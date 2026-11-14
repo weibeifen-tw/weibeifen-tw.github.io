@@ -138,6 +138,14 @@ def run_backfill():
     if not files:
         print("排程裡沒有核准過的貼文，今天不發。")
         return False
+    sent_names = {p.name for p in SENT.glob("*.txt")} if SENT.exists() else set()
+    while files and files[0].name in sent_names:
+        print(f"{files[0].name}：已經發過，跳過。")
+        files[0].unlink()
+        files = files[1:]
+    if not files:
+        print("排程裡沒有核准過的貼文，今天不發。")
+        return False
     f = files[0]
     slug = f.stem.split("_", 1)[1]
     text = f.read_text(encoding="utf-8").strip()

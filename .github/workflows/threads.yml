@@ -24,6 +24,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main  # 拿執行當下最新的版本，避免兩次執行重發同一篇
       - name: 發文
         env:
           THREADS_TOKEN: ${{ secrets.THREADS_TOKEN }}
