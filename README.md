@@ -1,6 +1,6 @@
 # 未備份
 
-MU的小說網站。網址：https://weibeifen-tw.github.io/
+畝 MU 的小說網站。網址：https://weibeifen-tw.github.io/
 
 ## 新增一串貼文
 
