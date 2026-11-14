@@ -1,6 +1,6 @@
 # 未備份
 
-MU的小說網站。網址：https://sierra2121.github.io/weibeifen/
+MU的小說網站。網址：https://weibeifen-tw.github.io/
 
 ## 新增一串貼文
 

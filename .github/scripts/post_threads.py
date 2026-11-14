@@ -25,7 +25,7 @@ OUTBOX = BASE / "outbox"
 SENT = BASE / "sent"
 DONE = BASE / "done.txt"
 API = "https://graph.threads.net/v1.0"
-SITE = "https://sierra2121.github.io/weibeifen/t/{slug}/"
+SITE = "https://weibeifen-tw.github.io/t/{slug}/"
 LIMIT = 500  # 脆一篇最多 500 字
 
 
