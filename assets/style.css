@@ -331,3 +331,5 @@ body.wide .rg{max-width:700px;margin-left:auto;margin-right:auto}
 
 /* 章節頁已經有「喜歡這一章？請畝 MU 吃糖果」，頁尾就不再放 */
 body.reading .foot .candy{display:none}
+
+.drawer{display:flex;flex-direction:column}.d-candy{margin-top:auto;align-self:center;padding:10px 22px;border:1px solid var(--line);border-radius:999px;font-size:15px;color:var(--sub);text-decoration:none}.d-candy:hover{color:var(--ink)}
