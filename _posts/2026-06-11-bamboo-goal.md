@@ -1,6 +1,6 @@
 ---
 layout: thread
-title: 竹足球框
+title: 三合院
 character: mo
 novel: yu
 chapter: 1
