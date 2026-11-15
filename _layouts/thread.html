@@ -14,6 +14,11 @@ body_class: reading
 {%- endif -%}{%- endfor -%}
 {%- unless nx -%}{%- for p in site.posts -%}{%- if p.novel == page.novel and p.chapter == want_n -%}{%- assign nx = p -%}{%- endif -%}{%- endfor -%}{%- endunless -%}
 {%- unless pv -%}{%- for p in site.posts -%}{%- if p.novel == page.novel and p.chapter == want_p -%}{%- assign pv = p -%}{%- endif -%}{%- endfor -%}{%- endunless -%}
+{%- comment -%} 章號跳號時（例如上釉 5 → 51）：找同角色最接近的前一章、後一章 {%- endcomment -%}
+{%- if page.chapter -%}
+{%- unless nx -%}{%- assign best = 99999 -%}{%- for p in site.posts -%}{%- if p.novel == page.novel and p.character == page.character and p.chapter > page.chapter and p.chapter < best -%}{%- assign best = p.chapter -%}{%- assign nx = p -%}{%- endif -%}{%- endfor -%}{%- endunless -%}
+{%- unless pv -%}{%- assign best = -1 -%}{%- for p in site.posts -%}{%- if p.novel == page.novel and p.character == page.character and p.chapter < page.chapter and p.chapter > best -%}{%- assign best = p.chapter -%}{%- assign pv = p -%}{%- endif -%}{%- endfor -%}{%- endunless -%}
+{%- endif -%}
 <article class="chapter read" data-char="{{ page.character }}" data-novel="{{ page.novel }}" data-no="{{ page.chapter }}" data-title="{{ page.title | escape }}" style="--c:{{ me.color }}">
   <p class="r-crumb"><a href="{{ '/' | relative_url }}?n={{ page.novel }}">《{{ nv.title }}》</a>{% if page.chapter %}　·　第 {{ page.chapter }} 章{% endif %}</p>
   <a class="r-who" href="{{ '/' | relative_url }}?c={{ page.character }}">

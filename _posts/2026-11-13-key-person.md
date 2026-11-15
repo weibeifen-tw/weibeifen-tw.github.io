@@ -3,7 +3,7 @@ layout: thread
 title: 關鍵人物
 character: mo
 novel: yu
-chapter: 13
+chapter: 5
 teaser: |
   黃仁勳辭職了。台股隔天漲了一千點。
 

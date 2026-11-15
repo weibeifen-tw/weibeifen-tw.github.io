@@ -3,7 +3,7 @@ layout: thread
 title: 雞腿
 character: mo
 novel: yu
-chapter: 2
+chapter: 52
 teaser: |
   營養午餐有雞腿的那天，她會把她的雞腿夾到我的餐盤裡。
 

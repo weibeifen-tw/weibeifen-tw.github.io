@@ -3,7 +3,7 @@ layout: thread
 title: 三合院
 character: mo
 novel: yu
-chapter: 1
+chapter: 51
 teaser: |
   姊姊張開手，站在兩根曬衣竹竿中間。
 

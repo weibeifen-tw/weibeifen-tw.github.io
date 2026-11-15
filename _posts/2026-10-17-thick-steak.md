@@ -3,7 +3,7 @@ layout: thread
 title: 厚牛排
 character: mo
 novel: yu
-chapter: 16
+chapter: 107
 teaser: |
   「比流器的二次側不能開路，你知道為什麼嗎？」
 

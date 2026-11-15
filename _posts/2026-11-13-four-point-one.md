@@ -3,7 +3,7 @@ layout: thread
 title: 四點一
 character: mo
 novel: yu
-chapter: 10
+chapter: 2
 teaser: |
   同一份民調，兩家新聞。
 
