@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<!-- 菁：淡棕色中長直髮、寬鬆襯衫、表情淡 -->
+<rect width="64" height="64" fill="#efe9f2"/>
+<path d="M14 54 C11 24 21 10 32 10 C43 10 53 24 50 54 L44 50 L20 50 Z" fill="#b8916c"/>
+<rect x="27" y="45" width="10" height="8" fill="#f7e2d6"/><path d="M8 64 C11 55 20 52 32 52 C44 52 53 55 56 64 Z" fill="#d9d3e0"/><path d="M28 52 L32 57 L36 52" stroke="#b3a9bf" stroke-width="1.2" fill="none"/>
+<ellipse cx="32" cy="34" rx="13" ry="15.5" fill="#f7e2d6"/>
+<path d="M24 35 L29 35" stroke="#3a2c2a" stroke-width="1.6" stroke-linecap="round"/><path d="M35 35 L40 35" stroke="#3a2c2a" stroke-width="1.6" stroke-linecap="round"/>
+<path d="M30 43 L34 43" stroke="#a8686a" stroke-width="1.2" stroke-linecap="round"/>
+<path d="M19 33 C18 19 25 13 32 13 C39 13 46 19 45 33 C43 25 38 21 33 21 L32 24 L31 21 C26 21 21 25 19 33 Z" fill="#b8916c"/>
+</svg>
