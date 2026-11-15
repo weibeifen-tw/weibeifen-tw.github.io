@@ -1,0 +1,60 @@
+name: 排程發章
+
+# 用法：把寫好的章節檔放進 .github/scheduled/上線日期/ 資料夾，
+# 例如 .github/scheduled/2026-11-20/2026-11-20-yang11.md
+# 每天早上 8 點左右（台灣時間），日期到了的章節會自動搬進 _posts/，網站重建後就看得到。
+# 章節檔名裡的日期照舊是故事裡的時間，跟上線日期無關（但不能晚於上線日期，不然會被藏起來）。
+
+on:
+  schedule:
+    - cron: "53 23 * * *"   # UTC 23:53 = 台灣 07:53（提早幾分鐘，避開整點塞車）
+  workflow_dispatch:         # 也可以在 Actions 頁面手動按一次
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: schedule-chapters
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: 把到期的章節搬進 _posts
+        id: move
+        run: |
+          TODAY=$(TZ=Asia/Taipei date +%F)
+          moved=0
+          shopt -s nullglob
+          for dir in .github/scheduled/*/; do
+            day=$(basename "$dir")
+            if [[ "$day" > "$TODAY" ]]; then continue; fi
+            for f in "$dir"*.md; do
+              git mv "$f" "_posts/$(basename "$f")"
+              echo "上線：$(basename "$f")"
+              moved=$((moved+1))
+            done
+          done
+          echo "moved=$moved" >> "$GITHUB_OUTPUT"
+
+      - name: 推上去
+        if: steps.move.outputs.moved != '0'
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git commit -m "排程發章：${{ steps.move.outputs.moved }} 章上線"
+          git pull --rebase
+          git push
+
+      - name: 請 GitHub Pages 重建網站
+        if: steps.move.outputs.moved != '0'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X POST "repos/${{ github.repository }}/pages/builds"
