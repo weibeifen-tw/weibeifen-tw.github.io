@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<!-- 硝：短髮、左臉到脖子燒傷疤、黑色皮夾克 -->
+<rect width="64" height="64" fill="#efe2dc"/>
+<rect x="26" y="45" width="12" height="9" fill="#e2b99c"/>
+<path d="M27 46 L31 46 L31 54 L27 54 Z" fill="#b97a66" opacity=".7"/>
+<path d="M4 64 C6 53 17 49 32 49 C47 49 58 53 60 64 Z" fill="#2a2422"/>
+<path d="M26 50 L32 58 L38 50" stroke="#8b3a2a" stroke-width="1.6" fill="none"/>
+<ellipse cx="32" cy="33" rx="14.5" ry="16" fill="#e2b99c"/>
+<path d="M18.5 32 C19 40 22 45 27 47 C26 41 25 37 26 32 C24 30 21 30 18.5 32 Z" fill="#b97a66" opacity=".75"/>
+<path d="M20 36 Q23 35 25 37 M21 40 Q23 39 25 41" stroke="#9a5a4a" stroke-width=".8" fill="none" opacity=".7"/>
+<path d="M23 31 L28.5 30" stroke="#2a2220" stroke-width="2.2" stroke-linecap="round"/><path d="M35.5 30 L41 31" stroke="#2a2220" stroke-width="2.2" stroke-linecap="round"/>
+<path d="M24 34 L28 34" stroke="#2a2220" stroke-width="1.6" stroke-linecap="round"/><path d="M36 34 L40 34" stroke="#2a2220" stroke-width="1.6" stroke-linecap="round"/>
+<path d="M29 42 L35 42" stroke="#8a5446" stroke-width="1.4" stroke-linecap="round"/>
+<path d="M17 30 C16 18 23 14 32 14 C41 14 48 18 47 30 C46 24 42 21 37 21 C34 24 28 24 25 21 C21 22 18 25 17 30 Z" fill="#1e1a19"/>
+</svg>

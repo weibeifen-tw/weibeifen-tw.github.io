@@ -327,3 +327,19 @@ yan:
   glyph: 焰
   color: "#d0622b"
   bio: 二十六歲，古坑瓦斯行的女兒，一次搬兩桶二十公斤。我爸說他沒生到兒子，但他有我。
+xiao:
+  name: 硝
+  handle: xiao.lieyu
+  novel: duanqiao
+  avatar: xiao.svg
+  glyph: 硝
+  color: "#8b3a2a"
+  bio: 三十二歲，烈嶼守備隊長。退伍軍人，左臉到脖子有燒傷。住上林古厝，不太講話。
+ying:
+  name: 霙
+  handle: ying.shuitou
+  novel: duanqiao
+  avatar: ying.svg
+  glyph: 霙
+  color: "#6f84a8"
+  bio: 二十四歲，大金首領的女兒，災變第三年被送到烈嶼當人質。什麼都說好。
