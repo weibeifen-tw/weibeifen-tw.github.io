@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<!-- 蘅：淡茶色長直髮到背、細框眼鏡、米色棉麻 -->
+<rect width="64" height="64" fill="#f1e8df"/>
+<path d="M14 64 L14 30 C13 14 22 8.5 32 8.5 C42 8.5 51 14 50 30 L50 64 Z" fill="#c9a37e"/>
+<rect x="27" y="45" width="10" height="9" fill="#ecc8a8"/><path d="M12 64 C14 54 21 51 32 51 C43 51 50 54 52 64 Z" fill="#e6d8c3"/><path d="M27 51 C29 54 35 54 37 51" fill="none" stroke="#c7b394" stroke-width="1.2"/>
+<path d="M14 64 L14 40 C16 50 18 56 20 64 Z M50 64 L50 40 C48 50 46 56 44 64 Z" fill="#c9a37e"/>
+<ellipse cx="32" cy="33" rx="14" ry="16" fill="#ecc8a8"/>
+<ellipse cx="25.5" cy="34.5" rx="2.6" ry="3.3" fill="#3a2d3f"/><circle cx="24.7" cy="33.3" r="0.9" fill="#fff"/><ellipse cx="38.5" cy="34.5" rx="2.6" ry="3.3" fill="#3a2d3f"/><circle cx="37.7" cy="33.3" r="0.9" fill="#fff"/>
+<circle cx="25.5" cy="34.5" r="5" fill="none" stroke="#7a6152" stroke-width="0.9"/><circle cx="38.5" cy="34.5" r="5" fill="none" stroke="#7a6152" stroke-width="0.9"/><path d="M30.5 34 L33.5 34" stroke="#7a6152" stroke-width="0.9"/>
+<path d="M22 28.5 C24 27.6 26.5 27.7 28.5 28.6" stroke="#8a6a52" stroke-width="1" fill="none" stroke-linecap="round"/><path d="M42 28.5 C40 27.6 37.5 27.7 35.5 28.6" stroke="#8a6a52" stroke-width="1" fill="none" stroke-linecap="round"/>
+<path d="M29.5 42.5 C31 43.5 33 43.5 34.5 42.5" stroke="#b0705f" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+<path d="M16.5 33 C15.5 17 24 11 32 11 C40 11 48.5 17 47.5 33 C46 23 40 18.5 33 18 C30 21 25 24 16.5 33 Z" fill="#c9a37e"/>
+</svg>
