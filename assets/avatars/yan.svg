@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-<!-- 焰：胖T、極短髮、圓臉、背心 -->
+<!-- 焰：圓臉、極短髮、圓臉、背心 -->
 <rect width="64" height="64" fill="#f6e6da"/>
 <rect x="25" y="46" width="14" height="8" fill="#e9c4a6"/>
 <path d="M4 64 C6 53 17 49 32 49 C47 49 58 53 60 64 Z" fill="#d0622b"/>
