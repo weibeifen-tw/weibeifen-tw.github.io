@@ -279,3 +279,27 @@ heng:
   glyph: 蘅
   color: "#b38e72"
   bio: 三十三歲，中文系助理教授，出過兩本詩集。五個孩子的媽媽、一個人的妻。每天早上五點寫字，那一小時是她自己的。
+yin:
+  name: 茵
+  handle: yin.firstyear
+  novel: pendi
+  avatar: yin.svg
+  glyph: 茵
+  color: "#c08497"
+  bio: 十六歲，高一。這個夏天才發現自己喜歡女生，在脆上找到鎮上的群，第一次見面緊張到提早半小時到。
+jin:
+  name: 燼
+  handle: jin.ashes
+  novel: pendi
+  avatar: jin.svg
+  glyph: 燼
+  color: "#9a4f3c"
+  bio: 二十歲，電商客服。狼尾頭，165 公分 45 公斤，週末 cos。認識很多怪人，鎮上誰跟誰在一起她都知道。
+ting:
+  name: 汀
+  handle: ting.notbufen
+  novel: pendi
+  avatar: ting.svg
+  glyph: 汀
+  color: "#56698c"
+  bio: 十七歲，高二。T，很在意這件事。嘴很硬，騎腳踏車載過半個群的人回家。

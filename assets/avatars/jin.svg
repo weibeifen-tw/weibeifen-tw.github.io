@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<!-- 燼：黑色狼尾、很瘦、眼線、黑色寬 T -->
+<rect width="64" height="64" fill="#ece4e1"/>
+<path d="M16 56 C14 44 16 30 20 26 L44 26 C48 30 50 44 48 56 C46 50 45 46 44 42 L20 42 C19 46 18 50 16 56 Z" fill="#26201f"/>
+<rect x="28.5" y="44" width="7" height="10" fill="#f3dfd6"/><path d="M8 64 C11 55 20 52 32 52 C44 52 53 55 56 64 Z" fill="#2e2a2a"/>
+<ellipse cx="32" cy="33" rx="11.5" ry="15" fill="#f3dfd6"/>
+<path d="M23.5 33 L29 33" stroke="#1e1818" stroke-width="1.8" stroke-linecap="round"/><path d="M35 33 L40.5 33" stroke="#1e1818" stroke-width="1.8" stroke-linecap="round"/>
+<path d="M29 33 L30.5 32" stroke="#1e1818" stroke-width="1" /><path d="M40.5 33 L42 32" stroke="#1e1818" stroke-width="1"/>
+<path d="M29.5 42.5 L34.5 42.5" stroke="#9a5a52" stroke-width="1.2" stroke-linecap="round"/>
+<path d="M19 30 C18 16 25 11 32 11 C40 11 47 16 45 30 C42 24 39 21 36 22 L34 27 L31 21 C27 21 22 24 19 30 Z" fill="#26201f"/>
+</svg>
