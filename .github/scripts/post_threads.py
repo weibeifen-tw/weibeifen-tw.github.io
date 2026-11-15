@@ -42,7 +42,9 @@ def call(method, path, params):
 
 def publish(text, link, tag=None):
     token = os.environ["THREADS_TOKEN"]
-    params = {"media_type": "TEXT", "text": text[:LIMIT], "link_attachment": link, "access_token": token}
+    params = {"media_type": "TEXT", "text": text[:LIMIT], "access_token": token}
+    if link:
+        params["link_attachment"] = link
     if tag:
         params["topic_tag"] = tag
     cid = call("POST", "me/threads", params)["id"]
@@ -153,6 +155,14 @@ def run_backfill():
     if text.startswith("#"):
         first, _, text = text.partition("\n")
         tag, text = first[1:].strip(), text.strip()
+    if slug.startswith("daily"):
+        # 角色日常：不對應章節、不附連結
+        pid = publish(text, None, tag)
+        SENT.mkdir(parents=True, exist_ok=True)
+        f.rename(SENT / f.name)
+        mark_done(f.name, "daily")
+        print(f"{f.name}：已發到脆（{pid}）")
+        return False
     post = find_post(slug)
     if post is None:
         print(f"{f.name}：找不到章節 {slug}")
