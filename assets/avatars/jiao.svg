@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<!-- 礁：短髮、白色制服、灰藍 -->
+<rect width="64" height="64" fill="#e3e7ee"/>
+<rect x="27" y="45" width="10" height="8" fill="#e6bf9f"/>
+<path d="M6 64 C8 54 18 50 32 50 C46 50 56 54 58 64 Z" fill="#f4f4f2"/>
+<path d="M27 50 L32 56 L37 50" stroke="#4a5a70" stroke-width="1.6" fill="none"/>
+<ellipse cx="32" cy="33" rx="13.5" ry="15" fill="#e6bf9f"/>
+<path d="M24 31 L29 30.5" stroke="#2a2a2e" stroke-width="1.8" stroke-linecap="round"/><path d="M35 30.5 L40 31" stroke="#2a2a2e" stroke-width="1.8" stroke-linecap="round"/>
+<circle cx="26.5" cy="34.5" r="1.5" fill="#2a2a2e"/><circle cx="37.5" cy="34.5" r="1.5" fill="#2a2a2e"/>
+<path d="M29 42 L35 42" stroke="#9a6450" stroke-width="1.4" stroke-linecap="round"/>
+<path d="M18 31 C17 19 24 15 32 15 C40 15 47 19 46 31 C45 25 42 22 38 22 C35 24 29 24 26 22 C22 22 19 25 18 31 Z" fill="#1f1d1e"/>
+</svg>

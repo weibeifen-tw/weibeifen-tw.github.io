@@ -343,3 +343,19 @@ ying:
   glyph: 霙
   color: "#6f84a8"
   bio: 二十四歲，大金首領的女兒，災變第三年被送到烈嶼當人質。什麼都說好。
+jiao:
+  name: 礁
+  handle: jiao.kaiyuan
+  novel: huaji
+  avatar: jiao.svg
+  glyph: 礁
+  color: "#4a5a70"
+  bio: 蘭嶼長大。短頭髮是我爸要我剪的。話不多，但我都有在聽。
+yi:
+  name: 漪
+  handle: yi.minsu
+  novel: huaji
+  avatar: yi.svg
+  glyph: 漪
+  color: "#b07a8f"
+  bio: 蘭嶼長大，家裡開民宿。讀書很慢，會畫很多重點。

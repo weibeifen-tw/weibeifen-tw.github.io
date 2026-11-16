@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<!-- 漪：黑長髮、瀏海、白色制服、紅筆 -->
+<rect width="64" height="64" fill="#f2e6ea"/>
+<path d="M15 30 C14 44 15 56 18 64 L46 64 C49 56 50 44 49 30 Z" fill="#231e20"/>
+<rect x="27" y="45" width="10" height="8" fill="#ecc6a8"/>
+<path d="M8 64 C10 54 19 50 32 50 C45 50 54 54 56 64 Z" fill="#f6f5f3"/>
+<path d="M27 50 L32 56 L37 50" stroke="#b07a8f" stroke-width="1.6" fill="none"/>
+<ellipse cx="32" cy="34" rx="13" ry="14.5" fill="#ecc6a8"/>
+<circle cx="27" cy="35.5" r="1.6" fill="#2a2426"/><circle cx="37" cy="35.5" r="1.6" fill="#2a2426"/>
+<path d="M28.5 42 Q32 44.5 35.5 42" stroke="#b56a6a" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+<path d="M18 34 C17 20 24 16 32 16 C40 16 47 20 46 34 C45 29 44 27 43 27 L21 27 C20 27 19 29 18 34 Z" fill="#231e20"/>
+<path d="M44 58 L52 50" stroke="#c0392b" stroke-width="2.4" stroke-linecap="round"/>
+</svg>
