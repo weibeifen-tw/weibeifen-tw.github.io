@@ -368,3 +368,22 @@ a.ib-ref:hover{text-decoration:underline}
 .ib-form{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--line);background:var(--card)}
 .ib-form input{flex:1;min-width:0;padding:8px 14px;border:1px solid var(--line);border-radius:999px;background:var(--bg);color:var(--ink);font:inherit;font-size:16px}
 .ib-form button{border:0;border-radius:999px;padding:0 16px;background:var(--ink);color:var(--bg);font:inherit;font-size:14px;cursor:pointer}
+
+/* 獨立小說介紹頁 */
+.nv-leads{display:flex;flex-direction:column;gap:10px;margin:0 0 18px}
+.nv-lead{display:flex;gap:12px;align-items:flex-start;padding:12px;border:1px solid var(--line);border-radius:14px}
+.nv-lead:hover{border-color:var(--ink)}
+.nv-lead .avatar{flex:none}
+.nv-lead-t{display:flex;flex-direction:column;line-height:1.6;min-width:0}
+.nv-lead-t small{color:var(--sub);font-size:12px}
+.nv-lead-t span{font-size:14px;color:#4a463f}
+.nv-sample{margin:0 0 18px}
+.nv-sample blockquote{margin:0;padding:4px 0 4px 14px;border-left:3px solid var(--line);font-family:"Noto Serif TC",serif;font-size:15px;line-height:1.95;color:#3d3a34}
+.nv-sample figcaption{margin-top:6px;font-size:12px;color:var(--sub)}
+.nv-info{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;margin:0 0 18px;padding:12px 14px;border-radius:12px;background:var(--chip);font-size:14px}
+.nv-info>div{display:flex;flex-direction:column}
+.nv-info dt{font-size:12px;color:var(--sub)}
+.nv-info dd{margin:0}
+.nv-info summary{cursor:pointer;color:var(--sub);list-style:none}
+.nv-info summary::-webkit-details-marker{display:none}
+.nv-info details[open] summary{display:none}

@@ -2,11 +2,13 @@
   var feed = document.querySelector('.feed');
   if (!feed) return;
   var q = new URLSearchParams(location.search);
-  var n = q.get('n') || '', c = q.get('c') || '';
+  var n = q.get('n') || window.NOVEL || '', c = q.get('c') || '';
   var chars = JSON.parse(document.getElementById('chars').textContent || '{}');
   var who = chars[c];
   var novels = JSON.parse(document.getElementById('novels').textContent || '{}');
   var nv = !who && n && !q.get('liked') && !q.get('reposted') ? novels[n] : null;
+  // 有獨立介紹頁的小說，舊的 ?n= 網址轉過去
+  if (nv && nv.page && !window.NOVEL) { location.replace(BASE + '/novel/' + n + '/'); return; }
   var shown = 0;
   function mk(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
 
@@ -36,6 +38,8 @@
       cbox.appendChild(ch);
     });
     var box2 = document.getElementById('novel');
+    var isStatic = !!box2.dataset.static;
+    if (!isStatic) {
     var bk = mk('a', 'nv-back', '← 所有小說'); bk.href = BASE + '/novels/'; box2.appendChild(bk);
     box2.append(mk('h1', null, nv.title));
     if (nv.era) box2.appendChild(mk('p', 'nv-era', nv.era));
@@ -50,6 +54,7 @@
       a.append(av, mk('span', null, ch.name)); cl.appendChild(a);
     });
     box2.appendChild(cl);
+    }
     var btns = mk('div', 'nv-btns');
     function rd(k) { try { var r = JSON.parse(localStorage.getItem(k) || 'null'); return r && r.url ? r : null; } catch (e) { return null; } }
     var lr = rd('wb:last:' + n);
@@ -76,7 +81,7 @@
     box2.appendChild(btns);
     cbox.parentNode.insertBefore(mk('h2', 'nv-h', '章節'), cbox);
     box2.hidden = false;
-    document.title = nv.title + '｜未備份';
+    if (!isStatic) document.title = nv.title + '｜未備份';
   } else if (who) {
     // 個人頁：顯示這個角色的完整章節，從第一章排起
     feed.hidden = true;
@@ -348,7 +353,7 @@
   if (!list.length) { var p = document.createElement('p'); p.textContent = '還沒有看過的小說'; sub.appendChild(p); }
   list.forEach(function (x) {
     if (x.r) { sub.appendChild(row(x.r.url, novels[x.id].title, x.r.no)); return; }
-    var h = document.createElement('a'); h.href = BASE + '/?n=' + x.id; h.className = 'd-nv'; h.textContent = novels[x.id].title; sub.appendChild(h);
+    var h = document.createElement('a'); h.href = novels[x.id].page ? BASE + '/novel/' + x.id + '/' : BASE + '/?n=' + x.id; h.className = 'd-nv'; h.textContent = novels[x.id].title; sub.appendChild(h);
     x.rows.forEach(function (y) { sub.appendChild(row(y[1].url, (chars[y[0]] || {}).name || '', y[1].no, 'd-ch')); });
   });
   arrow.onclick = function () { var o = g.classList.toggle('open'); arrow.setAttribute('aria-expanded', o); };
@@ -377,7 +382,7 @@
     var ids = list(key);
     if (!ids.length) { var p = document.createElement('p'); p.className = 'tw-empty'; p.textContent = '這裡還沒有小說。'; panel.appendChild(p); return; }
     ids.forEach(function (id) {
-      var a = document.createElement('a'); a.className = 'tw-item'; a.href = BASE + '/?n=' + id; a.style.color = color(id);
+      var a = document.createElement('a'); a.className = 'tw-item'; a.href = novels[id].page ? BASE + '/novel/' + id + '/' : BASE + '/?n=' + id; a.style.color = color(id);
       var b = document.createElement('b'); b.textContent = novels[id].title; a.appendChild(b);
       if (novels[id].era) { var s = document.createElement('small'); s.textContent = novels[id].era; a.appendChild(s); }
       panel.appendChild(a);

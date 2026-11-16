@@ -1,0 +1,53 @@
+{%- assign id = include.id -%}
+{%- assign nv = site.data.novels[id] -%}
+<section id="novel" class="novel" data-static="1">
+  <a class="nv-back" href="{{ '/novels/' | relative_url }}">← 所有小說</a>
+  <h1>{{ nv.title }}</h1>
+  {%- if nv.era %}<p class="nv-era">{{ nv.era }}</p>{% endif %}
+  {%- if nv.tags %}<ul class="nv-tags">{% for t in nv.tags %}<li>{{ t }}</li>{% endfor %}</ul>{% endif %}
+  {%- if nv.intro %}<p class="nv-intro">{{ nv.intro }}</p>{% endif %}
+  <div class="nv-leads">
+  {%- for c in site.data.characters -%}{%- if c[1].novel == id -%}
+    <a class="nv-lead" href="{{ '/' | relative_url }}?c={{ c[0] }}">
+      <span class="avatar" style="--c:{{ c[1].color }}">{% if c[1].avatar %}<img src="{{ '/assets/avatars/' | append: c[1].avatar | relative_url }}?v={{ site.time | date: '%s' }}" alt="">{% else %}{{ c[1].glyph }}{% endif %}</span>
+      <span class="nv-lead-t"><b>{{ c[1].name }}</b><small>@{{ c[1].handle }}</small><span>{{ c[1].bio }}</span></span>
+    </a>
+  {%- endif -%}{%- endfor -%}
+  </div>
+  {%- if nv.sample %}
+  <figure class="nv-sample"><blockquote>{{ nv.sample | newline_to_br }}</blockquote>{% if nv.sample_from %}<figcaption>{{ nv.sample_from }}</figcaption>{% endif %}</figure>
+  {%- endif %}
+  {%- if nv.info %}
+  <dl class="nv-info">
+  {%- for r in nv.info -%}
+    <div><dt>{{ r[0] }}</dt><dd>{% if r[2] == 'hide' %}<details><summary>點開可查看</summary>{{ r[1] }}</details>{% else %}{{ r[1] }}{% endif %}</dd></div>
+  {%- endfor -%}
+  </dl>
+  {%- endif %}
+</section>
+<div class="feed" hidden></div>
+<button type="button" class="more-btn" hidden>載入更多</button>
+<div class="chapters" hidden>
+{%- assign ordered = site.posts | reverse | where: "novel", id -%}
+{%- for post in ordered -%}
+  {% include chapter.html post=post no=forloop.index %}
+{%- endfor -%}
+</div>
+<p class="empty" hidden>這裡還沒有貼文。</p>
+<script>window.NOVEL = {{ id | jsonify }};</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Book",
+  "name": {{ nv.title | jsonify }},
+  "url": {{ page.url | absolute_url | jsonify }},
+  "author": { "@type": "Person", "name": {{ site.author | jsonify }} },
+  "inLanguage": "zh-Hant",
+  "genre": "女同志小說",
+  "description": {{ nv.intro | default: nv.seo_desc | jsonify }},
+  "temporalCoverage": {{ nv.era | split: "・" | first | replace: "–", "/" | jsonify }},
+  "contentLocation": { "@type": "Place", "name": {{ nv.era | split: "・" | last | jsonify }} },
+  "character": [{% assign first = true %}{% for c in site.data.characters %}{% if c[1].novel == id %}{% unless first %},{% endunless %}{ "@type": "Person", "name": {{ c[1].name | jsonify }} }{% assign first = false %}{% endif %}{% endfor %}],
+  "publisher": { "@type": "Organization", "name": {{ site.title | jsonify }} }
+}
+</script>

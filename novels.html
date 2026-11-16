@@ -14,7 +14,7 @@ body_class: wide
 {%- assign nv = n[1] -%}
 {%- if nv.region == ar.key -%}
 {%- assign cnt = 0 -%}{%- for p in site.posts -%}{%- if p.novel == n[0] -%}{%- assign cnt = cnt | plus: 1 -%}{%- endif -%}{%- endfor -%}
-  <a class="ov-card" href="{{ '/' | relative_url }}?n={{ n[0] }}">
+  <a class="ov-card" href="{% if site.data.novels[n[0]].page %}{{ '/novel/' | append: n[0] | append: '/' | relative_url }}{% else %}{{ '/' | relative_url }}?n={{ n[0] }}{% endif %}">
     <span class="ov-icon" aria-hidden="true">{{ nv.icon | default: '📖' }}</span>
     <span class="ov-t">
       <span class="ov-top"><b>{{ nv.title }}</b><small class="ov-n">{{ cnt }} 篇</small></span>

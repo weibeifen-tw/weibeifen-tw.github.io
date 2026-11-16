@@ -20,7 +20,7 @@ body_class: reading
 {%- unless pv -%}{%- assign best = -1 -%}{%- for p in site.posts -%}{%- if p.novel == page.novel and p.character == page.character and p.chapter < page.chapter and p.chapter > best -%}{%- assign best = p.chapter -%}{%- assign pv = p -%}{%- endif -%}{%- endfor -%}{%- endunless -%}
 {%- endif -%}
 <article class="chapter read" data-char="{{ page.character }}" data-novel="{{ page.novel }}" data-no="{{ page.chapter }}" data-title="{{ page.title | escape }}" style="--c:{{ me.color }}">
-  <p class="r-crumb"><a href="{{ '/' | relative_url }}?n={{ page.novel }}">《{{ nv.title }}》</a>{% if page.chapter %}　·　第 {{ page.chapter }} 章{% endif %}</p>
+  <p class="r-crumb"><a href="{% if site.data.novels[page.novel].page %}{{ '/novel/' | append: page.novel | append: '/' | relative_url }}{% else %}{{ '/' | relative_url }}?n={{ page.novel }}{% endif %}">《{{ nv.title }}》</a>{% if page.chapter %}　·　第 {{ page.chapter }} 章{% endif %}</p>
   <a class="r-who" href="{{ '/' | relative_url }}?c={{ page.character }}">
     <span class="avatar" style="--c:{{ me.color }}">{%- if me.avatar -%}<img src="{{ '/assets/avatars/' | append: me.avatar | relative_url }}?v={{ site.time | date: '%s' }}" alt="">{%- else -%}{{ me.glyph }}{%- endif -%}</span>
     <span class="r-who-t"><b>{{ me.handle }}</b><small>{{ page.date | date: "%Y 年 %-m 月 %-d 日" }}</small></span>
