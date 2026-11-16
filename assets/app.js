@@ -83,19 +83,18 @@
     box2.hidden = false;
     if (!isStatic) document.title = nv.title + '｜未備份';
   } else if (who) {
-    // 個人頁：顯示這個角色的完整章節，從第一章排起
-    feed.hidden = true;
+    // 個人頁：像她的社群主頁，動態牆只放她發的貼文，照章節順序從第一則往下滑
     var box = document.querySelector('.chapters');
-    box.hidden = false;
-    // 照 front matter 的 chapter 編號排，不照發文日期
-    Array.prototype.slice.call(box.querySelectorAll('.chapter'))
-      .sort(function (a, b) { return (+a.dataset.no || 0) - (+b.dataset.no || 0); })
-      .forEach(function (ch) { box.appendChild(ch); });
-    box.querySelectorAll('.chapter').forEach(function (ch) {
-      var ok = ch.dataset.char === c && (!n || ch.dataset.novel === n);
-      ch.hidden = !ok;
-      if (ok) { shown++; ch.querySelector('.ch-no').textContent = '第 ' + shown + ' 章'; }
+    box.hidden = true;
+    var mineT = Array.prototype.slice.call(feed.querySelectorAll('.teaser')).filter(function (t) {
+      t.hidden = true; return t.dataset.char === c && (!n || t.dataset.novel === n);
     });
+    mineT.sort(function (a, b) { return (+a.dataset.no || 0) - (+b.dataset.no || 0); });
+    mineT.forEach(function (t) { feed.appendChild(t); });
+    shown = mineT.length;
+    var PAGE1 = 15, upto1 = 0, more1 = document.querySelector('.more-btn');
+    function step1() { mineT.slice(upto1, upto1 + PAGE1).forEach(function (t) { t.hidden = false; }); upto1 += PAGE1; more1.hidden = upto1 >= mineT.length; }
+    more1.onclick = step1; step1();
 
     var prof = document.getElementById('profile');
     var av = document.createElement('div');
@@ -141,8 +140,9 @@
     document.title = who.name + '｜未備份';
 
     if (location.hash) {
-      var t = document.getElementById(decodeURIComponent(location.hash.slice(1)));
-      if (t) setTimeout(function () { t.scrollIntoView(); }, 50);
+      var key0 = decodeURIComponent(location.hash.slice(1)), idx = -1;
+      mineT.forEach(function (t, i) { if (t.querySelector('.actions').dataset.key === key0) idx = i; });
+      if (idx >= 0) { while (upto1 <= idx) step1(); setTimeout(function () { mineT[idx].scrollIntoView(); }, 50); }
     }
   } else {
     // 動態牆：每章一則重點（也可篩選小說、已說讚、已轉發）
