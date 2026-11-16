@@ -172,15 +172,25 @@
 (function () {
   function get(k, d) { try { var v = localStorage.getItem('wb:' + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
   function set(k, v) { try { localStorage.setItem('wb:' + k, JSON.stringify(v)); } catch (e) {} }
+  // 假的互動數字：用文章 key 當種子，同一篇每次看到的數字都一樣
+  function rnd(seed) { var h = 2166136261; for (var i = 0; i < seed.length; i++) { h ^= seed.charCodeAt(i); h = Math.imul(h, 16777619); } return function () { h ^= h << 13; h ^= h >>> 17; h ^= h << 5; return ((h >>> 0) % 100000) / 100000; }; }
+  function fake(key) {
+    var r = rnd(key || 'x'), viral = r() < 0.06;
+    var likes = Math.round(Math.exp(Math.log(viral ? 3000 : 25) + r() * Math.log(viral ? 12 : 120)));
+    return { like: likes, talk: Math.round(likes * (0.02 + r() * 0.08)), rp: Math.round(likes * (0.01 + r() * 0.05)), share: Math.round(likes * (0.01 + r() * 0.07)) };
+  }
+  function fmt(n) { return !n ? '' : n >= 10000 ? (Math.round(n / 1000) / 10) + '萬' : String(n); }
   document.querySelectorAll('.actions').forEach(function (a) {
-    var key = a.dataset.key;
+    var key = a.dataset.key, base = fake(key);
     var like = a.querySelector('.like'), talk = a.querySelector('.talk'), rep = a.querySelector('.repost');
     var box = a.querySelector('.comments'), list = a.querySelector('.clist'), form = a.querySelector('.cform');
     function draw() {
       var liked = get('like:' + key, false), cs = get('c:' + key, []);
-      like.classList.toggle('on', liked); like.querySelector('.n').textContent = liked ? '1' : '';
-      rep.classList.toggle('on', get('rp:' + key, false));
-      talk.querySelector('.n').textContent = cs.length || '';
+      like.classList.toggle('on', liked); like.querySelector('.n').textContent = fmt(base.like + (liked ? 1 : 0));
+      var rped = get('rp:' + key, false);
+      rep.classList.toggle('on', rped); rep.querySelector('.n').textContent = fmt(base.rp + (rped ? 1 : 0));
+      talk.querySelector('.n').textContent = fmt(base.talk + cs.length);
+      a.querySelector('.share .n').textContent = fmt(base.share);
       list.innerHTML = '';
       cs.forEach(function (t) { var li = document.createElement('li'); var b = document.createElement('b'); b.textContent = '你'; li.append(b, document.createTextNode(t)); list.appendChild(li); });
     }
