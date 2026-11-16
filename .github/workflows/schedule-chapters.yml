@@ -52,8 +52,8 @@ jobs:
           git pull --rebase
           git push
 
+      # 每天都重建一次，故意設未來日期的章節到了那天才會自己出現
       - name: 請 GitHub Pages 重建網站
-        if: steps.move.outputs.moved != '0'
         continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
