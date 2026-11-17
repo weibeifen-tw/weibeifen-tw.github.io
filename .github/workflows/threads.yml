@@ -1,42 +1,16 @@
-name: 發到脆
+
+name: 發到脆（已停用）
+
+# 已停用 Threads 自動發文。
+# 不會定時執行，也不會因上傳貼文而執行。
+# 保留檔案，方便未來需要時恢復。
 
 on:
-  # 蔡說「發」→ Claude 把貼文放進 outbox 推上來，就會發
-  push:
-    branches: [main]
-    paths: [".github/threads/outbox/**"]
-  # 每天三篇（台灣時間）：中午 12:30、晚上 6:30、晚上 11:00（提早幾分鐘，避開整點塞車；repo 轉移後重新登記排程）
-  schedule:
-    - cron: "27 4 * * *"
-    - cron: "27 10 * * *"
-    - cron: "57 14 * * *"
   workflow_dispatch:
 
-permissions:
-  contents: write
-
-concurrency:
-  group: threads
-  cancel-in-progress: false
-
 jobs:
-  post:
+  disabled:
+    if: ${{ false }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: main  # 拿執行當下最新的版本，避免兩次執行重發同一篇
-      - name: 發文
-        env:
-          THREADS_TOKEN: ${{ secrets.THREADS_TOKEN }}
-        run: |
-          pip install --quiet pyyaml
-          if [ "${{ github.event_name }}" = "push" ]; then MODE=outbox; else MODE=backfill; fi
-          python .github/scripts/post_threads.py $MODE
-      - name: 記錄已發的章節
-        if: always()
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@users.noreply.github.com"
-          git add .github/threads
-          git diff --cached --quiet || (git commit -m "記錄已發到脆的章節" && git pull --rebase && git push)
+      - run: echo "Threads 自動發文已停用"
