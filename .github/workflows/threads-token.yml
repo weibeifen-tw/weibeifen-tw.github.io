@@ -1,34 +1,16 @@
-name: 續期脆的金鑰
 
-# 脆的金鑰大約 60 天會過期。這裡每個月 1 號、15 號自動換一把新的，
-# 寫回 repo secret THREADS_TOKEN，之後就不用手動更新。
-# 需要另一個 secret：GH_PAT（GitHub 個人存取權杖，勾 repo 權限），用來寫回 secret。
+name: 續期脆的金鑰（已停用）
+
+# Threads 自動發文已停用。
+# 不再定期更新 THREADS_TOKEN。
+# 保留此工作流程檔案，方便未來恢復。
 
 on:
-  schedule:
-    - cron: "13 2 1,15 * *"   # 台灣時間每月 1 號、15 號早上 10:13
   workflow_dispatch:
 
 jobs:
-  refresh:
+  disabled:
+    if: ${{ false }}
     runs-on: ubuntu-latest
     steps:
-      - name: 換新金鑰並寫回
-        env:
-          THREADS_TOKEN: ${{ secrets.THREADS_TOKEN }}
-          GH_TOKEN: ${{ secrets.GH_PAT }}
-          REPO: ${{ github.repository }}
-        run: |
-          set -euo pipefail
-          if [ -z "${GH_TOKEN}" ]; then
-            echo "::error::缺少 secret GH_PAT，沒辦法把新金鑰寫回去"; exit 1
-          fi
-          RESP=$(curl -sS "https://graph.threads.net/refresh_access_token?grant_type=th_refresh_token&access_token=${THREADS_TOKEN}")
-          NEW=$(echo "$RESP" | jq -r '.access_token // empty')
-          if [ -z "$NEW" ]; then
-            echo "::error::續期失敗：$(echo "$RESP" | jq -c '.error // .')"; exit 1
-          fi
-          echo "::add-mask::$NEW"
-          DAYS=$(( $(echo "$RESP" | jq -r '.expires_in') / 86400 ))
-          gh secret set THREADS_TOKEN --repo "$REPO" --body "$NEW"
-          echo "已換新金鑰，有效約 ${DAYS} 天"
+      - run: echo "Threads Token 自動續期已停用"
