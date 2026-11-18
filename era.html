@@ -8,7 +8,7 @@ permalink: /era/
 <div class="era-axis" role="tablist" aria-label="年代">
 {%- for i in (0..9) -%}
   {%- assign d = i | times: 10 | plus: 1950 -%}{%- capture ds -%}{{ d }}{%- endcapture -%}
-  {%- assign cnt = 0 -%}{%- for n in site.data.novels -%}{%- assign e = site.data.era[n[0]] -%}{%- if e and e[ds] != nil and e[ds] != "" -%}{%- assign cnt = cnt | plus: 1 -%}{%- endif -%}{%- endfor -%}
+  {%- assign cnt = 0 -%}{%- for n in site.data.novels -%}{%- assign nid = n[0] -%}{%- assign e = site.data.era[nid] -%}{%- if e and e[ds] != nil and e[ds] != "" -%}{%- assign cnt = cnt | plus: 1 -%}{%- endif -%}{%- endfor -%}
   <button type="button" role="tab" class="era-cell{% if cnt == 0 %} empty{% endif %}" data-dec="{{ ds }}" aria-selected="false"><b>{{ ds }}</b><small>{% if cnt > 0 %}{{ cnt }} 部{% else %}－{% endif %}</small></button>
 {%- endfor -%}
 </div>
@@ -17,7 +17,7 @@ permalink: /era/
 <section class="era-dec" data-dec="{{ ds }}" hidden>
   <h2>{{ ds }} 年代</h2>
   {%- assign any = false -%}
-  {%- for n in site.data.novels -%}{%- assign e = site.data.era[n[0]] -%}{%- if e and e[ds] != nil and e[ds] != "" -%}{%- assign any = true -%}
+  {%- for n in site.data.novels -%}{%- assign nid = n[0] -%}{%- assign e = site.data.era[nid] -%}{%- if e and e[ds] != nil and e[ds] != "" -%}{%- assign any = true -%}
   {%- assign col = '#6b665c' -%}{%- for ch in site.data.characters -%}{%- if ch[1].novel == n[0] -%}{%- assign col = ch[1].color -%}{%- break -%}{%- endif -%}{%- endfor -%}
   <a class="era-item" href="{{ '/novel/' | append: n[0] | append: '/' | relative_url }}">
     <span class="era-t"><b style="color:{{ col }}">{{ n[1].title }}</b><small>{{ n[1].era }}</small></span>
