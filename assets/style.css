@@ -411,3 +411,16 @@ button.story{background:none;border:0;padding:0;font:inherit;cursor:pointer}
 .st-say p{margin:2px 0 0;line-height:1.7}
 .st-go{display:block;margin-top:16px;text-align:center;padding:12px;border-radius:999px;background:var(--ink);color:var(--card);text-decoration:none;font-weight:500}
 @media (hover:hover) and (pointer:fine){.stories{scrollbar-width:thin;cursor:grab}.stories::-webkit-scrollbar{display:block;height:6px}.stories::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}}
+/* 作品介紹貼文 */
+.intro-post{background:var(--card);border-bottom:1px solid var(--line);padding:18px 0 16px;margin-bottom:10px}
+.intro-post .t-head{padding:0 16px}
+.ip-slides{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin-top:8px}
+.ip-slides::-webkit-scrollbar{display:none}
+.ip-slides img{flex:none;width:100%;aspect-ratio:4/5;object-fit:cover;scroll-snap-align:start;display:block}
+.ip-dots{display:flex;justify-content:center;gap:5px;margin:10px 0 4px}
+.ip-dots i{width:6px;height:6px;border-radius:50%;background:var(--line)}
+.ip-dots i.on{background:var(--ink)}
+.ip-text{padding:4px 16px 0}
+.ip-text p{line-height:1.8;margin:6px 0}
+.ip-info{list-style:none;padding:0;margin:10px 0 0;display:flex;flex-wrap:wrap;gap:6px}
+.ip-info li{font-size:13px;padding:3px 10px;border-radius:999px;background:var(--bg);border:1px solid var(--line)}

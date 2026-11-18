@@ -163,7 +163,13 @@
         if (k === hits.length) k = 0;
         prev = hits[k].dataset.novel; out.push(hits.splice(k, 1)[0]);
       }
-      hits = out; hits.forEach(function (t) { feed.appendChild(t); });
+      hits = out;
+      // 作品介紹貼文：滿 4 部就只放介紹；不到 4 部先每 6 則章節穿插一則
+      var ips = Array.prototype.slice.call(document.querySelectorAll('.intros .intro-post'));
+      for (var a = ips.length - 1; a > 0; a--) { var b = Math.floor(Math.random() * (a + 1)), tt = ips[a]; ips[a] = ips[b]; ips[b] = tt; }
+      if (ips.length >= 4) { hits.forEach(function (t) { t.remove(); }); hits = ips; }
+      else if (ips.length) { var mix = []; hits.forEach(function (t, i) { if (i % 6 === 2 && ips.length) mix.push(ips.shift()); mix.push(t); }); hits = mix.concat(ips); }
+      hits.forEach(function (t) { feed.appendChild(t); });
     }
     // 一次先放 15 則，按「載入更多」再放 15 則
     var PAGE = 15, upto = 0, more = document.querySelector('.more-btn');
@@ -493,4 +499,12 @@
   addEventListener('mousemove', function (e) { if (!down) return; var d = e.pageX - x0; if (Math.abs(d) > 4) moved = true; s.scrollLeft = l0 - d; });
   addEventListener('mouseup', function () { down = false; });
   s.addEventListener('click', function (e) { if (moved) { e.stopPropagation(); e.preventDefault(); moved = false; } }, true);
+})();
+
+// 作品介紹貼文：多張圖左右滑，下方圓點
+(function () {
+  document.querySelectorAll('.intro-post').forEach(function (p) {
+    var sl = p.querySelector('.ip-slides'), dots = p.querySelectorAll('.ip-dots i');
+    sl.addEventListener('scroll', function () { var k = Math.round(sl.scrollLeft / sl.clientWidth); dots.forEach(function (d, i) { d.classList.toggle('on', i === k); }); }, { passive: true });
+  });
 })();
