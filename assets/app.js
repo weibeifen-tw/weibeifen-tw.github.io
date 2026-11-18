@@ -135,7 +135,7 @@
   document.querySelector('.empty').hidden = shown > 0;
 })();
 
-// 互動按鈕（目前只存在這個瀏覽器）
+// 互動按鈕：讚只有動畫、轉發到脆、留言進角色私訊、分享連結
 (function () {
   function get(k, d) { try { var v = localStorage.getItem('wb:' + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
   function set(k, v) { try { localStorage.setItem('wb:' + k, JSON.stringify(v)); } catch (e) {} }
@@ -148,25 +148,26 @@
   }
   function fmt(n) { return !n ? '' : n >= 10000 ? (Math.round(n / 1000) / 10) + '萬' : String(n); }
   document.querySelectorAll('.actions').forEach(function (a) {
-    var key = a.dataset.key, base = fake(key);
+    var key = a.dataset.key, base = fake(key), liked = false;
+    var host = a.closest('[data-char]'), cid = host ? host.dataset.char : '';
     var like = a.querySelector('.like'), talk = a.querySelector('.talk'), rep = a.querySelector('.repost');
-    var box = a.querySelector('.comments'), list = a.querySelector('.clist'), form = a.querySelector('.cform');
+    var url = new URL(a.dataset.url, location.origin).href;
     function draw() {
-      var liked = get('like:' + key, false), cs = get('c:' + key, []);
       like.classList.toggle('on', liked); like.querySelector('.n').textContent = fmt(base.like + (liked ? 1 : 0));
-      var rped = get('rp:' + key, false);
-      rep.classList.toggle('on', rped); rep.querySelector('.n').textContent = fmt(base.rp + (rped ? 1 : 0));
-      talk.querySelector('.n').textContent = fmt(base.talk + cs.length);
+      rep.querySelector('.n').textContent = fmt(base.rp);
+      talk.querySelector('.n').textContent = fmt(base.talk + get('c:' + key, []).length);
       a.querySelector('.share .n').textContent = fmt(base.share);
-      list.innerHTML = '';
-      cs.forEach(function (t) { var li = document.createElement('li'); var b = document.createElement('b'); b.textContent = '你'; li.append(b, document.createTextNode(t && t.t != null ? t.t : t)); list.appendChild(li); });
     }
-    like.onclick = function () { set('like:' + key, !get('like:' + key, false)); like.classList.add('pop'); setTimeout(function () { like.classList.remove('pop'); }, 300); draw(); };
-    rep.onclick = function () { set('rp:' + key, !get('rp:' + key, false)); draw(); };
-    talk.onclick = function () { box.hidden = !box.hidden; if (!box.hidden) form.querySelector('input').focus(); };
-    form.onsubmit = function (e) { e.preventDefault(); var i = form.querySelector('input'); var t = i.value.trim(); if (!t) return; var cs = get('c:' + key, []); cs.push({ t: t, at: Date.now() }); set('c:' + key, cs); i.value = ''; draw(); };
+    // 讚：只有動畫，不記錄
+    like.onclick = function () { liked = !liked; like.classList.add('pop'); setTimeout(function () { like.classList.remove('pop'); }, 300); draw(); };
+    // 轉發：真的轉發到脆
+    rep.onclick = function () {
+      var t = (a.closest('.chapter.read') ? document.title.replace(/｜未備份$/, '') : (host && host.querySelector('.topic') ? host.querySelector('.topic').textContent : document.title));
+      window.open('https://www.threads.net/intent/post?text=' + encodeURIComponent(t + '\n' + url), '_blank', 'noopener');
+    };
+    // 留言：連到角色私訊
+    talk.onclick = function () { if (window.openDM && cid) window.openDM(cid, key); };
     a.querySelector('.share').onclick = function () {
-      var url = new URL(a.dataset.url, location.origin).href;
       if (navigator.share) { navigator.share({ title: document.title, url: url }).catch(function () {}); return; }
       var toast = a.querySelector('.toast');
       (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(function () { toast.hidden = false; setTimeout(function () { toast.hidden = true; }, 1500); }).catch(function () { prompt('複製這個連結：', url); });
@@ -400,30 +401,34 @@
     else h += '<ul class="ib-list">' + ids.map(function (c) { var last = by[c][by[c].length - 1], ch = chars[c]; return '<li><button type="button" data-c="' + c + '">' + av(c) + '<span class="ib-who"><b>' + esc(ch.name) + '</b><small>@' + esc(ch.handle || '') + '</small><span class="ib-last">你：' + esc(last.t) + '</span></span><span class="ib-n">' + by[c].length + '</span></button></li>'; }).join('') + '</ul>';
     box.innerHTML = '<div class="ib-panel">' + h + '</div>';
   }
+  var ctx = null; // 從貼文點留言進來時，記住是哪一篇
   function chatView(c) {
     var msgs = collect()[c] || [], ch = chars[c] || {}, nv = novels[ch.novel] || {}, last = null;
     var h = '<div class="ib-head"><button type="button" class="ib-back" aria-label="返回">‹</button>' + av(c) + '<span class="ib-who"><b>' + esc(ch.name) + '</b><small>' + (nv.title ? '《' + esc(nv.title) + '》' : '') + '</small></span><button type="button" class="ib-x" aria-label="關閉">✕</button></div><div class="ib-msgs">';
     msgs.forEach(function (m) {
       var tag = m.post ? m.post.u : 'dm';
-      if (tag !== last) { h += m.post ? '<a class="ib-ref" href="' + m.post.u + '">' + (m.post.ch ? '第 ' + m.post.ch + ' 章' : '') + '〈' + esc(m.post.t) + '〉</a>' : '<span class="ib-ref">直接私訊</span>'; last = tag; }
+      if (tag !== last) { h += m.post ? '<a class="ib-ref" href="' + m.post.u + '">' + (m.post.ch ? '第 ' + m.post.ch + ' 篇' : '') + '〈' + esc(m.post.t) + '〉</a>' : '<span class="ib-ref">直接私訊</span>'; last = tag; }
       h += '<div class="ib-me"><span>' + esc(m.t) + '</span>' + (m.at ? '<small>' + when(m.at) + '</small>' : '') + '</div>';
     });
     h += '</div><form class="ib-form"><input type="text" maxlength="200" placeholder="傳訊息給' + esc(ch.name) + '…（只有你看得到）"><button type="submit">送出</button></form>';
     box.innerHTML = '<div class="ib-panel chat">' + h + '</div>';
     var ms = box.querySelector('.ib-msgs'); ms.scrollTop = ms.scrollHeight;
-    box.querySelector('.ib-form').onsubmit = function (e) { e.preventDefault(); var i = this.querySelector('input'), t = i.value.trim(); if (!t) return; var a = get('dm:' + c, []); a.push({ t: t, at: Date.now() }); set('dm:' + c, a); chatView(c); box.querySelector('.ib-form input').focus(); };
+    box.querySelector('.ib-form').onsubmit = function (e) { e.preventDefault(); var i = this.querySelector('input'), t = i.value.trim(); if (!t) return; var kk = ctx && ctx.c === c ? 'c:' + ctx.key : 'dm:' + c; var a = get(kk, []); a.push({ t: t, at: Date.now() }); set(kk, a); chatView(c); box.querySelector('.ib-form input').focus(); };
   }
-  function open() {
+  function open(then) {
     box.hidden = false; document.body.classList.add('ib-open');
-    if (posts) return listView();
+    then = typeof then === 'function' ? then : listView;
+    if (posts) return then();
     box.innerHTML = '<div class="ib-panel"><p class="ib-empty">載入中…</p></div>';
-    fetch(window.BASE + '/assets/posts.json?v=' + window.VER).then(function (r) { return r.json(); }).then(function (j) { posts = j; listView(); }).catch(function () { posts = {}; listView(); });
+    fetch(window.BASE + '/assets/posts.json?v=' + window.VER).then(function (r) { return r.json(); }).then(function (j) { posts = j; then(); }).catch(function () { posts = {}; then(); });
   }
   function close() { box.hidden = true; document.body.classList.remove('ib-open'); }
-  btn.onclick = open;
+  btn.onclick = function () { ctx = null; open(); };
+  // 貼文的留言按鈕：直接打開跟這個角色的私訊
+  window.openDM = function (c, key) { if (!chars[c]) return; ctx = { c: c, key: key }; open(function () { chatView(c); }); };
   box.addEventListener('click', function (e) {
     if (e.target === box || e.target.closest('.ib-x')) return close();
-    if (e.target.closest('.ib-back')) return listView();
+    if (e.target.closest('.ib-back')) { ctx = null; return listView(); }
     var b = e.target.closest('[data-c]'); if (b) chatView(b.dataset.c);
   });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !box.hidden) close(); });
