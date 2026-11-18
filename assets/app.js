@@ -478,6 +478,6 @@
 // 作品介紹貼文：讀過的人，按鈕改成「繼續讀第 N 篇」
 (function () {
   document.querySelectorAll('.st-go[data-novel]').forEach(function (a) {
-    try { var r = JSON.parse(localStorage.getItem('wb:last:' + a.dataset.novel) || 'null'); if (r && r.url) { a.href = r.url; a.textContent = '繼續讀第 ' + r.no + ' 篇'; } } catch (e) {}
+    try { var r = JSON.parse(localStorage.getItem('wb:last:' + a.dataset.novel) || 'null'); if (r && r.url) { a.href = r.url; var rl = a.querySelector('.rl'); if (rl) rl.textContent = '讀第 ' + r.no + ' 篇'; else a.textContent = '繼續讀第 ' + r.no + ' 篇'; } } catch (e) {}
   });
 })();
