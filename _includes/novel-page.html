@@ -7,7 +7,7 @@
 {%- for c in site.data.characters -%}{%- if c[1].novel == id -%}{%- assign leads = leads | push: c[0] -%}{%- endif -%}{%- endfor -%}
 {%- assign posters = ordered | map: "character" | uniq -%}
 <section id="novel" class="novel" data-static="1">
-  <a class="nv-back" href="{{ '/novels/' | relative_url }}">← 所有小說</a>
+  <a class="nv-back" href="{{ '/' | relative_url }}">← 回首頁</a>
   <h1>{{ nv.title }}</h1>
   {%- if nv.era %}<p class="nv-era">{{ nv.era }}</p>{% endif %}
   {%- if nv.tags %}<ul class="nv-tags">{% for t in nv.tags %}<li>{{ t }}</li>{% endfor %}</ul>{% endif %}

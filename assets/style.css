@@ -525,3 +525,12 @@ body.reading .chat-btn{bottom:calc(84px + env(safe-area-inset-bottom))}
 .intro-post .actions .act.read:hover{filter:brightness(.92)}
 .intro-post .actions{align-items:center;margin-bottom:10px}
 .intro-post .actions .act.read{margin-top:0;align-self:center;line-height:1;padding:8px 16px;font-size:14px;border:0}
+.sbox{max-width:620px;margin:0 auto;padding:0 16px 12px}
+.sbox[hidden]{display:none}
+.sbox-q{width:100%;box-sizing:border-box;padding:11px 18px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--ink);font:inherit;font-size:16px}
+.sbox-r{list-style:none;margin:8px 0 0;padding:0;max-height:60vh;overflow-y:auto}
+.sbox-r a{display:flex;gap:10px;align-items:baseline;padding:10px 14px;border-radius:10px;color:var(--ink);text-decoration:none}
+.sbox-r a:hover{background:var(--chip)}
+.sbox-r small{color:var(--sub)}
+.sbox-r .none{padding:10px 14px;color:var(--sub)}
+button.search-btn{border:0;background:none;cursor:pointer}

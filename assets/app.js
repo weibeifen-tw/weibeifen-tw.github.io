@@ -486,3 +486,24 @@
     try { var r = JSON.parse(localStorage.getItem('wb:last:' + a.dataset.novel) || 'null'); if (r && r.url) { a.href = r.url; var rl = a.querySelector('.rl'); if (rl) rl.textContent = '讀第 ' + r.no + ' 篇'; else a.textContent = '繼續讀第 ' + r.no + ' 篇'; } } catch (e) {}
   });
 })();
+
+// 頂端搜尋：點放大鏡展開，即時列出符合的小說
+(function () {
+  var btn = document.querySelector('.search-btn'), box = document.querySelector('.sbox'); if (!btn || !box) return;
+  var q = box.querySelector('.sbox-q'), out = box.querySelector('.sbox-r');
+  var nv = {}, ch = {};
+  try { nv = JSON.parse(document.getElementById('novels').textContent); ch = JSON.parse(document.getElementById('chars').textContent); } catch (e) {}
+  var list = Object.keys(nv).map(function (id) {
+    var n = nv[id], who = Object.keys(ch).filter(function (c) { return ch[c].novel === id; }).map(function (c) { return ch[c].name + ' ' + ch[c].handle; }).join(' ');
+    return { id: id, t: n.title, era: n.era || '', key: [n.title, n.era, n.tag, (n.tags || []).join(' '), n.blurb, n.intro, who].join(' ').toLowerCase() };
+  });
+  function open(v) { box.hidden = !v; btn.setAttribute('aria-expanded', v); if (v) { q.focus(); } else { q.value = ''; out.innerHTML = ''; } }
+  btn.onclick = function () { open(box.hidden); };
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !box.hidden) open(false); });
+  q.addEventListener('input', function () {
+    var v = q.value.trim().toLowerCase(); out.innerHTML = ''; if (!v) return;
+    var hit = list.filter(function (x) { return x.key.indexOf(v) >= 0; });
+    if (!hit.length) { var li = document.createElement('li'); li.className = 'none'; li.textContent = '找不到符合的小說'; out.appendChild(li); return; }
+    hit.forEach(function (x) { var li = document.createElement('li'), a = document.createElement('a'), b = document.createElement('b'), sm = document.createElement('small'); a.href = (window.BASE || '') + '/novel/' + x.id + '/'; b.textContent = x.t; sm.textContent = x.era; a.append(b, sm); li.appendChild(a); out.appendChild(li); });
+  });
+})();
