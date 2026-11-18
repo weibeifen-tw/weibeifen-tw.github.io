@@ -359,3 +359,19 @@ yi:
   glyph: 漪
   color: "#b07a8f"
   bio: 蘭嶼長大，家裡開民宿。讀書很慢，會畫很多重點。
+xiwei-jin:
+  name: 矜
+  handle: jin.seat
+  novel: xiwei
+  avatar: xiwei-jin.svg
+  glyph: 矜
+  color: "#4a3f5c"
+  bio: 三十五歲，無黨籍嘉義市議員。議會裡有我的名牌，家裡餐桌靠窗那張椅子，從來不是我的。
+xiwei-he:
+  name: 禾
+  handle: he.recorder
+  novel: xiwei
+  avatar: xiwei-he.svg
+  glyph: 禾
+  color: "#b0623f"
+  bio: 二十九歲，嘉義地方記者。錄音筆打開的時候，我不會因為欣賞一個人，就少問一題。

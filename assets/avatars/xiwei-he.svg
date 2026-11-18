@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<!-- 禾：黑色短髮、圓臉嬌小、米色襯衫、紅色記者證掛繩 -->
+<rect width="64" height="64" fill="#f3e6dc"/>
+<path d="M14 36 C11 18 21 10 32 10 C43 10 53 18 50 36 C49 42 46 44 44 44 L20 44 C18 44 15 42 14 36 Z" fill="#241c1c"/>
+<rect x="27.5" y="45" width="9" height="8" fill="#fbe5d6"/>
+<path d="M4 64 C6 53 18 50.5 32 50.5 C46 50.5 58 53 60 64 Z" fill="#dcc8a8"/>
+<path d="M25 50.5 L30 57 L32 52 L34 57 L39 50.5" fill="#e8d8bd" stroke="#bfa985" stroke-width=".8"/>
+<path d="M24 52 L27 64 M40 52 L37 64" stroke="#b5312f" stroke-width="1.8"/>
+<ellipse cx="32" cy="34" rx="15" ry="14.5" fill="#fbe5d6"/>
+<path d="M17 33 C17 19 25 15 32 15 C40 15 47 19 47 33 C44 26 40 22 36 22 C34 25 30 26 26 25 C23 27 20 29 17 33 Z" fill="#241c1c"/>
+<ellipse cx="25.5" cy="35.5" rx="2.8" ry="3.4" fill="#2e2424"/><circle cx="24.6" cy="34.3" r="1" fill="#fff"/>
+<ellipse cx="38.5" cy="35.5" rx="2.8" ry="3.4" fill="#2e2424"/><circle cx="37.6" cy="34.3" r="1" fill="#fff"/>
+<path d="M22.5 30.8 Q25.5 29.6 28.5 30.6" stroke="#241c1c" stroke-width="1" fill="none" stroke-linecap="round"/><path d="M35.5 30.6 Q38.5 29.6 41.5 30.8" stroke="#241c1c" stroke-width="1" fill="none" stroke-linecap="round"/>
+<ellipse cx="22" cy="40.5" rx="2.6" ry="1.4" fill="#f2a9a0" opacity=".5"/><ellipse cx="42" cy="40.5" rx="2.6" ry="1.4" fill="#f2a9a0" opacity=".5"/>
+<path d="M29.5 42.5 Q32 44.5 34.5 42.5" stroke="#b0605a" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+</svg>

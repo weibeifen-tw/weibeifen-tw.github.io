@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<!-- 矜：黑色長直髮、成熟清冷、黑西裝白襯衫 -->
+<rect width="64" height="64" fill="#e6e1ea"/>
+<path d="M13 32 C11 14 22 7 32 7 C42 7 53 14 51 32 L53 62 C46 64 18 64 11 62 Z" fill="#1f1a20"/>
+<rect x="27.5" y="44" width="9" height="9" fill="#f6dfd2"/>
+<path d="M3 64 C5 52 17 49.5 32 49.5 C47 49.5 59 52 61 64 Z" fill="#2a2430"/>
+<path d="M26 50 L32 60 L38 50 Z" fill="#f4f1f3"/><path d="M26 50 L29 64 M38 50 L35 64" stroke="#3a3340" stroke-width="1.2"/>
+<path d="M27 50 Q32 54 37 50" fill="#f6dfd2"/>
+<ellipse cx="32" cy="31.5" rx="14" ry="15.5" fill="#f6dfd2"/>
+<path d="M18 30 C18 17 25 13 33 13 C30 17 24 20 20 33 Z" fill="#1f1a20"/><path d="M46 30 C46 19 41 14 34 13 C38 17 42 22 44 33 Z" fill="#1f1a20"/>
+<path d="M22.5 33.5 Q25.5 31.8 28.5 33.5" stroke="#2a2226" stroke-width="1.4" fill="none" stroke-linecap="round"/><ellipse cx="25.5" cy="34.6" rx="2.2" ry="1.9" fill="#3a2d33"/><circle cx="24.9" cy="34" r=".6" fill="#fff"/>
+<path d="M35.5 33.5 Q38.5 31.8 41.5 33.5" stroke="#2a2226" stroke-width="1.4" fill="none" stroke-linecap="round"/><ellipse cx="38.5" cy="34.6" rx="2.2" ry="1.9" fill="#3a2d33"/><circle cx="37.9" cy="34" r=".6" fill="#fff"/>
+<path d="M22.5 29.5 Q25.5 28.3 29 29.2" stroke="#1f1a20" stroke-width="1" fill="none" stroke-linecap="round"/><path d="M35 29.2 Q38.5 28.3 41.5 29.5" stroke="#1f1a20" stroke-width="1" fill="none" stroke-linecap="round"/>
+<path d="M31.5 37 L31 40.5 L32.5 40.6" stroke="#d9b8a8" stroke-width=".8" fill="none"/>
+<path d="M29.5 43.2 Q32 44.4 34.5 43.2" stroke="#b9776f" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+</svg>
