@@ -470,5 +470,8 @@ body.roles-only .roles{margin-top:8px}
 .shelf-list p{color:var(--sub)}
 .intro-post a.name{color:inherit;text-decoration:none}
 a.ig-av{text-decoration:none}
-.pin-img{display:block;margin:12px 0 4px;border-radius:14px;overflow:hidden;border:1px solid var(--line)}
-.pin-img img{display:block;width:100%;height:auto}
+
+
+.ip-one{display:block;margin-top:10px}
+.ip-one img{display:block;width:100%;height:auto}
+.pinned-ig .ip-text p + p{margin-top:0}

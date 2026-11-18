@@ -157,7 +157,7 @@
     function draw() {
       like.classList.toggle('on', liked); like.querySelector('.n').textContent = fmt(base.like + (liked ? 1 : 0));
       if (rep) rep.querySelector('.n').textContent = fmt(base.rp);
-      talk.querySelector('.n').textContent = fmt(base.talk + get('c:' + key, []).length);
+      if (talk) talk.querySelector('.n').textContent = fmt(base.talk + get('c:' + key, []).length);
       a.querySelector('.share .n').textContent = fmt(base.share);
     }
     // 讚：只有動畫，不記錄
@@ -168,7 +168,7 @@
       window.open('https://www.threads.net/intent/post?text=' + encodeURIComponent(t + '\n' + url), '_blank', 'noopener');
     };
     // 留言：連到角色私訊
-    talk.onclick = function () { if (window.openDM && cid) window.openDM(cid, key); };
+    if (talk) talk.onclick = function () { if (window.openDM && cid) window.openDM(cid, key); };
     a.querySelector('.share').onclick = function () {
       if (navigator.share) { navigator.share({ title: document.title, url: url }).catch(function () {}); return; }
       var toast = a.querySelector('.toast');
@@ -465,7 +465,7 @@
 // 作品介紹貼文：多張圖左右滑，下方圓點
 (function () {
   document.querySelectorAll('.intro-post').forEach(function (p) {
-    var sl = p.querySelector('.ip-slides'), dots = p.querySelectorAll('.ip-dots i');
+    var sl = p.querySelector('.ip-slides'), dots = p.querySelectorAll('.ip-dots i'); if (!sl) return;
     function go(k) { sl.scrollTo({ left: k * sl.clientWidth, behavior: 'smooth' }); }
     dots.forEach(function (d, i) { d.onclick = function () { go(i); }; });
     sl.onclick = function (e) { var r = sl.getBoundingClientRect(), k = Math.round(sl.scrollLeft / sl.clientWidth); go(e.clientX - r.left > r.width / 2 ? Math.min(k + 1, dots.length - 1) : Math.max(k - 1, 0)); };
