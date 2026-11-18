@@ -156,14 +156,14 @@
     var url = new URL(a.dataset.url, location.origin).href;
     function draw() {
       like.classList.toggle('on', liked); like.querySelector('.n').textContent = fmt(base.like + (liked ? 1 : 0));
-      rep.querySelector('.n').textContent = fmt(base.rp);
+      if (rep) rep.querySelector('.n').textContent = fmt(base.rp);
       talk.querySelector('.n').textContent = fmt(base.talk + get('c:' + key, []).length);
       a.querySelector('.share .n').textContent = fmt(base.share);
     }
     // 讚：只有動畫，不記錄
     like.onclick = function () { liked = !liked; like.classList.add('pop'); setTimeout(function () { like.classList.remove('pop'); }, 300); draw(); };
     // 轉發：真的轉發到脆
-    rep.onclick = function () {
+    if (rep) rep.onclick = function () {
       var t = (a.closest('.chapter.read') ? document.title.replace(/｜未備份$/, '') : (host && host.querySelector('.topic') ? host.querySelector('.topic').textContent : document.title));
       window.open('https://www.threads.net/intent/post?text=' + encodeURIComponent(t + '\n' + url), '_blank', 'noopener');
     };
@@ -415,7 +415,7 @@
     h += '</div><form class="ib-form"><input type="text" maxlength="200" placeholder="傳訊息給' + esc(ch.name) + '…（只有你看得到）"><button type="submit">送出</button></form>';
     box.innerHTML = '<div class="ib-panel chat">' + h + '</div>';
     var ms = box.querySelector('.ib-msgs'); ms.scrollTop = ms.scrollHeight;
-    box.querySelector('.ib-form').onsubmit = function (e) { e.preventDefault(); var i = this.querySelector('input'), t = i.value.trim(); if (!t) return; var kk = ctx && ctx.c === c ? 'c:' + ctx.key : 'dm:' + c; var a = get(kk, []); a.push({ t: t, at: Date.now() }); set(kk, a); chatView(c); box.querySelector('.ib-form input').focus(); };
+    box.querySelector('.ib-form').onsubmit = function (e) { e.preventDefault(); var i = this.querySelector('input'), t = i.value.trim(); if (!t) return; var kk = ctx && ctx.c === c && posts && posts[ctx.key] ? 'c:' + ctx.key : 'dm:' + c; var a = get(kk, []); a.push({ t: t, at: Date.now() }); set(kk, a); chatView(c); box.querySelector('.ib-form input').focus(); };
   }
   function open(then) {
     box.hidden = false; document.body.classList.add('ib-open');
