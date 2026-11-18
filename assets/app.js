@@ -125,6 +125,8 @@
       // 作品介紹貼文：滿 4 部就只放介紹；不到 4 部先放在最上面，下面接章節動態
       var ips = Array.prototype.slice.call(document.querySelectorAll('.intros .intro-post'));
       for (var a = ips.length - 1; a > 0; a--) { var b = Math.floor(Math.random() * (a + 1)), tt = ips[a]; ips[a] = ips[b]; ips[b] = tt; }
+      // 有插畫的排前面（各自隨機），沒插畫的排後面
+      ips = ips.filter(function (x) { return x.dataset.has === '1'; }).concat(ips.filter(function (x) { return x.dataset.has !== '1'; }));
       if (ips.length >= 4) { hits.forEach(function (t) { t.remove(); }); hits = ips; }
       else if (ips.length) { hits = ips.concat(hits); }
       hits.forEach(function (t) { feed.appendChild(t); });

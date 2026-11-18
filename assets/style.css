@@ -515,3 +515,11 @@ body.reading .chat-btn{bottom:calc(84px + env(safe-area-inset-bottom))}
 .wk-list small{color:var(--sub)}
 .wk-list span{display:block;margin-top:4px;color:var(--sub);font-size:14px;line-height:1.6}
 .wk-none{color:var(--sub);text-align:center}
+/* 沒插畫的作品貼文：主角頭像放代表色底 */
+.ip-cover{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;aspect-ratio:4/5;margin-top:8px;background:color-mix(in srgb,var(--c) 22%,var(--card));color:var(--ink);text-decoration:none}
+.ip-cover .avatar{width:150px;height:150px;font-size:56px;box-shadow:0 0 0 4px var(--card)}
+.ip-cover b{font-family:"Noto Serif TC",serif;font-size:22px;letter-spacing:.08em}
+/* 進入故事按鈕 */
+.intro-post .actions .act.read{background:var(--c,var(--accent));color:#fff;padding:9px 18px;border-radius:999px;font-size:15px;font-weight:600;gap:6px}
+.intro-post .actions .act.read svg{width:18px;height:18px}
+.intro-post .actions .act.read:hover{filter:brightness(.92)}

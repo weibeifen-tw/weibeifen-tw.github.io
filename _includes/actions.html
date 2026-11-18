@@ -8,7 +8,7 @@
   {%- endunless %}
   <button type="button" class="act share" aria-label="分享"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 3 10 14M21 3l-7 18-4-7-7-4 18-7z"/></svg><span class="n"></span></button>
   {%- if include.read %}
-  <a class="act read st-go" data-novel="{{ include.novel }}" href="{{ include.read }}" aria-label="開始讀"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5zM20 5.5A1.5 1.5 0 0 0 18.5 4H13v16h5.5a1.5 1.5 0 0 0 1.5-1.5z"/></svg><span class="rl">開始讀</span></a>
+  <a class="act read st-go"{% if include.novel %} data-novel="{{ include.novel }}"{% endif %} href="{{ include.read }}" aria-label="{{ include.readlabel | default: '開始讀' }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5zM20 5.5A1.5 1.5 0 0 0 18.5 4H13v16h5.5a1.5 1.5 0 0 0 1.5-1.5z"/></svg><span class="rl">{{ include.readlabel | default: '開始讀' }}</span></a>
   {%- endif %}
   <span class="toast" hidden>已複製連結</span>
 </div>
