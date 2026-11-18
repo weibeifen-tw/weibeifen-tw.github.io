@@ -30,13 +30,13 @@ layout: default
 {%- endfor -%}
 </div>
 <div class="st-layer" hidden><div class="st-card" role="dialog" aria-modal="true"><button type="button" class="st-x" aria-label="關閉">✕</button><div class="st-in"></div></div></div>
-<article class="thread intro-post pinned-ig">
+<article class="thread intro-post pinned-ig" data-char="mu">
   <div class="t-head">
-    <span class="avatar ig-av" style="--c:#d97a3a">未</span>
-    <div class="t-who"><div class="meta"><span class="name">weibe.ifen</span><span class="pin-tag">📌 置頂</span></div><span class="time">未備份</span></div>
+    <a class="avatar ig-av" style="--c:#d97a3a" href="{{ '/novels/' | relative_url }}" aria-label="台灣地圖">未</a>
+    <div class="t-who"><div class="meta"><a class="name" href="{{ '/novels/' | relative_url }}">weibe.ifen</a><span class="pin-tag">📌 置頂</span></div><span class="time">未備份</span></div>
   </div>
   <a class="ip-one" href="{{ '/novels/' | relative_url }}"><img src="{{ '/assets/img/pin.webp' | relative_url }}" alt="夜晚的台灣，散落各地的燈光裡，每個人都有自己的故事" decoding="async"></a>
-  {% capture u %}{{ '/' | relative_url }}{% endcapture %}{% include actions.html key="pin" url=u norepost=true notalk=true %}
+  {% capture u %}{{ '/' | relative_url }}{% endcapture %}{% include actions.html key="pin" url=u norepost=true %}
   <div class="ip-text">
     <p><b class="ig-name">weibe.ifen</b> 每個人，都有未曾備份的故事。</p>
     <p>這裡的帳號都是小說角色。點上面的頭像，聽她們自己說。</p>

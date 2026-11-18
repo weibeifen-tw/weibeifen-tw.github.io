@@ -475,3 +475,7 @@ a.ig-av{text-decoration:none}
 .ip-one{display:block;margin-top:10px}
 .ip-one img{display:block;width:100%;height:auto}
 .pinned-ig .ip-text p + p{margin-top:0}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.tw-row{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px}
+.tw-row b{margin-right:4px}
+.tw-row i{font-style:normal;font-size:12px;padding:2px 9px;border-radius:999px;background:var(--chip);color:#5e594f}

@@ -345,8 +345,11 @@
     var ids = list(key);
     if (!ids.length) { var p = document.createElement('p'); p.className = 'tw-empty'; p.textContent = '這裡還沒有小說。'; panel.appendChild(p); return; }
     ids.forEach(function (id) {
-      var a = document.createElement('a'); a.className = 'tw-item'; a.href = novels[id].page ? BASE + '/novel/' + id + '/' : BASE + '/?n=' + id; a.style.color = color(id);
-      var b = document.createElement('b'); b.textContent = novels[id].title; a.appendChild(b);
+      var a = document.createElement('a'); a.className = 'tw-item'; a.href = BASE + '/novel/' + id + '/'; a.style.color = color(id);
+      var row = document.createElement('span'); row.className = 'tw-row';
+      var b = document.createElement('b'); b.textContent = novels[id].title; row.appendChild(b);
+      (novels[id].info || []).forEach(function (r) { if (r[2] === 'hide') return; var t = document.createElement('i'); t.textContent = r[1]; row.appendChild(t); });
+      a.appendChild(row);
       if (novels[id].era) { var s = document.createElement('small'); s.textContent = novels[id].era; a.appendChild(s); }
       panel.appendChild(a);
     });

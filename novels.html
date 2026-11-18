@@ -1,48 +1,9 @@
 ---
 layout: default
-title: 小說
+title: 台灣地圖
 permalink: /novels/
 body_class: wide
 ---
-<h1 class="ov-h">小說</h1>
+<h1 class="ov-h">台灣地圖</h1>
 {% include taiwan-map.html %}
-{%- for rg in site.data.regions -%}
-{%- capture side_html -%}
-{%- for ar in rg.areas -%}
-{%- capture area_html -%}
-{%- for n in site.data.novels -%}
-{%- assign nv = n[1] -%}
-{%- if nv.region == ar.key -%}
-{%- assign cnt = 0 -%}{%- for p in site.posts -%}{%- if p.novel == n[0] -%}{%- assign cnt = cnt | plus: 1 -%}{%- endif -%}{%- endfor -%}
-  <a class="ov-card" href="{{ '/novel/' | append: n[0] | append: '/' | relative_url }}">
-    <span class="ov-icon" aria-hidden="true">{{ nv.icon | default: '📖' }}</span>
-    <span class="ov-t">
-      <span class="ov-top"><b>{{ nv.title }}</b><small class="ov-n">{{ cnt }} 篇</small></span>
-      {%- if nv.era %}<small>{{ nv.era }}</small>{% endif %}
-      {%- if nv.info -%}
-      <span class="ov-tags ov-info">{%- for r in nv.info -%}{%- unless r[2] == 'hide' -%}<i><small>{{ r[0] }}</small>{{ r[1] }}</i>{%- endunless -%}{%- endfor -%}</span>
-      {%- else -%}
-      {%- if nv.tags %}{% assign tg = nv.tags %}{% elsif nv.tag %}{% assign tg = nv.tag | split: '・' %}{% else %}{% assign tg = nil %}{% endif %}
-      {%- if tg %}<span class="ov-tags">{% for t in tg %}<i>{{ t }}</i>{% endfor %}</span>{% endif %}
-      {%- endif %}
-      <span>{{ nv.blurb }}</span>
-    </span>
-  </a>
-{%- endif -%}
-{%- endfor -%}
-{%- endcapture -%}
-{%- assign area_t = area_html | strip -%}
-{%- if area_t != "" %}
-<h3 class="rg-area">{{ ar.name }}</h3>
-<div class="ov-list">{{ area_html }}</div>
-{%- endif -%}
-{%- endfor -%}
-{%- endcapture -%}
-{%- assign side_t = side_html | strip -%}
-{%- if side_t != "" %}
-<section class="rg">
-<h2 class="rg-side">{{ rg.side }}</h2>
-{{ side_html }}
-</section>
-{%- endif -%}
-{%- endfor -%}
+<nav class="sr-only" aria-label="所有小說">{% for n in site.data.novels %}<a href="{{ '/novel/' | append: n[0] | append: '/' | relative_url }}">{{ n[1].title }}</a>{% endfor %}</nav>
