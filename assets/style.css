@@ -523,3 +523,5 @@ body.reading .chat-btn{bottom:calc(84px + env(safe-area-inset-bottom))}
 .intro-post .actions .act.read{background:var(--c,var(--accent));color:#fff;padding:9px 18px;border-radius:999px;font-size:15px;font-weight:600;gap:6px}
 .intro-post .actions .act.read svg{width:18px;height:18px}
 .intro-post .actions .act.read:hover{filter:brightness(.92)}
+.intro-post .actions{align-items:center;margin-bottom:10px}
+.intro-post .actions .act.read{margin-top:0;align-self:center;line-height:1;padding:8px 16px;font-size:14px;border:0}
