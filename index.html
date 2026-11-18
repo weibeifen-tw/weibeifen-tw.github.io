@@ -8,11 +8,11 @@ layout: default
 {%- for nv in site.data.novels -%}
   {%- assign leads = "" | split: "" -%}
   {%- for ch in site.data.characters -%}{%- if ch[1].novel == nv[0] and leads.size < 2 -%}{%- assign leads = leads | push: ch[1] -%}{%- endif -%}{%- endfor -%}
-  {%- if leads.size > 0 -%}
-  {%- assign lead = leads[0] -%}
-  {%- assign first = site.posts | where: "novel", nv[0] | last -%}
   {%- capture spath -%}/assets/stories/{{ nv[0] }}.webp{%- endcapture -%}
   {%- assign simg = site.static_files | where: "path", spath | first -%}
+  {%- if leads.size > 0 and simg -%}
+  {%- assign lead = leads[0] -%}
+  {%- assign first = site.posts | where: "novel", nv[0] | last -%}
   <button type="button" class="story" data-story="{{ nv[0] }}" style="--c:{{ lead.color }}">
     <span class="avatar">{%- if lead.avatar -%}<img src="{{ '/assets/avatars/' | append: lead.avatar | relative_url }}?v={{ site.time | date: '%s' }}" alt="" loading="lazy">{%- else -%}{{ lead.glyph }}{%- endif -%}</span>
     <span class="s-t">{{ nv[1].title }}</span>
