@@ -329,7 +329,8 @@
   var novels = JSON.parse(document.getElementById('novels').textContent || '{}');
   var chars = JSON.parse(document.getElementById('chars').textContent || '{}');
   var regions = JSON.parse(document.getElementById('regions').textContent || '[]'), names = {};
-  regions.forEach(function (s) { (s.areas || []).forEach(function (a) { names[a.key] = a.name; }); });
+  var notes = {}, places = JSON.parse((document.getElementById('places') || {}).textContent || '{}');
+  regions.forEach(function (s) { (s.areas || []).forEach(function (a) { names[a.key] = a.name; notes[a.key] = a.note || ''; }); });
   function color(id) { for (var k in chars) if (chars[k].novel === id) return chars[k].color; return '#6b665c'; }
   function list(key) { return Object.keys(novels).filter(function (id) { return novels[id].region === key; }); }
   var cur = null, pinned = null;
@@ -342,15 +343,16 @@
     x.onclick = function (e) { e.stopPropagation(); wrap.classList.remove('open'); pinned = null; cur = null; wrap.querySelectorAll('.tw-rg').forEach(function (r) { r.classList.remove('on', 'pin'); }); };
     panel.appendChild(x); wrap.classList.add('open');
     var h = document.createElement('h3'); h.textContent = names[key] || ''; panel.appendChild(h);
+    if (notes[key]) { var nt = document.createElement('p'); nt.className = 'tw-note'; nt.textContent = notes[key]; panel.appendChild(nt); }
     var ids = list(key);
     if (!ids.length) { var p = document.createElement('p'); p.className = 'tw-empty'; p.textContent = '這裡還沒有小說。'; panel.appendChild(p); return; }
     ids.forEach(function (id) {
       var a = document.createElement('a'); a.className = 'tw-item'; a.href = BASE + '/novel/' + id + '/'; a.style.color = color(id);
       var row = document.createElement('span'); row.className = 'tw-row';
       var b = document.createElement('b'); b.textContent = novels[id].title; row.appendChild(b);
-      (novels[id].info || []).forEach(function (r) { if (r[2] === 'hide') return; var t = document.createElement('i'); t.textContent = r[1]; row.appendChild(t); });
       a.appendChild(row);
       if (novels[id].era) { var s = document.createElement('small'); s.textContent = novels[id].era; a.appendChild(s); }
+      if (places[id]) { var pl = document.createElement('span'); pl.className = 'tw-place'; pl.textContent = places[id]; a.appendChild(pl); }
       panel.appendChild(a);
     });
   }

@@ -495,3 +495,5 @@ a.ig-av{text-decoration:none}
 .era-t small{font-size:12px;color:var(--sub)}
 .era-h{display:block;margin-top:4px;font-size:14px;line-height:1.7;color:#5e594f}
 .era-none{color:var(--sub)}
+.tw-note{margin:-4px 0 10px;font-size:13px;line-height:1.7;color:var(--sub)}
+.tw-place{display:block;margin-top:2px;font-size:14px;line-height:1.7;color:#5e594f}

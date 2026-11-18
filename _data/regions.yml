@@ -4,37 +4,51 @@
   areas:
     - key: north-hills
       name: 西部丘陵與台地帶｜北部丘陵
+      note: 台灣北端的丘陵與台地，東北季風帶來綿綿細雨。
     - key: taipei-basin
       name: 西部盆地帶｜臺北盆地
+      note: 四周被山圍住的盆地，淡水河在這裡匯流。
     - key: taichung-basin
       name: 西部盆地帶｜臺中盆地
+      note: 被大肚台地和八卦台地圍住，冬天少雨、氣候溫和。
     - key: puli-basin
       name: 西部盆地帶｜埔里盆地群
+      note: 台灣地理中心附近，群山之間的一串小盆地。
     - key: changhua-plain
       name: 西部沖積平原帶｜彰化平原
+      note: 濁水溪北岸的沖積平原，一望無際的稻田。
 - side: 西部・濁水溪以南
   areas:
     - key: south-hills
       name: 西部丘陵與台地帶｜中南部丘陵
+      note: 雲林、嘉義東邊的淺山丘陵，種咖啡和竹子的地方。
     - key: chianan-plain
       name: 西部沖積平原帶｜嘉南平原
+      note: 台灣最大的平原，嘉義和台南都在這裡。
     - key: pingtung-plain
       name: 西部沖積平原帶｜屏東平原
+      note: 高屏溪沖積出的平原，熱帶的南方。
 - side: 中央山地帶
   areas:
     - key: mountains
       name: 中央山地帶｜五大山脈
+      note: 中央山脈、雪山、玉山、阿里山、海岸山脈，台灣的脊梁。
 - side: 東部
   areas:
     - key: yilan-plain
       name: 東部縱谷與平原帶｜宜蘭平原
+      note: 蘭陽溪沖積出的三角形平原，背山面海。
     - key: huadong-valley
       name: 東部縱谷與平原帶｜花東縱谷
+      note: 中央山脈和海岸山脈之間，細長的縱谷。
 - side: 離島
   areas:
     - key: volcanic-isles
       name: 離島｜火山島
+      note: 火山噴發形成的島嶼，例如蘭嶼和綠島。
     - key: coral-isles
       name: 離島｜珊瑚礁島
+      note: 珊瑚礁堆積成的低平島嶼，例如小琉球。
     - key: continental-isles
       name: 離島｜大陸島
+      note: 緊鄰大陸的花崗岩島嶼，例如金門和馬祖。

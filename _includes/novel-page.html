@@ -12,6 +12,13 @@
   {%- if nv.era %}<p class="nv-era">{{ nv.era }}</p>{% endif %}
   {%- if nv.tags %}<ul class="nv-tags">{% for t in nv.tags %}<li>{{ t }}</li>{% endfor %}</ul>{% endif %}
   {%- if nv.intro %}<p class="nv-intro">{{ nv.intro }}</p>{% endif %}
+  {%- if nv.info %}
+  <ul class="nv-tags nv-info-tags">
+  {%- for r in nv.info -%}
+    {%- if r[2] == 'hide' -%}<li class="spoil"><details><summary>{{ r[0] }}：點開可查看</summary>{{ r[1] }}</details></li>{%- else -%}<li><small>{{ r[0] }}</small>{{ r[1] }}</li>{%- endif -%}
+  {%- endfor -%}
+  </ul>
+  {%- endif %}
   {%- if nv.sample %}
   <figure class="nv-sample"><blockquote>{{ nv.sample | newline_to_br }}</blockquote>{% if nv.sample_from %}<figcaption>{{ nv.sample_from }}</figcaption>{% endif %}</figure>
   {%- endif %}
