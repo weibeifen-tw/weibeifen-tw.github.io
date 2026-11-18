@@ -479,3 +479,19 @@ a.ig-av{text-decoration:none}
 .tw-row{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px}
 .tw-row b{margin-right:4px}
 .tw-row i{font-style:normal;font-size:12px;padding:2px 9px;border-radius:999px;background:var(--chip);color:#5e594f}
+/* 年代誌 */
+.era-axis{display:grid;grid-template-columns:repeat(10,minmax(54px,1fr));gap:0;margin:8px 0 18px;overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+.era-cell{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 2px;border:0;border-right:1px solid var(--line);background:none;color:var(--ink);font:inherit;cursor:pointer}
+.era-cell:last-child{border-right:0}
+.era-cell b{font-size:14px;font-weight:600;font-variant-numeric:tabular-nums}
+.era-cell small{font-size:11px;color:var(--sub)}
+.era-cell.empty b{color:var(--sub);font-weight:400}
+.era-cell[aria-selected="true"]{background:var(--ink);color:#fff}
+.era-cell[aria-selected="true"] small,.era-cell[aria-selected="true"] b{color:#fff}
+.era-dec h2{margin:0 0 6px;font-family:"Noto Serif TC",serif;font-size:20px}
+.era-item{display:block;padding:12px 0;border-bottom:1px solid var(--line);color:inherit;text-decoration:none}
+.era-t{display:flex;align-items:baseline;gap:10px}
+.era-t b{font-family:"Noto Serif TC",serif;font-size:19px}
+.era-t small{font-size:12px;color:var(--sub)}
+.era-h{display:block;margin-top:4px;font-size:14px;line-height:1.7;color:#5e594f}
+.era-none{color:var(--sub)}

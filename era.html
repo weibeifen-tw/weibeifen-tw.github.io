@@ -1,10 +1,41 @@
 ---
 layout: default
 title: 年代誌
+description: 未備份的小說，各自發生在台灣的哪個年代，又寫到了哪些真實發生過的事。
 permalink: /era/
-sitemap: false
 ---
-<section class="novel page-box">
-  <h1>年代誌</h1>
-  <p class="nv-intro">準備中。</p>
+<h1 class="ov-h">年代誌</h1>
+<div class="era-axis" role="tablist" aria-label="年代">
+{%- for i in (0..9) -%}
+  {%- assign d = i | times: 10 | plus: 1950 -%}{%- capture ds -%}{{ d }}{%- endcapture -%}
+  {%- assign cnt = 0 -%}{%- for n in site.data.novels -%}{%- assign e = site.data.era[n[0]] -%}{%- if e and e[ds] != nil -%}{%- assign cnt = cnt | plus: 1 -%}{%- endif -%}{%- endfor -%}
+  <button type="button" role="tab" class="era-cell{% if cnt == 0 %} empty{% endif %}" data-dec="{{ ds }}" aria-selected="false"><b>{{ ds }}</b><small>{% if cnt > 0 %}{{ cnt }} 部{% else %}－{% endif %}</small></button>
+{%- endfor -%}
+</div>
+{%- for i in (0..9) -%}
+{%- assign d = i | times: 10 | plus: 1950 -%}{%- capture ds -%}{{ d }}{%- endcapture -%}
+<section class="era-dec" data-dec="{{ ds }}" hidden>
+  <h2>{{ ds }} 年代</h2>
+  {%- assign any = false -%}
+  {%- for n in site.data.novels -%}{%- assign e = site.data.era[n[0]] -%}{%- if e and e[ds] != nil -%}{%- assign any = true -%}
+  {%- assign col = '#6b665c' -%}{%- for ch in site.data.characters -%}{%- if ch[1].novel == n[0] -%}{%- assign col = ch[1].color -%}{%- break -%}{%- endif -%}{%- endfor -%}
+  <a class="era-item" href="{{ '/novel/' | append: n[0] | append: '/' | relative_url }}">
+    <span class="era-t"><b style="color:{{ col }}">{{ n[1].title }}</b><small>{{ n[1].era }}</small></span>
+    {%- if e[ds] != "" %}<span class="era-h">{{ e[ds] }}</span>{% endif %}
+  </a>
+  {%- endif -%}{%- endfor -%}
+  {%- unless any %}<p class="era-none">這個年代，還沒有人發文。</p>{% endunless %}
 </section>
+{%- endfor -%}
+<script>
+(function () {
+  var cells = document.querySelectorAll('.era-cell'), secs = document.querySelectorAll('.era-dec');
+  function pick(d) {
+    cells.forEach(function (c) { c.setAttribute('aria-selected', c.dataset.dec === d); });
+    secs.forEach(function (s) { s.hidden = s.dataset.dec !== d; });
+    try { history.replaceState(null, '', '#' + d); } catch (e) {}
+  }
+  cells.forEach(function (c) { c.onclick = function () { pick(c.dataset.dec); }; });
+  var h = location.hash.slice(1); pick(/^\d{4}$/.test(h) ? h : '2020');
+})();
+</script>
