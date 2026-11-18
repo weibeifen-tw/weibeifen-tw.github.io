@@ -375,3 +375,19 @@ xiwei-he:
   glyph: 禾
   color: "#b0623f"
   bio: 二十九歲，嘉義地方記者。錄音筆打開的時候，我不會因為欣賞一個人，就少問一題。
+chaosheng-cheng:
+  name: 澄
+  handle: cheng.archive
+  novel: chaosheng
+  avatar: chaosheng-cheng.svg
+  glyph: 澄
+  color: "#3d4f78"
+  bio: 二十九歲，歷史研究員，在南竿整理地方文獻。證據不足的事，我不下結論。
+chaosheng-xi:
+  name: 晞
+  handle: xi.tidevoice
+  novel: chaosheng
+  avatar: chaosheng-xi.svg
+  glyph: 晞
+  color: "#c8604e"
+  bio: 二十八歲，南竿出生，在地方文化工作室做口述歷史。島上每個人的故事，我都想聽完。
