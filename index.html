@@ -32,7 +32,7 @@ layout: default
 <div class="st-layer" hidden><div class="st-card" role="dialog" aria-modal="true"><button type="button" class="st-x" aria-label="關閉">✕</button><div class="st-in"></div></div></div>
 <article class="thread intro-post pinned-ig" data-char="mu">
   <div class="t-head">
-    <a class="avatar ig-av" style="--c:#d97a3a" href="{{ '/novels/' | relative_url }}" aria-label="台灣地圖">未</a>
+    <a class="avatar ig-av" style="--c:#d97a3a" href="{{ '/novels/' | relative_url }}" aria-label="台灣地圖"><img src="{{ '/assets/img/logo.webp' | relative_url }}" alt=""></a>
     <div class="t-who"><div class="meta"><a class="name" href="{{ '/novels/' | relative_url }}">weibe.ifen</a><span class="pin-tag">📌 置頂</span></div><span class="time">未備份</span></div>
   </div>
   <a class="ip-one" href="{{ '/novels/' | relative_url }}"><img src="{{ '/assets/img/pin.webp' | relative_url }}" alt="夜晚的台灣，散落各地的燈光裡，每個人都有自己的故事" decoding="async"></a>
@@ -53,7 +53,7 @@ layout: default
   {%- assign lead = nil -%}{%- for ch in site.data.characters -%}{%- if ch[1].novel == nv[0] -%}{%- assign lead = ch[0] -%}{%- break -%}{%- endif -%}{%- endfor -%}
   <article class="thread intro-post" data-novel="{{ nv[0] }}" data-char="{{ lead }}" hidden>
     <div class="t-head">
-      <a class="avatar ig-av" style="--c:#d97a3a" href="{{ '/novel/' | append: nv[0] | append: '/' | relative_url }}" aria-label="《{{ nv[1].title }}》作品頁">未</a>
+      <a class="avatar ig-av" style="--c:#d97a3a" href="{{ '/novel/' | append: nv[0] | append: '/' | relative_url }}" aria-label="《{{ nv[1].title }}》作品頁"><img src="{{ '/assets/img/logo.webp' | relative_url }}" alt=""></a>
       <div class="t-who"><div class="meta"><a class="name" href="{{ '/novel/' | append: nv[0] | append: '/' | relative_url }}">weibe.ifen</a></div><span class="time">《{{ nv[1].title }}》・{{ nv[1].era }}</span></div>
     </div>
     <div class="ip-slides">{%- for i in (1..3) -%}<img src="{{ '/assets/comics/' | append: nv[0] | append: '-' | append: i | append: '.webp' | relative_url }}" alt="《{{ nv[1].title }}》{{ i }}/3" loading="lazy" decoding="async">{%- endfor -%}</div>
