@@ -424,3 +424,4 @@ button.story{background:none;border:0;padding:0;font:inherit;cursor:pointer}
 .ip-text p{line-height:1.8;margin:6px 0}
 .ip-info{list-style:none;padding:0;margin:10px 0 0;display:flex;flex-wrap:wrap;gap:6px}
 .ip-info li{font-size:13px;padding:3px 10px;border-radius:999px;background:var(--bg);border:1px solid var(--line)}
+.ip-dots i{cursor:pointer}.ip-slides{cursor:pointer}

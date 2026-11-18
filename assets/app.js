@@ -505,6 +505,9 @@
 (function () {
   document.querySelectorAll('.intro-post').forEach(function (p) {
     var sl = p.querySelector('.ip-slides'), dots = p.querySelectorAll('.ip-dots i');
+    function go(k) { sl.scrollTo({ left: k * sl.clientWidth, behavior: 'smooth' }); }
+    dots.forEach(function (d, i) { d.onclick = function () { go(i); }; });
+    sl.onclick = function (e) { var r = sl.getBoundingClientRect(), k = Math.round(sl.scrollLeft / sl.clientWidth); go(e.clientX - r.left > r.width / 2 ? Math.min(k + 1, dots.length - 1) : Math.max(k - 1, 0)); };
     sl.addEventListener('scroll', function () { var k = Math.round(sl.scrollLeft / sl.clientWidth); dots.forEach(function (d, i) { d.classList.toggle('on', i === k); }); }, { passive: true });
   });
 })();
