@@ -1,8 +1,10 @@
+# caption＝首頁作品貼文的短文案（蔡確認過）。
 # 每部小說一段。tags＝介紹頁的標籤，intro＝介紹頁的簡介。era＝時代・地點，tag＝題材（會顯示在選單書名下面）。id 用英文，貼文裡的 novel: 要對得上。icon 是側邊選單上的小圖示，可以放一個表情符號。
 yu:
   city: taichung
   region: taichung-basin
   title: 上釉
+  caption: 大里三合院長大的女生，從沒有手機的童年，成長到每天跟 AI 說話的二十四歲。
   era: 2002–・台中
   tag: 成長
   icon: 🏺
@@ -14,6 +16,7 @@ market:
   region: taichung-basin
   split: true  # 兩個角色各自編章號
   title: 看天
+  caption: 凌晨四點半的市場菜攤，九點才開門的咖啡廳。兩個看天吃飯的人，慢慢來的日常。
   era: 2025–・台中
   tag: 市場
   icon: 🍅
@@ -29,6 +32,7 @@ feichang:
   region: changhua-plain
   split: true  # 兩個角色各自編章號
   title: 蘿蔔
+  caption: 藝術系大一就在一起，一隻撿來的狗，從彰化到台中，吵了七年還沒分開。
   era: 2018–2024・彰化台中
   tag: 藝術系
   icon: 🐕
@@ -39,6 +43,7 @@ gongdi:
   city: taichung
   region: taichung-basin
   title: 共地
+  caption: 兩間高工機電科，一場機器人比賽。一個量了十次，一個看一眼就裝好了。
   era: 2023–・台中
   tag: 機電科
   icon: 🔌
@@ -54,6 +59,7 @@ hongdian:
   city: yilan
   region: yilan-plain
   title: 紅點
+  caption: 經營情侶帳號的網紅，紅點亮著是大家想看的樣子，紅點關掉之後呢？
   era: 2026・宜蘭
   tag: 網紅
   icon: 🔴
@@ -68,6 +74,7 @@ hue:
   city: tainan
   region: chianan-plain
   title: 忌色
+  caption: 末日台南府城，ABO 世界裡看得見顏色的禮儀師，在八家將老師傅的喪禮遇見她。
   era: 2025–・台南府城
   tag: ABO・禮儀師
   icon: 🏮
@@ -82,6 +89,7 @@ houshan:
   city: taitung
   region: huadong-valley
   title: 後山
+  caption: 1980 到 2010，台東部落的禾和漢人老師嵐，戶籍寫著寄居，卻把日子過成了家。
   era: 1980–2010・台東
   tag: 年代・原住民
   icon: ⛰️
@@ -97,6 +105,7 @@ exam:
   city: taipei
   region: taipei-basin
   title: 比例原則
+  caption: 台北國考補習班，兩個重考生、一張自習室的桌子。喜歡一個人，要怎麼剛剛好？
   era: 2025–2026・台北
   tag: 國考
   icon: 🖍️
@@ -112,6 +121,7 @@ yincang:
   city: chiayi
   region: chianan-plain
   title: 隱藏
+  caption: 2005 年的嘉義網聚，兩個很會熱場、也很會說謊的女生，說好不過夜、不要喜歡上。
   era: 2005–2008・雲嘉
   tag: 年代・迴避型
   icon: 💬
@@ -122,6 +132,7 @@ shiyi:
   city: zhongxing
   region: taichung-basin
   title: 拾遺
+  caption: 中興新村的高中，學生把歷史老師的每堂課都記下來，記到自己也開始寫歷史。
   era: 2019–2022・南投
   tag: 高中・歷史
   icon: 📜
@@ -132,6 +143,7 @@ chaojian:
   city: keelung
   region: north-hills
   title: 潮間
+  caption: 雨都基隆，在 HER 交友軟體上距離 1.2 公里。一個焦慮型，一個迴避型。
   era: 2020–2026・基隆
   tag: 交友軟體・焦慮迴避
   icon: 🌊
@@ -150,6 +162,7 @@ weigongkai:
   city: qingjing
   region: mountains
   title: 未公開
+  caption: 清境山上的戀愛實境秀，八個女生、二十八天，真正發生的事都在鏡頭外。
   era: 2025–2026・清境
   tag: 實境秀・群像
   icon: 🎥
@@ -160,6 +173,7 @@ chuwang:
   city: hualien
   region: huadong-valley
   title: 觸網
+  caption: 東華的戶外排球場，一個每球都說對不起的學妹，和一個會抱很多人的學姊。
   era: 2021–2024・花蓮
   tag: 系排・焦慮型
   icon: 🏐
@@ -175,6 +189,7 @@ mizi:
   city: taipei
   region: taipei-basin
   title: 米字旁
+  caption: 只有女生的世界裡，海運集團董事長和寫詩的老師，一場聯姻，五個孩子的家庭日常。
   era: 2026・台北
   tag: 家庭・甜寵
   icon: 🍚
@@ -185,6 +200,7 @@ pendi:
   city: puli
   region: puli-basin
   title: 盆底
+  caption: 埔里高一女生在脆上找到鎮上的女同圈，第一次見面就遇到什麼都講的燼。
   era: 2025–2026・埔里
   tag: 女同圈・群像
   icon: 🌫️
@@ -195,6 +211,7 @@ shuangshuang:
   city: gukeng
   region: south-hills
   title: 雙雙
+  caption: 雲林古坑兩個胖 T，瓦斯行和炸粿攤，被逼婚只好假裝在一起，問題是誰要當男人？
   era: 2010・古坑
   tag: TTL・喜劇
   icon: 🔥
@@ -210,6 +227,7 @@ duanqiao:
   city: kinmen
   region: continental-isles
   title: 斷橋
+  caption: 末日金門分成兩座島，用首領的女兒換十二桶柴油，碼頭上等她的是敵方守備隊長。
   era: 2026・金門
   tag: 末日・敵對
   icon: 🌉
@@ -220,6 +238,7 @@ huaji:
   city: lanyu
   region: volcanic-isles
   title: 劃記
+  caption: 蘭嶼長大的短髮女孩和長髮女孩，從離島到台北，花了十年才讀懂對方。
   era: 2010–2021・蘭嶼
   tag: 成長・父權
   icon: 🖍️
@@ -230,6 +249,7 @@ xiwei:
   city: chiayi
   region: chianan-plain
   title: 席位
+  caption: 嘉義政治世家的女市議員，喜歡上問她尖銳問題的短髮記者。
   era: 2025・嘉義
   tag: 地方政治・單戀
   icon: 🪑
@@ -245,6 +265,7 @@ chaosheng:
   city: matsu
   region: continental-isles
   title: 潮聲未歇
+  caption: 馬祖南竿，六年沒聯絡的兩個人久別重逢，一起做一檔地方記憶展覽。
   era: 2025・馬祖
   tag: 久別重逢・地方記憶
   icon: 🌅
@@ -260,6 +281,7 @@ houdiao:
   city: taipei
   region: taipei-basin
   title: 後調
+  caption: 臺北的 Alpha 調香師和 Omega 香水品牌主，ABO 世界裡，一瓶只屬於她的香水。
   era: 2020・臺北
   tag: ABO・調香・職場
   icon: 🧴

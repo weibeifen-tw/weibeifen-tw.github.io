@@ -65,7 +65,7 @@ layout: default
     {%- endif %}
     {% capture u %}{{ '/novel/' | append: nv[0] | append: '/' | relative_url }}{% endcapture %}{% capture k %}intro-{{ nv[0] }}{% endcapture %}{% include actions.html key=k url=u norepost=true read=u readlabel='進入故事' %}
     <div class="ip-text">
-      <p><b class="ig-name">{{ lc.handle }}</b> {{ nv[1].intro }}</p>
+      <p><b class="ig-name">{{ lc.handle }}</b> {{ nv[1].caption | default: nv[1].intro }}</p>
     </div>
   </article>
   {%- endif -%}
