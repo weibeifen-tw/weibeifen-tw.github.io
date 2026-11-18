@@ -4,24 +4,17 @@ body_class: reading
 ---
 {%- assign me = site.data.characters[page.character] -%}
 {%- assign nv = site.data.novels[page.novel] -%}
-{%- comment -%} 上一章、下一章：先找同一個角色的前後章，找不到再找同一本小說的（後山這種兩個人輪流寫的） {%- endcomment -%}
-{%- assign want_n = page.chapter | plus: 1 -%}
-{%- assign want_p = page.chapter | minus: 1 -%}
-{%- assign nx = nil -%}{%- assign pv = nil -%}
-{%- for p in site.posts -%}{%- if p.novel == page.novel and p.character == page.character -%}
-  {%- if p.chapter == want_n -%}{%- assign nx = p -%}{%- endif -%}
-  {%- if p.chapter == want_p -%}{%- assign pv = p -%}{%- endif -%}
-{%- endif -%}{%- endfor -%}
-{%- unless nx -%}{%- for p in site.posts -%}{%- if p.novel == page.novel and p.chapter == want_n -%}{%- assign nx = p -%}{%- endif -%}{%- endfor -%}{%- endunless -%}
-{%- unless pv -%}{%- for p in site.posts -%}{%- if p.novel == page.novel and p.chapter == want_p -%}{%- assign pv = p -%}{%- endif -%}{%- endfor -%}{%- endunless -%}
-{%- comment -%} 章號跳號時（例如上釉 5 → 51）：找同角色最接近的前一章、後一章 {%- endcomment -%}
-{%- if page.chapter -%}
-{%- unless nx -%}{%- assign best = 99999 -%}{%- for p in site.posts -%}{%- if p.novel == page.novel and p.character == page.character and p.chapter > page.chapter and p.chapter < best -%}{%- assign best = p.chapter -%}{%- assign nx = p -%}{%- endif -%}{%- endfor -%}{%- endunless -%}
-{%- unless pv -%}{%- assign best = -1 -%}{%- for p in site.posts -%}{%- if p.novel == page.novel and p.character == page.character and p.chapter < page.chapter and p.chapter > best -%}{%- assign best = p.chapter -%}{%- assign pv = p -%}{%- endif -%}{%- endfor -%}{%- endunless -%}
-{%- endif -%}
+{%- comment -%} 上一篇、下一篇：照故事順序。兩個角色各自編章號的（split）照日期，其他照章號 {%- endcomment -%}
+{%- assign ordered = site.posts | where: "novel", page.novel | reverse -%}
+{%- unless nv.split -%}{%- assign ordered = ordered | sort: "chapter" -%}{%- endunless -%}
+{%- assign nx = nil -%}{%- assign pv = nil -%}{%- assign hit = false -%}
+{%- for p in ordered -%}
+  {%- if hit -%}{%- assign nx = p -%}{%- break -%}{%- endif -%}
+  {%- if p.url == page.url -%}{%- assign hit = true -%}{%- else -%}{%- assign pv = p -%}{%- endif -%}
+{%- endfor -%}
 <article class="chapter read" data-char="{{ page.character }}" data-novel="{{ page.novel }}" data-no="{{ page.chapter }}" data-title="{{ page.title | escape }}" style="--c:{{ me.color }}">
-  <p class="r-crumb"><a href="{% if site.data.novels[page.novel].page %}{{ '/novel/' | append: page.novel | append: '/' | relative_url }}{% else %}{{ '/' | relative_url }}?n={{ page.novel }}{% endif %}">《{{ nv.title }}》</a>{% if page.chapter %}　·　第 {{ page.chapter }} 章{% endif %}</p>
-  <a class="r-who" href="{{ '/' | relative_url }}?c={{ page.character }}">
+  <p class="r-crumb"><a href="{{ '/novel/' | append: page.novel | append: '/' | relative_url }}">《{{ nv.title }}》</a>・{{ me.name }}{% if page.chapter %}・第 {{ page.chapter }} 篇{% endif %}</p>
+  <a class="r-who" href="{{ '/novel/' | append: page.novel | append: '/' | relative_url }}?c={{ page.character }}">
     <span class="avatar" style="--c:{{ me.color }}">{%- if me.avatar -%}<img src="{{ '/assets/avatars/' | append: me.avatar | relative_url }}?v={{ site.time | date: '%s' }}" alt="">{%- else -%}{{ me.glyph }}{%- endif -%}</span>
     <span class="r-who-t"><b>{{ me.handle }}</b><small>{{ page.date | date: "%Y 年 %-m 月 %-d 日" }}</small></span>
   </a>
@@ -31,19 +24,19 @@ body_class: reading
   {%- assign era = nil -%}
   {%- for e in me.eras -%}{%- if e.year <= y -%}{%- assign era = e -%}{%- endif -%}{%- endfor -%}
   {%- if era %}
-  <p class="era"><a href="{{ '/' | relative_url }}?c={{ page.character }}">{{ y }} 年的{{ me.name }}</a>　{{ era.bio }}</p>
+  <p class="era"><a href="{{ '/novel/' | append: page.novel | append: '/' | relative_url }}?c={{ page.character }}">{{ y }} 年的{{ me.name }}</a>　{{ era.bio }}</p>
   {%- endif -%}
   {%- endif %}
   <div class="ch-text">{{ content }}</div>
   <div class="r-end" aria-hidden="true"><span></span><span></span><span></span></div>
   {% capture u %}{{ page.url | relative_url }}{% endcapture %}{% include actions.html key=page.slug url=u %}
-  <p class="tip"><a href="https://portaly.cc/weibeifen/support" target="_blank" rel="noopener">🍬 喜歡這一章？請畝 MU 吃糖果</a></p>
+  <p class="tip"><a href="https://portaly.cc/weibeifen/support" target="_blank" rel="noopener">🍬 喜歡這一篇？請畝 MU 吃糖果</a></p>
   <nav class="r-nav" aria-label="換章">
-    {%- if pv -%}<a class="r-prev" href="{{ pv.url | relative_url }}"><small>← 上一章</small><span>{{ pv.title }}</span></a>{%- else -%}<span class="r-prev off"><small>← 上一章</small><span>這是第一章</span></span>{%- endif -%}
-    {%- if nx -%}<a class="r-next" href="{{ nx.url | relative_url }}"><small>下一章 →</small><span>{{ nx.title }}</span></a>{%- else -%}<span class="r-next off"><small>下一章 →</small><span>目前最後一章</span></span>{%- endif -%}
+    {%- if pv -%}<a class="r-prev" href="{{ pv.url | relative_url }}"><small>← 上一篇</small><span>{{ pv.title }}</span></a>{%- else -%}<span class="r-prev off"><small>← 上一篇</small><span>這是第一篇</span></span>{%- endif -%}
+    {%- if nx -%}<a class="r-next" href="{{ nx.url | relative_url }}"><small>下一篇 →</small><span>{{ nx.title }}</span></a>{%- else -%}<span class="r-next off"><small>下一篇 →</small><span>目前最後一篇</span></span>{%- endif -%}
   </nav>
 </article>
 <nav class="r-bar" aria-label="換章">
-  {%- if pv -%}<a href="{{ pv.url | relative_url }}">← 上一章</a>{%- else -%}<span class="off">← 上一章</span>{%- endif -%}
-  {%- if nx -%}<a class="go" href="{{ nx.url | relative_url }}">下一章 →</a>{%- else -%}<span class="off">下一章 →</span>{%- endif -%}
+  {%- if pv -%}<a href="{{ pv.url | relative_url }}">← 上一篇</a>{%- else -%}<span class="off">← 上一篇</span>{%- endif -%}
+  {%- if nx -%}<a class="go" href="{{ nx.url | relative_url }}">下一篇 →</a>{%- else -%}<span class="off">下一篇 →</span>{%- endif -%}
 </nav>

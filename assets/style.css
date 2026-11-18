@@ -425,3 +425,27 @@ button.story{background:none;border:0;padding:0;font:inherit;cursor:pointer}
 .ip-info{list-style:none;padding:0;margin:10px 0 0;display:flex;flex-wrap:wrap;gap:6px}
 .ip-info li{font-size:13px;padding:3px 10px;border-radius:999px;background:var(--bg);border:1px solid var(--line)}
 .ip-dots i{cursor:pointer}.ip-slides{cursor:pointer}
+/* 作品頁：閱讀資訊標籤、角色分頁 */
+.nv-info-tags li{display:inline-flex;align-items:baseline;gap:5px}
+.nv-info-tags small{font-size:11px;color:var(--sub)}
+.nv-info-tags .spoil details{display:inline}
+.nv-info-tags .spoil summary{cursor:pointer;list-style:none;color:var(--sub)}
+.nv-info-tags .spoil summary::-webkit-details-marker{display:none}
+.nv-info-tags .spoil details[open] summary{display:none}
+.novel .nv-btns{margin:4px 0 16px}
+.roles{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px 6px;margin-bottom:12px;scroll-margin-top:72px}
+.roles .nv-h{margin-top:0}
+.tabs{display:flex;gap:6px;margin:0 0 12px;overflow-x:auto}
+.tabs button{flex:none;padding:6px 14px;border:1px solid var(--line);border-radius:999px;background:none;color:var(--ink);font:inherit;font-size:14px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--c,var(--ink));border-color:var(--c,var(--ink));color:#fff}
+.role{padding:10px 0 12px;border-top:1px solid var(--line)}
+.tabs + .role,.roles .nv-h + .role{border-top:0}
+.role-head{display:flex;align-items:center;gap:10px}
+.role-head .avatar{width:44px;height:44px}
+.role-t b{display:block;color:var(--c)}
+.role-t small{color:var(--sub);font-size:12px}
+.role-bio{margin:8px 0 0;font-size:14px;line-height:1.7}
+.role-more{display:none;margin-top:12px}
+.role.full .role-more{display:block}
+.role-more h3{margin:0 0 .5em;font-size:13px;color:var(--sub);letter-spacing:.15em;font-weight:500}
+.nv-list .ch-who{margin-left:8px;font-size:12px;color:var(--c)}

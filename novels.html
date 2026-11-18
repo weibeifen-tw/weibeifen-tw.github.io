@@ -14,13 +14,17 @@ body_class: wide
 {%- assign nv = n[1] -%}
 {%- if nv.region == ar.key -%}
 {%- assign cnt = 0 -%}{%- for p in site.posts -%}{%- if p.novel == n[0] -%}{%- assign cnt = cnt | plus: 1 -%}{%- endif -%}{%- endfor -%}
-  <a class="ov-card" href="{% if site.data.novels[n[0]].page %}{{ '/novel/' | append: n[0] | append: '/' | relative_url }}{% else %}{{ '/' | relative_url }}?n={{ n[0] }}{% endif %}">
+  <a class="ov-card" href="{{ '/novel/' | append: n[0] | append: '/' | relative_url }}">
     <span class="ov-icon" aria-hidden="true">{{ nv.icon | default: '📖' }}</span>
     <span class="ov-t">
       <span class="ov-top"><b>{{ nv.title }}</b><small class="ov-n">{{ cnt }} 篇</small></span>
       {%- if nv.era %}<small>{{ nv.era }}</small>{% endif %}
+      {%- if nv.info -%}
+      <span class="ov-tags">{%- assign k = 0 -%}{%- for r in nv.info -%}{%- if r[2] != 'hide' and k < 3 -%}<i>{{ r[1] }}</i>{%- assign k = k | plus: 1 -%}{%- endif -%}{%- endfor -%}</span>
+      {%- else -%}
       {%- if nv.tags %}{% assign tg = nv.tags %}{% elsif nv.tag %}{% assign tg = nv.tag | split: '・' %}{% else %}{% assign tg = nil %}{% endif %}
       {%- if tg %}<span class="ov-tags">{% for t in tg %}<i>{{ t }}</i>{% endfor %}</span>{% endif %}
+      {%- endif %}
       <span>{{ nv.blurb }}</span>
     </span>
   </a>

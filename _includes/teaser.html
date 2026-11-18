@@ -2,14 +2,14 @@
 {%- assign c = site.data.characters[p.character] -%}
 <article class="thread teaser" data-novel="{{ p.novel }}" data-char="{{ p.character }}" data-no="{{ p.chapter }}" style="--c:{{ c.color }}">
   <div class="t-head">
-    <a class="avatar" href="{{ '/' | relative_url }}?c={{ p.character }}" style="--c:{{ c.color }}" aria-label="{{ c.name }}">
+    <a class="avatar" href="{{ '/novel/' | append: p.novel | append: '/' | relative_url }}?c={{ p.character }}" style="--c:{{ c.color }}" aria-label="{{ c.name }}">
       {%- if c.avatar -%}<img src="{{ '/assets/avatars/' | append: c.avatar | relative_url }}?v={{ site.time | date: '%s' }}" alt="">{%- else -%}{{ c.glyph }}{%- endif -%}
     </a>
     <div class="t-who">
       <div class="meta">
-        <a class="name" href="{{ '/' | relative_url }}?c={{ p.character }}">{{ c.handle }}</a>
+        <a class="name" href="{{ '/novel/' | append: p.novel | append: '/' | relative_url }}?c={{ p.character }}">{{ c.handle }}</a>
         <span class="sep">›</span>
-        <a class="topic" href="{% if site.data.novels[p.novel].page %}{{ '/novel/' | append: p.novel | append: '/' | relative_url }}{% else %}{{ '/' | relative_url }}?n={{ p.novel }}{% endif %}">《{{ site.data.novels[p.novel].title }}》{% if p.chapter %}・第 {{ p.chapter }} 篇{% endif %}</a>
+        <a class="topic" href="{{ '/novel/' | append: p.novel | append: '/' | relative_url }}">《{{ site.data.novels[p.novel].title }}》{% if p.chapter %}・第 {{ p.chapter }} 篇{% endif %}</a>
       </div>
       <span class="time">{{ p.date | date: "%Y/%m/%d %H:%M" }}</span>
     </div>

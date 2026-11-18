@@ -1,38 +1,73 @@
 {%- assign id = include.id -%}
 {%- assign nv = site.data.novels[id] -%}
+{%- comment -%} 章節照故事順序：兩個角色各自編章號的（split）照日期，其他照章號 {%- endcomment -%}
+{%- assign ordered = site.posts | where: "novel", id | reverse -%}
+{%- unless nv.split -%}{%- assign ordered = ordered | sort: "chapter" -%}{%- endunless -%}
+{%- assign leads = "" | split: "" -%}
+{%- for c in site.data.characters -%}{%- if c[1].novel == id -%}{%- assign leads = leads | push: c[0] -%}{%- endif -%}{%- endfor -%}
+{%- assign posters = ordered | map: "character" | uniq -%}
 <section id="novel" class="novel" data-static="1">
   <a class="nv-back" href="{{ '/novels/' | relative_url }}">← 所有小說</a>
   <h1>{{ nv.title }}</h1>
   {%- if nv.era %}<p class="nv-era">{{ nv.era }}</p>{% endif %}
-  {%- if nv.tags %}<ul class="nv-tags">{% for t in nv.tags %}<li>{{ t }}</li>{% endfor %}</ul>{% endif %}
+  {%- if nv.info %}
+  <ul class="nv-tags nv-info-tags">
+  {%- for r in nv.info -%}
+    {%- if r[2] == 'hide' -%}<li class="spoil"><details><summary>{{ r[0] }}：點開可查看</summary>{{ r[1] }}</details></li>{%- else -%}<li><small>{{ r[0] }}</small>{{ r[1] }}</li>{%- endif -%}
+  {%- endfor -%}
+  </ul>
+  {%- elsif nv.tags %}<ul class="nv-tags">{% for t in nv.tags %}<li>{{ t }}</li>{% endfor %}</ul>{% endif %}
   {%- if nv.intro %}<p class="nv-intro">{{ nv.intro }}</p>{% endif %}
-  <div class="nv-leads">
-  {%- for c in site.data.characters -%}{%- if c[1].novel == id -%}
-    <a class="nv-lead" href="{{ '/' | relative_url }}?c={{ c[0] }}">
-      <span class="avatar" style="--c:{{ c[1].color }}">{% if c[1].avatar %}<img src="{{ '/assets/avatars/' | append: c[1].avatar | relative_url }}?v={{ site.time | date: '%s' }}" alt="">{% else %}{{ c[1].glyph }}{% endif %}</span>
-      <span class="nv-lead-t"><b>{{ c[1].name }}</b><small>@{{ c[1].handle }}</small><span>{{ c[1].bio }}</span></span>
-    </a>
-  {%- endif -%}{%- endfor -%}
-  </div>
   {%- if nv.sample %}
   <figure class="nv-sample"><blockquote>{{ nv.sample | newline_to_br }}</blockquote>{% if nv.sample_from %}<figcaption>{{ nv.sample_from }}</figcaption>{% endif %}</figure>
   {%- endif %}
-  {%- if nv.info %}
-  <dl class="nv-info">
-  {%- for r in nv.info -%}
-    <div><dt>{{ r[0] }}</dt><dd>{% if r[2] == 'hide' %}<details><summary>點開可查看</summary>{{ r[1] }}</details>{% else %}{{ r[1] }}{% endif %}</dd></div>
-  {%- endfor -%}
-  </dl>
-  {%- endif %}
+  <div class="nv-btns"></div>
 </section>
-<div class="feed" hidden></div>
-<button type="button" class="more-btn" hidden>載入更多</button>
-<div class="chapters" hidden>
-{%- assign ordered = site.posts | reverse | where: "novel", id -%}
+<section id="roles" class="roles">
+  <h2 class="nv-h">角色</h2>
+  {%- if leads.size > 1 %}
+  <div class="tabs" role="tablist">
+    <button type="button" role="tab" data-tab="all" aria-selected="true">全部</button>
+    {%- for cid in leads -%}{%- assign c = site.data.characters[cid] -%}
+    <button type="button" role="tab" data-tab="{{ cid }}" style="--c:{{ c.color }}">{{ c.name }}</button>
+    {%- endfor -%}
+  </div>
+  {%- endif %}
+  {%- for cid in leads -%}{%- assign c = site.data.characters[cid] -%}
+  <div class="role" data-char="{{ cid }}" style="--c:{{ c.color }}">
+    <div class="role-head">
+      <span class="avatar" style="--c:{{ c.color }}">{% if c.avatar %}<img src="{{ '/assets/avatars/' | append: c.avatar | relative_url }}?v={{ site.time | date: '%s' }}" alt="">{% else %}{{ c.glyph }}{% endif %}</span>
+      <span class="role-t"><b>{{ c.name }}</b><small>@{{ c.handle }}</small></span>
+    </div>
+    <p class="role-bio">{{ c.bio }}</p>
+    {%- if c.eras %}
+    <div class="role-more">
+      <h3>那些年的{{ c.name }}</h3>
+      <ul class="eras">{% for e in c.eras %}<li><b>{{ e.year }}</b><span>{{ e.bio }}</span></li>{% endfor %}</ul>
+    </div>
+    {%- endif %}
+    {%- if c.items %}
+    <div class="role-more">
+      <h3>她的東西</h3>
+      <ul class="items">{% for it in c.items %}{% assign src = ordered | where: "chapter", it.ch | first %}<li>{% if src %}<a href="{{ src.url | relative_url }}">{% else %}<div>{% endif %}<b>{{ it.name }}</b><span>{{ it.note }}</span>{% if src %}<em>第一次出現：〈{{ src.title }}〉 ›</em></a>{% else %}</div>{% endif %}</li>{% endfor %}</ul>
+    </div>
+    {%- endif %}
+  </div>
+  {%- endfor -%}
+</section>
+<h2 class="nv-h">篇章</h2>
+<div class="chapters nv-list">
 {%- for post in ordered -%}
-  {% include chapter.html post=post no=forloop.index %}
+  {%- assign pc = site.data.characters[post.character] -%}
+  <a class="chapter toc" id="{{ post.slug }}" href="{{ post.url | relative_url }}" data-novel="{{ post.novel }}" data-char="{{ post.character }}" data-no="{{ post.chapter }}">
+    <span class="ch-no">第 {{ post.chapter }} 篇</span>
+    <span class="ch-title">{{ post.title }}{% if posters.size > 1 %}<small class="ch-who" style="--c:{{ pc.color }}">{{ pc.name }}</small>{% endif %}</span>
+    <span class="ch-go" aria-hidden="true">›</span>
+  </a>
 {%- endfor -%}
 </div>
+<div class="feed" hidden></div>
+<button type="button" class="more-btn" hidden>載入更多</button>
 <p class="empty" hidden>這裡還沒有貼文。</p>
 <script>window.NOVEL = {{ id | jsonify }};</script>
 <script type="application/ld+json">
@@ -43,11 +78,11 @@
   "url": {{ page.url | absolute_url | jsonify }},
   "author": { "@type": "Person", "name": {{ site.author | jsonify }} },
   "inLanguage": "zh-Hant",
-  "genre": "女同志小說",
+  "genre": "百合小說",
   "description": {{ nv.intro | default: nv.seo_desc | jsonify }},
   "temporalCoverage": {{ nv.era | split: "・" | first | replace: "–", "/" | jsonify }},
   "contentLocation": { "@type": "Place", "name": {{ nv.era | split: "・" | last | jsonify }} },
-  "character": [{% assign first = true %}{% for c in site.data.characters %}{% if c[1].novel == id %}{% unless first %},{% endunless %}{ "@type": "Person", "name": {{ c[1].name | jsonify }} }{% assign first = false %}{% endif %}{% endfor %}],
+  "character": [{% for cid in leads %}{% unless forloop.first %},{% endunless %}{ "@type": "Person", "name": {{ site.data.characters[cid].name | jsonify }} }{% endfor %}],
   "publisher": { "@type": "Organization", "name": {{ site.title | jsonify }} }
 }
 </script>
