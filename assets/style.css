@@ -387,3 +387,12 @@ a.ib-ref:hover{text-decoration:underline}
 .nv-info summary{cursor:pointer;color:var(--sub);list-style:none}
 .nv-info summary::-webkit-details-marker{display:none}
 .nv-info details[open] summary{display:none}
+/* 首頁：小說頭像列＋置頂 */
+.stories{display:flex;gap:14px;overflow-x:auto;padding:14px 4px 16px;margin-bottom:6px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.stories::-webkit-scrollbar{display:none}
+.story{flex:none;width:68px;display:flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;color:var(--ink)}
+.story .avatar{width:62px;height:62px;font-size:22px;box-shadow:0 0 0 2px var(--bg,#fff),0 0 0 4px var(--c,#999)}
+.story .s-t{font-size:13px;line-height:1.2;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.thread.teaser.pinned .text{cursor:default}
+.thread.teaser.pinned .text p{margin:0 0 .4em}
+.pin-tag{font-size:12px;color:var(--sub)}

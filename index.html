@@ -3,6 +3,30 @@ layout: default
 ---
 <section id="novel" class="novel" hidden></section>
 <section id="profile" class="profile" hidden></section>
+<div class="home-top">
+<div class="stories" aria-label="小說">
+{%- for nv in site.data.novels -%}
+  {%- assign lead = nil -%}
+  {%- for ch in site.data.characters -%}{%- if ch[1].novel == nv[0] -%}{%- assign lead = ch[1] -%}{%- break -%}{%- endif -%}{%- endfor -%}
+  {%- if lead -%}
+  <a class="story" href="{% if nv[1].page %}{{ '/novel/' | append: nv[0] | append: '/' | relative_url }}{% else %}{{ '/' | relative_url }}?n={{ nv[0] }}{% endif %}" style="--c:{{ lead.color }}">
+    <span class="avatar">{%- if lead.avatar -%}<img src="{{ '/assets/avatars/' | append: lead.avatar | relative_url }}?v={{ site.time | date: '%s' }}" alt="" loading="lazy">{%- else -%}{{ lead.glyph }}{%- endif -%}</span>
+    <span class="s-t">{{ nv[1].title }}</span>
+  </a>
+  {%- endif -%}
+{%- endfor -%}
+</div>
+<article class="thread teaser pinned" style="--c:#d97a3a">
+  <div class="t-head">
+    <span class="avatar" style="--c:#d97a3a">畝</span>
+    <div class="t-who">
+      <div class="meta"><span class="name">畝 MU</span><span class="pin-tag">📌 置頂</span></div>
+    </div>
+  </div>
+  <div class="text"><p>每個人，都有未曾備份的故事。</p><p>這裡的帳號都是小說角色。點上面的頭像，從第一篇開始讀。</p></div>
+</article>
+</div>
+<script>if(/[?&](c|n|liked|reposted)=/.test(location.search))document.querySelector('.home-top').hidden=true;</script>
 <div class="feed">
 {%- for post in site.posts -%}
   {% include teaser.html post=post %}
