@@ -10,13 +10,7 @@
   <a class="nv-back" href="{{ '/novels/' | relative_url }}">← 所有小說</a>
   <h1>{{ nv.title }}</h1>
   {%- if nv.era %}<p class="nv-era">{{ nv.era }}</p>{% endif %}
-  {%- if nv.info %}
-  <ul class="nv-tags nv-info-tags">
-  {%- for r in nv.info -%}
-    {%- if r[2] == 'hide' -%}<li class="spoil"><details><summary>{{ r[0] }}：點開可查看</summary>{{ r[1] }}</details></li>{%- else -%}<li><small>{{ r[0] }}</small>{{ r[1] }}</li>{%- endif -%}
-  {%- endfor -%}
-  </ul>
-  {%- elsif nv.tags %}<ul class="nv-tags">{% for t in nv.tags %}<li>{{ t }}</li>{% endfor %}</ul>{% endif %}
+  {%- if nv.tags %}<ul class="nv-tags">{% for t in nv.tags %}<li>{{ t }}</li>{% endfor %}</ul>{% endif %}
   {%- if nv.intro %}<p class="nv-intro">{{ nv.intro }}</p>{% endif %}
   {%- if nv.sample %}
   <figure class="nv-sample"><blockquote>{{ nv.sample | newline_to_br }}</blockquote>{% if nv.sample_from %}<figcaption>{{ nv.sample_from }}</figcaption>{% endif %}</figure>
@@ -25,6 +19,7 @@
 </section>
 <section id="roles" class="roles">
   <h2 class="nv-h">角色</h2>
+  <p class="ro-only ro-book">《{{ nv.title }}》</p>
   {%- if leads.size > 1 %}
   <div class="tabs" role="tablist">
     <button type="button" role="tab" data-tab="all" aria-selected="true">全部</button>
@@ -54,8 +49,9 @@
     {%- endif %}
   </div>
   {%- endfor -%}
+  <a class="ro-only ro-go" href="{{ '/novel/' | append: id | append: '/' | relative_url }}">看《{{ nv.title }}》的篇章 →</a>
 </section>
-<h2 class="nv-h">篇章</h2>
+<h2 class="nv-h ch-h">篇章</h2>
 <div class="chapters nv-list">
 {%- for post in ordered -%}
   {%- assign pc = site.data.characters[post.character] -%}

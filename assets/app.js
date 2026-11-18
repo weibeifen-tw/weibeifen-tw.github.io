@@ -31,6 +31,8 @@
       try { history.replaceState(null, '', t === 'all' ? location.pathname : location.pathname + '?c=' + t); } catch (e) {}
     }
     tabs.forEach(function (b) { b.onclick = function () { pick(b.dataset.tab); }; });
+    // 從限動點進來：只介紹角色
+    if (q.get('roles')) { document.body.classList.add('roles-only'); roles.forEach(function (r) { r.classList.add('full'); }); window.scrollTo(0, 0); return; }
     if (c) { pick(c); setTimeout(function () { document.getElementById('roles').scrollIntoView(); }, 50); } else pick('all');
     function rd(k) { try { var r = JSON.parse(localStorage.getItem(k) || 'null'); return r && r.url ? r : null; } catch (e) { return null; } }
     var btns = document.querySelector('.nv-btns'), lr = rd('wb:last:' + window.NOVEL);

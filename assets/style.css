@@ -449,3 +449,11 @@ button.story{background:none;border:0;padding:0;font:inherit;cursor:pointer}
 .role.full .role-more{display:block}
 .role-more h3{margin:0 0 .5em;font-size:13px;color:var(--sub);letter-spacing:.15em;font-weight:500}
 .nv-list .ch-who{margin-left:8px;font-size:12px;color:var(--c)}
+/* 從限動進來：只介紹角色 */
+.ro-only{display:none}
+body.roles-only #novel,body.roles-only .ch-h,body.roles-only .nv-list,body.roles-only .roles .tabs,body.roles-only .roles > .nv-h{display:none}
+body.roles-only .ro-only{display:block}
+body.roles-only .roles{margin-top:8px}
+.ro-book{margin:0 0 6px;font-size:20px;font-weight:700}
+.ro-go{margin:6px 0 12px;font-size:14px;color:var(--sub);text-decoration:none}
+.ov-info i small{margin-right:4px;font-size:10px;color:var(--sub);font-style:normal}

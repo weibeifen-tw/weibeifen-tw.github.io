@@ -20,7 +20,7 @@ body_class: wide
       <span class="ov-top"><b>{{ nv.title }}</b><small class="ov-n">{{ cnt }} 篇</small></span>
       {%- if nv.era %}<small>{{ nv.era }}</small>{% endif %}
       {%- if nv.info -%}
-      <span class="ov-tags">{%- assign k = 0 -%}{%- for r in nv.info -%}{%- if r[2] != 'hide' and k < 3 -%}<i>{{ r[1] }}</i>{%- assign k = k | plus: 1 -%}{%- endif -%}{%- endfor -%}</span>
+      <span class="ov-tags ov-info">{%- for r in nv.info -%}{%- unless r[2] == 'hide' -%}<i><small>{{ r[0] }}</small>{{ r[1] }}</i>{%- endunless -%}{%- endfor -%}</span>
       {%- else -%}
       {%- if nv.tags %}{% assign tg = nv.tags %}{% elsif nv.tag %}{% assign tg = nv.tag | split: '・' %}{% else %}{% assign tg = nil %}{% endif %}
       {%- if tg %}<span class="ov-tags">{% for t in tg %}<i>{{ t }}</i>{% endfor %}</span>{% endif %}

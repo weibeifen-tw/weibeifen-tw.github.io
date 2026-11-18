@@ -23,7 +23,7 @@ layout: default
     </div>
     <div class="st-body">
       <p class="st-book">《{{ nv[1].title }}》</p>
-      <a class="st-go" href="{{ '/novel/' | append: nv[0] | append: '/#roles' | relative_url }}">認識角色</a>
+      <a class="st-go" href="{{ '/novel/' | append: nv[0] | append: '/?roles=1' | relative_url }}">認識角色</a>
     </div>
   </template>
   {%- endif -%}
