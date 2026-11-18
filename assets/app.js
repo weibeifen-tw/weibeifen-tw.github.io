@@ -483,3 +483,14 @@
   layer.onclick = function (e) { if (e.target === layer) close(); };
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !layer.hidden) close(); });
 })();
+
+// 頭像列：電腦用滑鼠滾輪、拖曳也能左右滑
+(function () {
+  var s = document.querySelector('.stories'); if (!s) return;
+  s.addEventListener('wheel', function (e) { if (Math.abs(e.deltaY) > Math.abs(e.deltaX) && s.scrollWidth > s.clientWidth) { e.preventDefault(); s.scrollLeft += e.deltaY; } }, { passive: false });
+  var down = false, x0 = 0, l0 = 0, moved = false;
+  s.addEventListener('mousedown', function (e) { down = true; moved = false; x0 = e.pageX; l0 = s.scrollLeft; });
+  addEventListener('mousemove', function (e) { if (!down) return; var d = e.pageX - x0; if (Math.abs(d) > 4) moved = true; s.scrollLeft = l0 - d; });
+  addEventListener('mouseup', function () { down = false; });
+  s.addEventListener('click', function (e) { if (moved) { e.stopPropagation(); e.preventDefault(); moved = false; } }, true);
+})();
