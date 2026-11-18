@@ -462,3 +462,11 @@ body.roles-only .roles{margin-top:8px}
 .ig-name{margin-right:4px;font-weight:700}
 .intro-post .ip-text p{margin-top:2px}
 .actions .act.read{margin-left:auto;display:inline-flex;align-items:center;gap:4px;color:var(--accent);text-decoration:none;font-size:13px;font-weight:500}
+/* 我的書櫃、準備中頁 */
+.shelf-list a{display:flex;align-items:baseline;gap:10px;padding:12px 4px;border-top:1px solid var(--line);color:inherit;text-decoration:none;font-size:16px}
+.shelf-list a:first-child{border-top:0}
+.shelf-list small{margin-left:auto;font-size:13px;color:var(--sub)}
+.shelf-list a.d-ch{padding:6px 4px 6px 22px;border-top:0;font-size:14px;color:#5e594f}
+.shelf-list p{color:var(--sub)}
+.intro-post a.name{color:inherit;text-decoration:none}
+a.ig-av{text-decoration:none}

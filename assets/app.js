@@ -291,17 +291,16 @@
   });
 })();
 
-// 選單：碰到「小說」滑出看過的小說，手機點箭頭展開
+// 我的書櫃：看過的小說和讀到第幾篇
 (function () {
-  var g = document.querySelector('.d-group'); if (!g) return;
-  var sub = g.querySelector('.d-sub'), arrow = g.querySelector('.d-arrow');
+  var sub = document.querySelector('.shelf-list'); if (!sub) return;
   var novels = JSON.parse(document.getElementById('novels').textContent || '{}'), list = [];
   var chars = JSON.parse(document.getElementById('chars').textContent || '{}');
   var split = window.SPLIT || [];
   function rd(k) { try { var r = JSON.parse(localStorage.getItem(k) || 'null'); return r && r.url ? r : null; } catch (e) { return null; } }
   function row(href, label, no, cls) {
     var a = document.createElement('a'); a.href = href; a.textContent = label; if (cls) a.className = cls;
-    var sm = document.createElement('small'); sm.textContent = '第 ' + no + ' 章'; a.appendChild(sm); return a;
+    var sm = document.createElement('small'); sm.textContent = '讀到第 ' + no + ' 篇'; a.appendChild(sm); return a;
   }
   Object.keys(novels).forEach(function (id) {
     if (split.indexOf(id) >= 0 || novels[id].split) {
@@ -315,13 +314,12 @@
     }
   });
   list.sort(function (a, b) { return b.t - a.t; });
-  if (!list.length) { var p = document.createElement('p'); p.textContent = '還沒有看過的小說'; sub.appendChild(p); }
+  if (!list.length) { var p = document.createElement('p'); p.textContent = '還沒有看過的小說。從首頁挑一部開始吧。'; sub.appendChild(p); }
   list.forEach(function (x) {
     if (x.r) { sub.appendChild(row(x.r.url, novels[x.id].title, x.r.no)); return; }
-    var h = document.createElement('a'); h.href = novels[x.id].page ? BASE + '/novel/' + x.id + '/' : BASE + '/?n=' + x.id; h.className = 'd-nv'; h.textContent = novels[x.id].title; sub.appendChild(h);
+    var h = document.createElement('a'); h.href = BASE + '/novel/' + x.id + '/'; h.className = 'd-nv'; h.textContent = novels[x.id].title; sub.appendChild(h);
     x.rows.forEach(function (y) { sub.appendChild(row(y[1].url, (chars[y[0]] || {}).name || '', y[1].no, 'd-ch')); });
   });
-  arrow.onclick = function () { var o = g.classList.toggle('open'); arrow.setAttribute('aria-expanded', o); };
 })();
 
 // 小說總覽的台灣地圖：滑到（手機點）一個地形區，旁邊列出那區的小說
