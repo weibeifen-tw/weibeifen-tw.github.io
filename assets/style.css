@@ -497,3 +497,21 @@ a.ig-av{text-decoration:none}
 .era-none{color:var(--sub)}
 .tw-note{margin:-4px 0 10px;font-size:13px;line-height:1.7;color:var(--sub)}
 .tw-place{display:block;margin-top:2px;font-size:14px;line-height:1.7;color:#5e594f}
+/* 頂端：全部作品＋搜尋；私訊改浮動 */
+.nav-all{margin-left:14px;font-size:15px;color:var(--ink);text-decoration:none;padding:4px 2px;white-space:nowrap}
+.nav-all:hover{text-decoration:underline}
+.search-btn{display:grid;place-items:center;width:40px;height:40px;margin:0 -8px 0 auto;border-radius:50%;color:var(--ink)}
+.search-btn:hover{background:var(--chip)}
+.r-tools ~ .search-btn{margin-left:4px}
+.chat-btn{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom));z-index:40;width:54px;height:54px;margin:0;background:var(--card);border:1px solid var(--line);box-shadow:0 4px 14px rgba(0,0,0,.14)}
+.chat-btn:hover{background:var(--card)}
+body.reading .chat-btn{bottom:calc(84px + env(safe-area-inset-bottom))}
+/* 全部作品頁 */
+.wk-sub{color:var(--sub);margin:-4px 0 14px}
+.wk-q{width:100%;box-sizing:border-box;padding:12px 18px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--ink);font:inherit;font-size:16px;margin-bottom:16px}
+.wk-list{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+.wk-list a{display:block;padding:14px 16px;background:var(--card);border:1px solid var(--line);border-radius:12px;color:var(--ink);text-decoration:none}
+.wk-list b{font-size:17px;margin-right:8px}
+.wk-list small{color:var(--sub)}
+.wk-list span{display:block;margin-top:4px;color:var(--sub);font-size:14px;line-height:1.6}
+.wk-none{color:var(--sub);text-align:center}
