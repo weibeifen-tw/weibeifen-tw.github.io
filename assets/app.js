@@ -466,3 +466,20 @@
   });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !box.hidden) close(); });
 })();
+
+// 首頁頭像列：點了跳出角色卡片
+(function () {
+  var layer = document.querySelector('.st-layer'); if (!layer) return;
+  var box = layer.querySelector('.st-in');
+  function close() { layer.hidden = true; document.body.style.overflow = ''; box.innerHTML = ''; }
+  document.querySelectorAll('.story').forEach(function (b) {
+    b.onclick = function () {
+      var t = document.getElementById('st-' + b.dataset.story); if (!t) return;
+      box.innerHTML = ''; box.appendChild(t.content.cloneNode(true));
+      layer.hidden = false; document.body.style.overflow = 'hidden';
+    };
+  });
+  layer.querySelector('.st-x').onclick = close;
+  layer.onclick = function (e) { if (e.target === layer) close(); };
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !layer.hidden) close(); });
+})();

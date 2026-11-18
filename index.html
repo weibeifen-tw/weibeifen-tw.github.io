@@ -6,16 +6,33 @@ layout: default
 <div class="home-top">
 <div class="stories" aria-label="小說">
 {%- for nv in site.data.novels -%}
-  {%- assign lead = nil -%}
-  {%- for ch in site.data.characters -%}{%- if ch[1].novel == nv[0] -%}{%- assign lead = ch[1] -%}{%- break -%}{%- endif -%}{%- endfor -%}
-  {%- if lead -%}
-  <a class="story" href="{% if nv[1].page %}{{ '/novel/' | append: nv[0] | append: '/' | relative_url }}{% else %}{{ '/' | relative_url }}?n={{ nv[0] }}{% endif %}" style="--c:{{ lead.color }}">
+  {%- assign leads = "" | split: "" -%}
+  {%- for ch in site.data.characters -%}{%- if ch[1].novel == nv[0] and leads.size < 2 -%}{%- assign leads = leads | push: ch[1] -%}{%- endif -%}{%- endfor -%}
+  {%- if leads.size > 0 -%}
+  {%- assign lead = leads[0] -%}
+  {%- assign first = site.posts | where: "novel", nv[0] | last -%}
+  {%- capture spath -%}/assets/stories/{{ nv[0] }}.webp{%- endcapture -%}
+  {%- assign simg = site.static_files | where: "path", spath | first -%}
+  <button type="button" class="story" data-story="{{ nv[0] }}" style="--c:{{ lead.color }}">
     <span class="avatar">{%- if lead.avatar -%}<img src="{{ '/assets/avatars/' | append: lead.avatar | relative_url }}?v={{ site.time | date: '%s' }}" alt="" loading="lazy">{%- else -%}{{ lead.glyph }}{%- endif -%}</span>
     <span class="s-t">{{ nv[1].title }}</span>
-  </a>
+  </button>
+  <template id="st-{{ nv[0] }}">
+    <div class="st-pic{% unless simg %} none{% endunless %}" style="--c:{{ lead.color }}">
+      {%- if simg -%}<img src="{{ spath | relative_url }}?v={{ site.time | date: '%s' }}" alt="《{{ nv[1].title }}》">{%- else -%}<span class="avatar big">{%- if lead.avatar -%}<img src="{{ '/assets/avatars/' | append: lead.avatar | relative_url }}" alt="">{%- else -%}{{ lead.glyph }}{%- endif -%}</span>{%- endif -%}
+    </div>
+    <div class="st-body">
+      <p class="st-book">《{{ nv[1].title }}》</p>
+      {%- for c in leads %}
+      <div class="st-say" style="--c:{{ c.color }}"><b>{{ c.name }}</b><p>{{ c.bio }}</p></div>
+      {%- endfor %}
+      {%- if first %}<a class="st-go" href="{{ first.url | relative_url }}">從第一篇開始讀</a>{% endif %}
+    </div>
+  </template>
   {%- endif -%}
 {%- endfor -%}
 </div>
+<div class="st-layer" hidden><div class="st-card" role="dialog" aria-modal="true"><button type="button" class="st-x" aria-label="關閉">✕</button><div class="st-in"></div></div></div>
 <article class="thread teaser pinned" style="--c:#d97a3a">
   <div class="t-head">
     <span class="avatar" style="--c:#d97a3a">畝</span>
@@ -23,7 +40,7 @@ layout: default
       <div class="meta"><span class="name">畝 MU</span><span class="pin-tag">📌 置頂</span></div>
     </div>
   </div>
-  <div class="text"><p>每個人，都有未曾備份的故事。</p><p>這裡的帳號都是小說角色。點上面的頭像，從第一篇開始讀。</p></div>
+  <div class="text"><p>每個人，都有未曾備份的故事。</p><p>這裡的帳號都是小說角色。點上面的頭像，聽她們自己說。</p></div>
 </article>
 </div>
 <script>if(/[?&](c|n|liked|reposted)=/.test(location.search))document.querySelector('.home-top').hidden=true;</script>
