@@ -391,3 +391,19 @@ chaosheng-xi:
   glyph: 晞
   color: "#c8604e"
   bio: 二十八歲，南竿出生，在地方文化工作室做口述歷史。島上每個人的故事，我都想聽完。
+houdiao-mu:
+  name: 沐
+  handle: mu.cedar
+  novel: houdiao
+  avatar: houdiao-mu.svg
+  glyph: 沐
+  color: "#8a6a52"
+  bio: 二十七歲，獨立調香師，女性 Alpha。台大化學系，習慣喝便利商店的白茶。身上是雪松和白茶的味道。
+houdiao-lian:
+  name: 斂
+  handle: lian.xu
+  novel: houdiao
+  avatar: houdiao-lian.svg
+  glyph: 斂
+  color: "#3f3a5a"
+  bio: 三十二歲，香水品牌「序」的創辦人，女性 Omega。不喜歡甜膩的香調，也不喜歡被低估。
