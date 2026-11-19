@@ -69,6 +69,13 @@
     return (s.data && s.data.session && s.data.session.user && s.data.session.user.id) || null;
   }
 
+  // 錯誤訊息後面附上錯誤代碼，方便回報問題
+  function errText(msg, e) {
+    var code = (e && (e.code || e.status)) || '';
+    var detail = (e && e.message) ? String(e.message).slice(0, 120) : '';
+    return msg + (code || detail ? '\n（錯誤代碼：' + code + (detail ? '｜' + detail : '') + '）' : '');
+  }
+
   function cut(v, n) { return v == null || v === '' ? null : String(v).slice(0, n); }
 
   /* ---------- 雲端書櫃 ---------- */
@@ -141,14 +148,15 @@
     if (!uid) return '請先登入。';
     var res;
     if (on) {
-      res = await c.from('favorites').upsert({
+      res = await c.from('favorites').insert({
         user_id: uid, novel: row.novel, path: row.path,
         title: cut(row.title, 100), no: cut(row.no, 10)
-      }, { onConflict: 'user_id,novel,path', ignoreDuplicates: true });
+      });
+      if (res.error && res.error.code === '23505') return null; // 已經收藏過了
     } else {
       res = await c.from('favorites').delete().eq('novel', row.novel).eq('path', row.path);
     }
-    return res.error ? '收藏沒有成功，請稍後再試。' : null;
+    return res.error ? errText('收藏沒有成功，請稍後再試。', res.error) : null;
   }
 
   function askLogin() {
@@ -207,7 +215,7 @@
     var res = await A.getClient().from('favorites').select('novel,path,title,no,created_at').order('created_at', { ascending: false });
     favList.textContent = '';
     favBox.hidden = false;
-    if (res.error) { favList.appendChild(el('p', 'mb-form-msg err', '讀取收藏失敗，請重新整理。')); return; }
+    if (res.error) { favList.appendChild(el('p', 'mb-form-msg err', errText('讀取收藏失敗，請重新整理。', res.error))); return; }
     var rows = res.data || [];
     if (!rows.length) { favList.appendChild(el('p', null, '還沒有收藏。在小說介紹頁按「收藏這本」，或在章節最後按「加入書籤」。')); return; }
     rows.forEach(function (r) {
