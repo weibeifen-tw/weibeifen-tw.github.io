@@ -1,6 +1,8 @@
 -- 《未備份》會員系統第二批：收藏（整本小說＋章節書籤）、雲端書櫃
 -- 在 Supabase → SQL Editor 整段貼上執行一次。整段包在交易裡，任何一行失敗就全部不生效。
 --
+-- 注意：PostgreSQL 正規表示式的重複次數上限是 255，長度改用 char_length 檢查（2026-11-20 修正）。
+--
 -- 兩張表都只有「本人」能讀寫自己的資料（RLS），訪客完全碰不到。
 -- 管理員（你）在 Supabase 後台看得到所有人的資料，網站上的管理員帳號一樣看不到別人的。
 
@@ -10,7 +12,7 @@ BEGIN;
 CREATE TABLE public.favorites (
   user_id    uuid NOT NULL REFERENCES auth.users (id) ON DELETE CASCADE,
   novel      text NOT NULL CHECK (novel ~ '^[a-z0-9_-]{1,40}$'),
-  path       text NOT NULL DEFAULT '' CHECK (path = '' OR path ~ '^/[^/\s][^\s]{0,299}$'),
+  path       text NOT NULL DEFAULT '' CHECK (path = '' OR (path ~ '^/[^/\s][^\s]*$' AND char_length(path) <= 300)),
   title      text CHECK (title IS NULL OR char_length(title) <= 100),
   no         text CHECK (no IS NULL OR char_length(no) <= 10),
   created_at timestamptz NOT NULL DEFAULT now(),
@@ -21,7 +23,7 @@ CREATE TABLE public.favorites (
 CREATE TABLE public.reading_progress (
   user_id    uuid NOT NULL REFERENCES auth.users (id) ON DELETE CASCADE,
   k          text NOT NULL CHECK (k ~ '^[a-z0-9_-]{1,40}(:[a-z0-9_-]{1,40})?$'),
-  url        text NOT NULL CHECK (url ~ '^/[^/\s][^\s]{0,299}$'),
+  url        text NOT NULL CHECK (url ~ '^/[^/\s][^\s]*$' AND char_length(url) <= 300),
   no         text CHECK (no IS NULL OR char_length(no) <= 10),
   title      text CHECK (title IS NULL OR char_length(title) <= 100),
   chr        text CHECK (chr IS NULL OR char_length(chr) <= 40),
