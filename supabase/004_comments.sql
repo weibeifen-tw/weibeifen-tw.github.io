@@ -4,7 +4,7 @@
 -- 設計：
 --   * 所有人（含訪客）都看得到留言；只有登入會員能留言
 --   * 不能編輯留言；自己可以刪自己的，管理員（已通過兩步驟驗證）可以刪任何一則
---   * 防洗版：同一人 15 秒內只能留 1 則、1 小時最多 20 則（資料庫端擋）
+--   * 防洗版：同一人 15 秒內只能留 1 則、1 小時最多 5 則（資料庫端擋）
 --   * 檢舉：每人對同一則只能檢舉一次；被 3 個不同會員檢舉 → 自動隱藏
 --     隱藏的留言只有作者本人和管理員看得到；管理員可以刪除或恢復
 --   * 正規表示式不使用超過 255 的重複次數，長度一律用 char_length 檢查
@@ -53,7 +53,7 @@ begin
     raise exception 'WB_TOO_FAST';
   end if;
   if (select count(*) from public.comments
-      where user_id = new.user_id and created_at > now() - interval '1 hour') >= 20 then
+      where user_id = new.user_id and created_at > now() - interval '1 hour') >= 5 then
     raise exception 'WB_TOO_MANY';
   end if;
   return new;

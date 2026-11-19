@@ -252,7 +252,7 @@
   function cmError(e) {
     var m = (e && e.message) || '';
     if (/WB_TOO_FAST/.test(m)) return '留言太快了，請等 15 秒再試。';
-    if (/WB_TOO_MANY/.test(m)) return '這一小時留言太多次了，請晚點再來。';
+    if (/WB_TOO_MANY/.test(m)) return '一小時最多留 5 則，請晚點再來。';
     if (/WB_LOGIN_REQUIRED/.test(m)) return '請先登入會員。';
     if (e && e.code === '23514') return '留言要 1～500 個字。';
     if (e && e.code === '23505') return '你已經檢舉過這則留言了。';
