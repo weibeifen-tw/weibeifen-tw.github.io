@@ -442,14 +442,23 @@
     if (e && e.code === '23514') return '訊息要 1～500 個字。';
     return errText('傳送失敗，請稍後再試。', e);
   }
-  // 右下角私訊按鈕：有角色的新回覆就亮紅點
+  // 右下角私訊按鈕亮紅點：
+  //   讀者：有角色的新回覆
+  //   管理員（這次登入已通過兩步驟驗證）：有讀者傳來、還沒讀的私訊（不算自己傳的）
+  //   一般讀者的第二個查詢因為 RLS 只看得到自己的，又排除自己，所以一定是 0。
   async function dmDot(A) {
     var btn = document.querySelector('.chat-btn'); if (!btn) return;
     var c = A.getClient(), uid = await uidOf(c);
-    if (!uid) { btn.classList.remove('has-new'); return; }
-    var res = await c.from('dm_messages').select('id', { count: 'exact', head: true })
-      .eq('user_id', uid).eq('from_char', true).eq('seen', false);
-    btn.classList.toggle('has-new', !res.error && res.count > 0);
+    if (!uid) { btn.classList.remove('has-new'); window.WBDM.adminUnseen = 0; return; }
+    var r = await Promise.all([
+      c.from('dm_messages').select('id', { count: 'exact', head: true })
+        .eq('user_id', uid).eq('from_char', true).eq('seen', false),
+      c.from('dm_messages').select('id', { count: 'exact', head: true })
+        .neq('user_id', uid).eq('from_char', false).eq('seen', false)
+    ]);
+    var mine = !r[0].error && r[0].count > 0;
+    window.WBDM.adminUnseen = (!r[1].error && r[1].count) || 0;
+    btn.classList.toggle('has-new', mine || window.WBDM.adminUnseen > 0);
   }
   window.WBDM = {
     on: signedIn,
@@ -471,6 +480,8 @@
       } catch (e) { return dmError(e); }
     },
     // 看過這個角色的回覆
+    adminUnseen: 0,             // 管理員：讀者還沒讀的私訊數（dmDot 更新）
+    refresh: function () { return getAuth().then(dmDot).catch(function () {}); },
     seen: async function (chr) {
       try { var A = await getAuth(); await A.getClient().rpc('dm_mark_seen', { p_chr: chr }); await dmDot(A); } catch (e) {}
     }

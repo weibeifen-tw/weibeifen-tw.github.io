@@ -203,6 +203,7 @@ document.addEventListener('DOMContentLoaded', function () {
   async function refreshBadge() {
     var res = await c().rpc('admin_dm_threads');
     if (!res.error) setBadge((res.data || []).reduce(function (s, r) { return s + (+r.unseen || 0); }, 0));
+    if (window.WBDM && window.WBDM.refresh) window.WBDM.refresh();  // 右下角紅點跟著更新
   }
   function chrName(id) { return (chars[id] && chars[id].name) || id; }
   function avatar(id) {
@@ -364,7 +365,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     say('已通過兩步驟驗證。');
     tabs.hidden = false;
-    show('stats');
+    show(location.hash === '#dm' ? 'dm' : 'stats');
     refreshBadge().catch(function () {});
   }
   init();

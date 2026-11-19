@@ -695,3 +695,6 @@ body.roles-only .cm-intro{display:none}
 .ad-dm-form{display:flex;flex-direction:column;gap:8px;padding-top:12px;border-top:1px solid var(--line)}
 .ad-dm-form textarea{width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);font:inherit;font-size:16px;line-height:1.6;resize:vertical}
 .ad-dm-bar{display:flex;justify-content:space-between;align-items:center}
+.ib-admin{display:block;padding:10px 16px;border-bottom:1px solid var(--line);background:#fdecee;color:#b3263a;font-size:14px;font-weight:600;text-decoration:none}
+.ib-admin:hover{text-decoration:underline}
+html[data-theme="night"] .ib-admin{background:#3a2226;color:#f2a7b1}
