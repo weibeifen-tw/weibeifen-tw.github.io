@@ -14,6 +14,15 @@ document.addEventListener('DOMContentLoaded', function () {
   document.querySelectorAll('.ad-panel').forEach(function (p) { panels[p.dataset.panel] = p; });
   var novels = {};
   try { novels = JSON.parse(document.getElementById('novels').textContent || '{}'); } catch (e) {}
+  var posts = {};
+  try { posts = JSON.parse(document.getElementById('posts-map').textContent || '{}'); } catch (e) {}
+  // 留言位置：《書名》第 N 篇・篇名，或《書名》介紹頁
+  function whereText(r) {
+    if (r.path.indexOf('/novel/') === 0) return '《' + title(r.novel) + '》介紹頁';
+    var p = posts[r.path] || posts[decodeURI(r.path)];
+    if (!p) return '《' + title(r.novel) + '》' + r.path;
+    return '《' + title(r.novel) + '》' + (p.no ? '第 ' + p.no + ' 篇・' : '') + (p.t || '');
+  }
 
   function el(tag, cls, text) {
     var e = document.createElement(tag);
@@ -37,7 +46,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   /* ---------- 分頁 ---------- */
   var loaded = {};
-  function show(name) {
+  function show(name, force) {
+    if (force) loaded[name] = false;
     tabs.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-selected', String(b.dataset.tab === name)); });
     Object.keys(panels).forEach(function (k) { panels[k].hidden = k !== name; });
     if (!loaded[name]) { loaded[name] = true; LOADERS[name](); }
@@ -77,23 +87,36 @@ document.addEventListener('DOMContentLoaded', function () {
       var tr = el('tr');
       var td = el('td'); var a = el('a', null, '《' + title(r.novel) + '》'); a.href = BASE + '/novel/' + r.novel + '/'; td.appendChild(a);
       tr.appendChild(td);
-      [r.fav, r.marks, r.readers, r.comments].forEach(function (v) { tr.appendChild(el('td', 'num', String(v || 0))); });
+      [r.fav, r.marks, r.readers].forEach(function (v) { tr.appendChild(el('td', 'num', String(v || 0))); });
+      var ct = el('td', 'num');
+      if (r.comments) {
+        var cb = el('button', 'ad-link', String(r.comments)); cb.type = 'button'; cb.title = '看這本的留言';
+        cb.onclick = function () { cmFilter = 'all'; cmNovel = r.novel; show('comments', true); };
+        ct.appendChild(cb);
+      } else ct.textContent = '0';
+      tr.appendChild(ct);
       tb.appendChild(tr);
     });
     p.appendChild(tb);
   }
 
   /* ---------- 留言管理 ---------- */
-  var cmFilter = 'reported';
+  var cmFilter = 'all', cmNovel = '';
   async function loadComments() {
     var p = panels.comments;
     p.textContent = '';
     var bar = el('div', 'ad-filter');
-    [['reported', '被檢舉'], ['hidden', '已隱藏'], ['all', '全部最新']].forEach(function (f) {
+    [['all', '全部最新'], ['reported', '被檢舉'], ['hidden', '已隱藏']].forEach(function (f) {
       var b = el('button', 'cm-btn' + (cmFilter === f[0] ? ' on' : ''), f[1]); b.type = 'button';
       b.onclick = function () { cmFilter = f[0]; loadComments(); };
       bar.appendChild(b);
     });
+    var sel = el('select', 'ad-select');
+    var o0 = el('option', null, '所有小說'); o0.value = ''; sel.appendChild(o0);
+    Object.keys(novels).forEach(function (id) { var o = el('option', null, '《' + title(id) + '》'); o.value = id; sel.appendChild(o); });
+    sel.value = cmNovel;
+    sel.onchange = function () { cmNovel = sel.value; loadComments(); };
+    bar.appendChild(sel);
     p.appendChild(bar);
     var list = el('div', 'ad-list'); list.appendChild(el('p', 'mb-sub', '讀取中…'));
     p.appendChild(list);
@@ -106,6 +129,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var q = c().from('comments').select('id,user_id,novel,path,body,hidden,created_at,profiles(display_name,username)')
       .order('created_at', { ascending: false }).limit(100);
     if (cmFilter === 'hidden') q = q.eq('hidden', true);
+    if (cmNovel) q = q.eq('novel', cmNovel);
     if (cmFilter === 'reported') {
       var ids = Object.keys(reports).map(Number);
       if (!ids.length) { list.textContent = ''; list.appendChild(el('p', 'mb-sub', '目前沒有被檢舉的留言。')); return; }
@@ -124,7 +148,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (pr.username) top.appendChild(el('span', 'cm-user', '@' + pr.username));
       top.appendChild(el('time', 'cm-time', fmtDate(r.created_at)));
       item.appendChild(top);
-      var where = el('a', 'ad-where', '《' + title(r.novel) + '》' + (r.path.indexOf('/novel/') === 0 ? '介紹頁' : r.path));
+      var where = el('a', 'ad-where', whereText(r));
       where.href = r.path + '#comments';
       item.appendChild(where);
       if (r.hidden) item.appendChild(el('p', 'cm-note', '已隱藏（只有作者和管理員看得到）'));
