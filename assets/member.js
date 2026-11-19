@@ -192,8 +192,7 @@
       dn.hidden = nameLocked; dnHint.hidden = nameLocked; dnStatic.hidden = !nameLocked;
     }
     paintNameHint();
-    f.appendChild(field('帳號名稱（選填）', un, '小寫英文、數字、底線，3～8 個字。首頁頭貼下面會顯示帳號名稱。'));
-    f.appendChild(field('簡介（選填）', bio, '最多 30 個字'));
+    // 順序：顯示名稱 → 頭貼顏色 → 帳號名稱 → 簡介
     var dnField = field('顯示名稱', dn); dnField.appendChild(dnStatic); dnField.appendChild(dnHint);
     f.appendChild(dnField);
 
@@ -230,6 +229,8 @@
     }
     pk.appendChild(pkHint);
     f.appendChild(pk); // 放在顯示名稱下面
+    f.appendChild(field('帳號名稱（選填）', un, '小寫英文、數字、底線，3～8 個字。首頁頭貼下面會顯示帳號名稱。'));
+    f.appendChild(field('簡介（選填）', bio, '最多 30 個字'));
     paintColorHint();
     dn.addEventListener('input', function () {
       preview();
@@ -384,7 +385,6 @@
 
   async function logoutAll() {
     if (busy || !A) return;
-    if (!window.confirm('要登出所有裝置嗎？手機、電腦等所有登入過的地方都要重新登入。')) return;
     busy = true;
     var b = card.querySelector('.mb-logout'); if (b) b.disabled = true;
     var r = await A.signOutAll();
