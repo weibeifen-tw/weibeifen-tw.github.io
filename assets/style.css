@@ -699,3 +699,5 @@ body.roles-only .cm-intro{display:none}
 .ib-admin:hover{text-decoration:underline}
 html[data-theme="night"] .ib-admin{background:#3a2226;color:#f2a7b1}
 .ad-backup{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:16px 0 4px}
+.ib-del{border:0;background:none;color:var(--sub);font:inherit;font-size:13px;cursor:pointer;padding:4px 6px;white-space:nowrap}
+.ib-del:hover{color:#d93a4a}

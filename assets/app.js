@@ -427,7 +427,7 @@ window.WBRenderShelf();
   var ctx = null; // 從貼文點留言進來時，記住是哪一篇
   function chatView(c) {
     var msgs = collect()[c] || [], ch = chars[c] || {}, nv = novels[ch.novel] || {}, last = null;
-    var h = '<div class="ib-head"><button type="button" class="ib-back" aria-label="返回">‹</button>' + av(c) + '<span class="ib-who"><b>' + esc(ch.name) + '</b><small>' + (nv.title ? '《' + esc(nv.title) + '》' : '') + '</small></span><button type="button" class="ib-x" aria-label="關閉">✕</button></div><div class="ib-msgs">';
+    var h = '<div class="ib-head"><button type="button" class="ib-back" aria-label="返回">‹</button>' + av(c) + '<span class="ib-who"><b>' + esc(ch.name) + '</b><small>' + (nv.title ? '《' + esc(nv.title) + '》' : '') + '</small></span>' + (msgs.length ? '<button type="button" class="ib-del" data-del="' + esc(c) + '">刪除對話</button>' : '') + '<button type="button" class="ib-x" aria-label="關閉">✕</button></div><div class="ib-msgs">';
     if (msgs.some(function (m) { return m.local; })) h += '<p class="ib-note">淡色的訊息只存在這台裝置，' + esc(ch.name) + '看不到。</p>';
     msgs.forEach(function (m) {
       var tag = m.post ? m.post.u : 'dm';
@@ -471,12 +471,32 @@ window.WBRenderShelf();
     if (!box.hidden) then();
   }
   function close() { box.hidden = true; document.body.classList.remove('ib-open'); }
+  // 刪除跟某個角色的整段對話：雲端的（含角色回覆）＋這台裝置上的舊訊息
+  async function delThread(c, b) {
+    var name = (chars[c] || {}).name || '';
+    if (!window.confirm('刪除跟' + name + '的整段對話？' + (cloud ? name + '的回覆也會一起刪掉，' : '') + '刪了就找不回來。')) return;
+    b.disabled = true;
+    if (cloud) {
+      var err = await window.WBDM.delThread(c);
+      if (err) { b.disabled = false; window.alert(err); return; }
+      cloud = cloud.filter(function (r) { return r.chr !== c; });
+    }
+    try {
+      localStorage.removeItem('wb:dm:' + c);
+      for (var i = localStorage.length - 1; i >= 0; i--) {
+        var k = localStorage.key(i);
+        if (k && k.indexOf('wb:c:') === 0 && posts[k.slice(5)] && posts[k.slice(5)].c === c) localStorage.removeItem(k);
+      }
+    } catch (x) {}
+    ctx = null; listView();
+  }
   btn.onclick = function () { ctx = null; open(); };
   // 貼文的留言按鈕：直接打開跟這個角色的私訊
   window.openDM = function (c, key) { if (!chars[c]) return; ctx = { c: c, key: key }; open(function () { chatView(c); }); };
   box.addEventListener('click', function (e) {
     if (e.target === box || e.target.closest('.ib-x')) return close();
     if (e.target.closest('.ib-back')) { ctx = null; return listView(); }
+    var d = e.target.closest('[data-del]'); if (d) return delThread(d.dataset.del, d);
     var b = e.target.closest('[data-c]'); if (b) chatView(b.dataset.c);
   });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !box.hidden) close(); });
