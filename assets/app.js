@@ -352,11 +352,22 @@ window.WBRenderShelf = function () {
   });
   list.sort(function (a, b) { return b.t - a.t; });
   if (!list.length) { var p = document.createElement('p'); p.textContent = '還沒有看過的小說。從首頁挑一部開始吧。'; sub.appendChild(p); }
-  list.forEach(function (x) {
+  function add(x) {
     if (x.r) { sub.appendChild(row(x.r.url, novels[x.id].title, x.r.no)); return; }
     var h = document.createElement('a'); h.href = BASE + '/novel/' + x.id + '/'; h.className = 'd-nv'; h.textContent = novels[x.id].title; sub.appendChild(h);
     x.rows.forEach(function (y) { sub.appendChild(row(y[1].url, (chars[y[0]] || {}).name || '', y[1].no, 'd-ch')); });
-  });
+  }
+  // 會員頁：先顯示最近讀的 5 本，「再看 10 本」一次多 10 本；書櫃頁全部顯示
+  if (!sub.closest('.member-page')) { list.forEach(add); return; }
+  var n = 0, more = document.createElement('button'); more.type = 'button'; more.className = 'mb-btn mycm-more';
+  function showMore(k) {
+    list.slice(n, n + k).forEach(add); n = Math.min(list.length, n + k);
+    var left = list.length - n; more.hidden = left <= 0;
+    more.textContent = '再看 ' + Math.min(10, left) + ' 本（還有 ' + left + ' 本）';
+    sub.appendChild(more);
+  }
+  more.onclick = function () { showMore(10); };
+  showMore(5);
 };
 window.WBRenderShelf();
 

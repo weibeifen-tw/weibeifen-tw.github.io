@@ -754,3 +754,16 @@ html[data-theme="night"] .ib-admin{background:#3a2226;color:#f2a7b1}
 .cm-card-bio.empty{color:var(--sub)}
 .mycm-more{display:block;margin:12px auto 0}
 .mycm-more[hidden]{display:none}
+.mb-colors.locked .mb-color{cursor:default;opacity:.45}
+.mb-colors.locked .mb-color[aria-checked="true"]{opacity:1}
+.mb-field input:disabled{opacity:.6;cursor:not-allowed}
+/* 會員頁收藏：收藏的小說／書籤（照小說摺疊） */
+.fav-h{margin:14px 0 2px;font-size:14px;color:var(--sub);font-weight:600}
+.fav-h:first-child{margin-top:0}
+.fav-group{border-top:1px solid var(--line)}
+.fav-group summary{display:flex;align-items:baseline;gap:10px;padding:12px 4px;cursor:pointer;list-style:none}
+.fav-group summary::-webkit-details-marker{display:none}
+.fav-group summary::before{content:'▸';color:var(--sub);font-size:12px;transition:transform .15s}
+.fav-group[open] summary::before{transform:rotate(90deg)}
+.fav-group summary small{margin-left:auto;color:var(--sub);font-size:12px}
+.fav-group .fav-item{padding-left:22px}
