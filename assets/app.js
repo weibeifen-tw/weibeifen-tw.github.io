@@ -1,3 +1,28 @@
+// 會員頭像：白底圓圈＋名字第一個字（管理員顯示 MU），字的顏色由會員在會員頁自己選
+window.WBAvatar = (function () {
+  var COLORS = [
+    ['red', '紅', '#d0473f'], ['orange', '橘', '#d9702a'], ['yellow', '黃', '#b8901a'], ['green', '綠', '#3f8f52'],
+    ['teal', '青', '#23918f'], ['blue', '藍', '#3a6fc2'], ['indigo', '靛', '#5650b5'], ['purple', '紫', '#9248ad'],
+    ['pink', '粉', '#cc4f8a'], ['brown', '棕', '#8a5a3c'], ['gray', '灰', '#666666']
+  ];
+  var map = {};
+  COLORS.forEach(function (c) { map[c[0]] = c[2]; });
+  function hash(s) { var h = 0; s = String(s || ''); for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return Math.abs(h); }
+  // 沒選過顏色：依會員 ID 固定給一個
+  function color(key, id) { return map[key] || COLORS[hash(id) % COLORS.length][2]; }
+  function letter(name) { var a = Array.from(String(name || '').trim()); return a.length ? a[0].toUpperCase() : '新'; }
+  // o = { name, color, id, author }
+  function paint(box, o) {
+    o = o || {};
+    box.textContent = o.author ? 'MU' : letter(o.name);
+    box.classList.add('lt-av');
+    box.classList.toggle('lt-mu', !!o.author);
+    box.style.setProperty('--lc', color(o.color, o.id));
+  }
+  function make(o, cls) { var s = document.createElement('span'); s.className = 'avatar' + (cls ? ' ' + cls : ''); s.setAttribute('aria-hidden', 'true'); paint(s, o); return s; }
+  return { colors: COLORS, color: color, paint: paint, make: make };
+})();
+
 (function () {
   var feed = document.querySelector('.feed');
   if (!feed) return;

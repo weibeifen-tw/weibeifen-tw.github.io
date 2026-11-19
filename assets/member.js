@@ -67,8 +67,16 @@
     box.classList.toggle('is-member', !!src || !!p);
   }
 
+  // 這台裝置記住自己的頭貼（名字、顏色、是不是管理員），讓全站「我的帳號」入口顯示
+  var ME_KEY = 'wb:me';
+  function myAvatar() { try { return JSON.parse(localStorage.getItem(ME_KEY) || 'null'); } catch (e) { return null; } }
+  function saveMyAvatar(o) { try { if (o) localStorage.setItem(ME_KEY, JSON.stringify(o)); else localStorage.removeItem(ME_KEY); } catch (e) {} }
   function paintEntries(p) {
-    document.querySelectorAll('[data-member-avatar]').forEach(function (b) { paintAvatar(b, p); });
+    var me = p && myAvatar();
+    document.querySelectorAll('[data-member-avatar]').forEach(function (b) {
+      if (me && window.WBAvatar) { window.WBAvatar.paint(b, me); b.classList.add('is-member'); }
+      else { b.classList.remove('lt-av', 'lt-mu'); paintAvatar(b, p); }
+    });
     document.querySelectorAll('[data-member-entry]').forEach(function (a) { a.classList.toggle('signed-in', !!p); });
   }
 
@@ -92,6 +100,7 @@
   function setNote(text, isErr) { note.textContent = text || ''; note.classList.toggle('err', !!isErr); note.hidden = !text; }
 
   function renderGuest() {
+    saveMyAvatar(null);
     card.textContent = '';
     var av = el('span', 'avatar mb-av'); paintAvatar(av, null); card.appendChild(av);
     card.appendChild(el('h1', 'mb-title', '登入你的帳號'));
@@ -110,7 +119,11 @@
     prof = prof || {};
     var name = prof.display_name || '新會員';
     var head = el('div', 'mb-head');
-    var av = el('span', 'avatar mb-av'); paintAvatar(av, { avatar: prof.avatar_url || '' }); head.appendChild(av);
+    var me = { name: name, color: prof.avatar_color || null, id: prof.id || p.id, author: role === 'admin' };
+    saveMyAvatar(me);
+    var av = el('span', 'avatar mb-av');
+    if (window.WBAvatar) window.WBAvatar.paint(av, me); else paintAvatar(av, null);
+    head.appendChild(av);
     var who = el('div', 'mb-who');
     var nm = el('h1', 'mb-title', name);
     if (role === 'admin') nm.appendChild(el('span', 'mb-badge', '管理員'));
@@ -127,7 +140,7 @@
     idd.classList.add('mb-id');
     card.appendChild(dl);
 
-    if (prof.id) card.appendChild(profileForm(prof));
+    if (prof.id) card.appendChild(profileForm(prof, me, av));
     if (role === 'admin') card.appendChild(adminBox());
 
     var acts = el('div', 'mb-acts');
@@ -150,7 +163,7 @@
     return w;
   }
 
-  function profileForm(prof) {
+  function profileForm(prof, me, headAv) {
     var f = el('form', 'mb-form');
     f.noValidate = true;
     f.appendChild(el('h2', 'mb-h', '個人資料'));
@@ -165,6 +178,31 @@
     f.appendChild(field('帳號名稱（選填）', un, '小寫英文、數字、底線，3～20 個字'));
     f.appendChild(field('簡介（選填）', bio, '最多 200 個字'));
 
+    // 頭貼顏色：白底圓圈，名字第一個字（管理員是 MU）用選的顏色
+    var picked = prof.avatar_color || '';
+    var pk = el('div', 'mb-field');
+    pk.appendChild(el('span', 'mb-lbl', '頭貼顏色'));
+    var sw = el('div', 'mb-colors');
+    sw.setAttribute('role', 'radiogroup');
+    function preview() { if (window.WBAvatar && headAv) window.WBAvatar.paint(headAv, { name: dn.value.trim() || '新會員', color: picked || null, id: me.id, author: me.author }); }
+    (window.WBAvatar ? window.WBAvatar.colors : []).forEach(function (c) {
+      var b = el('button', 'mb-color'); b.type = 'button';
+      b.setAttribute('role', 'radio'); b.setAttribute('aria-label', c[1]); b.title = c[1];
+      var dot = window.WBAvatar.make({ name: dn.value.trim() || '新會員', color: c[0], id: me.id, author: me.author });
+      b.appendChild(dot);
+      function mark() { sw.querySelectorAll('.mb-color').forEach(function (x) { x.setAttribute('aria-checked', String(x === b)); }); }
+      b.onclick = function () { picked = c[0]; mark(); preview(); };
+      if (picked === c[0]) b.setAttribute('aria-checked', 'true'); else b.setAttribute('aria-checked', 'false');
+      sw.appendChild(b);
+    });
+    pk.appendChild(sw);
+    pk.appendChild(el('small', 'mb-hint', '選好按「儲存」。留言區和全站都會顯示這個頭貼。'));
+    f.appendChild(pk);
+    dn.addEventListener('input', function () {
+      preview();
+      sw.querySelectorAll('.lt-av').forEach(function (d, i) { window.WBAvatar.paint(d, { name: dn.value.trim() || '新會員', color: window.WBAvatar.colors[i][0], id: me.id, author: me.author }); });
+    });
+
     var msg = el('p', 'mb-form-msg'); msg.hidden = true;
     var save = el('button', 'mb-btn primary', '儲存');
     save.type = 'submit';
@@ -178,13 +216,15 @@
       if (u && !/^[a-z0-9_]{3,20}$/.test(u)) { say('帳號名稱只能用小寫英文、數字、底線，3～20 個字。', true); return; }
       save.disabled = true; say('儲存中…');
       var r;
-      try { r = await A.updateMyProfile({ display_name: dn.value, username: u, bio: bio.value }); }
+      try { r = await A.updateMyProfile({ display_name: dn.value, username: u, bio: bio.value, avatar_color: picked }); }
       catch (e) { r = { error: '連不上會員伺服器，請稍後再試。' }; }
       save.disabled = false;
       if (r.error) { say(r.error, true); return; }
       dn.value = r.profile.display_name || ''; un.value = r.profile.username || ''; bio.value = r.profile.bio || '';
       var t = card.querySelector('.mb-title');
       if (t && t.firstChild && t.firstChild.nodeType === 3) t.firstChild.nodeValue = r.profile.display_name || '新會員';
+      me.name = r.profile.display_name || '新會員'; me.color = r.profile.avatar_color || null;
+      saveMyAvatar(me); preview(); paintEntries(me);
       say('已儲存。');
     };
     return f;

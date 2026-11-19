@@ -233,7 +233,7 @@
   }
 
   /* ---------- 會員公開資料（public.profiles，RLS：只能改自己的） ---------- */
-  var PROFILE_COLS = 'id,username,display_name,avatar_url,bio';
+  var PROFILE_COLS = 'id,username,display_name,avatar_url,avatar_color,bio';
 
   function profileError(e) {
     if (!e) return null;
@@ -256,7 +256,7 @@
     return { profile: res.data || null, error: res.error ? profileError(res.error) : null };
   }
 
-  // 只送出允許修改的三個欄位；空字串存成 null
+  // 只送出允許修改的四個欄位（名稱、帳號名稱、簡介、頭貼顏色）；空字串存成 null
   async function updateMyProfile(input) {
     if (configProblem()) return { profile: null, error: configProblem() };
     var uid = await myUid();
@@ -265,7 +265,8 @@
     var patch = {
       display_name: clean(input.display_name) || '新會員',
       username: clean(input.username) ? clean(input.username).toLowerCase() : null,
-      bio: clean(input.bio)
+      bio: clean(input.bio),
+      avatar_color: /^[a-z]{1,12}$/.test(input.avatar_color || '') ? input.avatar_color : null
     };
     var res = await getClient().from('profiles').update(patch).eq('id', uid).select(PROFILE_COLS).maybeSingle();
     if (res.error) return { profile: null, error: profileError(res.error) };
