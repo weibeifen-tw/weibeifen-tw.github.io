@@ -659,3 +659,6 @@ body.roles-only .cm-intro{display:none}
 .ad-link{font:inherit;font-size:14px;padding:0;border:0;background:none;color:var(--accent,#e07b39);text-decoration:underline;cursor:pointer}
 .ad-where{font-size:13px;color:var(--ink);text-decoration:underline}
 .ad-filter .ad-select{margin-left:auto}
+.cm-item{display:flex;align-items:flex-start;gap:12px}
+.cm-main{flex:1;min-width:0}
+.cm-main .cm-body{margin-top:2px}

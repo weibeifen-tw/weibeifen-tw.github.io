@@ -311,7 +311,7 @@
         var top = el('div', 'cm-top');
         top.appendChild(el('b', 'cm-name', p.display_name || '新會員'));
         if (p.username) top.appendChild(el('span', 'cm-user', '@' + p.username));
-        var side = el('div', 'cm-side'); side.appendChild(el('time', 'cm-time', fmtDate(r.created_at))); top.appendChild(side);
+        var side = el('div', 'cm-side'); side.appendChild(el('time', 'cm-time', fmtDate(r.created_at)));
         item.appendChild(top);
         if (r.removed) item.appendChild(el('p', 'cm-note', '已被管理員刪除，只有管理員看得到。'));
         else if (r.hidden) item.appendChild(el('p', 'cm-note', '這則留言因為被檢舉，目前只有作者和管理員看得到。'));
@@ -357,6 +357,7 @@
           }
           side.appendChild(acts);
         }
+        var main = el('div', 'cm-main'); while (item.firstChild) main.appendChild(item.firstChild); item.appendChild(main); item.appendChild(side);
         list.appendChild(item);
       });
     }
