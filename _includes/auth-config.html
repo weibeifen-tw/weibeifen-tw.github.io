@@ -1,17 +1,27 @@
 {%- comment -%}
-  會員登入共用設定（Supabase Auth，Google OAuth，PKCE 流程）。
+  會員登入共用設定（Supabase Auth，Google OAuth，PKCE 流程）。設定值在 _data/auth.yml。
   只能放「前端可公開」的 Publishable Key（sb_publishable_ 開頭）。
   絕對不要放 Secret Key（sb_secret_）、service_role 或 Google Client Secret。
   auth.js 啟動時也會檢查，若偵測到私密金鑰會拒絕運作。
-  SDK 版本固定為 2.119.2，並用 SRI 雜湊確認檔案內容沒被竄改。
+  SDK 版本固定，並用 SRI 雜湊確認檔案內容沒被竄改。
+  lazy=true：只放設定，SDK 與 auth.js 由 cloud.js 在「有登入」時才載入（一般頁面用）。
 {%- endcomment -%}
+{%- assign au = site.data.auth -%}
+{%- capture au_js -%}{{ '/assets/auth.js' | relative_url }}?v={{ site.time | date: '%s' }}{%- endcapture -%}
 <script>
 window.WB_AUTH_CONFIG = {
-  supabaseUrl: "https://tqicconarhpddejxdvmf.supabase.co",
-  publishableKey: "sb_publishable_7JzzTIqK9DO8uVMVZz6tJg_9Mmu6osl",
-  siteOrigin: "https://weibeifen.com",
-  callbackPath: "/auth/callback/"
+  supabaseUrl: {{ au.supabase_url | jsonify }},
+  publishableKey: {{ au.publishable_key | jsonify }},
+  siteOrigin: {{ au.site_origin | jsonify }},
+  callbackPath: {{ au.callback_path | jsonify }}
+};
+window.WB_AUTH_LAZY = {
+  sdk: {{ au.sdk | jsonify }},
+  sri: {{ au.sdk_sri | jsonify }},
+  auth: {{ au_js | jsonify }}
 };
 </script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2/dist/umd/supabase.js" integrity="sha384-A97u3Qnt9GZHURO9YJZRe7VQgGUeFzcv6I1oIGnUTxQrCxnpQMwR0/G8F2zt9abZ" crossorigin="anonymous"></script>
-<script src="{{ '/assets/auth.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>
+{%- unless include.lazy %}
+<script src="{{ au.sdk }}" integrity="{{ au.sdk_sri }}" crossorigin="anonymous"></script>
+<script src="{{ au_js }}"></script>
+{%- endunless %}
