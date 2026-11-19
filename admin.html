@@ -18,12 +18,14 @@ noindex: true
       <button type="button" role="tab" data-tab="comments" aria-selected="false">留言</button>
       <button type="button" role="tab" data-tab="dm" aria-selected="false">私訊<span class="ad-badge" hidden></span></button>
       <button type="button" role="tab" data-tab="members" aria-selected="false">會員</button>
+      <button type="button" role="tab" data-tab="roles" aria-selected="false">角色</button>
     </div>
   </section>
   <section class="novel page-box mb-box ad-panel" data-panel="stats" hidden></section>
   <section class="novel page-box mb-box ad-panel" data-panel="comments" hidden></section>
   <section class="novel page-box mb-box ad-panel" data-panel="dm" hidden></section>
   <section class="novel page-box mb-box ad-panel" data-panel="members" hidden></section>
+  <section class="novel page-box mb-box ad-panel" data-panel="roles" hidden></section>
 </div>
 {%- comment -%} 章節網址 → 書名、篇號、篇名、貼文 key（給留言管理、私訊顯示「在哪一篇」） {%- endcomment -%}
 <script id="posts-map" type="application/json">{ {%- for p in site.posts -%}{{ p.url | relative_url | jsonify }}:{"s":{{ p.slug | jsonify }},"n":{{ p.novel | jsonify }},"no":{{ p.chapter | jsonify }},"t":{{ p.title | jsonify }}}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%} }</script>

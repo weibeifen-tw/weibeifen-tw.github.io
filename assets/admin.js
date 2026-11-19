@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function () {
     Object.keys(panels).forEach(function (k) { panels[k].hidden = k !== name; });
     if (!loaded[name]) { loaded[name] = true; LOADERS[name](); }
   }
-  tabs.querySelectorAll('button').forEach(function (b) { b.onclick = function () { show(b.dataset.tab); }; });
+  tabs.querySelectorAll('button').forEach(function (b) { b.onclick = function () { if (b.dataset.tab === 'roles') roleOpen = undefined; show(b.dataset.tab, b.dataset.tab === 'roles'); }; });
 
   /* ---------- 統計 ---------- */
   async function loadStats() {
@@ -287,44 +287,113 @@ document.addEventListener('DOMContentLoaded', function () {
     p.appendChild(ul);
   }
 
-  // 常用語：點一下帶入回覆框；「＋存成常用語」把目前打的字存起來；× 刪除
+  // 常用語：全部讀一次快取起來（chr 為 null 是通用）
   var snippets = null;
-  function snippetBar(ta, cnt) {
+  async function loadSnippets(force) {
+    if (snippets && !force) return snippets;
+    var r = await c().from('admin_snippets').select('id,chr,body').order('created_at', { ascending: true });
+    if (r.error) throw r.error;
+    snippets = r.data || [];
+    return snippets;
+  }
+  function snippetsFor(chr) { return (snippets || []).filter(function (s) { return s.chr === chr || s.chr == null; }); }
+
+  // 私訊回覆框下面：這個角色＋通用的常用語，點一下帶入
+  function snippetBar(ta, chr) {
     var box = el('div', 'ad-snips');
-    async function draw() {
-      if (!snippets) {
-        var r = await c().from('admin_snippets').select('id,body').order('created_at', { ascending: true });
-        snippets = r.error ? [] : (r.data || []);
-      }
-      box.textContent = '';
-      snippets.forEach(function (s) {
-        var chip = el('span', 'ad-snip');
-        var use = el('button', 'ad-snip-use', s.body.length > 24 ? s.body.slice(0, 24) + '…' : s.body); use.type = 'button'; use.title = s.body;
+    loadSnippets().then(function () {
+      snippetsFor(chr).forEach(function (s) {
+        var use = el('button', 'ad-snip ad-snip-use', s.body.length > 24 ? s.body.slice(0, 24) + '…' : s.body);
+        use.type = 'button'; use.title = s.body;
         use.onclick = function () {
           ta.value = ta.value.trim() ? ta.value.replace(/\s+$/, '') + '\n' + s.body : s.body;
           ta.dispatchEvent(new Event('input')); ta.focus();
         };
-        var x = el('button', 'ad-snip-x', '×'); x.type = 'button'; x.title = '刪除這句常用語';
-        x.onclick = async function () {
-          if (!window.confirm('刪除常用語「' + s.body.slice(0, 40) + '」？')) return;
-          var r = await c().from('admin_snippets').delete().eq('id', s.id);
-          if (r.error) { window.alert(errMsg(r.error)); return; }
-          snippets = snippets.filter(function (y) { return y.id !== s.id; }); draw();
-        };
-        chip.appendChild(use); chip.appendChild(x); box.appendChild(chip);
+        box.appendChild(use);
       });
-      var add = el('button', 'ad-link', '＋存成常用語'); add.type = 'button';
-      add.onclick = async function () {
-        var t = ta.value.trim();
-        if (!t) { window.alert('先在回覆框打好要存的句子。'); ta.focus(); return; }
-        var r = await c().from('admin_snippets').insert({ body: t }).select('id,body').single();
-        if (r.error) { window.alert(errMsg(r.error)); return; }
-        snippets.push(r.data); draw();
-      };
-      box.appendChild(add);
-    }
-    draw();
+      var go = el('button', 'ad-link', snippetsFor(chr).length ? '管理常用語' : '設定這個角色的常用語'); go.type = 'button';
+      go.onclick = function () { roleOpen = chr; show('roles', true); };
+      box.appendChild(go);
+    }).catch(function () {});
     return box;
+  }
+
+  /* ---------- 角色：每個角色的常用語 ---------- */
+  var roleOpen; // undefined＝角色列表；null＝通用；字串＝角色 id
+  async function loadRoles() {
+    var p = panels.roles;
+    p.textContent = ''; p.appendChild(el('p', 'mb-sub', '讀取中…'));
+    try { await loadSnippets(true); } catch (e) { p.textContent = ''; p.appendChild(el('p', 'mb-form-msg err', errMsg(e))); return; }
+    p.textContent = '';
+    if (roleOpen !== undefined) return roleSnippets(p, roleOpen);
+    p.appendChild(el('p', 'mb-sub', '點角色設定常用語。回覆私訊時，會出現這個角色的常用語和「通用」的常用語，點一下就帶進回覆框。'));
+    var ul = el('ul', 'ad-dm-list');
+    function row(id, label, sub) {
+      var li = el('li'), b = el('button', 'ad-dm-row'); b.type = 'button';
+      if (id) b.appendChild(avatar(id)); else { var g = el('span', 'avatar ad-all', '全'); b.appendChild(g); }
+      var who = el('span', 'ad-dm-who'); who.appendChild(el('b', null, label)); who.appendChild(el('small', null, sub));
+      b.appendChild(who);
+      var n = (snippets || []).filter(function (s) { return s.chr === id; }).length;
+      var side = el('span', 'ad-dm-side'); side.appendChild(el('span', 'ib-n', n + ' 句')); b.appendChild(side);
+      b.onclick = function () { roleOpen = id; loadRoles(); };
+      li.appendChild(b); ul.appendChild(li);
+    }
+    row(null, '通用', '所有角色都會出現');
+    Object.keys(novels).forEach(function (nid) {
+      Object.keys(chars).filter(function (cid) { return chars[cid].novel === nid; }).forEach(function (cid) {
+        row(cid, chrName(cid), '《' + title(nid) + '》' + (chars[cid].handle ? '　@' + chars[cid].handle : ''));
+      });
+    });
+    p.appendChild(ul);
+  }
+
+  function roleSnippets(p, chr) {
+    var head = el('div', 'ad-dm-head');
+    var back = el('button', 'cm-btn', '‹ 全部角色'); back.type = 'button';
+    back.onclick = function () { roleOpen = undefined; loadRoles(); };
+    head.appendChild(back);
+    if (chr) head.appendChild(avatar(chr));
+    var hw = el('span', 'ad-dm-who');
+    hw.appendChild(el('b', null, chr ? chrName(chr) + ' 的常用語' : '通用常用語'));
+    hw.appendChild(el('small', null, chr ? (chars[chr] && novels[chars[chr].novel] ? '《' + title(chars[chr].novel) + '》' : '') : '所有角色回覆時都會出現'));
+    head.appendChild(hw);
+    p.appendChild(head);
+
+    var list = el('div', 'ad-snip-list');
+    var mine = (snippets || []).filter(function (s) { return s.chr === chr; });
+    if (!mine.length) list.appendChild(el('p', 'mb-sub', '還沒有常用語。'));
+    mine.forEach(function (s) {
+      var item = el('div', 'ad-snip-item');
+      item.appendChild(el('p', null, s.body));
+      var del = el('button', 'cm-btn', '刪除'); del.type = 'button';
+      del.onclick = async function () {
+        if (!window.confirm('刪除這句常用語？')) return;
+        del.disabled = true;
+        var r = await c().from('admin_snippets').delete().eq('id', s.id);
+        if (r.error) { del.disabled = false; window.alert(errMsg(r.error)); return; }
+        loadRoles();
+      };
+      item.appendChild(del);
+      list.appendChild(item);
+    });
+    p.appendChild(list);
+
+    var f = el('form', 'ad-dm-form');
+    var ta = el('textarea'); ta.maxLength = 500; ta.rows = 2; ta.placeholder = '新增一句' + (chr ? chrName(chr) + '的' : '通用') + '常用語…';
+    var sb = el('button', 'cm-btn on', '新增'); sb.type = 'submit';
+    var cnt = el('small', 'mb-sub', '0 / 500');
+    ta.oninput = function () { cnt.textContent = ta.value.length + ' / 500'; };
+    f.onsubmit = async function (e) {
+      e.preventDefault();
+      var t = ta.value.trim(); if (!t) return;
+      ta.disabled = sb.disabled = true;
+      var r = await c().from('admin_snippets').insert({ body: t, chr: chr });
+      if (r.error) { ta.disabled = sb.disabled = false; window.alert(errMsg(r.error)); return; }
+      loadRoles();
+    };
+    var bar = el('div', 'ad-dm-bar'); bar.appendChild(cnt); bar.appendChild(sb);
+    f.appendChild(ta); f.appendChild(bar);
+    p.appendChild(f);
   }
 
   async function dmThread() {
@@ -390,7 +459,7 @@ document.addEventListener('DOMContentLoaded', function () {
     };
     var bar = el('div', 'ad-dm-bar'); bar.appendChild(cnt); bar.appendChild(sb);
     f.appendChild(ta);
-    f.appendChild(snippetBar(ta, cnt));
+    f.appendChild(snippetBar(ta, t.chr));
     f.appendChild(bar);
     p.appendChild(f);
     box.scrollTop = box.scrollHeight;
@@ -452,7 +521,7 @@ document.addEventListener('DOMContentLoaded', function () {
     p.appendChild(tb);
   }
 
-  var LOADERS = { stats: loadStats, comments: loadComments, dm: loadDM, members: loadMembers };
+  var LOADERS = { stats: loadStats, comments: loadComments, dm: loadDM, members: loadMembers, roles: loadRoles };
 
   /* ---------- 啟動：確認權限 ---------- */
   async function init() {
