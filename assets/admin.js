@@ -98,6 +98,24 @@ document.addEventListener('DOMContentLoaded', function () {
     bk.appendChild(bb); bk.appendChild(bm);
     p.appendChild(bk);
 
+    // 熱門章節：留言、書籤最多的頁面
+    p.appendChild(el('h2', 'mb-h ad-h', '熱門章節'));
+    var top = await c().rpc('admin_top_paths', { p_limit: 20 });
+    if (top.error) p.appendChild(el('p', 'mb-form-msg err', errMsg(top.error)));
+    else if (!(top.data || []).length) p.appendChild(el('p', 'mb-sub', '還沒有留言或書籤。'));
+    else {
+      var tt = el('table', 'ad-table'), th = el('tr');
+      ['篇章', '留言', '書籤'].forEach(function (h) { th.appendChild(el('th', null, h)); });
+      tt.appendChild(th);
+      top.data.forEach(function (r) {
+        var tr = el('tr'), td = el('td'), a = el('a', null, whereText(r)); a.href = r.path; td.appendChild(a); tr.appendChild(td);
+        tr.appendChild(el('td', 'num', String(r.comments || 0)));
+        tr.appendChild(el('td', 'num', String(r.marks || 0)));
+        tt.appendChild(tr);
+      });
+      p.appendChild(tt);
+    }
+
     p.appendChild(el('h2', 'mb-h ad-h', '各小說'));
     p.appendChild(el('p', 'mb-sub', '只有總數，不會列出是誰收藏或閱讀。「在讀」＝雲端書櫃裡有這本的會員數。'));
     var rows = s.novels || [];

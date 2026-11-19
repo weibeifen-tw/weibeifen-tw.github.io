@@ -701,3 +701,9 @@ html[data-theme="night"] .ib-admin{background:#3a2226;color:#f2a7b1}
 .ad-backup{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:16px 0 4px}
 .ib-del{border:0;background:none;color:var(--sub);font:inherit;font-size:13px;cursor:pointer;padding:4px 6px;white-space:nowrap}
 .ib-del:hover{color:#d93a4a}
+.cm-author{display:inline-block;margin-left:6px;padding:0 7px;border-radius:999px;background:var(--accent);color:#fff;font-size:11px;font-weight:600;line-height:18px;vertical-align:1px}
+.ib-notices{display:flex;flex-direction:column;border-bottom:1px solid var(--line);background:var(--card)}
+.ib-notices>b{padding:10px 16px 4px;font-size:13px;color:var(--sub);font-weight:600}
+.ib-notices a{display:flex;justify-content:space-between;gap:10px;padding:8px 16px;color:var(--ink);font-size:14px;text-decoration:none}
+.ib-notices a:hover{background:var(--chip)}
+.ib-notices a span{flex:none;color:#d93a4a;font-size:12px;font-weight:600}

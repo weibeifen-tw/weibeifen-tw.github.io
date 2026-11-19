@@ -249,7 +249,7 @@
 
   /* ---------- 公開留言（章節頁最下面） ---------- */
   var AU = window.WB_AUTH_CONFIG || {};
-  var CM_COLS = 'id,user_id,body,hidden,removed,created_at,profiles(display_name,username)';
+  var CM_COLS = 'id,user_id,body,hidden,removed,as_author,created_at,profiles(display_name,username)';
 
   function cmError(e) {
     var m = (e && e.message) || '';
@@ -311,6 +311,7 @@
         var item = el('div', 'cm-item' + (r.hidden || r.removed ? ' is-hidden' : ''));
         var top = el('div', 'cm-top');
         top.appendChild(el('b', 'cm-name', p.display_name || '新會員'));
+        if (r.as_author) top.appendChild(el('span', 'cm-author', '作者'));
         if (p.username) top.appendChild(el('span', 'cm-user', '@' + p.username));
         var side = el('div', 'cm-side'); side.appendChild(el('time', 'cm-time', fmtDate(r.created_at)));
         item.appendChild(top);
@@ -374,6 +375,10 @@
           rows = await fetchCommentsPublic(path);
         }
         paint(rows);
+        // 自己在這頁留過言：看到了就算讀過新回應
+        if (A && me && rows.some(function (r) { return r.user_id === me; })) {
+          A.getClient().rpc('comment_mark_read', { p_path: path }).then(function () { return dmDot(A); }).catch(function () {});
+        }
       } catch (e) {
         list.textContent = '';
         list.appendChild(el('p', 'cm-empty', '留言暫時載入不了，請稍後再試。'));
@@ -446,19 +451,22 @@
   //   讀者：有角色的新回覆
   //   管理員（這次登入已通過兩步驟驗證）：有讀者傳來、還沒讀的私訊（不算自己傳的）
   //   一般讀者的第二個查詢因為 RLS 只看得到自己的，又排除自己，所以一定是 0。
+  //   所有會員：自己留過言的頁面，之後有別人留言（comment_notices）
   async function dmDot(A) {
     var btn = document.querySelector('.chat-btn'); if (!btn) return;
     var c = A.getClient(), uid = await uidOf(c);
-    if (!uid) { btn.classList.remove('has-new'); window.WBDM.adminUnseen = 0; return; }
+    if (!uid) { btn.classList.remove('has-new'); window.WBDM.adminUnseen = 0; window.WBDM.notices = []; return; }
     var r = await Promise.all([
       c.from('dm_messages').select('id', { count: 'exact', head: true })
         .eq('user_id', uid).eq('from_char', true).eq('seen', false),
       c.from('dm_messages').select('id', { count: 'exact', head: true })
-        .neq('user_id', uid).eq('from_char', false).eq('seen', false)
+        .neq('user_id', uid).eq('from_char', false).eq('seen', false),
+      c.rpc('comment_notices')
     ]);
+    window.WBDM.notices = (!r[2].error && r[2].data) || [];
     var mine = !r[0].error && r[0].count > 0;
     window.WBDM.adminUnseen = (!r[1].error && r[1].count) || 0;
-    btn.classList.toggle('has-new', mine || window.WBDM.adminUnseen > 0);
+    btn.classList.toggle('has-new', mine || window.WBDM.adminUnseen > 0 || window.WBDM.notices.length > 0);
   }
   window.WBDM = {
     on: signedIn,
@@ -480,7 +488,8 @@
       } catch (e) { return dmError(e); }
     },
     // 看過這個角色的回覆
-    adminUnseen: 0,             // 管理員：讀者還沒讀的私訊數（dmDot 更新）
+    adminUnseen: 0,
+    notices: [],                // 自己留過言的頁面有新回應：[{path, novel, n, last_at}]             // 管理員：讀者還沒讀的私訊數（dmDot 更新）
     refresh: function () { return getAuth().then(dmDot).catch(function () {}); },
     // 刪掉自己跟這個角色的整段對話（含角色回覆）；成功回傳 null，失敗回傳錯誤訊息
     delThread: async function (chr) {

@@ -415,6 +415,15 @@ window.WBRenderShelf();
     var h = '<div class="ib-head"><b>私訊</b><button type="button" class="ib-x" aria-label="關閉">✕</button></div>';
     var au = window.WBDM && window.WBDM.adminUnseen;
     if (au > 0) h += '<a class="ib-admin" href="' + window.BASE + '/admin/#dm">讀者傳來 ' + au + ' 則未讀私訊，前往後台回覆 ›</a>';
+    var nt = (window.WBDM && window.WBDM.notices) || [];
+    if (nt.length) {
+      var byUrl = {}; Object.keys(posts || {}).forEach(function (k) { byUrl[posts[k].u] = posts[k]; });
+      h += '<div class="ib-notices"><b>你留言的地方有新回應</b>' + nt.map(function (x) {
+        var pp = byUrl[x.path], nv = novels[x.novel] || {}, t = '《' + (nv.title || x.novel) + '》' +
+          (pp ? (pp.ch ? '第 ' + pp.ch + ' 篇・' : '') + pp.t : (x.path.indexOf('/novel/') === 0 ? '介紹頁' : ''));
+        return '<a href="' + esc(x.path) + '#comments">' + esc(t) + '<span>' + x.n + ' 則新留言</span></a>';
+      }).join('') + '</div>';
+    }
     if (!ids.length) h += '<p class="ib-empty">還沒有對話。<br>' + (cloud ? '在貼文按 💬 就能私訊角色，角色會回覆你。' : '登入會員後，在貼文按 💬 就能私訊角色。') + '</p>';
     else h += '<ul class="ib-list">' + ids.map(function (c) {
       var ms = by[c], last = ms[ms.length - 1], ch = chars[c];
@@ -467,7 +476,7 @@ window.WBRenderShelf();
       try { posts = await (await fetch(window.BASE + '/assets/posts.json?v=' + window.VER)).json(); } catch (e) { posts = {}; }
     }
     cloud = null;
-    if (dm()) { try { cloud = await dm().load(); } catch (e) { cloud = null; } }
+    if (dm()) { try { var lr = await Promise.all([dm().load(), dm().refresh()]); cloud = lr[0]; } catch (e) { cloud = null; } }
     if (!box.hidden) then();
   }
   function close() { box.hidden = true; document.body.classList.remove('ib-open'); }
