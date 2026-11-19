@@ -227,9 +227,110 @@
     return res.data.role === 'admin' ? 'admin' : null;
   }
 
+  async function myUid() {
+    var s = await getClient().auth.getSession();
+    return (s.data && s.data.session && s.data.session.user && s.data.session.user.id) || null;
+  }
+
+  /* ---------- 會員公開資料（public.profiles，RLS：只能改自己的） ---------- */
+  var PROFILE_COLS = 'id,username,display_name,avatar_url,bio';
+
+  function profileError(e) {
+    if (!e) return null;
+    if (e.code === '23505') return '這個帳號名稱已經有人使用，請換一個。';
+    if (e.code === '23514') {
+      if (/username/.test(e.message || '')) return '帳號名稱只能用小寫英文、數字、底線，3～20 個字。';
+      if (/display_name/.test(e.message || '')) return '顯示名稱要 1～30 個字。';
+      if (/bio/.test(e.message || '')) return '簡介最多 200 個字。';
+      return '資料格式不符合規定。';
+    }
+    if (e.code === '42501') return '沒有權限修改這筆資料。';
+    return describeError(e);
+  }
+
+  async function getMyProfile() {
+    if (configProblem()) return { profile: null, error: configProblem() };
+    var uid = await myUid();
+    if (!uid) return { profile: null, error: null };
+    var res = await getClient().from('profiles').select(PROFILE_COLS).eq('id', uid).maybeSingle();
+    return { profile: res.data || null, error: res.error ? profileError(res.error) : null };
+  }
+
+  // 只送出允許修改的三個欄位；空字串存成 null
+  async function updateMyProfile(input) {
+    if (configProblem()) return { profile: null, error: configProblem() };
+    var uid = await myUid();
+    if (!uid) return { profile: null, error: '請先登入。' };
+    function clean(v) { v = (v == null ? '' : String(v)).trim(); return v === '' ? null : v; }
+    var patch = {
+      display_name: clean(input.display_name) || '新會員',
+      username: clean(input.username) ? clean(input.username).toLowerCase() : null,
+      bio: clean(input.bio)
+    };
+    var res = await getClient().from('profiles').update(patch).eq('id', uid).select(PROFILE_COLS).maybeSingle();
+    if (res.error) return { profile: null, error: profileError(res.error) };
+    if (!res.data) return { profile: null, error: '找不到你的會員資料，請重新登入後再試。' };
+    return { profile: res.data, error: null };
+  }
+
+  /* ---------- 管理員（資料庫端 is_admin()：admin＋已通過兩步驟驗證） ---------- */
+  async function isAdmin() {
+    if (configProblem()) return false;
+    var res = await getClient().rpc('is_admin');
+    return !res.error && res.data === true;
+  }
+
+  /* ---------- 兩步驟驗證（TOTP） ---------- */
+  // 回傳 { level: 'aal1'|'aal2', verified: [factor], error }
+  async function mfaStatus() {
+    if (configProblem()) return { level: null, verified: [], error: configProblem() };
+    var mfa = getClient().auth.mfa;
+    var a = await mfa.getAuthenticatorAssuranceLevel();
+    if (a.error) return { level: null, verified: [], error: describeError(a.error) };
+    var f = await mfa.listFactors();
+    if (f.error) return { level: null, verified: [], error: describeError(f.error) };
+    var totp = ((f.data && f.data.totp) || []).filter(function (x) { return x.status === 'verified'; });
+    return { level: a.data.currentLevel, verified: totp, error: null };
+  }
+
+  // 開始綁定：先清掉之前沒完成的綁定，再產生新的 QR code
+  async function mfaEnroll() {
+    if (configProblem()) return { error: configProblem() };
+    var mfa = getClient().auth.mfa;
+    var f = await mfa.listFactors();
+    var all = (f.data && f.data.all) || [];
+    for (var i = 0; i < all.length; i++) {
+      if (all[i].factor_type === 'totp' && all[i].status !== 'verified') {
+        try { await mfa.unenroll({ factorId: all[i].id }); } catch (e) {}
+      }
+    }
+    var res = await mfa.enroll({ factorType: 'totp', friendlyName: '未備份管理員' });
+    if (res.error) return { error: describeError(res.error) };
+    return { factorId: res.data.id, qr: res.data.totp.qr_code, secret: res.data.totp.secret, error: null };
+  }
+
+  async function mfaVerify(factorId, code) {
+    if (configProblem()) return { error: configProblem() };
+    code = String(code || '').replace(/\s/g, '');
+    if (!/^\d{6}$/.test(code)) return { error: '請輸入驗證 App 上的 6 位數字。' };
+    var res = await getClient().auth.mfa.challengeAndVerify({ factorId: factorId, code: code });
+    if (res.error) {
+      if (/invalid|code/i.test(res.error.message || '')) return { error: '驗證碼不正確或已過期，請輸入 App 上目前顯示的數字。' };
+      return { error: describeError(res.error) };
+    }
+    return { error: null };
+  }
+
   async function signOut() {
     if (configProblem()) return { error: configProblem() };
     var res = await getClient().auth.signOut({ scope: 'local' }); // 只登出這台裝置
+    return { error: res.error ? describeError(res.error) : null };
+  }
+
+  // 登出所有裝置（所有地方的登入憑證都會失效）
+  async function signOutAll() {
+    if (configProblem()) return { error: configProblem() };
+    var res = await getClient().auth.signOut({ scope: 'global' });
     return { error: res.error ? describeError(res.error) : null };
   }
 
@@ -246,6 +347,13 @@
     signInWithGoogle: signInWithGoogle,
     handleCallback: handleCallback,
     signOut: signOut,
+    signOutAll: signOutAll,
+    getMyProfile: getMyProfile,
+    updateMyProfile: updateMyProfile,
+    isAdmin: isAdmin,
+    mfaStatus: mfaStatus,
+    mfaEnroll: mfaEnroll,
+    mfaVerify: mfaVerify,
     getSession: getSession,
     getVerifiedUser: getVerifiedUser,
     getRole: getRole,
