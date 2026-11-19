@@ -2,7 +2,7 @@
 window.WBAvatar = (function () {
   var COLORS = [
     ['red', '紅', '#d0473f'], ['orange', '橘', '#d9702a'], ['yellow', '黃', '#b8901a'],
-    ['teal', '青', '#23918f'], ['blue', '藍', '#3a6fc2'], ['indigo', '靛', '#5650b5'], ['purple', '紫', '#9248ad'],
+    ['blue', '藍', '#3a6fc2'], ['indigo', '靛', '#5650b5'], ['purple', '紫', '#9248ad'],
     ['pink', '粉', '#cc4f8a'], ['brown', '棕', '#8a5a3c'], ['gray', '灰', '#666666']
   ];
   var ADMIN_ONLY = 'orange'; // 橘色只有管理員能用（資料庫也會擋）；管理員沒選時預設橘色
