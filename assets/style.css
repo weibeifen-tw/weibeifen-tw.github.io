@@ -740,3 +740,15 @@ html[data-theme="night"] .ib-admin{background:#3a2226;color:#f2a7b1}
 .mb-color[aria-checked="true"]{box-shadow:0 0 0 2px var(--ink)}
 .mb-acts.has-admin{width:100%;justify-content:flex-end}
 .mb-acts .mb-go-admin{margin-right:auto;text-decoration:none}
+/* 留言區：點頭貼或名字跳出會員小卡片 */
+.cm-who{display:inline-flex;align-items:center;gap:8px;border:0;background:none;padding:0;font:inherit;color:inherit;cursor:pointer;align-self:center}
+.cm-who:hover .cm-name{text-decoration:underline}
+.cm-card{position:absolute;z-index:35;width:240px;max-width:calc(100vw - 16px);box-sizing:border-box;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);box-shadow:0 8px 28px rgba(0,0,0,.14)}
+.cm-card-head{display:flex;align-items:center;gap:10px}
+.avatar.cm-card-av{width:44px;height:44px;font-size:19px;flex:none}
+.avatar.cm-card-av.lt-mu{font-size:14px}
+.cm-card-who{display:flex;flex-direction:column;min-width:0;line-height:1.4}
+.cm-card-who b{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.cm-card-who small{color:var(--sub);font-size:12px}
+.cm-card-bio{margin:10px 0 0;font-size:14px;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+.cm-card-bio.empty{color:var(--sub)}
