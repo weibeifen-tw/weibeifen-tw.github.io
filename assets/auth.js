@@ -201,8 +201,30 @@
   async function getVerifiedUser() {
     if (configProblem()) return { user: null, error: configProblem() };
     var res = await getClient().auth.getUser();
-    if (res.error) return { user: null, error: res.error.name === 'AuthSessionMissingError' ? null : describeError(res.error) };
+    if (res.error) {
+      var e = res.error;
+      // 沒有登入、或伺服器明確拒絕（token 失效／被撤銷）→ 視為未登入
+      if (e.name === 'AuthSessionMissingError' || e.status === 400 || e.status === 401 || e.status === 403) {
+        return { user: null, error: null, expired: e.name !== 'AuthSessionMissingError' };
+      }
+      // 其他（多半是網路問題）→ 回報錯誤，不當成登出
+      return { user: null, error: describeError(e) };
+    }
     return { user: toProfile(res.data.user), error: null };
+  }
+
+  // 讀取自己的角色（public.user_roles，受 RLS 保護：只能讀到自己那一列）。
+  // 這個結果只用來「顯示」管理員標籤；任何管理動作都必須在資料庫端用 is_admin() 檢查。
+  // 資料表還沒建立、沒有那一列、或讀取失敗 → 一律回傳 null（一般會員）。
+  async function getRole() {
+    if (configProblem()) return null;
+    var c = getClient();
+    var s = await c.auth.getSession();
+    var uid = s.data && s.data.session && s.data.session.user && s.data.session.user.id;
+    if (!uid) return null;
+    var res = await c.from('user_roles').select('role').eq('user_id', uid).maybeSingle();
+    if (res.error || !res.data) return null;
+    return res.data.role === 'admin' ? 'admin' : null;
   }
 
   async function signOut() {
@@ -226,6 +248,7 @@
     signOut: signOut,
     getSession: getSession,
     getVerifiedUser: getVerifiedUser,
+    getRole: getRole,
     onChange: onChange,
     toProfile: toProfile,
     configProblem: configProblem,
