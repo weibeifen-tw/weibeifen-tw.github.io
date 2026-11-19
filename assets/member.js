@@ -148,11 +148,12 @@
     if (role === 'admin') card.appendChild(adminBox());
 
     var acts = el('div', 'mb-acts');
+    // 只有一顆「登出」：一次登出所有裝置；靠左。儲存靠右（屬於上面的個人資料表單）
     var out = el('button', 'mb-btn mb-logout', '登出');
-    out.type = 'button'; out.onclick = logout;
-    var all = el('button', 'mb-btn mb-logout-all', '登出所有裝置');
-    all.type = 'button'; all.onclick = logoutAll;
-    acts.appendChild(out); acts.appendChild(all);
+    out.type = 'button'; out.onclick = logoutAll;
+    acts.appendChild(out);
+    var sv = card.querySelector('.mb-save');
+    if (sv) acts.appendChild(sv);
     card.appendChild(acts);
     if (future) future.hidden = false;
     paintEntries(p);
@@ -182,16 +183,19 @@
     var nameLocked = !me.author && !!prof.name_changed_at;
     var colorLocked = !me.author && !!prof.color_changed_at;
     var dnHint = el('small', 'mb-hint');
+    var dnStatic = el('p', 'mb-static');
     function paintNameHint() {
-      dnHint.textContent = (nameLocked ? '已經改過了，不能再改。' : '1～5 個字，留空會顯示「新會員」。' + (me.author ? '' : '只能改一次，存了就不能再改。')) +
-        (me.author ? '' : '頭貼會顯示名稱的第一個字。');
+      // 改過之後：輸入框和灰字都收起來，只顯示目前的名字
+      dnHint.textContent = '1～5 個字，留空會顯示「新會員」。' + (me.author ? '' : '只能改一次，存了就不能再改。頭貼會顯示名稱的第一個字。');
+      dnStatic.textContent = dn.value.trim() || '新會員';
       dn.disabled = nameLocked;
+      dn.hidden = nameLocked; dnHint.hidden = nameLocked; dnStatic.hidden = !nameLocked;
     }
     paintNameHint();
-    var dnField = field('顯示名稱', dn); dnField.appendChild(dnHint);
-    f.appendChild(dnField);
     f.appendChild(field('帳號名稱（選填）', un, '小寫英文、數字、底線，3～8 個字。首頁頭貼下面會顯示帳號名稱。'));
     f.appendChild(field('簡介（選填）', bio, '最多 30 個字'));
+    var dnField = field('顯示名稱', dn); dnField.appendChild(dnStatic); dnField.appendChild(dnHint);
+    f.appendChild(dnField);
 
     // 頭貼顏色：白底圓圈，名字第一個字（管理員是 MU）用選的顏色
     var picked = prof.avatar_color || '';
@@ -213,14 +217,19 @@
       sw.appendChild(b);
     });
     pk.appendChild(sw);
+    var pkNow = el('div', 'mb-colors mb-color-now');
+    pk.appendChild(pkNow);
     var pkHint = el('small', 'mb-hint');
     function paintColorHint() {
-      pkHint.textContent = colorLocked ? '已經選過了，不能再改。' : '選好按「儲存」。留言區和全站都會顯示這個頭貼。' + (me.author ? '' : '只能選一次。');
-      sw.classList.toggle('locked', colorLocked);
+      // 選過之後：色票和灰字都收起來，只顯示目前的顏色
+      pkHint.textContent = '選好按「儲存」。留言區和全站都會顯示這個頭貼。' + (me.author ? '' : '只能選一次。');
       sw.querySelectorAll('.mb-color').forEach(function (x) { x.disabled = colorLocked; });
+      sw.hidden = colorLocked; pkHint.hidden = colorLocked; pkNow.hidden = !colorLocked;
+      pkNow.textContent = '';
+      if (colorLocked && window.WBAvatar) pkNow.appendChild(window.WBAvatar.make({ name: dn.value.trim() || '新會員', color: picked || null, id: me.id, author: me.author }));
     }
     pk.appendChild(pkHint);
-    f.insertBefore(pk, un.parentNode); // 放在顯示名稱下面
+    f.appendChild(pk); // 放在顯示名稱下面
     paintColorHint();
     dn.addEventListener('input', function () {
       preview();
@@ -228,8 +237,9 @@
     });
 
     var msg = el('p', 'mb-form-msg'); msg.hidden = true;
-    var save = el('button', 'mb-btn primary', '儲存');
+    var save = el('button', 'mb-btn primary mb-save', '儲存');
     save.type = 'submit';
+    f.id = 'mb-profile-form'; save.setAttribute('form', f.id); // 按鈕移到最下面那排也能送出這個表單
     f.appendChild(save); f.appendChild(msg);
 
     function say(t, err) { msg.textContent = t; msg.hidden = !t; msg.classList.toggle('err', !!err); }
@@ -376,7 +386,7 @@
     if (busy || !A) return;
     if (!window.confirm('要登出所有裝置嗎？手機、電腦等所有登入過的地方都要重新登入。')) return;
     busy = true;
-    var b = card.querySelector('.mb-logout-all'); if (b) b.disabled = true;
+    var b = card.querySelector('.mb-logout'); if (b) b.disabled = true;
     var r = await A.signOutAll();
     busy = false;
     if (r.error) { setNote(r.error, true); if (b) b.disabled = false; return; }
