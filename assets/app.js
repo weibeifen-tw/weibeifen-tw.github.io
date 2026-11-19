@@ -555,6 +555,14 @@ window.WBRenderShelf();
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !box.hidden) close(); });
 })();
 
+// 首頁頭像列：每次打開隨機排序（最左邊「我的帳號」固定不動）
+(function () {
+  var s = document.querySelector('.stories'); if (!s) return;
+  var bs = Array.prototype.slice.call(s.children).filter(function (e) { return e.classList.contains('story'); });
+  for (var i = bs.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = bs[i]; bs[i] = bs[j]; bs[j] = t; }
+  bs.forEach(function (b) { s.appendChild(b); });
+})();
+
 // 首頁頭像列：點了跳出角色卡片
 (function () {
   var layer = document.querySelector('.st-layer'); if (!layer) return;
