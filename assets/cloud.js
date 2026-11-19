@@ -445,14 +445,15 @@
     function memberForm() {
       formWrap.textContent = '';
       var f = el('form', 'cm-form');
-      var ta = el('textarea'); ta.maxLength = 500; ta.rows = 3; ta.placeholder = '留言會公開給所有人看，請友善發言。';
+      var ta = el('textarea'); ta.maxLength = 500; ta.rows = 3; ta.placeholder = '留言會公開給所有人看，請友善發言。講髒話、罵人或騷擾，帳號會被封鎖。';
       var row = el('div', 'cm-row');
       var cnt = el('small', 'cm-cnt', '0 / 500');
       var b = el('button', 'cm-send', '送出'); b.type = 'submit';
       var msg = el('p', 'mb-form-msg err'); msg.hidden = true;
       ta.oninput = function () { cnt.textContent = ta.value.length + ' / 500'; };
       row.appendChild(cnt); row.appendChild(b);
-      f.appendChild(ta); f.appendChild(row); f.appendChild(msg);
+      var warn = el('p', 'cm-warn', '⚠️ 講髒話、罵人或騷擾，留言會被刪除，帳號會被封鎖。');
+      f.appendChild(warn); f.appendChild(ta); f.appendChild(row); f.appendChild(msg);
       f.onsubmit = async function (ev) {
         ev.preventDefault();
         var body = ta.value.trim();
