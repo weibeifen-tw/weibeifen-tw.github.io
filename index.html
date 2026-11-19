@@ -5,6 +5,7 @@ layout: default
 <section id="profile" class="profile" hidden></section>
 <div class="home-top">
 <div class="stories" aria-label="小說">
+{% include member-story.html %}
 {%- for nv in site.data.novels -%}
   {%- assign leads = "" | split: "" -%}
   {%- for ch in site.data.characters -%}{%- if ch[1].novel == nv[0] and leads.size < 2 -%}{%- assign leads = leads | push: ch[1] -%}{%- endif -%}{%- endfor -%}
@@ -32,10 +33,10 @@ layout: default
 <div class="st-layer" hidden><div class="st-card" role="dialog" aria-modal="true"><button type="button" class="st-x" aria-label="關閉">✕</button><div class="st-in"></div></div></div>
 <article class="thread intro-post pinned-ig" data-char="mu">
   <div class="t-head">
-    <span class="avatar ig-av" style="--c:#d97a3a"><img src="{{ '/assets/img/logo.webp' | relative_url }}" alt=""></span>
-    <div class="t-who"><div class="meta"><span class="name">weibe.ifen</span><span class="pin-tag">📌 置頂</span></div><span class="time">未備份</span></div>
+    <a class="avatar ig-av" style="--c:#d97a3a" href="{{ '/about/' | relative_url }}" aria-label="關於畝 MU"><img src="{{ '/assets/img/logo.webp' | relative_url }}" alt=""></a>
+    <div class="t-who"><div class="meta"><a class="name" href="{{ '/about/' | relative_url }}">weibe.ifen</a><span class="pin-tag">📌 置頂</span></div><span class="time">未備份</span></div>
   </div>
-  <div class="ip-one"><img src="{{ '/assets/img/pin-mu.webp' | relative_url }}" alt="畝 MU 和未婚妻，抱著米漿和米果，在夕陽的海邊" decoding="async"></div>
+  <a class="ip-one" href="{{ '/about/' | relative_url }}"><img src="{{ '/assets/img/pin-mu.webp' | relative_url }}" alt="畝 MU 和未婚妻，抱著米漿和米果，在夕陽的海邊" decoding="async"></a>
   {% capture u %}{{ '/' | relative_url }}{% endcapture %}{% include actions.html key="pin" url=u norepost=true %}
   <div class="ip-text">
     <p><b class="ig-name">weibe.ifen</b> 嗨，我是畝 MU，好奇心很重。</p>

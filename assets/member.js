@@ -75,6 +75,8 @@
   paintEntries(localProfile());
   // 從別的分頁登入／登出時同步
   window.addEventListener('storage', function (e) { if (e.key === SESSION_KEY) paintEntries(localProfile()); });
+  // 用「上一頁」回到頁面時，瀏覽器可能從快取（BFCache）還原、不重跑程式：重新讀取本機登入資料更新頭像
+  window.addEventListener('pageshow', function (e) { if (e.persisted) paintEntries(localProfile()); });
 
   /* ---------------- /member/ 會員頁 ---------------- */
   var page = document.querySelector('.member-page');

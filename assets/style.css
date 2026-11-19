@@ -568,3 +568,15 @@ button.search-btn{border:0;background:none;cursor:pointer}
 .mb-soon li{display:flex;align-items:baseline;padding:12px 4px;border-top:1px solid var(--line);color:var(--sub);font-size:16px}
 .mb-soon li:first-child{border-top:0}
 .mb-soon small{margin-left:auto;font-size:12px}
+
+/* ===== 4-2 會員入口：首頁限動列「我的帳號」、左側選單「我的帳號」===== */
+/* .account-story 數值與 .story（約第 393–395 行）相同；調整小說限動尺寸時請一併修改 */
+.account-story{flex:none;width:68px;display:flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;color:var(--ink);-webkit-user-drag:none}
+.account-story .avatar{--c:#c9c3b9;width:62px;height:62px;font-size:22px;box-shadow:0 0 0 2px var(--bg,#fff),0 0 0 4px var(--c)}
+.account-story.signed-in .avatar{--c:var(--accent)}
+.account-story .s-t{font-size:13px;line-height:1.2;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.account-story img{-webkit-user-drag:none}
+/* 抽屜：「我的帳號」推到底部，糖果緊接在下（只保留一個 margin-top:auto） */
+.d-account{margin-top:auto}
+.d-account + .d-candy{margin-top:12px}
+.d-av{width:28px;height:28px;font-size:12px;--c:#c9c3b9}
