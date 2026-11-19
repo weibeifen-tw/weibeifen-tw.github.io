@@ -767,3 +767,8 @@ html[data-theme="night"] .ib-admin{background:#3a2226;color:#f2a7b1}
 .fav-group[open] summary::before{transform:rotate(90deg)}
 .fav-group summary small{margin-left:auto;color:var(--sub);font-size:12px}
 .fav-group .fav-item{padding-left:22px}
+/* 左邊選單：我的書櫃／收藏／留言 */
+.d-item[hidden]{display:none}
+.d-mine{margin-top:14px}
+.mb-guest a{margin-left:6px;color:var(--accent);font-weight:600}
+.account-story .s-t{max-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
