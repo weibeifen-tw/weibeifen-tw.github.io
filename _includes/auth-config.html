@@ -1,0 +1,17 @@
+{%- comment -%}
+  會員登入共用設定（Supabase Auth，Google OAuth，PKCE 流程）。
+  只能放「前端可公開」的 Publishable Key（sb_publishable_ 開頭）。
+  絕對不要放 Secret Key（sb_secret_）、service_role 或 Google Client Secret。
+  auth.js 啟動時也會檢查，若偵測到私密金鑰會拒絕運作。
+  SDK 版本固定為 2.119.2，並用 SRI 雜湊確認檔案內容沒被竄改。
+{%- endcomment -%}
+<script>
+window.WB_AUTH_CONFIG = {
+  supabaseUrl: "https://tqicconarhpddejxdvmf.supabase.co",
+  publishableKey: "sb_publishable_7JzzTIqK9DO8uVMVZz6tJg_9Mmu6osl",
+  siteOrigin: "https://weibeifen.com",
+  callbackPath: "/auth/callback/"
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2/dist/umd/supabase.js" integrity="sha384-A97u3Qnt9GZHURO9YJZRe7VQgGUeFzcv6I1oIGnUTxQrCxnpQMwR0/G8F2zt9abZ" crossorigin="anonymous"></script>
+<script src="{{ '/assets/auth.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>
