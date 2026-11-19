@@ -171,8 +171,8 @@
   function profileForm(prof, me, headAv) {
     var f = el('form', 'mb-form');
     f.noValidate = true;
-    f.appendChild(el('h2', 'mb-h', '個人資料'));
-    f.appendChild(el('p', 'mb-sub', '以下資料所有人都看得到，請不要填真實姓名或聯絡方式。'));
+    var fH = el('h2', 'mb-h', '個人資料'); f.appendChild(fH);
+    var fSub = el('p', 'mb-sub', '以下資料所有人都看得到，請不要填真實姓名或聯絡方式。'); f.appendChild(fSub);
 
     var dn = el('input'); dn.name = 'display_name'; dn.maxLength = 5; dn.value = prof.display_name || ''; dn.autocomplete = 'off';
     var un = el('input'); un.name = 'username'; un.maxLength = 8; un.value = prof.username || ''; un.autocomplete = 'off';
@@ -182,6 +182,7 @@
     // 讀者的顯示名稱、頭貼顏色只能各改一次（資料庫也會擋）；管理員不限
     var nameLocked = !me.author && !!prof.name_changed_at;
     var colorLocked = !me.author && !!prof.color_changed_at;
+    var userLocked = !me.author && !!prof.username_changed_at;
     var dnHint = el('small', 'mb-hint');
     var dnStatic = el('p', 'mb-static');
     function paintNameHint() {
@@ -229,8 +230,19 @@
     }
     pk.appendChild(pkHint);
     f.appendChild(pk); // 放在顯示名稱下面
-    f.appendChild(field('帳號名稱（選填）', un, '小寫英文、數字、底線，3～8 個字。首頁頭貼下面會顯示帳號名稱。'));
-    f.appendChild(field('簡介（選填）', bio, '最多 30 個字'));
+    var unField = field('帳號名稱（選填）', un, '小寫英文、數字、底線，3～8 個字。首頁頭貼下面會顯示帳號名稱。' + (me.author ? '' : '只能改一次，存了就不能再改。'));
+    f.appendChild(unField);
+    var bioField = field('簡介（選填）', bio, '最多 30 個字');
+    f.appendChild(bioField);
+    // 名稱、顏色、帳號名稱都改過之後：上面卡片已經有名字、頭貼、@帳號，這區只留「簡介」
+    function paintLocks() {
+      unField.hidden = userLocked;
+      var all = nameLocked && colorLocked && userLocked;
+      dnField.hidden = all; pk.hidden = all; fSub.hidden = all;
+      fH.textContent = all ? '簡介' : '個人資料';
+      bioField.querySelector('.mb-lbl').hidden = all;
+    }
+    paintLocks();
     paintColorHint();
     dn.addEventListener('input', function () {
       preview();
@@ -254,8 +266,11 @@
       var newName = dn.value.trim() || '新會員', oldName = prof.display_name || '新會員';
       var nameChg = !nameLocked && !me.author && newName !== oldName;
       var colorChg = !colorLocked && !me.author && (picked || null) !== (prof.avatar_color || null);
-      if (nameChg || colorChg) {
-        var what = nameChg && colorChg ? '顯示名稱和頭貼顏色' : nameChg ? '顯示名稱' : '頭貼顏色';
+      var userChg = !userLocked && !me.author && (u || null) !== (prof.username || null);
+      if (nameChg || colorChg || userChg) {
+        var parts = [];
+        if (nameChg) parts.push('顯示名稱'); if (colorChg) parts.push('頭貼顏色'); if (userChg) parts.push('帳號名稱');
+        var what = parts.join('、');
         if (!window.confirm(what + '只能改一次，存了之後就不能再改。確定要儲存嗎？')) return;
       }
       save.disabled = true; say('儲存中…');
@@ -270,8 +285,10 @@
       me.name = r.profile.display_name || '新會員'; me.color = r.profile.avatar_color || null; me.username = r.profile.username || '';
       prof.display_name = r.profile.display_name; prof.avatar_color = r.profile.avatar_color;
       prof.name_changed_at = r.profile.name_changed_at; prof.color_changed_at = r.profile.color_changed_at;
+      prof.username = r.profile.username; prof.username_changed_at = r.profile.username_changed_at;
       nameLocked = !me.author && !!prof.name_changed_at; colorLocked = !me.author && !!prof.color_changed_at;
-      paintNameHint(); paintColorHint();
+      userLocked = !me.author && !!prof.username_changed_at;
+      paintNameHint(); paintColorHint(); paintLocks();
       saveMyAvatar(me); preview(); paintEntries(me);
       say('已儲存。');
     };
