@@ -126,9 +126,9 @@ document.addEventListener('DOMContentLoaded', function () {
     var reports = {};
     (rep.data || []).forEach(function (r) { (reports[r.comment_id] = reports[r.comment_id] || []).push(r); });
 
-    var q = c().from('comments').select('id,user_id,novel,path,body,hidden,created_at,profiles(display_name,username)')
+    var q = c().from('comments').select('id,user_id,novel,path,body,hidden,removed,created_at,profiles(display_name,username)')
       .order('created_at', { ascending: false }).limit(100);
-    if (cmFilter === 'hidden') q = q.eq('hidden', true);
+    if (cmFilter === 'hidden') q = q.or('hidden.eq.true,removed.eq.true');
     if (cmNovel) q = q.eq('novel', cmNovel);
     if (cmFilter === 'reported') {
       var ids = Object.keys(reports).map(Number);
@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     res.data.forEach(function (r) {
       var pr = r.profiles || {};
-      var item = el('div', 'cm-item' + (r.hidden ? ' is-hidden' : ''));
+      var item = el('div', 'cm-item' + (r.hidden || r.removed ? ' is-hidden' : ''));
       var top = el('div', 'cm-top');
       top.appendChild(el('b', 'cm-name', pr.display_name || '新會員'));
       if (pr.username) top.appendChild(el('span', 'cm-user', '@' + pr.username));
@@ -151,7 +151,8 @@ document.addEventListener('DOMContentLoaded', function () {
       var where = el('a', 'ad-where', whereText(r));
       where.href = r.path + '#comments';
       item.appendChild(where);
-      if (r.hidden) item.appendChild(el('p', 'cm-note', '已隱藏（只有作者和管理員看得到）'));
+      if (r.removed) item.appendChild(el('p', 'cm-note', '已被管理員刪除（讀者和作者都看不到）'));
+      else if (r.hidden) item.appendChild(el('p', 'cm-note', '因檢舉而隱藏（只有作者和管理員看得到）'));
       item.appendChild(el('p', 'cm-body', r.body));
       var rs = reports[r.id] || [];
       if (rs.length) {
@@ -171,12 +172,16 @@ document.addEventListener('DOMContentLoaded', function () {
         };
         acts.appendChild(b);
       }
-      btn('刪除', async function () {
-        if (!window.confirm('確定要刪除這則留言嗎？刪除後無法復原。')) return 'cancel';
-        return (await c().from('comments').delete().eq('id', r.id)).error;
+      if (!r.removed) btn('刪除', async function () {
+        if (!window.confirm('確定要刪除嗎？讀者會看不到，之後在「已隱藏」還找得到。')) return 'cancel';
+        return (await c().from('comments').update({ removed: true }).eq('id', r.id)).error;
       });
-      if (r.hidden) btn('恢復顯示', async function () {
-        return (await c().from('comments').update({ hidden: false }).eq('id', r.id)).error;
+      if (r.hidden || r.removed) btn('恢復顯示', async function () {
+        return (await c().from('comments').update({ hidden: false, removed: false }).eq('id', r.id)).error;
+      });
+      if (r.removed) btn('永久刪除', async function () {
+        if (!window.confirm('永久刪除後無法復原，確定嗎？')) return 'cancel';
+        return (await c().from('comments').delete().eq('id', r.id)).error;
       });
       if (rs.length) btn('清除檢舉', async function () {
         return (await c().from('comment_reports').delete().eq('comment_id', r.id)).error;
