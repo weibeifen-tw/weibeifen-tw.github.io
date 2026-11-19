@@ -595,6 +595,27 @@ button.search-btn{border:0;background:none;cursor:pointer}
 .fav-item a{flex:1;color:inherit;text-decoration:none;word-break:break-all}
 .fav-item small{color:var(--sub);font-size:12px;white-space:nowrap}
 .fav-del{font:inherit;font-size:12px;padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:none;color:var(--sub);cursor:pointer}
+.cm{margin:32px 0 0;padding-top:20px;border-top:1px solid var(--line);text-align:left}
+.cm-h{margin:0 0 12px;font-family:"Noto Serif TC",serif;font-size:20px;font-weight:600}
+.cm-n{font-size:15px;color:var(--sub);font-weight:400}
+.cm-form textarea{font:inherit;font-size:16px;width:100%;box-sizing:border-box;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);resize:vertical}
+.cm-row{display:flex;align-items:center;justify-content:flex-end;gap:12px;margin-top:8px}
+.cm-cnt{color:var(--sub);font-size:12px}
+.cm-send{font:inherit;font-size:14px;padding:7px 20px;border-radius:999px;border:1px solid var(--ink);background:var(--ink);color:var(--card);cursor:pointer}
+.cm-send:disabled,.cm-btn:disabled{opacity:.5;cursor:default}
+.cm-login{font-size:14px;color:var(--sub)}
+.cm-login a{margin-left:8px;color:inherit}
+.cm-list{margin-top:16px}
+.cm-empty{color:var(--sub);font-size:14px}
+.cm-item{padding:14px 2px;border-top:1px solid var(--line)}
+.cm-item.is-hidden{opacity:.6}
+.cm-top{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px;font-size:14px}
+.cm-user,.cm-time{color:var(--sub);font-size:12px}
+.cm-time{margin-left:auto}
+.cm-note{margin:4px 0 0;font-size:12px;color:#b0472b}
+.cm-body{margin:6px 0 0;font-size:15px;line-height:1.8;white-space:pre-wrap;word-break:break-word}
+.cm-acts{display:flex;gap:8px;margin-top:6px}
+.cm-btn{font:inherit;font-size:12px;padding:2px 10px;border:1px solid var(--line);border-radius:999px;background:none;color:var(--sub);cursor:pointer}
 
 /* ===== 4-2 會員入口：首頁限動列「我的帳號」、左側選單「我的帳號」===== */
 /* .account-story 數值與 .story（約第 393–395 行）相同；調整小說限動尺寸時請一併修改 */

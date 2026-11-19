@@ -8,6 +8,7 @@
  *    同一本（或同一個角色線）以「讀得比較後面」的為準；章數一樣時以比較新的為準。
  *    其他本機資料（字級、夜間模式、捲動位置、讀完標記、私訊）完全不動。
  * 2. 收藏：小說介紹頁可收藏整本，章節頁可加書籤；會員頁列出「我的收藏」。
+ * 3. 公開留言：章節頁最下面。訪客也看得到（直接用可公開金鑰讀，不載入 SDK），會員才能留言。
  *
  * 權限由 Supabase RLS 在伺服器端把關：每個人只能讀寫自己的資料。
  * 所有資料一律用 textContent 寫入，不使用 innerHTML。
@@ -243,6 +244,176 @@
       favList.appendChild(item);
     });
   }
+
+  /* ---------- 公開留言（章節頁最下面） ---------- */
+  var AU = window.WB_AUTH_CONFIG || {};
+  var CM_COLS = 'id,user_id,body,hidden,created_at,profiles(display_name,username)';
+
+  function cmError(e) {
+    var m = (e && e.message) || '';
+    if (/WB_TOO_FAST/.test(m)) return '留言太快了，請等 15 秒再試。';
+    if (/WB_TOO_MANY/.test(m)) return '這一小時留言太多次了，請晚點再來。';
+    if (/WB_LOGIN_REQUIRED/.test(m)) return '請先登入會員。';
+    if (e && e.code === '23514') return '留言要 1～500 個字。';
+    if (e && e.code === '23505') return '你已經檢舉過這則留言了。';
+    return errText('沒有成功，請稍後再試。', e);
+  }
+
+  // 訪客：不載入 SDK，直接用可公開的金鑰讀留言
+  async function fetchCommentsPublic(path) {
+    var u = AU.supabaseUrl + '/rest/v1/comments?select=' + encodeURIComponent(CM_COLS) +
+      '&path=eq.' + encodeURIComponent(path) + '&order=created_at.asc&limit=300';
+    var r = await fetch(u, { headers: { apikey: AU.publishableKey } });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  }
+
+  function fmtDate(iso) {
+    var d = new Date(iso);
+    return d.getFullYear() + '/' + (d.getMonth() + 1) + '/' + d.getDate() + ' ' +
+      String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+  }
+
+  function setTalkCount(n) {
+    if (!sec) return;
+    sec.querySelectorAll('.actions .talk .n').forEach(function (x) { x.textContent = n ? String(n) : ''; });
+  }
+
+  function initComments() {
+    if (!sec || !sec.dataset.novel || !AU.supabaseUrl) return;
+    var path = location.pathname;
+    var box = el('section', 'cm'); box.id = 'comments';
+    var h = el('h2', 'cm-h', '留言'); var hn = el('span', 'cm-n'); h.appendChild(hn);
+    box.appendChild(h);
+    var formWrap = el('div', 'cm-form-wrap');
+    var list = el('div', 'cm-list'); list.appendChild(el('p', 'cm-empty', '載入留言中…'));
+    box.appendChild(formWrap); box.appendChild(list);
+    sec.appendChild(box);
+
+    var me = null, admin = false, A = null;
+
+    function paint(rows) {
+      list.textContent = '';
+      var shown = rows.filter(function (r) { return !r.hidden; }).length;
+      hn.textContent = shown ? '（' + shown + '）' : '';
+      setTalkCount(shown);
+      if (!rows.length) { list.appendChild(el('p', 'cm-empty', '還沒有留言，來當第一個吧。')); return; }
+      rows.forEach(function (r) {
+        var p = r.profiles || {};
+        var item = el('div', 'cm-item' + (r.hidden ? ' is-hidden' : ''));
+        var top = el('div', 'cm-top');
+        top.appendChild(el('b', 'cm-name', p.display_name || '新會員'));
+        if (p.username) top.appendChild(el('span', 'cm-user', '@' + p.username));
+        top.appendChild(el('time', 'cm-time', fmtDate(r.created_at)));
+        item.appendChild(top);
+        if (r.hidden) item.appendChild(el('p', 'cm-note', '這則留言因為被檢舉，目前只有作者和管理員看得到。'));
+        item.appendChild(el('p', 'cm-body', r.body));
+        if (me) {
+          var acts = el('div', 'cm-acts');
+          if (r.user_id === me || admin) {
+            var del = el('button', 'cm-btn', r.user_id === me ? '刪除' : '刪除（管理員）'); del.type = 'button';
+            del.onclick = async function () {
+              if (!window.confirm('確定要刪除這則留言嗎？')) return;
+              del.disabled = true;
+              var res = await A.getClient().from('comments').delete().eq('id', r.id);
+              if (res.error) { del.disabled = false; window.alert(cmError(res.error)); return; }
+              load();
+            };
+            acts.appendChild(del);
+          }
+          if (admin && r.hidden) {
+            var un = el('button', 'cm-btn', '恢復顯示'); un.type = 'button';
+            un.onclick = async function () {
+              un.disabled = true;
+              var res = await A.getClient().from('comments').update({ hidden: false }).eq('id', r.id);
+              if (res.error) { un.disabled = false; window.alert(cmError(res.error)); return; }
+              load();
+            };
+            acts.appendChild(un);
+          }
+          if (r.user_id !== me) {
+            var rep = el('button', 'cm-btn', '檢舉'); rep.type = 'button';
+            rep.onclick = async function () {
+              var why = window.prompt('檢舉原因（選填，最多 200 字）：', '');
+              if (why === null) return;
+              rep.disabled = true;
+              var res = await A.getClient().from('comment_reports').insert({ comment_id: r.id, reason: why.trim().slice(0, 200) || null });
+              if (res.error) { rep.disabled = false; window.alert(cmError(res.error)); return; }
+              rep.textContent = '已檢舉';
+            };
+            acts.appendChild(rep);
+          }
+          item.appendChild(acts);
+        }
+        list.appendChild(item);
+      });
+    }
+
+    async function load() {
+      try {
+        var rows;
+        if (A) {
+          var res = await A.getClient().from('comments').select(CM_COLS).eq('path', path).order('created_at', { ascending: true }).limit(300);
+          if (res.error) throw res.error;
+          rows = res.data || [];
+        } else {
+          rows = await fetchCommentsPublic(path);
+        }
+        paint(rows);
+      } catch (e) {
+        list.textContent = '';
+        list.appendChild(el('p', 'cm-empty', '留言暫時載入不了，請稍後再試。'));
+      }
+    }
+
+    function guestForm() {
+      formWrap.textContent = '';
+      var p = el('p', 'cm-login');
+      p.appendChild(document.createTextNode('登入會員後就能留言。'));
+      var a = el('a', null, '前往登入'); a.href = BASE + '/member/';
+      p.appendChild(a);
+      formWrap.appendChild(p);
+    }
+
+    function memberForm() {
+      formWrap.textContent = '';
+      var f = el('form', 'cm-form');
+      var ta = el('textarea'); ta.maxLength = 500; ta.rows = 3; ta.placeholder = '留言會公開給所有人看，請友善發言。';
+      var row = el('div', 'cm-row');
+      var cnt = el('small', 'cm-cnt', '0 / 500');
+      var b = el('button', 'cm-send', '送出'); b.type = 'submit';
+      var msg = el('p', 'mb-form-msg err'); msg.hidden = true;
+      ta.oninput = function () { cnt.textContent = ta.value.length + ' / 500'; };
+      row.appendChild(cnt); row.appendChild(b);
+      f.appendChild(ta); f.appendChild(row); f.appendChild(msg);
+      f.onsubmit = async function (ev) {
+        ev.preventDefault();
+        var body = ta.value.trim();
+        if (!body) { msg.textContent = '請先寫點什麼。'; msg.hidden = false; return; }
+        b.disabled = true; msg.hidden = true;
+        var res;
+        try { res = await A.getClient().from('comments').insert({ novel: sec.dataset.novel, path: path, body: body }); }
+        catch (e) { res = { error: { message: '連不上會員伺服器' } }; }
+        b.disabled = false;
+        if (res.error) { msg.textContent = cmError(res.error); msg.hidden = false; return; }
+        ta.value = ''; cnt.textContent = '0 / 500';
+        load();
+      };
+      formWrap.appendChild(f);
+    }
+
+    if (!signedIn()) { guestForm(); load(); return; }
+    formWrap.appendChild(el('p', 'cm-empty', '…'));
+    getAuth().then(async function (auth) {
+      A = auth;
+      me = await uidOf(A.getClient());
+      try { admin = await A.isAdmin(); } catch (e) {}
+      if (me) memberForm(); else { A = null; guestForm(); }
+      load();
+    }).catch(function () { guestForm(); load(); });
+  }
+
+  initComments();
 
   /* ---------- 啟動 ---------- */
   if (!signedIn()) { if (favBox) favBox.hidden = true; return; }
