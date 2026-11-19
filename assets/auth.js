@@ -241,7 +241,7 @@
     if (e.code === '23514') {
       if (/username/.test(e.message || '')) return '帳號名稱只能用小寫英文、數字、底線，3～20 個字。';
       if (/display_name/.test(e.message || '')) return '顯示名稱要 1～30 個字。';
-      if (/bio/.test(e.message || '')) return '簡介最多 200 個字。';
+      if (/bio/.test(e.message || '')) return '簡介最多 30 個字。';
       return '資料格式不符合規定。';
     }
     if (e.code === '42501') return '沒有權限修改這筆資料。';

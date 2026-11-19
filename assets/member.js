@@ -172,11 +172,11 @@
     var dn = el('input'); dn.name = 'display_name'; dn.maxLength = 30; dn.value = prof.display_name || ''; dn.autocomplete = 'off';
     var un = el('input'); un.name = 'username'; un.maxLength = 20; un.value = prof.username || ''; un.autocomplete = 'off';
     un.setAttribute('autocapitalize', 'off'); un.spellcheck = false;
-    var bio = el('textarea'); bio.name = 'bio'; bio.maxLength = 200; bio.rows = 3; bio.value = prof.bio || '';
+    var bio = el('textarea'); bio.name = 'bio'; bio.maxLength = 30; bio.rows = 2; bio.value = prof.bio || '';
 
     f.appendChild(field('顯示名稱', dn, '1～30 個字，留空會顯示「新會員」'));
     f.appendChild(field('帳號名稱（選填）', un, '小寫英文、數字、底線，3～20 個字'));
-    f.appendChild(field('簡介（選填）', bio, '最多 200 個字'));
+    f.appendChild(field('簡介（選填）', bio, '最多 30 個字'));
 
     // 頭貼顏色：白底圓圈，名字第一個字（管理員是 MU）用選的顏色
     var picked = prof.avatar_color || '';
