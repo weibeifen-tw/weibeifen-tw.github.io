@@ -698,3 +698,4 @@ body.roles-only .cm-intro{display:none}
 .ib-admin{display:block;padding:10px 16px;border-bottom:1px solid var(--line);background:#fdecee;color:#b3263a;font-size:14px;font-weight:600;text-decoration:none}
 .ib-admin:hover{text-decoration:underline}
 html[data-theme="night"] .ib-admin{background:#3a2226;color:#f2a7b1}
+.ad-backup{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:16px 0 4px}

@@ -75,6 +75,29 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     p.appendChild(grid);
 
+    // 備份：下載全部資料（JSON）
+    var bk = el('div', 'ad-backup');
+    var bb = el('button', 'cm-btn on', '匯出全部資料'); bb.type = 'button';
+    var bm = el('small', 'mb-sub', '會員公開資料、收藏、閱讀進度、留言、檢舉、私訊。不含 email。建議每週下載一次存起來。');
+    bb.onclick = async function () {
+      bb.disabled = true; bb.textContent = '匯出中…';
+      var r = await c().rpc('admin_export');
+      bb.disabled = false; bb.textContent = '匯出全部資料';
+      if (r.error) { window.alert(errMsg(r.error)); return; }
+      var d = new Date(), stamp = d.getFullYear() + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0') +
+        '-' + String(d.getHours()).padStart(2, '0') + String(d.getMinutes()).padStart(2, '0');
+      var blob = new Blob([JSON.stringify(r.data, null, 2)], { type: 'application/json' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob); a.download = 'weibeifen-backup-' + stamp + '.json';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+      var x = r.data || {}, n = function (k) { return (x[k] || []).length; };
+      bm.textContent = '已下載：會員 ' + n('profiles') + '、收藏 ' + n('favorites') + '、閱讀進度 ' + n('reading_progress') +
+        '、留言 ' + n('comments') + '、檢舉 ' + n('comment_reports') + '、私訊 ' + n('dm_messages') + '。';
+    };
+    bk.appendChild(bb); bk.appendChild(bm);
+    p.appendChild(bk);
+
     p.appendChild(el('h2', 'mb-h ad-h', '各小說'));
     p.appendChild(el('p', 'mb-sub', '只有總數，不會列出是誰收藏或閱讀。「在讀」＝雲端書櫃裡有這本的會員數。'));
     var rows = s.novels || [];
