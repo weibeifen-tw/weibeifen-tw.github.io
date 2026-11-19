@@ -248,7 +248,7 @@
 
   /* ---------- 公開留言（章節頁最下面） ---------- */
   var AU = window.WB_AUTH_CONFIG || {};
-  var CM_COLS = 'id,user_id,body,hidden,created_at,profiles(display_name,username)';
+  var CM_COLS = 'id,user_id,body,hidden,removed,created_at,profiles(display_name,username)';
 
   function cmError(e) {
     var m = (e && e.message) || '';
@@ -301,38 +301,43 @@
 
     function paint(rows) {
       list.textContent = '';
-      var shown = rows.filter(function (r) { return !r.hidden; }).length;
+      var shown = rows.filter(function (r) { return !r.hidden && !r.removed; }).length;
       hn.textContent = shown ? '（' + shown + '）' : '';
       setTalkCount(shown);
       if (!rows.length) { list.appendChild(el('p', 'cm-empty', '還沒有留言，來當第一個吧。')); return; }
       rows.forEach(function (r) {
         var p = r.profiles || {};
-        var item = el('div', 'cm-item' + (r.hidden ? ' is-hidden' : ''));
+        var item = el('div', 'cm-item' + (r.hidden || r.removed ? ' is-hidden' : ''));
         var top = el('div', 'cm-top');
         top.appendChild(el('b', 'cm-name', p.display_name || '新會員'));
         if (p.username) top.appendChild(el('span', 'cm-user', '@' + p.username));
         var side = el('div', 'cm-side'); side.appendChild(el('time', 'cm-time', fmtDate(r.created_at))); top.appendChild(side);
         item.appendChild(top);
-        if (r.hidden) item.appendChild(el('p', 'cm-note', '這則留言因為被檢舉，目前只有作者和管理員看得到。'));
+        if (r.removed) item.appendChild(el('p', 'cm-note', '已被管理員刪除，只有管理員看得到。'));
+        else if (r.hidden) item.appendChild(el('p', 'cm-note', '這則留言因為被檢舉，目前只有作者和管理員看得到。'));
         item.appendChild(el('p', 'cm-body', r.body));
         if (me) {
           var acts = el('div', 'cm-acts');
-          if (r.user_id === me || admin) {
-            var del = el('button', 'cm-btn', r.user_id === me ? '刪除' : '刪除（管理員）'); del.type = 'button';
+          if (r.user_id === me || (admin && !r.removed)) {
+            var own = r.user_id === me;
+            var del = el('button', 'cm-btn', own ? '刪除' : '刪除（管理員）'); del.type = 'button';
             del.onclick = async function () {
-              if (!window.confirm('確定要刪除這則留言嗎？')) return;
+              if (!window.confirm(own ? '確定要刪除這則留言嗎？' : '確定要刪除嗎？讀者會看不到，但後台「已隱藏」還找得到。')) return;
               del.disabled = true;
-              var res = await A.getClient().from('comments').delete().eq('id', r.id);
+              // 自己的留言：真的刪除；管理員刪別人的：移除（後台保留）
+              var res = own
+                ? await A.getClient().from('comments').delete().eq('id', r.id)
+                : await A.getClient().from('comments').update({ removed: true }).eq('id', r.id);
               if (res.error) { del.disabled = false; window.alert(cmError(res.error)); return; }
               load();
             };
             acts.appendChild(del);
           }
-          if (admin && r.hidden) {
+          if (admin && (r.hidden || r.removed)) {
             var un = el('button', 'cm-btn', '恢復顯示'); un.type = 'button';
             un.onclick = async function () {
               un.disabled = true;
-              var res = await A.getClient().from('comments').update({ hidden: false }).eq('id', r.id);
+              var res = await A.getClient().from('comments').update({ hidden: false, removed: false }).eq('id', r.id);
               if (res.error) { un.disabled = false; window.alert(cmError(res.error)); return; }
               load();
             };

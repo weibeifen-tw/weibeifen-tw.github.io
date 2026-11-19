@@ -658,3 +658,4 @@ body.roles-only .cm-intro{display:none}
 .ad-select{font:inherit;font-size:13px;padding:3px 8px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
 .ad-link{font:inherit;font-size:14px;padding:0;border:0;background:none;color:var(--accent,#e07b39);text-decoration:underline;cursor:pointer}
 .ad-where{font-size:13px;color:var(--ink);text-decoration:underline}
+.ad-filter .ad-select{margin-left:auto}
