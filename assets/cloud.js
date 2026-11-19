@@ -9,6 +9,7 @@
  *    其他本機資料（字級、夜間模式、捲動位置、讀完標記、私訊）完全不動。
  * 2. 收藏：小說介紹頁可收藏整本，章節頁可加書籤；會員頁列出「我的收藏」。
  * 3. 公開留言：章節頁最下面、小說介紹頁篇章列表下面（整本小說的留言）。訪客也看得到（直接用可公開金鑰讀，不載入 SDK），會員才能留言。
+ * 4. 私訊角色：登入會員傳給角色的私訊存到雲端，蔡在管理後台用角色身分回覆（收件匣在 app.js，透過 window.WBDM）。
  *
  * 權限由 Supabase RLS 在伺服器端把關：每個人只能讀寫自己的資料。
  * 所有資料一律用 textContent 寫入，不使用 innerHTML。
@@ -428,6 +429,53 @@
 
   initComments();
 
+  /* ---------- 私訊角色（雲端） ----------
+   * 讀者傳給角色的訊息存到 dm_messages；蔡在管理後台用角色身分回覆。
+   * app.js 的收件匣透過 window.WBDM 讀寫；沒登入時 WBDM.on() 為 false，收件匣只顯示這台裝置的舊訊息。
+   */
+  var DM_COLS = 'id,chr,post,from_char,body,seen,created_at';
+  function dmError(e) {
+    var m = (e && e.message) || '';
+    if (/WB_TOO_FAST/.test(m)) return '傳太快了，隔幾秒再傳。';
+    if (/WB_TOO_MANY/.test(m)) return '一小時內傳太多則了，晚一點再傳。';
+    if (/WB_LOGIN_REQUIRED/.test(m)) return '登入已過期，請重新登入。';
+    if (e && e.code === '23514') return '訊息要 1～500 個字。';
+    return errText('傳送失敗，請稍後再試。', e);
+  }
+  // 右下角私訊按鈕：有角色的新回覆就亮紅點
+  async function dmDot(A) {
+    var btn = document.querySelector('.chat-btn'); if (!btn) return;
+    var c = A.getClient(), uid = await uidOf(c);
+    if (!uid) { btn.classList.remove('has-new'); return; }
+    var res = await c.from('dm_messages').select('id', { count: 'exact', head: true })
+      .eq('user_id', uid).eq('from_char', true).eq('seen', false);
+    btn.classList.toggle('has-new', !res.error && res.count > 0);
+  }
+  window.WBDM = {
+    on: signedIn,
+    // 讀自己全部的私訊；登入過期回傳 null
+    load: async function () {
+      var A = await getAuth(), c = A.getClient(), uid = await uidOf(c);
+      if (!uid) return null;
+      var res = await c.from('dm_messages').select(DM_COLS).eq('user_id', uid)
+        .order('created_at', { ascending: true }).limit(2000);
+      if (res.error) throw res.error;
+      return res.data || [];
+    },
+    // 傳給角色；成功回傳 null，失敗回傳錯誤訊息（中文）
+    send: async function (chr, post, body) {
+      try {
+        var A = await getAuth();
+        var res = await A.getClient().from('dm_messages').insert({ chr: chr, post: post || null, body: body });
+        return res.error ? dmError(res.error) : null;
+      } catch (e) { return dmError(e); }
+    },
+    // 看過這個角色的回覆
+    seen: async function (chr) {
+      try { var A = await getAuth(); await A.getClient().rpc('dm_mark_seen', { p_chr: chr }); await dmDot(A); } catch (e) {}
+    }
+  };
+
   /* ---------- 啟動 ---------- */
   if (!signedIn()) { if (favBox) favBox.hidden = true; return; }
 
@@ -437,6 +485,7 @@
     if (sec || document.querySelector('.shelf-list') || Date.now() - last > SYNC_EVERY) {
       try { await sync(A); } catch (e) {}
     }
+    dmDot(A).catch(function () {});
     buttons.forEach(function (x) {
       isFav(A, x[1].novel, x[1].path).then(function (v) { x[0].setOn(v); }).catch(function () {});
     });

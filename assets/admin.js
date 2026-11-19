@@ -192,6 +192,132 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  /* ---------- 私訊：用角色身分回覆 ---------- */
+  var chars = {};
+  try { chars = JSON.parse(document.getElementById('chars').textContent || '{}'); } catch (e) {}
+  var postsByKey = {};
+  Object.keys(posts).forEach(function (u) { var p = posts[u]; if (p.s) postsByKey[p.s] = { u: u, no: p.no, t: p.t }; });
+  var dmOpen = null; // 目前打開的對話：{ user_id, chr, name, username }
+  var badge = tabs.querySelector('[data-tab="dm"] .ad-badge');
+  function setBadge(n) { if (!badge) return; badge.hidden = !n; badge.textContent = n ? String(n) : ''; }
+  async function refreshBadge() {
+    var res = await c().rpc('admin_dm_threads');
+    if (!res.error) setBadge((res.data || []).reduce(function (s, r) { return s + (+r.unseen || 0); }, 0));
+  }
+  function chrName(id) { return (chars[id] && chars[id].name) || id; }
+  function avatar(id) {
+    var ch = chars[id] || {}, s = el('span', 'avatar');
+    s.style.setProperty('--c', ch.color || '#999');
+    if (ch.avatar) { var img = el('img'); img.alt = ''; img.src = BASE + '/assets/avatars/' + ch.avatar + '?v=' + (window.VER || ''); s.appendChild(img); }
+    else s.textContent = ch.glyph || '?';
+    return s;
+  }
+  function loadDM() { return dmOpen ? dmThread() : dmList(); }
+
+  async function dmList() {
+    dmOpen = null;
+    var p = panels.dm;
+    p.textContent = ''; p.appendChild(el('p', 'mb-sub', '讀取中…'));
+    var res = await c().rpc('admin_dm_threads');
+    p.textContent = '';
+    if (res.error) { p.appendChild(el('p', 'mb-form-msg err', errMsg(res.error))); return; }
+    var rows = res.data || [];
+    setBadge(rows.reduce(function (s, r) { return s + (+r.unseen || 0); }, 0));
+    p.appendChild(el('p', 'mb-sub', rows.length ? '每位會員和每個角色的對話各一列。點進去就能用角色的身分回覆。' : '還沒有人傳私訊。'));
+    var ul = el('ul', 'ad-dm-list');
+    rows.forEach(function (r) {
+      var li = el('li'), b = el('button', 'ad-dm-row'); b.type = 'button';
+      b.appendChild(avatar(r.chr));
+      var who = el('span', 'ad-dm-who'), top = el('span', 'ad-dm-top');
+      top.appendChild(el('b', null, chrName(r.chr)));
+      top.appendChild(el('span', null, '← ' + (r.display_name || '新會員') + (r.username ? ' @' + r.username : '')));
+      who.appendChild(top);
+      who.appendChild(el('span', 'ad-dm-last', (r.last_from_char ? chrName(r.chr) + '（你）：' : '') + r.last_body));
+      b.appendChild(who);
+      var side = el('span', 'ad-dm-side');
+      side.appendChild(el('time', null, fmtDate(r.last_at)));
+      if (+r.unseen) side.appendChild(el('span', 'ib-n new', String(r.unseen)));
+      b.appendChild(side);
+      b.onclick = function () { dmOpen = { user_id: r.user_id, chr: r.chr, name: r.display_name || '新會員', username: r.username }; dmThread(); };
+      li.appendChild(b); ul.appendChild(li);
+    });
+    p.appendChild(ul);
+  }
+
+  async function dmThread() {
+    var t = dmOpen, p = panels.dm;
+    p.textContent = '';
+    var head = el('div', 'ad-dm-head');
+    var back = el('button', 'cm-btn', '‹ 全部對話'); back.type = 'button'; back.onclick = function () { dmList(); };
+    head.appendChild(back);
+    head.appendChild(avatar(t.chr));
+    var hw = el('span', 'ad-dm-who');
+    hw.appendChild(el('b', null, chrName(t.chr) + ' ↔ ' + t.name + (t.username ? ' @' + t.username : '')));
+    var ch = chars[t.chr];
+    if (ch && novels[ch.novel]) hw.appendChild(el('small', null, '《' + title(ch.novel) + '》'));
+    head.appendChild(hw);
+    p.appendChild(head);
+    var box = el('div', 'ad-dm-msgs'); box.appendChild(el('p', 'mb-sub', '讀取中…'));
+    p.appendChild(box);
+
+    var res = await c().from('dm_messages').select('id,post,from_char,body,seen,created_at')
+      .eq('user_id', t.user_id).eq('chr', t.chr).order('created_at', { ascending: true }).limit(1000);
+    box.textContent = '';
+    if (res.error) { box.appendChild(el('p', 'mb-form-msg err', errMsg(res.error))); return; }
+    var rows = res.data || [], lastRef = null;
+    if (!rows.length) box.appendChild(el('p', 'mb-sub', '這段對話沒有訊息了。'));
+    rows.forEach(function (m) {
+      if (!m.from_char && m.post && m.post !== lastRef) {
+        var pp = postsByKey[m.post];
+        if (pp) { var a = el('a', 'ib-ref', (pp.no ? '第 ' + pp.no + ' 篇' : '') + '〈' + (pp.t || '') + '〉'); a.href = pp.u; box.appendChild(a); }
+        lastRef = m.post;
+      }
+      // 讀者在左邊，角色（你）在右邊
+      var row = el('div', m.from_char ? 'ib-me' : 'ib-them'), wrap = el('div');
+      wrap.appendChild(el('span', null, m.body));
+      var meta = el('small', null, fmtDate(m.created_at) + (m.from_char ? (m.seen ? '・已讀' : '・未讀') : '') + '　');
+      var del = el('button', 'ad-link', '刪除'); del.type = 'button';
+      del.onclick = async function () {
+        if (!window.confirm('永久刪除這則私訊？讀者那邊也會消失，無法復原。')) return;
+        del.disabled = true;
+        var r = await c().from('dm_messages').delete().eq('id', m.id);
+        if (r.error) { del.disabled = false; window.alert(errMsg(r.error)); return; }
+        dmThread();
+      };
+      meta.appendChild(del);
+      wrap.appendChild(meta);
+      if (m.from_char) { while (wrap.firstChild) row.appendChild(wrap.firstChild); } else row.appendChild(wrap);
+      box.appendChild(row);
+    });
+
+    // 回覆
+    var f = el('form', 'ad-dm-form');
+    var ta = el('textarea'); ta.maxLength = 500; ta.rows = 3; ta.placeholder = '以「' + chrName(t.chr) + '」的身分回覆…（Ctrl／⌘＋Enter 送出）';
+    var sb = el('button', 'cm-btn on', '以' + chrName(t.chr) + '回覆'); sb.type = 'submit';
+    var cnt = el('small', 'mb-sub', '0 / 500');
+    ta.oninput = function () { cnt.textContent = ta.value.length + ' / 500'; };
+    ta.onkeydown = function (e) { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); f.requestSubmit(); } };
+    f.onsubmit = async function (e) {
+      e.preventDefault();
+      var body = ta.value.trim(); if (!body) return;
+      ta.disabled = sb.disabled = true;
+      var r = await c().from('dm_messages').insert({ user_id: t.user_id, chr: t.chr, from_char: true, body: body });
+      if (r.error) { ta.disabled = sb.disabled = false; window.alert(errMsg(r.error)); return; }
+      dmThread();
+    };
+    var bar = el('div', 'ad-dm-bar'); bar.appendChild(cnt); bar.appendChild(sb);
+    f.appendChild(ta); f.appendChild(bar);
+    p.appendChild(f);
+    box.scrollTop = box.scrollHeight;
+    ta.focus();
+
+    // 打開就算看過讀者的訊息
+    if (rows.some(function (m) { return !m.from_char && !m.seen; })) {
+      await c().rpc('dm_mark_seen', { p_chr: t.chr, p_user: t.user_id });
+      refreshBadge();
+    }
+  }
+
   /* ---------- 會員列表 ---------- */
   async function loadMembers() {
     var p = panels.members;
@@ -217,7 +343,7 @@ document.addEventListener('DOMContentLoaded', function () {
     p.appendChild(tb);
   }
 
-  var LOADERS = { stats: loadStats, comments: loadComments, members: loadMembers };
+  var LOADERS = { stats: loadStats, comments: loadComments, dm: loadDM, members: loadMembers };
 
   /* ---------- 啟動：確認權限 ---------- */
   async function init() {
@@ -239,6 +365,7 @@ document.addEventListener('DOMContentLoaded', function () {
     say('已通過兩步驟驗證。');
     tabs.hidden = false;
     show('stats');
+    refreshBadge().catch(function () {});
   }
   init();
 });
