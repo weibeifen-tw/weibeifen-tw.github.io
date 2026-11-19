@@ -146,9 +146,10 @@
   // 假的互動數字：用文章 key 當種子，同一篇每次看到的數字都一樣
   function rnd(seed) { var h = 2166136261; for (var i = 0; i < seed.length; i++) { h ^= seed.charCodeAt(i); h = Math.imul(h, 16777619); } return function () { h ^= h << 13; h ^= h >>> 17; h ^= h << 5; return ((h >>> 0) % 100000) / 100000; }; }
   function fake(key) {
-    var r = rnd(key || 'x'), viral = r() < 0.02;
-    var likes = Math.round(Math.exp(Math.log(viral ? 1000 : 3) + r() * Math.log(viral ? 5 : 330)));
-    return { like: likes, talk: Math.round(likes * (0.02 + r() * 0.08)), rp: Math.round(likes * (0.01 + r() * 0.05)), share: Math.round(likes * (0.01 + r() * 0.07)) };
+    // 愛心 1～100；轉發、分享跟著愛心比例。留言數是真的（章節頁由 cloud.js 填入）
+    var r = rnd(key || 'x');
+    var likes = 1 + Math.floor(r() * 100);
+    return { like: likes, rp: Math.round(likes * (0.01 + r() * 0.05)), share: Math.round(likes * (0.01 + r() * 0.07)) };
   }
   function fmt(n) { return !n ? '' : n >= 10000 ? (Math.round(n / 1000) / 10) + '萬' : String(n); }
   document.querySelectorAll('.actions').forEach(function (a) {
@@ -159,7 +160,6 @@
     function draw() {
       like.classList.toggle('on', liked); like.querySelector('.n').textContent = fmt(base.like + (liked ? 1 : 0));
       if (rep) rep.querySelector('.n').textContent = fmt(base.rp);
-      if (talk) talk.querySelector('.n').textContent = fmt(base.talk + get('c:' + key, []).length);
       a.querySelector('.share .n').textContent = fmt(base.share);
     }
     // 讚：只有動畫，不記錄
