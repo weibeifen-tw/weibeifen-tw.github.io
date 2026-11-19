@@ -616,7 +616,9 @@ body.roles-only .cm-intro{display:none}
 .cm-item.is-hidden{opacity:.6}
 .cm-top{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px;font-size:14px}
 .cm-user,.cm-time{color:var(--sub);font-size:12px}
-.cm-time{margin-left:auto}
+.cm-time{white-space:nowrap}
+.cm-side{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.cm-side .cm-acts{margin-top:0;justify-content:flex-end;flex-wrap:wrap}
 .cm-note{margin:4px 0 0;font-size:12px;color:#b0472b}
 .cm-body{margin:6px 0 0;font-size:15px;line-height:1.8;white-space:pre-wrap;word-break:break-word}
 .cm-acts{display:flex;gap:8px;margin-top:6px}
