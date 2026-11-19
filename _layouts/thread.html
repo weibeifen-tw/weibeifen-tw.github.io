@@ -29,12 +29,13 @@ body_class: reading
   {%- endif %}
   <div class="ch-text">{{ content }}</div>
   <div class="r-end" aria-hidden="true"><span></span><span></span><span></span></div>
-  {% capture u %}{{ page.url | relative_url }}{% endcapture %}{% include actions.html key=page.slug url=u %}
-  <p class="tip"><a href="https://portaly.cc/weibeifen/support" target="_blank" rel="noopener">🍬 喜歡這一篇？請畝 MU 吃糖果</a></p>
   <nav class="r-nav" aria-label="換章">
     {%- if pv -%}<a class="r-prev" href="{{ pv.url | relative_url }}"><small>← 上一篇</small><span>{{ pv.title }}</span></a>{%- else -%}<span class="r-prev off"><small>← 上一篇</small><span>這是第一篇</span></span>{%- endif -%}
     {%- if nx -%}<a class="r-next" href="{{ nx.url | relative_url }}"><small>下一篇 →</small><span>{{ nx.title }}</span></a>{%- else -%}<span class="r-next off"><small>下一篇 →</small><span>目前最後一篇</span></span>{%- endif -%}
   </nav>
+  <div class="r-acts">
+  {% capture u %}{{ page.url | relative_url }}{% endcapture %}{% include actions.html key=page.slug url=u %}
+  </div>
 </article>
 <nav class="r-bar" aria-label="換章">
   {%- if pv -%}<a href="{{ pv.url | relative_url }}">← 上一篇</a>{%- else -%}<span class="off">← 上一篇</span>{%- endif -%}

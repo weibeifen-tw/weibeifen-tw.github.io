@@ -201,9 +201,10 @@
   if (sec && sec.dataset.novel) {
     var cr = { novel: sec.dataset.novel, path: location.pathname, title: sec.dataset.title || '', no: sec.dataset.no || '' };
     var cb = favButton('ch-fav', ['🔖 加入書籤', '🔖 已加入書籤'], cr);
-    var wrap = el('p', 'ch-fav-wrap'); wrap.appendChild(cb);
-    var tip = sec.querySelector('.tip');
-    if (tip) sec.insertBefore(wrap, tip); else sec.appendChild(wrap);
+    // 放在愛心、留言、轉發、分享那一排的最右邊
+    var row = sec.querySelector('.r-acts');
+    if (row) row.appendChild(cb);
+    else { var wrap = el('p', 'ch-fav-wrap'); wrap.appendChild(cb); sec.appendChild(wrap); }
     buttons.push([cb, cr]);
   }
 

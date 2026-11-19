@@ -188,7 +188,9 @@ html[data-fs="l"] .chapter.read .ch-text{font-size:20px}
 .chapter.read .ch-text p{margin:0 0 1.3em}
 .r-end{display:flex;justify-content:center;gap:10px;margin:48px 0 28px}
 .r-end span{width:5px;height:5px;border-radius:50%;background:var(--line)}
-.chapter.read .actions{border-top:0;margin:0 0 20px;justify-content:center}
+.chapter.read .actions{border-top:0;margin:0 0 0 -8px;padding-top:0;justify-content:flex-start}
+.r-acts{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:18px 0 0}
+.r-acts .ch-fav{margin-left:2px}
 .r-nav{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .r-nav a,.r-nav .off{display:flex;flex-direction:column;gap:4px;padding:14px 18px;border:1px solid var(--line);border-radius:12px;min-width:0}
 .r-nav small{font-size:13px;color:var(--sub)}
