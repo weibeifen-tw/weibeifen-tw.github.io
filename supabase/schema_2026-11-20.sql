@@ -1,9 +1,15 @@
 -- 《未備份》資料庫完整存檔（public schema）
--- 產生時間：2026-11-20 03:28（台北）
+-- 產生時間：2026-11-20 03:50（台北）
 -- 由 supabase/export_schema.sql 從實際資料庫產生。只有結構與權限，沒有資料。
 -- 順序：資料表 → 限制 → 索引 → 函式 → 觸發器 → 事件觸發器 → RLS → 政策 → 權限；在全新的 Supabase 專案可整段執行重建。
 
 BEGIN;
+
+CREATE TABLE public.comment_reads (
+  user_id uuid NOT NULL,
+  path text NOT NULL,
+  seen_at timestamp with time zone DEFAULT now() NOT NULL
+);
 
 CREATE TABLE public.comment_reports (
   comment_id bigint NOT NULL,
@@ -20,7 +26,8 @@ CREATE TABLE public.comments (
   body text NOT NULL,
   hidden boolean DEFAULT false NOT NULL,
   created_at timestamp with time zone DEFAULT now() NOT NULL,
-  removed boolean DEFAULT false NOT NULL
+  removed boolean DEFAULT false NOT NULL,
+  as_author boolean DEFAULT false NOT NULL
 );
 
 CREATE TABLE public.dm_messages (
@@ -69,6 +76,10 @@ CREATE TABLE public.user_roles (
   role text DEFAULT 'reader'::text NOT NULL,
   created_at timestamp with time zone DEFAULT now() NOT NULL
 );
+
+ALTER TABLE public.comment_reads ADD CONSTRAINT comment_reads_path_check CHECK (((path ~ '^/[^/\s][^\s]*$'::text) AND (char_length(path) <= 300)));
+
+ALTER TABLE public.comment_reads ADD CONSTRAINT comment_reads_pkey PRIMARY KEY (user_id, path);
 
 ALTER TABLE public.comment_reports ADD CONSTRAINT comment_reports_pkey PRIMARY KEY (comment_id, user_id);
 
@@ -126,6 +137,8 @@ ALTER TABLE public.user_roles ADD CONSTRAINT user_roles_pkey PRIMARY KEY (user_i
 
 ALTER TABLE public.user_roles ADD CONSTRAINT user_roles_role_check CHECK ((role = ANY (ARRAY['reader'::text, 'admin'::text])));
 
+ALTER TABLE public.comment_reads ADD CONSTRAINT comment_reads_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+
 ALTER TABLE public.comment_reports ADD CONSTRAINT comment_reports_comment_id_fkey FOREIGN KEY (comment_id) REFERENCES comments(id) ON DELETE CASCADE;
 
 ALTER TABLE public.comment_reports ADD CONSTRAINT comment_reports_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
@@ -150,8 +163,6 @@ CREATE INDEX dm_messages_thread_idx ON public.dm_messages USING btree (user_id, 
 
 CREATE INDEX dm_messages_unseen_idx ON public.dm_messages USING btree (user_id, from_char) WHERE (NOT seen);
 
-CREATE UNIQUE INDEX profiles_username_uniq ON public.profiles USING btree (username);
-
 CREATE OR REPLACE FUNCTION public.admin_dm_threads()
  RETURNS TABLE(user_id uuid, display_name text, username text, chr text, last_body text, last_from_char boolean, last_at timestamp with time zone, total bigint, unseen bigint)
  LANGUAGE plpgsql
@@ -173,6 +184,33 @@ begin
     join public.profiles p on p.id = m.user_id
     group by m.user_id, p.display_name, p.username, m.chr
     order by max(m.created_at) desc;
+end;
+$function$
+;
+
+CREATE OR REPLACE FUNCTION public.admin_export()
+ RETURNS jsonb
+ LANGUAGE plpgsql
+ STABLE SECURITY DEFINER
+ SET search_path TO ''
+AS $function$
+begin
+  if not public.is_admin() then
+    raise exception 'WB_NOT_ADMIN';
+  end if;
+  return jsonb_build_object(
+    'site',        '未備份',
+    'version',     1,
+    'exported_at', now(),
+    'profiles', coalesce((
+      select jsonb_agg(to_jsonb(p) || jsonb_build_object('role', coalesce(r.role, 'reader')) order by p.created_at)
+      from public.profiles p left join public.user_roles r on r.user_id = p.id), '[]'::jsonb),
+    'favorites',        coalesce((select jsonb_agg(to_jsonb(t) order by t.created_at) from public.favorites t), '[]'::jsonb),
+    'reading_progress', coalesce((select jsonb_agg(to_jsonb(t) order by t.updated_at) from public.reading_progress t), '[]'::jsonb),
+    'comments',         coalesce((select jsonb_agg(to_jsonb(t) order by t.id) from public.comments t), '[]'::jsonb),
+    'comment_reports',  coalesce((select jsonb_agg(to_jsonb(t) order by t.created_at) from public.comment_reports t), '[]'::jsonb),
+    'dm_messages',      coalesce((select jsonb_agg(to_jsonb(t) order by t.id) from public.dm_messages t), '[]'::jsonb)
+  );
 end;
 $function$
 ;
@@ -234,6 +272,72 @@ end;
 $function$
 ;
 
+CREATE OR REPLACE FUNCTION public.admin_top_paths(p_limit integer DEFAULT 20)
+ RETURNS TABLE(path text, novel text, comments bigint, marks bigint)
+ LANGUAGE plpgsql
+ STABLE SECURITY DEFINER
+ SET search_path TO ''
+AS $function$
+begin
+  if not public.is_admin() then
+    raise exception 'WB_NOT_ADMIN';
+  end if;
+  return query
+    select t.path, max(t.novel), sum(t.cm)::bigint, sum(t.mk)::bigint
+    from (
+      select c.path, c.novel, count(*) as cm, 0::bigint as mk
+      from public.comments c where not c.removed group by c.path, c.novel
+      union all
+      select f.path, f.novel, 0::bigint, count(*)
+      from public.favorites f where f.path <> '' group by f.path, f.novel
+    ) t
+    group by t.path
+    order by sum(t.cm) + sum(t.mk) desc, sum(t.cm) desc
+    limit least(greatest(coalesce(p_limit, 20), 1), 100);
+end;
+$function$
+;
+
+CREATE OR REPLACE FUNCTION public.comment_mark_read(p_path text)
+ RETURNS void
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO ''
+AS $function$
+begin
+  if auth.uid() is null then
+    raise exception 'WB_LOGIN_REQUIRED';
+  end if;
+  if exists (select 1 from public.comments where user_id = auth.uid() and path = p_path) then
+    insert into public.comment_reads (user_id, path, seen_at) values (auth.uid(), p_path, now())
+    on conflict (user_id, path) do update set seen_at = excluded.seen_at;
+  end if;
+end;
+$function$
+;
+
+CREATE OR REPLACE FUNCTION public.comment_notices()
+ RETURNS TABLE(path text, novel text, n bigint, last_at timestamp with time zone)
+ LANGUAGE sql
+ STABLE SECURITY DEFINER
+ SET search_path TO ''
+AS $function$
+  select c.path, max(c.novel), count(*), max(c.created_at)
+  from public.comments c
+  join (select m.path, min(m.created_at) as first_at
+        from public.comments m
+        where m.user_id = auth.uid() and not m.removed
+        group by m.path) mine on mine.path = c.path
+  left join public.comment_reads r on r.user_id = auth.uid() and r.path = c.path
+  where auth.uid() is not null
+    and c.user_id <> auth.uid() and not c.hidden and not c.removed
+    and c.created_at > greatest(mine.first_at, coalesce(r.seen_at, '-infinity'::timestamptz))
+  group by c.path
+  order by max(c.created_at) desc
+  limit 50;
+$function$
+;
+
 CREATE OR REPLACE FUNCTION public.comment_reports_after_insert()
  RETURNS trigger
  LANGUAGE plpgsql
@@ -256,13 +360,24 @@ CREATE OR REPLACE FUNCTION public.comments_before_insert()
  SET search_path TO ''
 AS $function$
 begin
-  new.user_id := auth.uid(); new.created_at := now();
-  new.hidden := false; new.removed := false; new.body := btrim(new.body);
-  if new.user_id is null then raise exception 'WB_LOGIN_REQUIRED'; end if;
-  if exists (select 1 from public.comments where user_id = new.user_id and created_at > now() - interval '15 seconds') then
-    raise exception 'WB_TOO_FAST'; end if;
-  if (select count(*) from public.comments where user_id = new.user_id and created_at > now() - interval '1 hour') >= 5 then
-    raise exception 'WB_TOO_MANY'; end if;
+  new.user_id    := auth.uid();
+  new.created_at := now();
+  new.hidden     := false;
+  new.removed    := false;
+  new.body       := btrim(new.body);
+  if new.user_id is null then
+    raise exception 'WB_LOGIN_REQUIRED';
+  end if;
+  new.as_author  := exists (select 1 from public.user_roles
+                            where user_id = new.user_id and role = 'admin');
+  if exists (select 1 from public.comments
+             where user_id = new.user_id and created_at > now() - interval '15 seconds') then
+    raise exception 'WB_TOO_FAST';
+  end if;
+  if (select count(*) from public.comments
+      where user_id = new.user_id and created_at > now() - interval '1 hour') >= 5 then
+    raise exception 'WB_TOO_MANY';
+  end if;
   return new;
 end;
 $function$
@@ -299,6 +414,25 @@ begin
     end if;
   end if;
   return new;
+end;
+$function$
+;
+
+CREATE OR REPLACE FUNCTION public.dm_delete_thread(p_chr text)
+ RETURNS integer
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO ''
+AS $function$
+declare
+  n integer;
+begin
+  if auth.uid() is null then
+    raise exception 'WB_LOGIN_REQUIRED';
+  end if;
+  delete from public.dm_messages where user_id = auth.uid() and chr = p_chr;
+  get diagnostics n = row_count;
+  return n;
 end;
 $function$
 ;
@@ -409,6 +543,8 @@ CREATE EVENT TRIGGER ensure_rls ON ddl_command_end
   WHEN TAG IN ('CREATE TABLE', 'CREATE TABLE AS', 'SELECT INTO')
   EXECUTE FUNCTION public.rls_auto_enable();
 
+ALTER TABLE public.comment_reads ENABLE ROW LEVEL SECURITY;
+
 ALTER TABLE public.comment_reports ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE public.comments ENABLE ROW LEVEL SECURITY;
@@ -486,6 +622,8 @@ CREATE POLICY "own progress update" ON public.reading_progress AS PERMISSIVE FOR
 CREATE POLICY "Users can view own role" ON public.user_roles AS PERMISSIVE FOR SELECT TO authenticated
   USING ((( SELECT auth.uid() AS uid) = user_id));
 
+REVOKE ALL ON public.comment_reads FROM anon, authenticated;
+
 REVOKE ALL ON public.comment_reports FROM anon, authenticated;
 
 GRANT DELETE, SELECT ON public.comment_reports TO authenticated;
@@ -531,17 +669,32 @@ GRANT SELECT ON public.user_roles TO authenticated;
 REVOKE ALL ON FUNCTION public.admin_dm_threads() FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.admin_dm_threads() TO authenticated;
 
+REVOKE ALL ON FUNCTION public.admin_export() FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.admin_export() TO authenticated;
+
 REVOKE ALL ON FUNCTION public.admin_member_list() FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.admin_member_list() TO authenticated;
 
 REVOKE ALL ON FUNCTION public.admin_stats() FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.admin_stats() TO authenticated;
 
+REVOKE ALL ON FUNCTION public.admin_top_paths(p_limit integer) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.admin_top_paths(p_limit integer) TO authenticated;
+
+REVOKE ALL ON FUNCTION public.comment_mark_read(p_path text) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.comment_mark_read(p_path text) TO authenticated;
+
+REVOKE ALL ON FUNCTION public.comment_notices() FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.comment_notices() TO authenticated;
+
 REVOKE ALL ON FUNCTION public.comment_reports_after_insert() FROM PUBLIC, anon, authenticated;
 
 REVOKE ALL ON FUNCTION public.comments_before_insert() FROM PUBLIC, anon, authenticated;
 
 REVOKE ALL ON FUNCTION public.dm_before_insert() FROM PUBLIC, anon, authenticated;
+
+REVOKE ALL ON FUNCTION public.dm_delete_thread(p_chr text) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.dm_delete_thread(p_chr text) TO authenticated;
 
 REVOKE ALL ON FUNCTION public.dm_mark_seen(p_chr text, p_user uuid) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.dm_mark_seen(p_chr text, p_user uuid) TO authenticated;
