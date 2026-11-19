@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', function () {
       var top = el('div', 'cm-top');
       top.appendChild(el('b', 'cm-name', pr.display_name || '新會員'));
       if (pr.username) top.appendChild(el('span', 'cm-user', '@' + pr.username));
-      var side = el('div', 'cm-side'); side.appendChild(el('time', 'cm-time', fmtDate(r.created_at))); top.appendChild(side);
+      var side = el('div', 'cm-side'); side.appendChild(el('time', 'cm-time', fmtDate(r.created_at)));
       item.appendChild(top);
       var where = el('a', 'ad-where', whereText(r));
       where.href = r.path + '#comments';
@@ -187,7 +187,8 @@ document.addEventListener('DOMContentLoaded', function () {
         return (await c().from('comment_reports').delete().eq('comment_id', r.id)).error;
       });
       side.appendChild(acts);
-      list.appendChild(item);
+      var main = el('div', 'cm-main'); while (item.firstChild) main.appendChild(item.firstChild); item.appendChild(main); item.appendChild(side);
+        list.appendChild(item);
     });
   }
 
