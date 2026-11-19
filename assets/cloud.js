@@ -290,10 +290,8 @@
       String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
   }
 
-  function setTalkCount(n) {
-    if (!sec) return;
-    sec.querySelectorAll('.actions .talk .n').forEach(function (x) { x.textContent = n ? String(n) : ''; });
-  }
+  // 留言按鈕上的數字改成假的（app.js），這裡不再覆蓋
+  function setTalkCount() {}
 
   // 會員小卡片：同一時間只開一張，點外面或按 Esc 關掉
   var cardEl = null;
