@@ -783,3 +783,10 @@ html[data-theme="night"] .ib-admin{background:#3a2226;color:#f2a7b1}
 a.ig-name{color:inherit;text-decoration:none}
 a.ig-name:hover{text-decoration:underline}
 .cm-warn{margin:0 0 6px;font-size:12px;color:#b3263a}
+
+/* 會員頁最下面：登出靠左、儲存靠右 */
+.mb-acts{width:100%;justify-content:flex-start}
+.mb-acts .mb-go-admin{margin-right:0}
+.mb-acts .mb-save{margin:0 0 0 auto;align-self:auto}
+.mb-static{margin:2px 0 0;font-size:16px}
+.mb-color-now .lt-av{pointer-events:none}
