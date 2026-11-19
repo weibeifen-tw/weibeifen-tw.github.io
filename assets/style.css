@@ -633,3 +633,22 @@ body.roles-only .cm-intro{display:none}
 .d-account{margin-top:auto}
 .d-account + .d-candy{margin-top:12px}
 .d-av{width:28px;height:28px;font-size:12px;--c:#c9c3b9}
+
+/* 管理後台 */
+.ad-tabs{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.ad-tabs button{font:inherit;font-size:14px;padding:6px 16px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.ad-tabs button[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:var(--card)}
+.ad-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
+.ad-tile{padding:12px 14px;border-radius:12px;background:var(--chip);display:flex;flex-direction:column;gap:2px}
+.ad-tile small,.ad-tile span{color:var(--sub);font-size:12px}
+.ad-tile b{font-size:26px}
+.ad-h{margin-top:22px}
+.ad-table{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}
+.ad-table th,.ad-table td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left}
+.ad-table th{color:var(--sub);font-weight:500;font-size:12px}
+.ad-table .num{text-align:right;font-variant-numeric:tabular-nums}
+.ad-table a{color:inherit}
+.ad-filter{display:flex;gap:8px;margin-bottom:8px}
+.ad-filter .cm-btn.on{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.ad-where{display:block;font-size:12px;color:var(--sub);margin-top:2px;word-break:break-all}
+.ad-reasons{margin:6px 0 0;padding-left:18px;font-size:12px;color:#b0472b}
