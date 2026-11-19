@@ -77,7 +77,13 @@
       if (me && window.WBAvatar) { window.WBAvatar.paint(b, me); b.classList.add('is-member'); }
       else { b.classList.remove('lt-av', 'lt-mu'); paintAvatar(b, p); }
     });
-    document.querySelectorAll('[data-member-entry]').forEach(function (a) { a.classList.toggle('signed-in', !!p); });
+    document.querySelectorAll('[data-member-entry]').forEach(function (a) {
+      a.classList.toggle('signed-in', !!p);
+      // 首頁頭貼下面：沒登入「登入」；有帳號名稱顯示帳號名稱；還沒設定顯示「我的資料」
+      var t = a.querySelector('.s-t');
+      if (t) t.textContent = !p ? '登入' : (me && me.username) ? me.username : '我的資料';
+    });
+    document.querySelectorAll('[data-member-only]').forEach(function (a) { a.hidden = !p; });
   }
 
   // 全站入口：一載入就依本機資料顯示
@@ -119,7 +125,7 @@
     prof = prof || {};
     var name = prof.display_name || '新會員';
     var head = el('div', 'mb-head');
-    var me = { name: name, color: prof.avatar_color || null, id: prof.id || p.id, author: role === 'admin' };
+    var me = { name: name, color: prof.avatar_color || null, id: prof.id || p.id, author: role === 'admin', username: prof.username || '' };
     saveMyAvatar(me);
     var av = el('span', 'avatar mb-av');
     if (window.WBAvatar) window.WBAvatar.paint(av, me); else paintAvatar(av, null);
@@ -248,7 +254,7 @@
       dn.value = r.profile.display_name || ''; un.value = r.profile.username || ''; bio.value = r.profile.bio || '';
       var t = card.querySelector('.mb-title');
       if (t && t.firstChild && t.firstChild.nodeType === 3) t.firstChild.nodeValue = r.profile.display_name || '新會員';
-      me.name = r.profile.display_name || '新會員'; me.color = r.profile.avatar_color || null;
+      me.name = r.profile.display_name || '新會員'; me.color = r.profile.avatar_color || null; me.username = r.profile.username || '';
       prof.display_name = r.profile.display_name; prof.avatar_color = r.profile.avatar_color;
       prof.name_changed_at = r.profile.name_changed_at; prof.color_changed_at = r.profile.color_changed_at;
       nameLocked = !me.author && !!prof.name_changed_at; colorLocked = !me.author && !!prof.color_changed_at;

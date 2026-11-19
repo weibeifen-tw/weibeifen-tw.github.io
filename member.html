@@ -1,36 +1,18 @@
 ---
 layout: default
-title: 我的帳號
+title: 我的資料
 permalink: /member/
 sitemap: false
 ---
 {%- comment -%}
   會員頁。登入狀態只用來決定畫面顯示，不是權限保護；
   之後任何會員資料都必須由 Supabase RLS 在伺服器端保護。
-  書櫃沿用 app.js 原本的程式：頁面上有 .shelf-list，它就會自動列出這台裝置的書櫃。
+  書櫃、收藏、留言各自有獨立頁面（/shelf/、/favorites/、/my-comments/），從左邊選單進去。
 {%- endcomment -%}
 <div class="member-page">
   <section class="novel page-box mb-box">
     <div class="mb-card" aria-live="polite"><span class="avatar mb-av"></span></div>
     <p class="mb-note" hidden></p>
-  </section>
-
-  <section class="novel page-box mb-box">
-    <h2 class="mb-h">我的書櫃</h2>
-    <p class="nv-era">看過的小說會自動放在這裡。沒登入時只存在這台裝置；登入後會同步到雲端，換手機或電腦登入也看得到。登出不會清掉這台裝置的紀錄。</p>
-    <div class="shelf-list"></div>
-  </section>
-
-  <section class="novel page-box mb-box mb-favs" hidden>
-    <h2 class="mb-h">我的收藏</h2>
-    <p class="nv-era">收藏的小說和章節書籤存在雲端，換裝置登入也看得到。</p>
-    <div class="fav-list"></div>
-  </section>
-
-  <section class="novel page-box mb-box mb-mycm" hidden>
-    <h2 class="mb-h">我的留言</h2>
-    <p class="nv-era">你在各章節和小說介紹頁留過的言，點了直接跳過去。被管理員刪除的不會列出。</p>
-    <div class="mycm-list"></div>
   </section>
 
 </div>
