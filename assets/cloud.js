@@ -482,6 +482,14 @@
     // 看過這個角色的回覆
     adminUnseen: 0,             // 管理員：讀者還沒讀的私訊數（dmDot 更新）
     refresh: function () { return getAuth().then(dmDot).catch(function () {}); },
+    // 刪掉自己跟這個角色的整段對話（含角色回覆）；成功回傳 null，失敗回傳錯誤訊息
+    delThread: async function (chr) {
+      try {
+        var A = await getAuth(), r = await A.getClient().rpc('dm_delete_thread', { p_chr: chr });
+        if (r.error) return errText('刪除失敗，請稍後再試。', r.error);
+        await dmDot(A); return null;
+      } catch (e) { return errText('刪除失敗，請稍後再試。', e); }
+    },
     seen: async function (chr) {
       try { var A = await getAuth(); await A.getClient().rpc('dm_mark_seen', { p_chr: chr }); await dmDot(A); } catch (e) {}
     }
