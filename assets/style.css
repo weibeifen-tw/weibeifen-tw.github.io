@@ -535,3 +535,4 @@ body.reading .chat-btn{bottom:calc(84px + env(safe-area-inset-bottom))}
 .sbox-r .none{padding:10px 14px;color:var(--sub)}
 button.search-btn{border:0;background:none;cursor:pointer}
 .ip-cap{color:#999;font-size:.85em}
+.drawer h2 a{color:inherit;text-decoration:none}
