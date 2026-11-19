@@ -360,6 +360,7 @@
     onChange: onChange,
     toProfile: toProfile,
     configProblem: configProblem,
+    getClient: getClient,
     // 供測試用
     _getClient: getClient,
     _safeReturnPath: safeReturnPath,

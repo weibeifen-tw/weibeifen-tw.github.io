@@ -1,0 +1,8 @@
+# 會員登入設定（Supabase）。只能放可公開的 Publishable Key（sb_publishable_ 開頭）。
+# 絕對不要放 Secret Key（sb_secret_）、service_role 或 Google Client Secret。
+supabase_url: "https://tqicconarhpddejxdvmf.supabase.co"
+publishable_key: "sb_publishable_7JzzTIqK9DO8uVMVZz6tJg_9Mmu6osl"
+site_origin: "https://weibeifen.com"
+callback_path: "/auth/callback/"
+sdk: "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2/dist/umd/supabase.js"
+sdk_sri: "sha384-A97u3Qnt9GZHURO9YJZRe7VQgGUeFzcv6I1oIGnUTxQrCxnpQMwR0/G8F2zt9abZ"

@@ -294,8 +294,10 @@
 })();
 
 // 我的書櫃：看過的小說和讀到第幾篇
-(function () {
+// （雲端書櫃同步後，cloud.js 會呼叫 window.WBRenderShelf() 重畫一次）
+window.WBRenderShelf = function () {
   var sub = document.querySelector('.shelf-list'); if (!sub) return;
+  sub.textContent = '';
   var novels = JSON.parse(document.getElementById('novels').textContent || '{}'), list = [];
   var chars = JSON.parse(document.getElementById('chars').textContent || '{}');
   var split = window.SPLIT || [];
@@ -322,7 +324,8 @@
     var h = document.createElement('a'); h.href = BASE + '/novel/' + x.id + '/'; h.className = 'd-nv'; h.textContent = novels[x.id].title; sub.appendChild(h);
     x.rows.forEach(function (y) { sub.appendChild(row(y[1].url, (chars[y[0]] || {}).name || '', y[1].no, 'd-ch')); });
   });
-})();
+};
+window.WBRenderShelf();
 
 // 小說總覽的台灣地圖：滑到（手機點）一個地形區，旁邊列出那區的小說
 (function () {
