@@ -1,0 +1,10 @@
+{%- comment -%}
+  首頁限動列最左側的「我的帳號」入口（4-2）。
+  使用獨立的 .account-story，不加 .story，所以 app.js 不會綁「打開角色卡」；
+  橫向滑動、拖曳防誤觸是綁在外層 .stories 上，仍然有效。
+  頭像由 member.js 依本機登入資料替換，只做顯示，不代表任何權限。
+{%- endcomment -%}
+<a class="account-story" href="{{ '/member/' | relative_url }}" draggable="false" data-member-entry>
+  <span class="avatar" data-member-avatar></span>
+  <span class="s-t">我的帳號</span>
+</a>
