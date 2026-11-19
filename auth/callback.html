@@ -1,0 +1,63 @@
+---
+layout: null
+permalink: /auth/callback/
+sitemap: false
+---
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>登入中｜未備份</title>
+<style>
+  body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:"Noto Sans TC",system-ui,sans-serif;background:#faf6ef;color:#3a2f28}
+  .box{max-width:360px;padding:28px 24px;text-align:center;line-height:1.7}
+  .box h1{font-size:1.15rem;margin:0 0 .6em}
+  .box p{margin:.4em 0}
+  .err{color:#b0472b}
+  .acts{margin-top:1.2em;display:flex;gap:.8em;justify-content:center;flex-wrap:wrap}
+  .acts a,.acts button{font:inherit;padding:.5em 1.1em;border-radius:999px;border:1px solid #d9c9b6;background:#fff;color:inherit;text-decoration:none;cursor:pointer}
+  .acts .primary{background:#e07b39;border-color:#e07b39;color:#fff}
+</style>
+</head>
+<body>
+<main class="box" aria-live="polite">
+  <h1 id="t">登入中…</h1>
+  <p id="m">正在確認你的 Google 帳號，請稍候。</p>
+  <div class="acts" id="acts" hidden>
+    <button type="button" class="primary" id="retry">重新登入</button>
+    <a id="back" href="/">回到剛才的頁面</a>
+  </div>
+</main>
+<noscript><p style="text-align:center">登入需要開啟 JavaScript。</p></noscript>
+{% include auth-config.html %}
+<script>
+(async function () {
+  var t = document.getElementById('t'), m = document.getElementById('m');
+  if (!window.WBAuth) {
+    t.textContent = '登入失敗'; m.textContent = '登入程式沒有載入成功，請重新整理或稍後再試。'; m.className = 'err';
+    return;
+  }
+  var r = await WBAuth.handleCallback();
+  if (r.ok) {
+    t.textContent = '登入成功';
+    m.textContent = '正在帶你回到剛才的頁面…';
+    location.replace(r.returnTo);
+    return;
+  }
+  t.textContent = r.cancelled ? '已取消登入' : '登入失敗';
+  m.textContent = r.message;
+  if (!r.cancelled) m.className = 'err';
+  document.getElementById('back').setAttribute('href', r.returnTo || '/');
+  document.getElementById('retry').addEventListener('click', async function () {
+    this.disabled = true;
+    var res = await WBAuth.signInWithGoogle(r.returnTo || '/');
+    if (res.error) { m.textContent = res.error; m.className = 'err'; this.disabled = false; }
+  });
+  document.getElementById('acts').hidden = false;
+})();
+</script>
+</body>
+</html>
