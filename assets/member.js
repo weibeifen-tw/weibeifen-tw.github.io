@@ -136,8 +136,6 @@
     var dl = el('dl', 'mb-info');
     function row(k, v) { dl.appendChild(el('dt', null, k)); var dd = el('dd', null, v); dl.appendChild(dd); return dd; }
     row('登入方式', p.provider === 'google' ? 'Google' : (p.provider || '—'));
-    var idd = row('會員 ID', p.id);
-    idd.classList.add('mb-id');
     card.appendChild(dl);
 
     if (prof.id) card.appendChild(profileForm(prof, me, av));
