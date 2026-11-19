@@ -249,7 +249,7 @@
 
   /* ---------- 公開留言（章節頁最下面） ---------- */
   var AU = window.WB_AUTH_CONFIG || {};
-  var CM_COLS = 'id,user_id,body,hidden,removed,as_author,created_at,profiles(display_name,username,avatar_color)';
+  var CM_COLS = 'id,user_id,body,hidden,removed,as_author,created_at,profiles(display_name,username,avatar_color,bio)';
 
   function cmError(e) {
     var m = (e && e.message) || '';
@@ -282,6 +282,35 @@
     sec.querySelectorAll('.actions .talk .n').forEach(function (x) { x.textContent = n ? String(n) : ''; });
   }
 
+  // 會員小卡片：同一時間只開一張，點外面或按 Esc 關掉
+  var cardEl = null;
+  function closeCard() { if (cardEl) { cardEl.remove(); cardEl = null; } }
+  function showCard(anchor, p, r) {
+    var same = cardEl && cardEl._for === anchor;
+    closeCard();
+    if (same) return;
+    var c = el('div', 'cm-card'); c._for = anchor;
+    c.setAttribute('role', 'dialog');
+    var head = el('div', 'cm-card-head');
+    if (window.WBAvatar) head.appendChild(window.WBAvatar.make({ name: p.display_name || '新會員', color: p.avatar_color, id: r.user_id, author: r.as_author }, 'cm-card-av'));
+    var nm = el('div', 'cm-card-who');
+    var b = el('b', null, p.display_name || '新會員');
+    if (r.as_author) b.appendChild(el('span', 'cm-author', '作者'));
+    nm.appendChild(b);
+    if (p.username) nm.appendChild(el('small', null, '@' + p.username));
+    head.appendChild(nm);
+    c.appendChild(head);
+    c.appendChild(el('p', 'cm-card-bio' + (p.bio ? '' : ' empty'), p.bio || '還沒有寫簡介。'));
+    document.body.appendChild(c);
+    var a = anchor.getBoundingClientRect(), w = c.offsetWidth;
+    var left = Math.max(8, Math.min(a.left + window.scrollX, window.scrollX + document.documentElement.clientWidth - w - 8));
+    c.style.left = left + 'px';
+    c.style.top = (a.bottom + window.scrollY + 6) + 'px';
+    cardEl = c;
+  }
+  document.addEventListener('click', function (e) { if (cardEl && !cardEl.contains(e.target)) closeCard(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeCard(); });
+
   function initComments() {
     if (!AU.supabaseUrl) return;
     // 章節頁：放在章節最下面；小說介紹頁：放在篇章列表下面（對整本小說留言）
@@ -311,8 +340,13 @@
         var p = r.profiles || {};
         var item = el('div', 'cm-item' + (r.hidden || r.removed ? ' is-hidden' : ''));
         var top = el('div', 'cm-top');
-        if (window.WBAvatar) top.appendChild(window.WBAvatar.make({ name: p.display_name || '新會員', color: p.avatar_color, id: r.user_id, author: r.as_author }, 'cm-av'));
-        top.appendChild(el('b', 'cm-name', p.display_name || '新會員'));
+        // 點頭貼或名字：跳出會員小卡片（頭貼、名字、@帳號、簡介）
+        var who = el('button', 'cm-who'); who.type = 'button';
+        who.setAttribute('aria-label', '看 ' + (p.display_name || '新會員') + ' 的簡介');
+        if (window.WBAvatar) who.appendChild(window.WBAvatar.make({ name: p.display_name || '新會員', color: p.avatar_color, id: r.user_id, author: r.as_author }, 'cm-av'));
+        who.appendChild(el('b', 'cm-name', p.display_name || '新會員'));
+        who.onclick = function (ev) { ev.stopPropagation(); showCard(who, p, r); };
+        top.appendChild(who);
         if (r.as_author) top.appendChild(el('span', 'cm-author', '作者'));
         if (p.username) top.appendChild(el('span', 'cm-user', '@' + p.username));
         var side = el('div', 'cm-side'); side.appendChild(el('time', 'cm-time', fmtDate(r.created_at)));
