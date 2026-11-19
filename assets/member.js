@@ -185,7 +185,9 @@
     var sw = el('div', 'mb-colors');
     sw.setAttribute('role', 'radiogroup');
     function preview() { if (window.WBAvatar && headAv) window.WBAvatar.paint(headAv, { name: dn.value.trim() || '新會員', color: picked || null, id: me.id, author: me.author }); }
-    (window.WBAvatar ? window.WBAvatar.colors : []).forEach(function (c) {
+    var palette = window.WBAvatar ? window.WBAvatar.choices(me.author) : [];
+    if (picked === 'orange' && !me.author) picked = '';
+    palette.forEach(function (c) {
       var b = el('button', 'mb-color'); b.type = 'button';
       b.setAttribute('role', 'radio'); b.setAttribute('aria-label', c[1]); b.title = c[1];
       var dot = window.WBAvatar.make({ name: dn.value.trim() || '新會員', color: c[0], id: me.id, author: me.author });
@@ -200,7 +202,7 @@
     f.appendChild(pk);
     dn.addEventListener('input', function () {
       preview();
-      sw.querySelectorAll('.lt-av').forEach(function (d, i) { window.WBAvatar.paint(d, { name: dn.value.trim() || '新會員', color: window.WBAvatar.colors[i][0], id: me.id, author: me.author }); });
+      sw.querySelectorAll('.lt-av').forEach(function (d, i) { window.WBAvatar.paint(d, { name: dn.value.trim() || '新會員', color: palette[i][0], id: me.id, author: me.author }); });
     });
 
     var msg = el('p', 'mb-form-msg'); msg.hidden = true;
