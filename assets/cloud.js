@@ -266,10 +266,11 @@
   function cmError(e) {
     var m = (e && e.message) || '';
     if (/WB_BANNED/.test(m)) return '你的帳號已被停權，不能留言。';
+    if (/WB_TOO_LONG/.test(m)) return '留言最多 100 個字。';
     if (/WB_TOO_FAST/.test(m)) return '留言太快了，請等 15 秒再試。';
     if (/WB_TOO_MANY/.test(m)) return '一小時最多留 5 則，請晚點再來。';
     if (/WB_LOGIN_REQUIRED/.test(m)) return '請先登入會員。';
-    if (e && e.code === '23514') return '留言要 1～500 個字。';
+    if (e && e.code === '23514') return '留言要 1～100 個字。';
     if (e && e.code === '23505') return '你已經檢舉過這則留言了。';
     return errText('沒有成功，請稍後再試。', e);
   }
@@ -445,12 +446,12 @@
     function memberForm() {
       formWrap.textContent = '';
       var f = el('form', 'cm-form');
-      var ta = el('textarea'); ta.maxLength = 500; ta.rows = 3; ta.placeholder = '留言會公開給所有人看，請友善發言。講髒話、罵人或騷擾，帳號會被封鎖。';
+      var ta = el('textarea'); ta.maxLength = 100; ta.rows = 3; ta.placeholder = '留言會公開給所有人看，請友善發言。講髒話、罵人或騷擾，帳號會被封鎖。';
       var row = el('div', 'cm-row');
-      var cnt = el('small', 'cm-cnt', '0 / 500');
+      var cnt = el('small', 'cm-cnt', '0 / 100');
       var b = el('button', 'cm-send', '送出'); b.type = 'submit';
       var msg = el('p', 'mb-form-msg err'); msg.hidden = true;
-      ta.oninput = function () { cnt.textContent = ta.value.length + ' / 500'; };
+      ta.oninput = function () { cnt.textContent = ta.value.length + ' / 100'; };
       row.appendChild(cnt); row.appendChild(b);
       var warn = el('p', 'cm-warn', '⚠️ 講髒話、罵人或騷擾，留言會被刪除，帳號會被封鎖。');
       f.appendChild(warn); f.appendChild(ta); f.appendChild(row); f.appendChild(msg);
@@ -464,7 +465,7 @@
         catch (e) { res = { error: { message: '連不上會員伺服器' } }; }
         b.disabled = false;
         if (res.error) { msg.textContent = cmError(res.error); msg.hidden = false; return; }
-        ta.value = ''; cnt.textContent = '0 / 500';
+        ta.value = ''; cnt.textContent = '0 / 100';
         load();
       };
       formWrap.appendChild(f);
@@ -602,6 +603,17 @@
   if (!signedIn()) { document.querySelectorAll('.mb-guest').forEach(function (g) { g.hidden = false; }); return; }
 
   getAuth().then(async function (A) {
+    // 被封鎖的帳號：自動登出（小說照樣可以看）
+    try {
+      var bn = await A.getClient().rpc('is_banned');
+      if (!bn.error && bn.data === true) {
+        try { localStorage.removeItem('wb:me'); } catch (e) {}
+        await A.signOut();
+        window.alert('你的帳號已被停權，已自動登出。小說還是可以繼續看。');
+        location.reload();
+        return;
+      }
+    } catch (e) {}
     var last = 0;
     try { last = +sessionStorage.getItem(SYNC_KEY) || 0; } catch (e) {}
     if (sec || document.querySelector('.shelf-list') || Date.now() - last > SYNC_EVERY) {
