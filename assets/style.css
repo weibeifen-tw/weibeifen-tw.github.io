@@ -568,6 +568,22 @@ button.search-btn{border:0;background:none;cursor:pointer}
 .mb-soon li{display:flex;align-items:baseline;padding:12px 4px;border-top:1px solid var(--line);color:var(--sub);font-size:16px}
 .mb-soon li:first-child{border-top:0}
 .mb-soon small{margin-left:auto;font-size:12px}
+.mb-form,.mb-admin{width:100%;margin-top:18px;padding-top:16px;border-top:1px solid var(--line);text-align:left;display:flex;flex-direction:column;gap:10px}
+.mb-field{display:flex;flex-direction:column;gap:4px}
+.mb-lbl{font-size:14px;font-weight:500}
+.mb-field input,.mb-field textarea,.mb-code input{font:inherit;font-size:16px;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);box-sizing:border-box;width:100%}
+.mb-field textarea{resize:vertical}
+.mb-hint{color:var(--sub);font-size:12px}
+.mb-form .mb-btn,.mb-admin .mb-btn{align-self:flex-start;margin-top:4px}
+.mb-form-msg{margin:0;font-size:13px;color:var(--sub)}
+.mb-form-msg.err{color:#b0472b}
+.mb-code{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.mb-code input{width:9em;letter-spacing:.2em;text-align:center}
+.mb-code .mb-btn{margin-top:0}
+.mb-code .mb-form-msg{flex-basis:100%}
+.mb-qr{width:180px;height:180px;background:#fff;padding:8px;border-radius:10px;align-self:center}
+.mb-secret{font-family:ui-monospace,Menlo,monospace;font-size:13px;word-break:break-all;padding:8px 10px;border-radius:8px;background:var(--chip)}
+.mb-acts{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
 
 /* ===== 4-2 會員入口：首頁限動列「我的帳號」、左側選單「我的帳號」===== */
 /* .account-story 數值與 .story（約第 393–395 行）相同；調整小說限動尺寸時請一併修改 */

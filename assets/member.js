@@ -3,7 +3,8 @@
  *
  * 1. 全站（首頁限動列、左側選單）：只讀瀏覽器裡的登入資料，把「我的帳號」換成頭像。
  *    這部分不載入 Supabase SDK、不連網，只做顯示；真正的驗證在 /member/ 進行。
- * 2. /member/：顯示訪客或會員畫面、Google 登入、登出、管理員標籤。
+ * 2. /member/：顯示訪客或會員畫面、Google 登入、登出（含所有裝置）、
+ *    個人資料編輯（profiles，RLS）、管理員兩步驟驗證。
  *    需要頁面先載入 _includes/auth-config.html（Supabase SDK + auth.js）。
  *
  * 不讀寫任何 wb: / wb- 開頭的資料（書櫃、閱讀紀錄），書櫃列表由 app.js 原本的程式負責。
@@ -28,7 +29,7 @@
       id: user.id || '',
       email: user.email || '',
       name: m.full_name || m.name || (user.email ? user.email.split('@')[0] : '讀者'),
-      avatar: m.avatar_url || m.picture || '',
+      avatar: '', // 不顯示 Google 大頭貼（隱私）；會員頁改用 profiles.avatar_url
       provider: (user.app_metadata && user.app_metadata.provider) || ''
     };
   }
@@ -104,15 +105,18 @@
     paintEntries(null);
   }
 
-  function renderMember(p, isAdmin) {
+  function renderMember(p, prof, role) {
     card.textContent = '';
+    prof = prof || {};
+    var name = prof.display_name || '新會員';
     var head = el('div', 'mb-head');
-    var av = el('span', 'avatar mb-av'); paintAvatar(av, p); head.appendChild(av);
+    var av = el('span', 'avatar mb-av'); paintAvatar(av, { avatar: prof.avatar_url || '' }); head.appendChild(av);
     var who = el('div', 'mb-who');
-    var nm = el('h1', 'mb-title', p.name);
-    if (isAdmin) nm.appendChild(el('span', 'mb-badge', '管理員'));
+    var nm = el('h1', 'mb-title', name);
+    if (role === 'admin') nm.appendChild(el('span', 'mb-badge', '管理員'));
     who.appendChild(nm);
-    who.appendChild(el('p', 'mb-sub', p.email));
+    if (prof.username) who.appendChild(el('p', 'mb-sub', '@' + prof.username));
+    who.appendChild(el('p', 'mb-sub', p.email + '（只有你看得到）'));
     head.appendChild(who);
     card.appendChild(head);
 
@@ -123,12 +127,146 @@
     idd.classList.add('mb-id');
     card.appendChild(dl);
 
+    if (prof.id) card.appendChild(profileForm(prof));
+    if (role === 'admin') card.appendChild(adminBox());
+
+    var acts = el('div', 'mb-acts');
     var out = el('button', 'mb-btn mb-logout', '登出');
-    out.type = 'button';
-    out.onclick = logout;
-    card.appendChild(out);
+    out.type = 'button'; out.onclick = logout;
+    var all = el('button', 'mb-btn mb-logout-all', '登出所有裝置');
+    all.type = 'button'; all.onclick = logoutAll;
+    acts.appendChild(out); acts.appendChild(all);
+    card.appendChild(acts);
     if (future) future.hidden = false;
     paintEntries(p);
+  }
+
+  /* ---------- 個人資料表單（公開資料） ---------- */
+  function field(labelText, input, hint) {
+    var w = el('label', 'mb-field');
+    w.appendChild(el('span', 'mb-lbl', labelText));
+    w.appendChild(input);
+    if (hint) w.appendChild(el('small', 'mb-hint', hint));
+    return w;
+  }
+
+  function profileForm(prof) {
+    var f = el('form', 'mb-form');
+    f.noValidate = true;
+    f.appendChild(el('h2', 'mb-h', '個人資料'));
+    f.appendChild(el('p', 'mb-sub', '以下資料所有人都看得到，請不要填真實姓名或聯絡方式。'));
+
+    var dn = el('input'); dn.name = 'display_name'; dn.maxLength = 30; dn.value = prof.display_name || ''; dn.autocomplete = 'off';
+    var un = el('input'); un.name = 'username'; un.maxLength = 20; un.value = prof.username || ''; un.autocomplete = 'off';
+    un.setAttribute('autocapitalize', 'off'); un.spellcheck = false;
+    var bio = el('textarea'); bio.name = 'bio'; bio.maxLength = 200; bio.rows = 3; bio.value = prof.bio || '';
+
+    f.appendChild(field('顯示名稱', dn, '1～30 個字，留空會顯示「新會員」'));
+    f.appendChild(field('帳號名稱（選填）', un, '小寫英文、數字、底線，3～20 個字'));
+    f.appendChild(field('簡介（選填）', bio, '最多 200 個字'));
+
+    var msg = el('p', 'mb-form-msg'); msg.hidden = true;
+    var save = el('button', 'mb-btn primary', '儲存');
+    save.type = 'submit';
+    f.appendChild(save); f.appendChild(msg);
+
+    function say(t, err) { msg.textContent = t; msg.hidden = !t; msg.classList.toggle('err', !!err); }
+
+    f.onsubmit = async function (ev) {
+      ev.preventDefault();
+      var u = un.value.trim().toLowerCase();
+      if (u && !/^[a-z0-9_]{3,20}$/.test(u)) { say('帳號名稱只能用小寫英文、數字、底線，3～20 個字。', true); return; }
+      save.disabled = true; say('儲存中…');
+      var r;
+      try { r = await A.updateMyProfile({ display_name: dn.value, username: u, bio: bio.value }); }
+      catch (e) { r = { error: '連不上會員伺服器，請稍後再試。' }; }
+      save.disabled = false;
+      if (r.error) { say(r.error, true); return; }
+      dn.value = r.profile.display_name || ''; un.value = r.profile.username || ''; bio.value = r.profile.bio || '';
+      var t = card.querySelector('.mb-title');
+      if (t && t.firstChild && t.firstChild.nodeType === 3) t.firstChild.nodeValue = r.profile.display_name || '新會員';
+      say('已儲存。');
+    };
+    return f;
+  }
+
+  /* ---------- 管理員：兩步驟驗證 ---------- */
+  function adminBox() {
+    var box = el('section', 'mb-admin');
+    box.appendChild(el('h2', 'mb-h', '管理員驗證'));
+    var body = el('div', 'mb-admin-body');
+    body.appendChild(el('p', 'mb-sub', '檢查中…'));
+    box.appendChild(body);
+    paintAdmin(body);
+    return box;
+  }
+
+  function codeForm(onCode, btnText) {
+    var f = el('form', 'mb-code');
+    var inp = el('input'); inp.inputMode = 'numeric'; inp.autocomplete = 'one-time-code'; inp.maxLength = 6; inp.placeholder = '6 位數字';
+    var b = el('button', 'mb-btn primary', btnText || '驗證'); b.type = 'submit';
+    var m = el('p', 'mb-form-msg err'); m.hidden = true;
+    f.appendChild(inp); f.appendChild(b); f.appendChild(m);
+    f.onsubmit = async function (ev) {
+      ev.preventDefault();
+      b.disabled = true; m.hidden = true;
+      var r;
+      try { r = await onCode(inp.value); } catch (e) { r = { error: '連不上會員伺服器，請稍後再試。' }; }
+      b.disabled = false;
+      if (r && r.error) { m.textContent = r.error; m.hidden = false; inp.select(); }
+    };
+    setTimeout(function () { inp.focus(); }, 0);
+    return f;
+  }
+
+  async function paintAdmin(body) {
+    var st;
+    try { st = await A.mfaStatus(); } catch (e) { st = { error: '連不上會員伺服器，請稍後再試。' }; }
+    body.textContent = '';
+    if (st.error) { body.appendChild(el('p', 'mb-form-msg err', st.error)); return; }
+
+    if (st.level === 'aal2') {
+      var ok = false;
+      try { ok = await A.isAdmin(); } catch (e) {}
+      body.appendChild(el('p', 'mb-sub', ok
+        ? '✓ 這次登入已通過兩步驟驗證，管理員權限已啟用。'
+        : '已通過兩步驟驗證，但資料庫沒有確認你的管理員權限。請確認 002 的 SQL 已執行。'));
+      return;
+    }
+
+    if (st.verified.length) {
+      body.appendChild(el('p', 'mb-sub', '請輸入驗證 App 上的 6 位數字，通過後這次登入才有管理員權限。'));
+      body.appendChild(codeForm(async function (code) {
+        var r = await A.mfaVerify(st.verified[0].id, code);
+        if (!r.error) paintAdmin(body);
+        return r;
+      }));
+      return;
+    }
+
+    body.appendChild(el('p', 'mb-sub', '管理員必須設定兩步驟驗證。請先在手機安裝 Google Authenticator 之類的驗證 App。'));
+    var start = el('button', 'mb-btn primary', '開始設定');
+    start.type = 'button';
+    start.onclick = async function () {
+      start.disabled = true;
+      var r;
+      try { r = await A.mfaEnroll(); } catch (e) { r = { error: '連不上會員伺服器，請稍後再試。' }; }
+      if (r.error) { start.disabled = false; body.appendChild(el('p', 'mb-form-msg err', r.error)); return; }
+      body.textContent = '';
+      body.appendChild(el('p', 'mb-sub', '1. 用驗證 App 掃描這個 QR code：'));
+      var img = el('img', 'mb-qr'); img.alt = '兩步驟驗證 QR code';
+      if (/^data:image\/svg\+xml/.test(r.qr)) img.src = r.qr;
+      body.appendChild(img);
+      body.appendChild(el('p', 'mb-sub', '無法掃描時，手動輸入這串金鑰：'));
+      body.appendChild(el('code', 'mb-secret', r.secret));
+      body.appendChild(el('p', 'mb-sub', '2. 輸入 App 上顯示的 6 位數字完成設定：'));
+      body.appendChild(codeForm(async function (code) {
+        var v = await A.mfaVerify(r.factorId, code);
+        if (!v.error) paintAdmin(body);
+        return v;
+      }, '完成設定'));
+    };
+    body.appendChild(start);
   }
 
   async function login() {
@@ -150,6 +288,18 @@
     renderGuest();
   }
 
+  async function logoutAll() {
+    if (busy || !A) return;
+    if (!window.confirm('要登出所有裝置嗎？手機、電腦等所有登入過的地方都要重新登入。')) return;
+    busy = true;
+    var b = card.querySelector('.mb-logout-all'); if (b) b.disabled = true;
+    var r = await A.signOutAll();
+    busy = false;
+    if (r.error) { setNote(r.error, true); if (b) b.disabled = false; return; }
+    setNote('已登出所有裝置。書櫃留在這台裝置，不受影響。');
+    renderGuest();
+  }
+
   // 從 Google 頁按「上一頁」回來時，頁面可能從快取還原：重設按鈕狀態
   window.addEventListener('pageshow', function (e) {
     if (e.persisted && busy) { busy = false; setNote(''); var b = card.querySelector('.mb-login'); if (b) b.disabled = false; }
@@ -157,7 +307,7 @@
 
   async function init() {
     var lp = localProfile();
-    if (lp) renderMember(lp, false); else renderGuest();
+    if (lp) renderMember(lp, null, null); else renderGuest();
 
     if (!A) { setNote('登入功能暫時無法使用（登入程式沒有載入），書櫃仍可正常查看。', true); return; }
     var problem = A.configProblem();
@@ -168,9 +318,14 @@
     var v;
     try { v = await A.getVerifiedUser(); } catch (e) { v = { user: null, error: '連不上會員伺服器，以下是這台裝置上次的登入資料。' }; }
     if (v.user) {
-      var role = null;
+      var role = null, prof = null;
       try { role = await A.getRole(); } catch (e) {}
-      renderMember(v.user, role === 'admin');
+      try {
+        var pr = await A.getMyProfile();
+        prof = pr.profile;
+        if (pr.error) setNote(pr.error, true);
+      } catch (e) { setNote('讀取個人資料失敗，請重新整理。', true); }
+      renderMember(v.user, prof, role);
       return;
     }
     if (v.error) { setNote(v.error, true); return; } // 網路問題：保留畫面，不強制登出
