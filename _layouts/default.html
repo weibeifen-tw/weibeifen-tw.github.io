@@ -7,6 +7,13 @@
 <title>{% if seo_t %}{{ seo_t }}｜{% elsif page.title %}{{ page.title }}｜{% endif %}{{ site.title }}</title>
 {% seo title=false %}
 <meta name="google-site-verification" content="KCQ-Qe4IAxDllQWbtZfBR7pU5hBGTlhBXfMzZcPZGxQ" />
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#f7f6f3">
+<link rel="icon" type="image/png" sizes="48x48" href="/assets/icons/favicon-48.png">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="未備份">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@400;600;700&display=swap" rel="stylesheet">
@@ -68,5 +75,6 @@
 {% include auth-config.html lazy=true %}
 <script src="{{ '/assets/cloud.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>
 <script>(function(){var ok=function(e){if(document.documentElement.classList.contains('can-copy'))return true;var t=e.target;return t&&t.closest&&t.closest('input,textarea');};['contextmenu','selectstart','copy','cut','dragstart'].forEach(function(n){document.addEventListener(n,function(e){if(!ok(e))e.preventDefault();});});})();</script>
+<script>if('serviceWorker' in navigator){addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){});});}</script>
 </body>
 </html>
