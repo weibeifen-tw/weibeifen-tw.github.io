@@ -721,3 +721,20 @@ html[data-theme="night"] .ib-admin{background:#3a2226;color:#f2a7b1}
 .ad-snip-list{display:flex;flex-direction:column;margin:8px 0}
 .ad-snip-item{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:10px 2px;border-bottom:1px solid var(--line)}
 .ad-snip-item p{margin:0;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+/* 會員頭貼：白底圓圈＋名字第一個字（管理員 MU），字的顏色會員自選 */
+.avatar.lt-av{background:#fff;color:var(--lc);border:1.5px solid var(--lc);box-sizing:border-box;font-weight:700;line-height:1}
+.avatar.lt-av.lt-mu{font-size:13px;letter-spacing:.02em}
+.account-story .avatar.lt-av{font-size:26px}
+.account-story .avatar.lt-mu{font-size:19px}
+.avatar.d-av.lt-mu{font-size:10px}
+.cm-top .cm-av{align-self:center}
+.mb-av.lt-av{font-size:28px}
+.avatar.cm-av{width:28px;height:28px;font-size:13px;flex:none}
+.avatar.cm-av.lt-mu{font-size:10px}
+.avatar.mb-av.lt-mu{font-size:26px}
+.ad-who{display:flex;align-items:center;gap:8px}
+.mb-colors{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 2px}
+.mb-color{border:0;background:none;padding:3px;border-radius:50%;cursor:pointer;line-height:0}
+.mb-color .avatar{width:34px;height:34px;font-size:15px}
+.mb-color .avatar.lt-mu{font-size:11px}
+.mb-color[aria-checked="true"]{box-shadow:0 0 0 2px var(--ink)}

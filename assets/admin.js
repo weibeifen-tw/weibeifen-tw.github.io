@@ -151,7 +151,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var reports = {};
     (rep.data || []).forEach(function (r) { (reports[r.comment_id] = reports[r.comment_id] || []).push(r); });
 
-    var q = c().from('comments').select('id,user_id,novel,path,body,hidden,removed,created_at,profiles(display_name,username)')
+    var q = c().from('comments').select('id,user_id,novel,path,body,hidden,removed,as_author,created_at,profiles(display_name,username,avatar_color)')
       .order('created_at', { ascending: false }).limit(100);
     if (cmFilter === 'hidden') q = q.or('hidden.eq.true,removed.eq.true');
     if (cmNovel) q = q.eq('novel', cmNovel);
@@ -169,6 +169,7 @@ document.addEventListener('DOMContentLoaded', function () {
       var pr = r.profiles || {};
       var item = el('div', 'cm-item' + (r.hidden || r.removed ? ' is-hidden' : ''));
       var top = el('div', 'cm-top');
+      if (window.WBAvatar) top.appendChild(window.WBAvatar.make({ name: pr.display_name || '新會員', color: pr.avatar_color, id: r.user_id, author: r.as_author }, 'cm-av'));
       top.appendChild(el('b', 'cm-name', pr.display_name || '新會員'));
       if (pr.username) top.appendChild(el('span', 'cm-user', '@' + pr.username));
       var side = el('div', 'cm-side'); side.appendChild(el('time', 'cm-time', fmtDate(r.created_at)));
@@ -470,7 +471,10 @@ document.addEventListener('DOMContentLoaded', function () {
     tb.appendChild(hr);
     rows.forEach(function (r) {
       var tr = el('tr');
-      tr.appendChild(el('td', null, r.display_name || '新會員'));
+      var nt = el('td', 'ad-who');
+      if (window.WBAvatar) nt.appendChild(window.WBAvatar.make({ name: r.display_name || '新會員', color: r.avatar_color, id: r.id, author: r.role === 'admin' }, 'cm-av'));
+      nt.appendChild(document.createTextNode(r.display_name || '新會員'));
+      tr.appendChild(nt);
       tr.appendChild(el('td', null, r.username ? '@' + r.username : '—'));
       tr.appendChild(el('td', null, r.role === 'admin' ? '管理員' : '讀者'));
       tr.appendChild(el('td', null, fmtDate(r.created_at)));

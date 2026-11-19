@@ -249,7 +249,7 @@
 
   /* ---------- 公開留言（章節頁最下面） ---------- */
   var AU = window.WB_AUTH_CONFIG || {};
-  var CM_COLS = 'id,user_id,body,hidden,removed,as_author,created_at,profiles(display_name,username)';
+  var CM_COLS = 'id,user_id,body,hidden,removed,as_author,created_at,profiles(display_name,username,avatar_color)';
 
   function cmError(e) {
     var m = (e && e.message) || '';
@@ -311,6 +311,7 @@
         var p = r.profiles || {};
         var item = el('div', 'cm-item' + (r.hidden || r.removed ? ' is-hidden' : ''));
         var top = el('div', 'cm-top');
+        if (window.WBAvatar) top.appendChild(window.WBAvatar.make({ name: p.display_name || '新會員', color: p.avatar_color, id: r.user_id, author: r.as_author }, 'cm-av'));
         top.appendChild(el('b', 'cm-name', p.display_name || '新會員'));
         if (r.as_author) top.appendChild(el('span', 'cm-author', '作者'));
         if (p.username) top.appendChild(el('span', 'cm-user', '@' + p.username));
