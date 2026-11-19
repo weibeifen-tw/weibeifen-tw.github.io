@@ -173,8 +173,8 @@
     f.appendChild(el('h2', 'mb-h', '個人資料'));
     f.appendChild(el('p', 'mb-sub', '以下資料所有人都看得到，請不要填真實姓名或聯絡方式。'));
 
-    var dn = el('input'); dn.name = 'display_name'; dn.maxLength = 30; dn.value = prof.display_name || ''; dn.autocomplete = 'off';
-    var un = el('input'); un.name = 'username'; un.maxLength = 20; un.value = prof.username || ''; un.autocomplete = 'off';
+    var dn = el('input'); dn.name = 'display_name'; dn.maxLength = 5; dn.value = prof.display_name || ''; dn.autocomplete = 'off';
+    var un = el('input'); un.name = 'username'; un.maxLength = 8; un.value = prof.username || ''; un.autocomplete = 'off';
     un.setAttribute('autocapitalize', 'off'); un.spellcheck = false;
     var bio = el('textarea'); bio.name = 'bio'; bio.maxLength = 30; bio.rows = 2; bio.value = prof.bio || '';
 
@@ -183,13 +183,14 @@
     var colorLocked = !me.author && !!prof.color_changed_at;
     var dnHint = el('small', 'mb-hint');
     function paintNameHint() {
-      dnHint.textContent = nameLocked ? '已經改過了，不能再改。' : '1～30 個字，留空會顯示「新會員」' + (me.author ? '' : '。只能改一次，存了就不能再改。');
+      dnHint.textContent = (nameLocked ? '已經改過了，不能再改。' : '1～5 個字，留空會顯示「新會員」。' + (me.author ? '' : '只能改一次，存了就不能再改。')) +
+        (me.author ? '' : '頭貼會顯示名稱的第一個字。');
       dn.disabled = nameLocked;
     }
     paintNameHint();
     var dnField = field('顯示名稱', dn); dnField.appendChild(dnHint);
     f.appendChild(dnField);
-    f.appendChild(field('帳號名稱（選填）', un, '小寫英文、數字、底線，3～20 個字'));
+    f.appendChild(field('帳號名稱（選填）', un, '小寫英文、數字、底線，3～8 個字。首頁頭貼下面會顯示帳號名稱。'));
     f.appendChild(field('簡介（選填）', bio, '最多 30 個字'));
 
     // 頭貼顏色：白底圓圈，名字第一個字（管理員是 MU）用選的顏色
@@ -236,7 +237,8 @@
     f.onsubmit = async function (ev) {
       ev.preventDefault();
       var u = un.value.trim().toLowerCase();
-      if (u && !/^[a-z0-9_]{3,20}$/.test(u)) { say('帳號名稱只能用小寫英文、數字、底線，3～20 個字。', true); return; }
+      if (u && !/^[a-z0-9_]{3,8}$/.test(u)) { say('帳號名稱只能用小寫英文、數字、底線，3～8 個字。', true); return; }
+      if (Array.from(dn.value.trim()).length > 5) { say('顯示名稱最多 5 個字。', true); return; }
       // 第一次改名字或顏色：先確認
       var newName = dn.value.trim() || '新會員', oldName = prof.display_name || '新會員';
       var nameChg = !nameLocked && !me.author && newName !== oldName;
