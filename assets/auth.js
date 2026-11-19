@@ -241,8 +241,8 @@
     if (/WB_COLOR_LOCKED/.test(e.message || '')) return '頭貼顏色只能選一次，已經選過了。';
     if (e.code === '23505') return '這個帳號名稱已經有人使用，請換一個。';
     if (e.code === '23514') {
-      if (/username/.test(e.message || '')) return '帳號名稱只能用小寫英文、數字、底線，3～20 個字。';
-      if (/display_name/.test(e.message || '')) return '顯示名稱要 1～30 個字。';
+      if (/username/.test(e.message || '')) return '帳號名稱只能用小寫英文、數字、底線，3～8 個字。';
+      if (/display_name/.test(e.message || '')) return '顯示名稱要 1～5 個字。';
       if (/bio/.test(e.message || '')) return '簡介最多 30 個字。';
       return '資料格式不符合規定。';
     }
