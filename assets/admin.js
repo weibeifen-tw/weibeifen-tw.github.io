@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', function () {
       var top = el('div', 'cm-top');
       top.appendChild(el('b', 'cm-name', pr.display_name || '新會員'));
       if (pr.username) top.appendChild(el('span', 'cm-user', '@' + pr.username));
-      top.appendChild(el('time', 'cm-time', fmtDate(r.created_at)));
+      var side = el('div', 'cm-side'); side.appendChild(el('time', 'cm-time', fmtDate(r.created_at))); top.appendChild(side);
       item.appendChild(top);
       var where = el('a', 'ad-where', whereText(r));
       where.href = r.path + '#comments';
@@ -181,7 +181,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (rs.length) btn('清除檢舉', async function () {
         return (await c().from('comment_reports').delete().eq('comment_id', r.id)).error;
       });
-      item.appendChild(acts);
+      side.appendChild(acts);
       list.appendChild(item);
     });
   }
