@@ -9,6 +9,7 @@ markdown: kramdown
 permalink: /t/:title/
 exclude:
   - README.md
+  - supabase
 plugins:
   - jekyll-seo-tag
   - jekyll-sitemap

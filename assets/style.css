@@ -543,3 +543,28 @@ button.search-btn{border:0;background:none;cursor:pointer}
 .ip-tags{position:absolute;left:12px;bottom:52px;z-index:2;display:flex;flex-wrap:wrap;gap:6px;max-width:calc(100% - 24px)}
 .ip-tags[hidden]{display:none}
 .ip-tags a{background:rgba(0,0,0,.72);color:#fff;font-size:13px;padding:6px 10px;border-radius:6px;text-decoration:none}
+
+/* ===== 會員（/member/ 與「我的帳號」入口）===== */
+.mb-default{width:62%;height:62%;color:#fff;margin-top:12%}
+.avatar:has(> .mb-default){background:#c9c3b9}
+.mb-box{padding-bottom:20px}
+.mb-card{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px}
+.mb-av{width:84px;height:84px;font-size:30px}
+.mb-card .mb-title{font-size:22px;margin:8px 0 0;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;word-break:break-all}
+.mb-sub{margin:0;color:var(--sub);font-size:14px;line-height:1.7;word-break:break-all}
+.mb-head{display:flex;flex-direction:column;align-items:center;gap:4px;width:100%}
+.mb-badge{font-family:"Noto Sans TC",sans-serif;font-size:12px;font-weight:500;letter-spacing:0;padding:2px 10px;border-radius:999px;background:var(--ink);color:var(--card)}
+.mb-info{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:14px 0 4px;padding:12px 16px;width:100%;box-sizing:border-box;border-radius:12px;background:var(--chip);font-size:13px;text-align:left}
+.mb-info dt{color:var(--sub);white-space:nowrap}
+.mb-info dd{margin:0;word-break:break-all}
+.mb-id{font-family:ui-monospace,Menlo,monospace;font-size:12px}
+.mb-btn{margin-top:14px;padding:11px 28px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:15px;cursor:pointer}
+.mb-btn.primary{background:var(--ink);border-color:var(--ink);color:var(--card);font-weight:500}
+.mb-btn:disabled{opacity:.5;cursor:default}
+.mb-note{margin:12px 0 0;text-align:center;font-size:13px;color:var(--sub)}
+.mb-note.err{color:#b0472b}
+.mb-h{margin:0 0 4px;font-family:"Noto Serif TC",serif;font-size:20px;font-weight:600}
+.mb-soon{list-style:none;margin:6px 0 0;padding:0}
+.mb-soon li{display:flex;align-items:baseline;padding:12px 4px;border-top:1px solid var(--line);color:var(--sub);font-size:16px}
+.mb-soon li:first-child{border-top:0}
+.mb-soon small{margin-left:auto;font-size:12px}

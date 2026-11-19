@@ -119,6 +119,13 @@ sitemap: false
     render(sess ? WBAuth.toProfile(sess.user) : null);
   }).catch(function (e) { msg('讀取登入狀態失敗：' + e.message, 'err'); });
 
+  // 從 Google 頁按「上一頁」回來時，頁面可能從瀏覽器快取還原，按鈕會停在「前往 Google…」：重設狀態
+  window.addEventListener('pageshow', function (e) {
+    if (!e.persisted) return;
+    msg(''); log('從上一頁返回（快取還原），已重設登入按鈕');
+    WBAuth.getSession().then(function (sess) { render(sess ? WBAuth.toProfile(sess.user) : null); });
+  });
+
   $('login').addEventListener('click', async function () {
     this.disabled = true; msg('前往 Google…');
     var r = await WBAuth.signInWithGoogle(location.pathname + location.search + location.hash);
@@ -137,6 +144,8 @@ sitemap: false
     if (r.error) { msg(r.error, 'err'); log('伺服器驗證失敗：' + r.error); return; }
     if (!r.user) { msg('伺服器確認：目前未登入'); log('伺服器確認：未登入'); render(null); return; }
     msg('伺服器確認登入有效', 'ok'); log('伺服器確認：' + r.user.email); render(r.user);
+    var role = await WBAuth.getRole();
+    log('角色（後端 user_roles）：' + (role === 'admin' ? '管理員' : '一般會員'));
   });
 })();
 </script>
