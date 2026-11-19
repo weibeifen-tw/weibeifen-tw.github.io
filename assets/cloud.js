@@ -8,7 +8,7 @@
  *    同一本（或同一個角色線）以「讀得比較後面」的為準；章數一樣時以比較新的為準。
  *    其他本機資料（字級、夜間模式、捲動位置、讀完標記、私訊）完全不動。
  * 2. 收藏：小說介紹頁可收藏整本，章節頁可加書籤；會員頁列出「我的收藏」。
- * 3. 公開留言：章節頁最下面。訪客也看得到（直接用可公開金鑰讀，不載入 SDK），會員才能留言。
+ * 3. 公開留言：章節頁最下面、小說介紹頁篇章列表下面（整本小說的留言）。訪客也看得到（直接用可公開金鑰讀，不載入 SDK），會員才能留言。
  *
  * 權限由 Supabase RLS 在伺服器端把關：每個人只能讀寫自己的資料。
  * 所有資料一律用 textContent 寫入，不使用 innerHTML。
@@ -201,9 +201,10 @@
   if (sec && sec.dataset.novel) {
     var cr = { novel: sec.dataset.novel, path: location.pathname, title: sec.dataset.title || '', no: sec.dataset.no || '' };
     var cb = favButton('ch-fav', ['🔖 加入書籤', '🔖 已加入書籤'], cr);
-    var wrap = el('p', 'ch-fav-wrap'); wrap.appendChild(cb);
-    var tip = sec.querySelector('.tip');
-    if (tip) sec.insertBefore(wrap, tip); else sec.appendChild(wrap);
+    // 放在愛心、留言、轉發、分享那一排的最右邊
+    var row = sec.querySelector('.r-acts');
+    if (row) row.appendChild(cb);
+    else { var wrap = el('p', 'ch-fav-wrap'); wrap.appendChild(cb); sec.appendChild(wrap); }
     buttons.push([cb, cr]);
   }
 
@@ -280,7 +281,12 @@
   }
 
   function initComments() {
-    if (!sec || !sec.dataset.novel || !AU.supabaseUrl) return;
+    if (!AU.supabaseUrl) return;
+    // 章節頁：放在章節最下面；小說介紹頁：放在篇章列表下面（對整本小說留言）
+    var novelId, mount, introList = document.querySelector('.chapters.nv-list');
+    if (sec && sec.dataset.novel) { novelId = sec.dataset.novel; mount = sec; }
+    else if (window.NOVEL && introList) { novelId = window.NOVEL; }
+    else return;
     var path = location.pathname;
     var box = el('section', 'cm'); box.id = 'comments';
     var h = el('h2', 'cm-h', '留言'); var hn = el('span', 'cm-n'); h.appendChild(hn);
@@ -288,7 +294,8 @@
     var formWrap = el('div', 'cm-form-wrap');
     var list = el('div', 'cm-list'); list.appendChild(el('p', 'cm-empty', '載入留言中…'));
     box.appendChild(formWrap); box.appendChild(list);
-    sec.appendChild(box);
+    if (mount) mount.appendChild(box);
+    else { box.classList.add('novel', 'cm-intro'); introList.parentNode.insertBefore(box, introList.nextSibling); }
 
     var me = null, admin = false, A = null;
 
@@ -392,7 +399,7 @@
         if (!body) { msg.textContent = '請先寫點什麼。'; msg.hidden = false; return; }
         b.disabled = true; msg.hidden = true;
         var res;
-        try { res = await A.getClient().from('comments').insert({ novel: sec.dataset.novel, path: path, body: body }); }
+        try { res = await A.getClient().from('comments').insert({ novel: novelId, path: path, body: body }); }
         catch (e) { res = { error: { message: '連不上會員伺服器' } }; }
         b.disabled = false;
         if (res.error) { msg.textContent = cmError(res.error); msg.hidden = false; return; }
