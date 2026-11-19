@@ -199,7 +199,7 @@
     });
     pk.appendChild(sw);
     pk.appendChild(el('small', 'mb-hint', '選好按「儲存」。留言區和全站都會顯示這個頭貼。'));
-    f.appendChild(pk);
+    f.insertBefore(pk, un.parentNode); // 放在顯示名稱下面
     dn.addEventListener('input', function () {
       preview();
       sw.querySelectorAll('.lt-av').forEach(function (d, i) { window.WBAvatar.paint(d, { name: dn.value.trim() || '新會員', color: palette[i][0], id: me.id, author: me.author }); });
@@ -273,7 +273,13 @@
       body.appendChild(el('p', 'mb-sub', ok
         ? '✓ 這次登入已通過兩步驟驗證，管理員權限已啟用。'
         : '已通過兩步驟驗證，但資料庫沒有確認你的管理員權限。請確認 002 的 SQL 已執行。'));
-      if (ok) { var go = el('a', 'mb-btn primary', '前往管理後台'); go.href = (window.BASE || '') + '/admin/'; go.style.textDecoration = 'none'; body.appendChild(go); }
+      if (ok) {
+        // 「前往管理後台」放在最下面登出按鈕的左邊
+        var go = el('a', 'mb-btn primary mb-go-admin', '前往管理後台'); go.href = (window.BASE || '') + '/admin/';
+        var acts = card.querySelector('.mb-acts'), old = card.querySelector('.mb-go-admin');
+        if (old) old.remove();
+        if (acts) { acts.insertBefore(go, acts.firstChild); acts.classList.add('has-admin'); } else body.appendChild(go);
+      }
       return;
     }
 
