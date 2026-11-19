@@ -769,6 +769,7 @@ html[data-theme="night"] .ib-admin{background:#3a2226;color:#f2a7b1}
 .fav-group .fav-item{padding-left:22px}
 /* 左邊選單：我的書櫃／收藏／留言 */
 .d-item[hidden]{display:none}
-.d-mine{margin-top:14px}
+.d-mine{margin-top:21px;position:relative}
+.d-mine::before{content:'';position:absolute;left:8px;right:8px;top:-11px;height:1px;background:var(--line)}
 .mb-guest a{margin-left:6px;color:var(--accent);font-weight:600}
 .account-story .s-t{max-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
