@@ -773,4 +773,5 @@ html[data-theme="night"] .ib-admin{background:#3a2226;color:#f2a7b1}
 .d-mine::before{content:'';position:absolute;left:8px;right:8px;top:-11px;height:1px;background:var(--line)}
 .mb-guest a{margin-left:6px;color:var(--accent);font-weight:600}
 .account-story .s-t{max-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.nv-btns .nv-fav{margin-left:auto}
+.nv-btns .nv-fav{margin-left:auto;align-self:center;min-height:32px;padding:0 12px;font-size:13px;color:var(--sub)}
+.nv-btns .nv-fav.on{color:var(--ink)}
