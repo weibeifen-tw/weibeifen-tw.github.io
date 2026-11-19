@@ -413,6 +413,8 @@ window.WBRenderShelf();
     var by = collect(), ids = Object.keys(by).filter(function (c) { return chars[c]; });
     ids.sort(function (a, b) { var x = by[a][by[a].length - 1], y = by[b][by[b].length - 1]; return (y.at || y.ord || 0) - (x.at || x.ord || 0); });
     var h = '<div class="ib-head"><b>私訊</b><button type="button" class="ib-x" aria-label="關閉">✕</button></div>';
+    var au = window.WBDM && window.WBDM.adminUnseen;
+    if (au > 0) h += '<a class="ib-admin" href="' + window.BASE + '/admin/#dm">讀者傳來 ' + au + ' 則未讀私訊，前往後台回覆 ›</a>';
     if (!ids.length) h += '<p class="ib-empty">還沒有對話。<br>' + (cloud ? '在貼文按 💬 就能私訊角色，角色會回覆你。' : '登入會員後，在貼文按 💬 就能私訊角色。') + '</p>';
     else h += '<ul class="ib-list">' + ids.map(function (c) {
       var ms = by[c], last = ms[ms.length - 1], ch = chars[c];
