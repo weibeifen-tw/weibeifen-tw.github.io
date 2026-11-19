@@ -457,7 +457,8 @@ body.roles-only #novel,body.roles-only .ch-h,body.roles-only .nv-list,body.roles
 body.roles-only .ro-only{display:block}
 body.roles-only .roles{margin-top:8px}
 .ro-book{margin:0 0 6px;font-size:20px;font-weight:700}
-.ro-go{margin:6px 0 12px;font-size:14px;color:var(--sub);text-decoration:none}
+.ro-go{font-size:14px;color:var(--sub);text-decoration:none}
+.ro-go-wrap{text-align:center;margin:20px 0 8px}
 .ov-info i small{margin-right:4px;font-size:10px;color:var(--sub);font-style:normal}
 /* 首頁作品介紹：IG 貼文樣式 */
 .intro-post .actions{padding:2px 10px 0;border:0}

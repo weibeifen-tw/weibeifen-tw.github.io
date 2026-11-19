@@ -56,7 +56,6 @@
     {%- endif %}
   </div>
   {%- endfor -%}
-  <a class="ro-only ro-go" href="{{ '/novel/' | append: id | append: '/' | relative_url }}">看《{{ nv.title }}》的篇章 →</a>
 </section>
 <h2 class="nv-h ch-h">篇章</h2>
 <div class="chapters nv-list">
@@ -70,6 +69,7 @@
 {%- endfor -%}
 </div>
 <div class="feed" hidden></div>
+<p class="ro-only ro-go-wrap"><a class="ro-go" href="{{ '/novel/' | append: id | append: '/' | relative_url }}">看《{{ nv.title }}》的篇章 →</a></p>
 <button type="button" class="more-btn" hidden>載入更多</button>
 <p class="empty" hidden>這裡還沒有貼文。</p>
 <script>window.NOVEL = {{ id | jsonify }};</script>
