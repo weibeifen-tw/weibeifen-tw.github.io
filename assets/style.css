@@ -738,3 +738,5 @@ html[data-theme="night"] .ib-admin{background:#3a2226;color:#f2a7b1}
 .mb-color .avatar{width:34px;height:34px;font-size:15px}
 .mb-color .avatar.lt-mu{font-size:11px}
 .mb-color[aria-checked="true"]{box-shadow:0 0 0 2px var(--ink)}
+.mb-acts.has-admin{width:100%;justify-content:flex-end}
+.mb-acts .mb-go-admin{margin-right:auto;text-decoration:none}
