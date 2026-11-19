@@ -233,10 +233,12 @@
   }
 
   /* ---------- 會員公開資料（public.profiles，RLS：只能改自己的） ---------- */
-  var PROFILE_COLS = 'id,username,display_name,avatar_url,avatar_color,bio';
+  var PROFILE_COLS = 'id,username,display_name,avatar_url,avatar_color,bio,name_changed_at,color_changed_at';
 
   function profileError(e) {
     if (!e) return null;
+    if (/WB_NAME_LOCKED/.test(e.message || '')) return '顯示名稱只能改一次，已經改過了。';
+    if (/WB_COLOR_LOCKED/.test(e.message || '')) return '頭貼顏色只能選一次，已經選過了。';
     if (e.code === '23505') return '這個帳號名稱已經有人使用，請換一個。';
     if (e.code === '23514') {
       if (/username/.test(e.message || '')) return '帳號名稱只能用小寫英文、數字、底線，3～20 個字。';

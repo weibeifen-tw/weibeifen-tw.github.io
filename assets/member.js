@@ -174,7 +174,17 @@
     un.setAttribute('autocapitalize', 'off'); un.spellcheck = false;
     var bio = el('textarea'); bio.name = 'bio'; bio.maxLength = 30; bio.rows = 2; bio.value = prof.bio || '';
 
-    f.appendChild(field('顯示名稱', dn, '1～30 個字，留空會顯示「新會員」'));
+    // 讀者的顯示名稱、頭貼顏色只能各改一次（資料庫也會擋）；管理員不限
+    var nameLocked = !me.author && !!prof.name_changed_at;
+    var colorLocked = !me.author && !!prof.color_changed_at;
+    var dnHint = el('small', 'mb-hint');
+    function paintNameHint() {
+      dnHint.textContent = nameLocked ? '已經改過了，不能再改。' : '1～30 個字，留空會顯示「新會員」' + (me.author ? '' : '。只能改一次，存了就不能再改。');
+      dn.disabled = nameLocked;
+    }
+    paintNameHint();
+    var dnField = field('顯示名稱', dn); dnField.appendChild(dnHint);
+    f.appendChild(dnField);
     f.appendChild(field('帳號名稱（選填）', un, '小寫英文、數字、底線，3～20 個字'));
     f.appendChild(field('簡介（選填）', bio, '最多 30 個字'));
 
@@ -193,13 +203,20 @@
       var dot = window.WBAvatar.make({ name: dn.value.trim() || '新會員', color: c[0], id: me.id, author: me.author });
       b.appendChild(dot);
       function mark() { sw.querySelectorAll('.mb-color').forEach(function (x) { x.setAttribute('aria-checked', String(x === b)); }); }
-      b.onclick = function () { picked = c[0]; mark(); preview(); };
+      b.onclick = function () { if (colorLocked) return; picked = c[0]; mark(); preview(); };
       if (picked === c[0]) b.setAttribute('aria-checked', 'true'); else b.setAttribute('aria-checked', 'false');
       sw.appendChild(b);
     });
     pk.appendChild(sw);
-    pk.appendChild(el('small', 'mb-hint', '選好按「儲存」。留言區和全站都會顯示這個頭貼。'));
+    var pkHint = el('small', 'mb-hint');
+    function paintColorHint() {
+      pkHint.textContent = colorLocked ? '已經選過了，不能再改。' : '選好按「儲存」。留言區和全站都會顯示這個頭貼。' + (me.author ? '' : '只能選一次。');
+      sw.classList.toggle('locked', colorLocked);
+      sw.querySelectorAll('.mb-color').forEach(function (x) { x.disabled = colorLocked; });
+    }
+    pk.appendChild(pkHint);
     f.insertBefore(pk, un.parentNode); // 放在顯示名稱下面
+    paintColorHint();
     dn.addEventListener('input', function () {
       preview();
       sw.querySelectorAll('.lt-av').forEach(function (d, i) { window.WBAvatar.paint(d, { name: dn.value.trim() || '新會員', color: palette[i][0], id: me.id, author: me.author }); });
@@ -216,6 +233,14 @@
       ev.preventDefault();
       var u = un.value.trim().toLowerCase();
       if (u && !/^[a-z0-9_]{3,20}$/.test(u)) { say('帳號名稱只能用小寫英文、數字、底線，3～20 個字。', true); return; }
+      // 第一次改名字或顏色：先確認
+      var newName = dn.value.trim() || '新會員', oldName = prof.display_name || '新會員';
+      var nameChg = !nameLocked && !me.author && newName !== oldName;
+      var colorChg = !colorLocked && !me.author && (picked || null) !== (prof.avatar_color || null);
+      if (nameChg || colorChg) {
+        var what = nameChg && colorChg ? '顯示名稱和頭貼顏色' : nameChg ? '顯示名稱' : '頭貼顏色';
+        if (!window.confirm(what + '只能改一次，存了之後就不能再改。確定要儲存嗎？')) return;
+      }
       save.disabled = true; say('儲存中…');
       var r;
       try { r = await A.updateMyProfile({ display_name: dn.value, username: u, bio: bio.value, avatar_color: picked }); }
@@ -226,6 +251,10 @@
       var t = card.querySelector('.mb-title');
       if (t && t.firstChild && t.firstChild.nodeType === 3) t.firstChild.nodeValue = r.profile.display_name || '新會員';
       me.name = r.profile.display_name || '新會員'; me.color = r.profile.avatar_color || null;
+      prof.display_name = r.profile.display_name; prof.avatar_color = r.profile.avatar_color;
+      prof.name_changed_at = r.profile.name_changed_at; prof.color_changed_at = r.profile.color_changed_at;
+      nameLocked = !me.author && !!prof.name_changed_at; colorLocked = !me.author && !!prof.color_changed_at;
+      paintNameHint(); paintColorHint();
       saveMyAvatar(me); preview(); paintEntries(me);
       say('已儲存。');
     };
