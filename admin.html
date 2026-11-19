@@ -1,0 +1,27 @@
+---
+layout: default
+title: 管理後台
+permalink: /admin/
+sitemap: false
+noindex: true
+---
+{%- comment -%}
+  管理後台。畫面只是顯示；所有資料都由 Supabase 在伺服器端判斷：
+  必須是 admin，而且這次登入已通過兩步驟驗證（is_admin()），否則什麼都讀不到。
+{%- endcomment -%}
+<div class="admin-page">
+  <section class="novel page-box mb-box">
+    <h1 class="mb-h">管理後台</h1>
+    <p class="ad-status mb-sub">檢查權限中…</p>
+    <div class="ad-tabs" role="tablist" hidden>
+      <button type="button" role="tab" data-tab="stats" aria-selected="true">統計</button>
+      <button type="button" role="tab" data-tab="comments" aria-selected="false">留言</button>
+      <button type="button" role="tab" data-tab="members" aria-selected="false">會員</button>
+    </div>
+  </section>
+  <section class="novel page-box mb-box ad-panel" data-panel="stats" hidden></section>
+  <section class="novel page-box mb-box ad-panel" data-panel="comments" hidden></section>
+  <section class="novel page-box mb-box ad-panel" data-panel="members" hidden></section>
+</div>
+{% include auth-config.html %}
+<script src="{{ '/assets/admin.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>

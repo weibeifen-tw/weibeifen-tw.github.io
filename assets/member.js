@@ -231,6 +231,7 @@
       body.appendChild(el('p', 'mb-sub', ok
         ? '✓ 這次登入已通過兩步驟驗證，管理員權限已啟用。'
         : '已通過兩步驟驗證，但資料庫沒有確認你的管理員權限。請確認 002 的 SQL 已執行。'));
+      if (ok) { var go = el('a', 'mb-btn primary', '前往管理後台'); go.href = (window.BASE || '') + '/admin/'; go.style.textDecoration = 'none'; body.appendChild(go); }
       return;
     }
 
