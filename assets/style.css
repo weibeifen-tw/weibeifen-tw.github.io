@@ -536,3 +536,10 @@ body.reading .chat-btn{bottom:calc(84px + env(safe-area-inset-bottom))}
 button.search-btn{border:0;background:none;cursor:pointer}
 .ip-cap{color:#999;font-size:.85em}
 .drawer h2 a{color:inherit;text-decoration:none}
+/* 作品貼文：小說頭像、圖上標註角色 */
+.avatar.nv-av{background:color-mix(in srgb,var(--c) 25%,var(--card));font-size:22px;text-decoration:none}
+.ip-media{position:relative}
+.ip-tagbtn{position:absolute;left:12px;bottom:12px;z-index:2;width:30px;height:30px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;display:grid;place-items:center;cursor:pointer}
+.ip-tags{position:absolute;left:12px;bottom:52px;z-index:2;display:flex;flex-wrap:wrap;gap:6px;max-width:calc(100% - 24px)}
+.ip-tags[hidden]{display:none}
+.ip-tags a{background:rgba(0,0,0,.72);color:#fff;font-size:13px;padding:6px 10px;border-radius:6px;text-decoration:none}

@@ -507,3 +507,9 @@
     hit.forEach(function (x) { var li = document.createElement('li'), a = document.createElement('a'), b = document.createElement('b'), sm = document.createElement('small'); a.href = (window.BASE || '') + '/novel/' + x.id + '/'; b.textContent = x.t; sm.textContent = x.era; a.append(b, sm); li.appendChild(a); out.appendChild(li); });
   });
 })();
+
+// 作品貼文：點人像圖示顯示／收起標註的角色
+document.querySelectorAll('.ip-tagbtn').forEach(function (b) {
+  var t = b.parentNode.querySelector('.ip-tags');
+  b.onclick = function (e) { e.stopPropagation(); t.hidden = !t.hidden; b.setAttribute('aria-expanded', !t.hidden); };
+});
