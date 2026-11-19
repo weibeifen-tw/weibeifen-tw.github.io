@@ -1,12 +1,15 @@
 # 建置檢查（不部署）
 # 用 GitHub Pages 官方的 Jekyll 建置工具建一次網站，確認沒有建置錯誤。
-# - 只能手動觸發（workflow_dispatch）
+# - 手動觸發（workflow_dispatch），或推送 feature/member-entry-4-2 分支時自動觸發（只限這個分支）
 # - 權限只有 contents: read；不部署、不推送任何分支、不使用任何私密金鑰
 # - 建置結果只留在這次執行的機器上，執行完就丟棄
 name: 建置檢查（不部署）
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - feature/member-entry-4-2
 
 permissions:
   contents: read
