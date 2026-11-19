@@ -162,6 +162,12 @@ window.WBAvatar = (function () {
       ips = ips.filter(function (x) { return x.dataset.has === '1'; }).concat(ips.filter(function (x) { return x.dataset.has !== '1'; }));
       if (ips.length >= 4) { hits.forEach(function (t) { t.remove(); }); hits = ips; }
       else if (ips.length) { hits = ips.concat(hits); }
+      // 畝 MU 的貼文：不置頂，隨機放在前 3 則裡
+      var pin = document.querySelector('.pinned-ig');
+      if (pin) {
+        var tag = pin.querySelector('.pin-tag'); if (tag) tag.remove();
+        hits.splice(Math.floor(Math.random() * Math.min(3, hits.length + 1)), 0, pin);
+      }
       hits.forEach(function (t) { feed.appendChild(t); });
     }
     // 一次先放 15 則，按「載入更多」再放 15 則
