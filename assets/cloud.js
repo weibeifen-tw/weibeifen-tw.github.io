@@ -253,6 +253,7 @@
 
   function cmError(e) {
     var m = (e && e.message) || '';
+    if (/WB_BANNED/.test(m)) return '你的帳號已被停權，不能留言。';
     if (/WB_TOO_FAST/.test(m)) return '留言太快了，請等 15 秒再試。';
     if (/WB_TOO_MANY/.test(m)) return '一小時最多留 5 則，請晚點再來。';
     if (/WB_LOGIN_REQUIRED/.test(m)) return '請先登入會員。';
@@ -434,6 +435,38 @@
 
   initComments();
 
+  /* ---------- 會員頁：我的留言 ---------- */
+  var myCmBox = document.querySelector('.mb-mycm');
+  var myCmList = myCmBox && myCmBox.querySelector('.mycm-list');
+  async function renderMyComments(A) {
+    var c = A.getClient(), uid = await uidOf(c);
+    if (!uid) return;
+    var res = await c.from('comments').select('id,novel,path,body,hidden,created_at')
+      .eq('user_id', uid).order('created_at', { ascending: false }).limit(100);
+    myCmList.textContent = '';
+    myCmBox.hidden = false;
+    if (res.error) { myCmList.appendChild(el('p', 'mb-form-msg err', errText('讀取留言失敗，請重新整理。', res.error))); return; }
+    var rows = res.data || [];
+    if (!rows.length) { myCmList.appendChild(el('p', null, '還沒有留言。章節最下面和小說介紹頁都可以留言。')); return; }
+    var byUrl = {};
+    try {
+      var pj = await (await fetch(BASE + '/assets/posts.json?v=' + (window.VER || ''))).json();
+      Object.keys(pj).forEach(function (k) { byUrl[pj[k].u] = pj[k]; });
+    } catch (e) {}
+    rows.forEach(function (r) {
+      var nv = novels[r.novel] || {}, pp = byUrl[r.path];
+      var item = el('div', 'fav-item mycm-item');
+      var a = el('a', null, '《' + (nv.title || r.novel) + '》' +
+        (pp ? (pp.ch ? '第 ' + pp.ch + ' 篇・' : '') + pp.t : (r.path.indexOf('/novel/') === 0 ? '介紹頁' : '')));
+      a.href = r.path + '#comments';
+      var meta = el('small', null, fmtDate(r.created_at) + (r.hidden ? '・因檢舉隱藏中' : ''));
+      var head = el('div', 'mycm-head'); head.appendChild(a); head.appendChild(meta);
+      item.appendChild(head);
+      item.appendChild(el('p', 'mycm-body', r.body));
+      myCmList.appendChild(item);
+    });
+  }
+
   /* ---------- 私訊角色（雲端） ----------
    * 讀者傳給角色的訊息存到 dm_messages；蔡在管理後台用角色身分回覆。
    * app.js 的收件匣透過 window.WBDM 讀寫；沒登入時 WBDM.on() 為 false，收件匣只顯示這台裝置的舊訊息。
@@ -441,6 +474,7 @@
   var DM_COLS = 'id,chr,post,from_char,body,seen,created_at';
   function dmError(e) {
     var m = (e && e.message) || '';
+    if (/WB_BANNED/.test(m)) return '你的帳號已被停權，不能傳私訊。';
     if (/WB_TOO_FAST/.test(m)) return '傳太快了，隔幾秒再傳。';
     if (/WB_TOO_MANY/.test(m)) return '一小時內傳太多則了，晚一點再傳。';
     if (/WB_LOGIN_REQUIRED/.test(m)) return '登入已過期，請重新登入。';
@@ -517,6 +551,7 @@
     buttons.forEach(function (x) {
       isFav(A, x[1].novel, x[1].path).then(function (v) { x[0].setOn(v); }).catch(function () {});
     });
+    if (myCmList) { try { await renderMyComments(A); } catch (e) {} }
     if (favList) {
       try { await renderFavs(A); } catch (e) {}
       A.onChange(function (event) { if (event === 'SIGNED_OUT') favBox.hidden = true; });

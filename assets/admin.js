@@ -39,6 +39,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function errMsg(e) {
     var m = (e && e.message) || '';
     if (/WB_NOT_ADMIN/.test(m)) return '沒有管理員權限，請先到會員頁輸入兩步驟驗證碼。';
+    if (/WB_CANNOT_BAN_ADMIN/.test(m)) return '不能封鎖管理員。';
     return '讀取失敗：' + ((e && e.code) || '') + ' ' + m.slice(0, 120);
   }
   function say(t) { status.textContent = t; }
@@ -286,6 +287,46 @@ document.addEventListener('DOMContentLoaded', function () {
     p.appendChild(ul);
   }
 
+  // 常用語：點一下帶入回覆框；「＋存成常用語」把目前打的字存起來；× 刪除
+  var snippets = null;
+  function snippetBar(ta, cnt) {
+    var box = el('div', 'ad-snips');
+    async function draw() {
+      if (!snippets) {
+        var r = await c().from('admin_snippets').select('id,body').order('created_at', { ascending: true });
+        snippets = r.error ? [] : (r.data || []);
+      }
+      box.textContent = '';
+      snippets.forEach(function (s) {
+        var chip = el('span', 'ad-snip');
+        var use = el('button', 'ad-snip-use', s.body.length > 24 ? s.body.slice(0, 24) + '…' : s.body); use.type = 'button'; use.title = s.body;
+        use.onclick = function () {
+          ta.value = ta.value.trim() ? ta.value.replace(/\s+$/, '') + '\n' + s.body : s.body;
+          ta.dispatchEvent(new Event('input')); ta.focus();
+        };
+        var x = el('button', 'ad-snip-x', '×'); x.type = 'button'; x.title = '刪除這句常用語';
+        x.onclick = async function () {
+          if (!window.confirm('刪除常用語「' + s.body.slice(0, 40) + '」？')) return;
+          var r = await c().from('admin_snippets').delete().eq('id', s.id);
+          if (r.error) { window.alert(errMsg(r.error)); return; }
+          snippets = snippets.filter(function (y) { return y.id !== s.id; }); draw();
+        };
+        chip.appendChild(use); chip.appendChild(x); box.appendChild(chip);
+      });
+      var add = el('button', 'ad-link', '＋存成常用語'); add.type = 'button';
+      add.onclick = async function () {
+        var t = ta.value.trim();
+        if (!t) { window.alert('先在回覆框打好要存的句子。'); ta.focus(); return; }
+        var r = await c().from('admin_snippets').insert({ body: t }).select('id,body').single();
+        if (r.error) { window.alert(errMsg(r.error)); return; }
+        snippets.push(r.data); draw();
+      };
+      box.appendChild(add);
+    }
+    draw();
+    return box;
+  }
+
   async function dmThread() {
     var t = dmOpen, p = panels.dm;
     p.textContent = '';
@@ -348,7 +389,9 @@ document.addEventListener('DOMContentLoaded', function () {
       dmThread();
     };
     var bar = el('div', 'ad-dm-bar'); bar.appendChild(cnt); bar.appendChild(sb);
-    f.appendChild(ta); f.appendChild(bar);
+    f.appendChild(ta);
+    f.appendChild(snippetBar(ta, cnt));
+    f.appendChild(bar);
     p.appendChild(f);
     box.scrollTop = box.scrollHeight;
     ta.focus();
@@ -371,7 +414,7 @@ document.addEventListener('DOMContentLoaded', function () {
     p.appendChild(el('p', 'mb-sub', '共 ' + rows.length + ' 位會員。不顯示 email。'));
     var tb = el('table', 'ad-table');
     var hr = el('tr');
-    ['顯示名稱', '帳號名稱', '角色', '加入時間', '留言'].forEach(function (h) { hr.appendChild(el('th', null, h)); });
+    ['顯示名稱', '帳號名稱', '角色', '加入時間', '留言', '狀態'].forEach(function (h) { hr.appendChild(el('th', null, h)); });
     tb.appendChild(hr);
     rows.forEach(function (r) {
       var tr = el('tr');
@@ -380,6 +423,30 @@ document.addEventListener('DOMContentLoaded', function () {
       tr.appendChild(el('td', null, r.role === 'admin' ? '管理員' : '讀者'));
       tr.appendChild(el('td', null, fmtDate(r.created_at)));
       tr.appendChild(el('td', 'num', String(r.comments || 0)));
+      // 封鎖：不能留言、私訊、檢舉、改個人資料；還能看小說
+      var st = el('td', 'ad-ban');
+      if (r.banned) st.appendChild(el('span', 'ad-banned', '已封鎖' + (r.ban_reason ? '：' + r.ban_reason : '')));
+      if (r.role !== 'admin') {
+        var bb = el('button', 'cm-btn', r.banned ? '解除封鎖' : '封鎖'); bb.type = 'button';
+        bb.onclick = async function () {
+          var name = r.display_name || '新會員', res2;
+          if (r.banned) {
+            if (!window.confirm('解除封鎖「' + name + '」？解除後可以再留言和傳私訊。')) return;
+            bb.disabled = true;
+            res2 = await c().rpc('admin_unban', { p_user: r.id });
+          } else {
+            var why = window.prompt('封鎖「' + name + '」的原因（選填，只有你看得到）：', '');
+            if (why === null) return;
+            var rm = window.confirm('要一起移除他所有的留言嗎？\n（按「確定」移除，之後可在留言「已隱藏」恢復；按「取消」只封鎖、不動留言）');
+            bb.disabled = true;
+            res2 = await c().rpc('admin_ban', { p_user: r.id, p_reason: why.trim() || null, p_remove_comments: rm });
+          }
+          if (res2.error) { bb.disabled = false; window.alert(errMsg(res2.error)); return; }
+          loadMembers();
+        };
+        st.appendChild(bb);
+      }
+      tr.appendChild(st);
       tb.appendChild(tr);
     });
     p.appendChild(tb);
