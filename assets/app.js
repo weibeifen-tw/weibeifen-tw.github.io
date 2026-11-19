@@ -5,11 +5,19 @@ window.WBAvatar = (function () {
     ['teal', '青', '#23918f'], ['blue', '藍', '#3a6fc2'], ['indigo', '靛', '#5650b5'], ['purple', '紫', '#9248ad'],
     ['pink', '粉', '#cc4f8a'], ['brown', '棕', '#8a5a3c'], ['gray', '灰', '#666666']
   ];
+  var ADMIN_ONLY = 'orange'; // 橘色只有管理員能用（資料庫也會擋）；管理員沒選時預設橘色
   var map = {};
   COLORS.forEach(function (c) { map[c[0]] = c[2]; });
+  var READER = COLORS.filter(function (c) { return c[0] !== ADMIN_ONLY; });
   function hash(s) { var h = 0; s = String(s || ''); for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return Math.abs(h); }
-  // 沒選過顏色：依會員 ID 固定給一個
-  function color(key, id) { return map[key] || COLORS[hash(id) % COLORS.length][2]; }
+  // 沒選過顏色：管理員橘色；讀者依會員 ID 固定給一個（不會是橘色）
+  function color(key, id, author) {
+    if (key === ADMIN_ONLY && !author) key = null;
+    if (map[key]) return map[key];
+    return author ? map[ADMIN_ONLY] : READER[hash(id) % READER.length][2];
+  }
+  // 會員頁可選的顏色
+  function choices(author) { return author ? COLORS : READER; }
   function letter(name) { var a = Array.from(String(name || '').trim()); return a.length ? a[0].toUpperCase() : '新'; }
   // o = { name, color, id, author }
   function paint(box, o) {
@@ -17,10 +25,10 @@ window.WBAvatar = (function () {
     box.textContent = o.author ? 'MU' : letter(o.name);
     box.classList.add('lt-av');
     box.classList.toggle('lt-mu', !!o.author);
-    box.style.setProperty('--lc', color(o.color, o.id));
+    box.style.setProperty('--lc', color(o.color, o.id, o.author));
   }
   function make(o, cls) { var s = document.createElement('span'); s.className = 'avatar' + (cls ? ' ' + cls : ''); s.setAttribute('aria-hidden', 'true'); paint(s, o); return s; }
-  return { colors: COLORS, color: color, paint: paint, make: make };
+  return { colors: COLORS, choices: choices, color: color, paint: paint, make: make };
 })();
 
 (function () {
