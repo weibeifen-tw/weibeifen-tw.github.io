@@ -488,7 +488,19 @@
       var pj = await (await fetch(BASE + '/assets/posts.json?v=' + (window.VER || ''))).json();
       Object.keys(pj).forEach(function (k) { byUrl[pj[k].u] = pj[k]; });
     } catch (e) {}
-    rows.forEach(function (r) {
+    // 先顯示 5 則，「再看 10 則」一次多 10 則
+    var shownN = 0, more = el('button', 'mb-btn mycm-more'); more.type = 'button';
+    function showMore(n) {
+      rows.slice(shownN, shownN + n).forEach(addItem);
+      shownN = Math.min(rows.length, shownN + n);
+      var left = rows.length - shownN;
+      more.hidden = left <= 0;
+      more.textContent = '再看 ' + Math.min(10, left) + ' 則（還有 ' + left + ' 則）';
+      myCmList.appendChild(more);
+    }
+    more.onclick = function () { showMore(10); };
+    showMore(5);
+    function addItem(r) {
       var nv = novels[r.novel] || {}, pp = byUrl[r.path];
       var item = el('div', 'fav-item mycm-item');
       var a = el('a', null, '《' + (nv.title || r.novel) + '》' +
@@ -499,7 +511,7 @@
       item.appendChild(head);
       item.appendChild(el('p', 'mycm-body', r.body));
       myCmList.appendChild(item);
-    });
+    }
   }
 
   /* ---------- 私訊角色（雲端） ----------

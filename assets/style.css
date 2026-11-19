@@ -752,3 +752,5 @@ html[data-theme="night"] .ib-admin{background:#3a2226;color:#f2a7b1}
 .cm-card-who small{color:var(--sub);font-size:12px}
 .cm-card-bio{margin:10px 0 0;font-size:14px;line-height:1.6;white-space:pre-wrap;word-break:break-word}
 .cm-card-bio.empty{color:var(--sub)}
+.mycm-more{display:block;margin:12px auto 0}
+.mycm-more[hidden]{display:none}
