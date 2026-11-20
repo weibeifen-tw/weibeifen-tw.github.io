@@ -21,6 +21,7 @@ yu:
       - 情緒壓力
       - 親密關係
     writing_completed: false
+    final_post_id: ""
 market:
   city: taichung
   region: taichung-basin
@@ -41,6 +42,7 @@ market:
       - 安全感
       - 生活陪伴
     writing_completed: false
+    final_post_id: ""
 feichang:
   city: changhua
   region: changhua-plain
@@ -62,6 +64,7 @@ feichang:
       - 家庭期待
       - 親密關係磨合
     writing_completed: false
+    final_post_id: ""
 gongdi:
   city: taichung
   region: taichung-basin
@@ -82,6 +85,7 @@ gongdi:
       - 個性差異
       - 情感溝通
     writing_completed: false
+    final_post_id: ""
 hongdian:
   city: taichung
   region: taichung-basin
@@ -102,6 +106,7 @@ hongdian:
       - 社群壓力
       - 表演式親密
     writing_completed: false
+    final_post_id: ""
 hue:
   city: tainan
   region: chianan-plain
@@ -122,6 +127,7 @@ hue:
       - 自我接納
       - 性別偏見
     writing_completed: false
+    final_post_id: ""
 exam:
   city: taipei
   region: taipei-basin
@@ -142,6 +148,7 @@ exam:
       - 自我要求
       - 失敗壓力
     writing_completed: false
+    final_post_id: ""
 yincang:
   city: chiayi
   region: chianan-plain
@@ -163,6 +170,7 @@ yincang:
       - 家庭衝突
       - 婚姻壓力
     writing_completed: false
+    final_post_id: ""
 shiyi:
   city: zhongxing
   region: taichung-basin
@@ -183,6 +191,7 @@ shiyi:
       - 仰慕
       - 自我認同
     writing_completed: false
+    final_post_id: ""
 chaojian:
   city: keelung
   region: north-hills
@@ -205,6 +214,7 @@ chaojian:
       - 迴避型依附
       - 不安全感
     writing_completed: false
+    final_post_id: ""
 weigongkai:
   city: qingjing
   region: mountains
@@ -225,6 +235,7 @@ weigongkai:
       - 社交壓力
       - 親密界線
     writing_completed: false
+    final_post_id: ""
 chuwang:
   city: hualien
   region: huadong-valley
@@ -245,6 +256,7 @@ chuwang:
       - 討好傾向
       - 家庭角色倒置
     writing_completed: false
+    final_post_id: ""
 mizi:
   city: taipei
   region: taipei-basin
@@ -265,6 +277,7 @@ mizi:
       - 親密陪伴
       - 情感表達
     writing_completed: false
+    final_post_id: ""
 pendi:
   city: puli
   region: puli-basin
@@ -287,6 +300,7 @@ pendi:
       - 人際界線
       - 群體歸屬
     writing_completed: false
+    final_post_id: ""
 shuangshuang:
   city: gukeng
   region: south-hills
@@ -307,6 +321,7 @@ shuangshuang:
       - 家庭逼婚
       - 自我接納
     writing_completed: false
+    final_post_id: ""
 duanqiao:
   city: kinmen
   region: continental-isles
@@ -328,6 +343,7 @@ duanqiao:
       - 人質交換
       - 信任與防備
     writing_completed: false
+    final_post_id: ""
 huaji:
   city: lanyu
   region: volcanic-isles
@@ -349,6 +365,7 @@ huaji:
       - 情感忽視
       - 性別刻板印象
     writing_completed: false
+    final_post_id: ""
 xiwei:
   city: chiayi
   region: chianan-plain
@@ -370,6 +387,7 @@ xiwei:
       - 政治壓力
       - 自主性
     writing_completed: false
+    final_post_id: ""
 chaosheng:
   city: matsu
   region: continental-isles
@@ -391,6 +409,7 @@ chaosheng:
       - 情感修復
       - 信任
     writing_completed: false
+    final_post_id: ""
 houdiao:
   city: taipei
   region: taipei-basin
@@ -412,3 +431,4 @@ houdiao:
       - 信任
       - 性別身分
     writing_completed: false
+    final_post_id: ""

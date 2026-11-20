@@ -14,8 +14,13 @@
     題材標籤：nv.tags，拿掉甜、虐這類詞（調性另外顯示）。
     閱讀資訊：nv.reading_info，感情關係、故事調性、內容尺度；心理議題、結局預設收合。
     完結：writing_completed 為 true 才顯示「完結」。
-    結局：完結，而且這部小說有一篇「已經上線」的章節在 front matter 寫了 ending: 才顯示。
-          排程中（未來日期）的章節不在 site.posts 裡，所以最終章上線前不會出現。
+    結局：以下全部成立才顯示，任一不成立就完全不顯示：
+          1. writing_completed 為 true
+          2. reading_info.final_post_id 有指定最終章（章節檔名去掉日期，也就是網址 /t/<id>/ 的那段，例如 yang09）
+          3. 那一篇的 novel 是這部小說
+          4. 那一篇已經上線（排程中的未來章節不在 site.posts 裡）
+          5. 那一篇的 front matter ending: 不是空白
+          不用章號判斷，因為兩個角色各自編章的小說（看天、蘿蔔）章號會重複。
   {%- endcomment -%}
   {%- assign ri = nv.reading_info -%}
   {%- capture topic_tags -%}
@@ -27,8 +32,15 @@
   {%- if topic_tags != '' %}<ul class="nv-tags nv-topic-tags">{{ topic_tags }}</ul>{% endif %}
   {%- if ri %}
   {%- assign end_post = nil -%}
-  {%- if ri.writing_completed == true -%}
-    {%- for p in site.posts -%}{%- if p.novel == id and p.ending -%}{%- assign end_post = p -%}{%- break -%}{%- endif -%}{%- endfor -%}
+  {%- assign end_text = '' -%}
+  {%- assign fid = ri.final_post_id | append: '' | strip -%}
+  {%- if ri.writing_completed == true and fid != '' -%}
+    {%- for p in site.posts -%}
+      {%- if p.slug == fid -%}
+        {%- if p.novel == id -%}{%- assign end_text = p.ending | append: '' | strip -%}{%- if end_text != '' -%}{%- assign end_post = p -%}{%- endif -%}{%- endif -%}
+        {%- break -%}
+      {%- endif -%}
+    {%- endfor -%}
   {%- endif %}
   <div class="reading-info">
     <ul class="nv-tags nv-info-tags">
@@ -46,7 +58,7 @@
     {%- if end_post %}
     <details class="reading-details">
       <summary>結局｜劇透提醒</summary>
-      <p>{{ end_post.ending | escape }}</p>
+      <p>{{ end_text | escape }}</p>
     </details>
     {%- endif %}
   </div>
