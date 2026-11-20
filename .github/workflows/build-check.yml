@@ -30,6 +30,9 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: 文學文章資料驗證（只讀檔案，不需要套件）
+        run: ruby .github/scripts/validate_literature.rb .
+
       - name: Jekyll 建置（GitHub Pages 官方工具）
         uses: actions/jekyll-build-pages@v1
         with:

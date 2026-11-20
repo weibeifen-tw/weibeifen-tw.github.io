@@ -892,3 +892,17 @@ a.ig-name:hover{text-decoration:underline}
 .lit-share-msg{font-size:13px;color:var(--sub)}
 .nv-lit{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin-bottom:12px}
 .nv-lit .nv-h{margin-top:0}
+/* 文學文章閱讀設定（P06 補強）：字級四級（wb:lfs），夜間沿用 body.reading 的顏色變數 */
+.lfs{display:flex;border:1px solid var(--line);border-radius:22px;overflow:hidden}
+.lfs button{min-width:36px;height:36px;padding:0 6px;border:0;background:none;color:var(--sub);font:inherit;font-size:13px;cursor:pointer}
+.lfs button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+html[data-lfs="s"] .lit-body{font-size:15px}
+html[data-lfs="m"] .lit-body{font-size:16px}
+html[data-lfs="l"] .lit-body{font-size:18px}
+html[data-lfs="xl"] .lit-body{font-size:21px}
+html[data-lfs="l"] .lit-summary{font-size:16px}
+html[data-lfs="xl"] .lit-summary{font-size:18px}
+body.lit-reading .lit-article{background:var(--card)}
+body.lit-reading .lit-body details.spoiler,body.lit-reading .lit-toc{border-color:var(--line)}
+@media (max-width:480px){.lit-reading .r-tools{gap:6px}.lfs button{min-width:30px;padding:0 4px;font-size:12px}}
+body.lit-reading .nv-tags li{color:var(--sub)}
