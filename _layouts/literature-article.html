@@ -1,0 +1,109 @@
+---
+layout: default
+---
+{%- comment -%}
+  文學專區文章版型（P06）
+  文章放在 _literature/檔名.md，網址是 /literature/檔名/。未經畝 MU 核准的文章不可以放進 repo。
+
+  front matter：
+    title:            標題（必填）
+    date:             首次發布日期（必填，排序只看這個）
+    updated:          最後更新日期（選填；不影響排序）
+    category:         主要分類（必填，寫 _data/literature.yml 裡的名稱）
+    tags:             標籤（選填，可多個）
+    article_type:     knowledge＝知識文章（要附參考資料）、opinion＝個人觀點
+    description:      摘要（必填）。列表卡片、文章頁、搜尋、SEO 都用這段；不要寫劇透
+    cover:            封面圖路徑（選填，例如 /assets/img/lit-xxx.webp）
+    cover_alt:        封面替代文字（有封面時填）
+    related_novels:   相關小說 ID（選填，例如 [chaojian, yincang]）；小說介紹頁會自動反向列出
+    related_articles: 相關文章檔名（選填，例如 [attachment-styles]）
+    references:       參考資料（知識文章必填），每筆 title / url / publisher（選填）
+                      正文用 <sup class="cite"><a href="#ref-1">[1]</a></sup> 引用第 1 筆
+  作者固定是畝 MU（_config.yml 預設）。
+  劇透段落：<details class="spoiler" markdown="1"><summary>劇透提醒：……</summary> …… </details>，預設收合。
+  個人觀點段落：<div class="opinion" markdown="1"> …… </div>，頁面會標示「個人觀點」。
+{%- endcomment -%}
+{%- assign words = content | strip_html | strip_newlines | replace: ' ', '' | size -%}
+{%- assign mins = words | divided_by: 400 | plus: 1 -%}
+{%- assign h2parts = content | split: '<h2 id="' -%}
+<article class="lit-article page-box">
+  <a class="nv-back" href="{{ '/literature/' | relative_url }}">← 文學專區</a>
+  <h1 class="lit-title">{{ page.title | escape }}</h1>
+  <p class="lit-meta">
+    <a class="lit-author" href="{{ '/about/' | relative_url }}">{{ page.author | default: site.author }}</a>
+    <span>・</span><time datetime="{{ page.date | date: '%Y-%m-%d' }}">{{ page.date | date: '%Y-%m-%d' }}</time>
+    {%- if page.updated %}<span>・</span><span class="lit-upd">最後更新 <time datetime="{{ page.updated | date: '%Y-%m-%d' }}">{{ page.updated | date: '%Y-%m-%d' }}</time></span>{% endif %}
+    {%- if page.category %}<span>・</span><a class="lit-cat" href="{{ '/literature/' | relative_url }}?cat={{ page.category | url_encode }}">{{ page.category | escape }}</a>{% endif %}
+    {%- if page.article_type == 'knowledge' %}<span class="lit-kind">知識文章</span>{% elsif page.article_type == 'opinion' %}<span class="lit-kind">個人觀點</span>{% endif %}
+  </p>
+  <ul class="nv-tags lit-tags">
+    {%- for t in page.tags %}<li><a href="{{ '/literature/' | relative_url }}?tag={{ t | url_encode }}">#{{ t | escape }}</a></li>{% endfor -%}
+    <li class="lit-time">約 {{ mins }} 分鐘</li>
+  </ul>
+  {%- if page.cover %}
+  <img class="lit-cover" src="{{ page.cover | relative_url }}" alt="{{ page.cover_alt | default: page.title | escape }}" decoding="async">
+  {%- endif %}
+  {%- if page.description and page.description != '' %}<p class="lit-summary">{{ page.description | escape }}</p>{% endif %}
+  {%- if h2parts.size > 3 %}
+  <nav class="lit-toc" aria-label="目錄">
+    <p class="lit-toc-h">目錄</p>
+    <ol>
+    {%- for part in h2parts offset: 1 -%}
+      {%- assign hid = part | split: '"' | first -%}
+      {%- assign htxt = part | split: '</h2>' | first | split: '>' | shift | join: '>' | strip_html -%}
+      <li><a href="#{{ hid }}">{{ htxt }}</a></li>
+    {%- endfor -%}
+    </ol>
+  </nav>
+  {%- endif %}
+  <div class="lit-body">
+{{ content }}
+  </div>
+  {%- if page.references and page.references.size > 0 %}
+  <section class="lit-sec lit-refs">
+    <h2 class="lit-h">參考資料</h2>
+    <ol>
+    {%- for r in page.references -%}
+      <li id="ref-{{ forloop.index }}">{% if r.url %}<a href="{{ r.url }}" target="_blank" rel="noopener">{{ r.title | escape }}</a>{% else %}{{ r.title | escape }}{% endif %}{% if r.publisher %}<span class="lit-pub">，{{ r.publisher | escape }}</span>{% endif %}</li>
+    {%- endfor -%}
+    </ol>
+  </section>
+  {%- endif %}
+  {%- capture rel_novels -%}
+  {%- for nid in page.related_novels -%}{%- assign n = site.data.novels[nid] -%}{%- if n -%}
+    {%- assign col = '#6b665c' -%}{%- for ch in site.data.characters -%}{%- if ch[1].novel == nid -%}{%- assign col = ch[1].color -%}{%- break -%}{%- endif -%}{%- endfor -%}
+    <li><a href="{{ '/novel/' | append: nid | append: '/' | relative_url }}" style="color:{{ col }}">《{{ n.title }}》</a></li>
+  {%- endif -%}{%- endfor -%}
+  {%- endcapture -%}
+  {%- if rel_novels != '' %}
+  <section class="lit-sec"><h2 class="lit-h">相關小說</h2><ul class="lit-rel">{{ rel_novels }}</ul></section>
+  {%- endif %}
+  {%- capture rel_arts -%}
+  {%- for aid in page.related_articles -%}{%- assign a = site.literature | where: "slug", aid | first -%}{%- if a and a.url != page.url -%}
+    <li><a href="{{ a.url | relative_url }}">{{ a.title | escape }}</a></li>
+  {%- endif -%}{%- endfor -%}
+  {%- endcapture -%}
+  {%- if rel_arts != '' %}
+  <section class="lit-sec"><h2 class="lit-h">相關文章</h2><ul class="lit-rel">{{ rel_arts }}</ul></section>
+  {%- endif %}
+  <div class="lit-share">
+    <button type="button" class="lit-share-btn" data-act="share">分享</button>
+    <button type="button" class="lit-share-btn" data-act="copy">複製網址</button>
+    <span class="lit-share-msg" aria-live="polite"></span>
+  </div>
+</article>
+<script>
+(function () {
+  var box = document.querySelector('.lit-share'); if (!box) return;
+  var url = location.origin + location.pathname, msg = box.querySelector('.lit-share-msg');
+  var shareBtn = box.querySelector('[data-act="share"]');
+  if (!navigator.share) shareBtn.hidden = true;
+  function copy() {
+    var done = function () { msg.textContent = '已複製網址'; setTimeout(function () { msg.textContent = ''; }, 2000); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(url).then(done, fallback); } else { fallback(); }
+    function fallback() { var t = document.createElement('textarea'); t.value = url; document.body.appendChild(t); t.select(); try { document.execCommand('copy'); done(); } catch (e) { msg.textContent = url; } t.remove(); }
+  }
+  shareBtn.onclick = function () { navigator.share({ title: document.title, url: url }).catch(function () {}); };
+  box.querySelector('[data-act="copy"]').onclick = copy;
+})();
+</script>

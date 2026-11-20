@@ -838,3 +838,57 @@ a.ig-name:hover{text-decoration:underline}
 .ab-family{display:block;width:100%;max-width:440px;height:auto;margin:6px auto 0;border-radius:12px}
 .ab-links{display:flex;gap:10px;flex-wrap:wrap}
 .ab-links a{padding:8px 18px;border:1px solid var(--line);border-radius:999px;font-size:14px;color:var(--ink);text-decoration:none}
+/* 文學專區（P06） */
+.lit-list,.lit-article{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 20px;margin-bottom:12px}
+.lit-list .ov-h{margin-top:0}
+.lit-tools{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
+.lit-q{flex:1 1 200px;min-width:0;padding:8px 12px;border:1px solid var(--line);border-radius:999px;background:var(--bg);color:var(--ink);font:inherit;font-size:14px}
+.lit-sort,.lit-clear{padding:8px 12px;border:1px solid var(--line);border-radius:999px;background:var(--bg);color:var(--ink);font:inherit;font-size:14px;cursor:pointer}
+.lit-cats,.lit-tagbar{display:flex;flex-wrap:wrap;gap:6px;list-style:none;margin:0 0 10px;padding:0}
+.lit-chip{display:inline-flex;align-items:baseline;gap:5px;padding:4px 12px;border:1px solid transparent;border-radius:999px;background:var(--chip);color:var(--ink);font:inherit;font-size:13px;cursor:pointer}
+.lit-chip small{font-size:11px;color:var(--sub)}
+.lit-chip.empty{color:var(--sub)}
+.lit-chip.lit-tag{background:none;border-color:var(--line);color:var(--sub)}
+.lit-chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--card)}
+.lit-chip[aria-pressed="true"] small{color:var(--card)}
+.lit-empty,.lit-none{margin:18px 0 4px;color:var(--sub);font-size:15px}
+.lit-none .lit-clear{margin-left:8px}
+.lit-cards{display:flex;flex-direction:column;margin-top:6px}
+.lit-card{display:flex;gap:14px;padding:14px 0;border-top:1px solid var(--line);color:inherit;text-decoration:none}
+.lit-card[hidden]{display:none}
+.lit-card-img{flex:none;width:96px;height:96px;object-fit:cover;border-radius:10px}
+.lit-card-body{display:flex;flex-direction:column;gap:4px;min-width:0}
+.lit-card-t{font-family:"Noto Serif TC",serif;font-size:18px;font-weight:600;line-height:1.5}
+.lit-card-m{font-size:12px;color:var(--sub)}
+.lit-card-s{font-size:14px;line-height:1.7;color:var(--sub)}
+.lit-title{margin:8px 0 6px;font-family:"Noto Serif TC",serif;font-size:26px;line-height:1.5}
+.lit-meta{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin:0 0 10px;font-size:13px;color:var(--sub)}
+.lit-meta a{color:inherit}
+.lit-kind{margin-left:6px;padding:1px 8px;border:1px solid var(--line);border-radius:999px;font-size:11px}
+.lit-tags a{color:inherit;text-decoration:none}
+.lit-time{background:none!important;color:var(--sub)}
+.lit-cover{display:block;width:100%;height:auto;margin:0 0 14px;border-radius:12px}
+.lit-summary{margin:0 0 16px;padding:10px 14px;border-radius:12px;background:var(--chip);font-size:15px;line-height:1.8}
+.lit-toc{margin:0 0 18px;padding:10px 14px;border:1px solid var(--line);border-radius:12px;font-size:14px}
+.lit-toc-h{margin:0 0 4px;font-size:12px;color:var(--sub)}
+.lit-toc ol{margin:0;padding-left:1.4em;line-height:1.9}
+.lit-body{font-size:16px;line-height:1.95}
+.lit-body h2{margin:1.6em 0 .6em;font-family:"Noto Serif TC",serif;font-size:20px;scroll-margin-top:72px}
+.lit-body img{max-width:100%;height:auto}
+.lit-body .cite{font-size:.75em}
+.lit-body .opinion{margin:1em 0;padding:10px 14px;border-left:3px solid var(--accent,var(--ink));background:var(--chip);border-radius:0 10px 10px 0}
+.lit-body .opinion::before{content:"個人觀點";display:block;margin-bottom:4px;font-size:12px;color:var(--sub)}
+.lit-body details.spoiler{margin:1em 0;padding:8px 12px;border:1px dashed var(--line);border-radius:10px}
+.lit-body details.spoiler summary{cursor:pointer;color:var(--sub);font-size:14px}
+.lit-sec{margin-top:22px;padding-top:14px;border-top:1px solid var(--line)}
+.lit-h{margin:0 0 8px;font-size:16px}
+.lit-refs ol{margin:0;padding-left:1.4em;font-size:14px;line-height:1.8;word-break:break-word}
+.lit-refs li:target{background:var(--chip)}
+.lit-pub{color:var(--sub)}
+.lit-rel{display:flex;flex-wrap:wrap;gap:6px 14px;list-style:none;margin:0;padding:0;font-size:15px}
+.lit-rel a{text-decoration:none}
+.lit-share{display:flex;align-items:center;gap:8px;margin-top:22px;padding-top:14px;border-top:1px solid var(--line)}
+.lit-share-btn{padding:7px 16px;border:1px solid var(--line);border-radius:999px;background:none;color:var(--ink);font:inherit;font-size:14px;cursor:pointer}
+.lit-share-msg{font-size:13px;color:var(--sub)}
+.nv-lit{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin-bottom:12px}
+.nv-lit .nv-h{margin-top:0}

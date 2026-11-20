@@ -76,6 +76,14 @@
   {%- endif %}
   <div class="nv-btns"></div>
 </section>
+{%- comment -%} 相關文學文章（P06）：由文章的 related_novels 反向列出，資料只存在文章那邊，所以兩邊一定一致；沒有就不顯示 {%- endcomment -%}
+{%- assign lit_rel = site.literature | where_exp: "a", "a.related_novels contains id" | sort: "date" | reverse -%}
+{%- if lit_rel.size > 0 %}
+<section class="nv-lit">
+  <h2 class="nv-h">相關文章</h2>
+  <ul class="lit-rel">{% for a in lit_rel %}<li><a href="{{ a.url | relative_url }}">{{ a.title | escape }}</a></li>{% endfor %}</ul>
+</section>
+{%- endif %}
 <section id="roles" class="roles">
   <h2 class="nv-h">角色</h2>
   <p class="ro-only ro-book">《{{ nv.title }}》</p>
