@@ -935,3 +935,5 @@ body.roles-only .cm-intro{display:none}
 .cm-as-row{display:flex;align-items:center;gap:8px;margin:0 0 8px;font-size:13px;color:var(--sub)}
 .cm-as{font:inherit;color:var(--ink);padding:4px 8px;border:1px solid var(--line);border-radius:8px;background:var(--card)}
 a.cm-who.cm-as-char{text-decoration:none;color:inherit}
+/* V1.0 R03：角色區只在「認識角色」（?roles=1、?c=）顯示 */
+body:not(.roles-only) #roles{display:none}

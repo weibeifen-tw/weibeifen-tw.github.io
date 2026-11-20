@@ -65,8 +65,14 @@ window.WBAvatar = (function () {
     }
     tabs.forEach(function (b) { b.onclick = function () { pick(b.dataset.tab); }; });
     // 從限動點進來：只介紹角色
-    if (q.get('roles')) { document.body.classList.add('roles-only'); roles.forEach(function (r) { r.classList.add('full'); }); window.scrollTo(0, 0); return; }
-    if (c) { pick(c); setTimeout(function () { document.getElementById('roles').scrollIntoView(); }, 50); } else pick('all');
+    // V1.0 R03：作品頁下方不再顯示角色區；?roles=1（圖片左下角小人）和 ?c=角色（舊連結、正文角色名）都進「認識角色」
+    if (q.get('roles') || c) {
+      document.body.classList.add('roles-only'); roles.forEach(function (r) { r.classList.add('full'); });
+      var tr = c && roles.filter(function (r) { return r.dataset.char === c; })[0];
+      if (tr) setTimeout(function () { tr.scrollIntoView(); }, 50); else window.scrollTo(0, 0);
+      return;
+    }
+    pick('all');
     function rd(k) { try { var r = JSON.parse(localStorage.getItem(k) || 'null'); return r && r.url ? r : null; } catch (e) { return null; } }
     var btns = document.querySelector('.nv-btns'), lr = rd('wb:last:' + window.NOVEL);
     var b0 = mk('a', 'nv-btn');
