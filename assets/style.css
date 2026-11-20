@@ -961,3 +961,12 @@ button.d-item{width:100%;font:inherit;font-size:17px;font-weight:500;color:inher
 .d-tai{font-family:"Noto Serif TC",serif;font-size:19px;font-weight:700}
 .drawer .d-item[hidden]{display:none}
 .drawer .d-mine{margin-top:0}.drawer .d-mine::before{content:none}
+/* V1.0 R06：搜尋分類與結果 */
+.sbox-tabs{display:flex;gap:6px;overflow-x:auto;padding:8px 0 2px;scrollbar-width:none}
+.sbox-tabs button{flex:none;font:inherit;font-size:13px;padding:4px 12px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--sub);cursor:pointer}
+.sbox-tabs button[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:var(--card)}
+.sbox-r .sr-h{padding:10px 4px 2px;font-size:12px;color:var(--sub);letter-spacing:.1em}
+.sbox-r li > a{display:flex;align-items:center;gap:10px}
+.sbox-r .sr-pic{width:36px;height:36px;flex:none;font-size:15px}
+.sbox-r .sr-txt{display:flex;flex-direction:column;min-width:0}
+.sbox-r .sr-txt small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}

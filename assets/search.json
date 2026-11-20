@@ -1,0 +1,35 @@
+---
+layout: null
+sitemap: false
+---
+{%- comment -%}
+  V1.0 R06：全站搜尋索引（只放公開內容：已上架小說、角色、年代誌事件與史前研究、文學文章）。
+  不含私訊、會員資料、下架作品（_hidden）、排程中或撤回的內容。
+{%- endcomment -%}
+{%- assign B = site.baseurl -%}
+{"novels":[
+{%- for nv in site.data.novels -%}
+{%- assign lead = nil -%}{%- assign who = "" -%}{%- for ch in site.data.characters -%}{%- if ch[1].novel == nv[0] -%}{%- unless lead -%}{%- assign lead = ch[1] -%}{%- endunless -%}{%- assign who = who | append: ch[1].name | append: ' ' | append: ch[1].handle | append: ' ' -%}{%- endif -%}{%- endfor -%}
+{"id":{{ nv[0] | jsonify }},"t":{{ nv[1].title | jsonify }},"b":{{ nv[1].blurb | default: nv[1].tag | jsonify }},"u":{{ '/novel/' | append: nv[0] | append: '/' | prepend: B | jsonify }},"img":{% if nv[1].cover %}{{ nv[1].cover | prepend: B | jsonify }}{% elsif lead.avatar %}{{ '/assets/avatars/' | append: lead.avatar | prepend: B | jsonify }}{% else %}null{% endif %},"c":{{ lead.color | default: '#999' | jsonify }},"k":{{ nv[1].title | append: ' ' | append: nv[1].era | append: ' ' | append: nv[1].tag | append: ' ' | append: nv[1].blurb | append: ' ' | append: nv[1].intro | append: ' ' | append: who | jsonify }},"tags":{{ nv[1].tags | jsonify }}}{% unless forloop.last %},{% endunless %}
+{%- endfor -%}],
+"chars":[
+{%- assign first = true -%}
+{%- for ch in site.data.characters -%}{%- assign nv = site.data.novels[ch[1].novel] -%}{%- unless nv -%}{%- continue -%}{%- endunless -%}
+{%- unless first %},{% endunless %}{%- assign first = false -%}
+{"id":{{ ch[0] | jsonify }},"t":{{ ch[1].name | jsonify }},"h":{{ ch[1].handle | jsonify }},"n":{{ nv.title | jsonify }},"u":{{ '/novel/' | append: ch[1].novel | append: '/?c=' | append: ch[0] | prepend: B | jsonify }},"img":{% if ch[1].avatar %}{{ '/assets/avatars/' | append: ch[1].avatar | prepend: B | jsonify }}{% else %}null{% endif %},"g":{{ ch[1].glyph | jsonify }},"c":{{ ch[1].color | default: '#999' | jsonify }},"k":{{ ch[1].name | append: ' ' | append: ch[1].handle | append: ' ' | append: nv.title | append: ' ' | append: ch[1].bio | jsonify }}}
+{%- endfor -%}],
+"events":[
+{%- assign first = true -%}
+{%- for e in site.data.era.events -%}{%- assign nv = site.data.novels[e.novel] -%}{%- unless nv -%}{%- continue -%}{%- endunless -%}
+{%- unless first %},{% endunless %}{%- assign first = false -%}{%- assign place = nv.era | split: "・" | last -%}
+{"t":{{ e.title | jsonify }},"y":{{ e.date | jsonify }},"p":{{ place | jsonify }},"n":{{ nv.title | jsonify }},"u":{{ '/era/#ev-' | append: e.id | prepend: B | jsonify }},"k":{{ e.title | append: ' ' | append: e.date | append: ' ' | append: place | append: ' ' | append: nv.title | jsonify }}}
+{%- endfor -%}
+{%- for e in site.data.era.research -%}{%- assign nv = site.data.novels[e.novel] -%}{%- unless nv -%}{%- continue -%}{%- endunless -%}
+{%- unless first %},{% endunless %}{%- assign first = false -%}{%- assign place = nv.era | split: "・" | last -%}
+{"t":{{ e.title | jsonify }},"y":{{ e.period | split: "，" | first | jsonify }},"p":{{ place | jsonify }},"n":{{ nv.title | jsonify }},"u":{{ '/era/#' | append: e.id | prepend: B | jsonify }},"k":{{ e.title | append: ' ' | append: e.period | append: ' ' | append: nv.title | jsonify }}}
+{%- endfor -%}],
+"arts":[
+{%- assign arts = site.literature | sort: "date" | reverse -%}
+{%- for a in arts -%}
+{"t":{{ a.title | jsonify }},"s":{{ a.description | default: '' | jsonify }},"u":{{ a.url | prepend: B | jsonify }},"k":{{ a.title | append: ' ' | append: a.description | append: ' ' | append: a.category | jsonify }}}{% unless forloop.last %},{% endunless %}
+{%- endfor -%}]}
