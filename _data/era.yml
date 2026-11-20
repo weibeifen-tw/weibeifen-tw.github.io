@@ -8,7 +8,8 @@
 #   date：顯示用的日期文字。
 #   category：experience＝親身經歷（角色自己經歷）、retrospective＝歷史回顧（角色回顧過去）。
 #   novel：小說 ID。
-#   source：官方或學術來源網址；空字串＝待補證。
+#   source：官方或學術來源網址（P04-2 核准清單）；空字串＝待補證。來源頁面的可存取性仍待補證。
+#   source_title：來源名稱（選填）。
 # research：史前年代／歷史研究，顯示在 1950 年代之前。
 #   period：年代說明。hypothesis: true 表示是研究假說，頁面會標「研究假說」，不能寫成定論。
 
@@ -20,15 +21,7 @@ events:
     title: 馬祖戰地政務時期
     category: retrospective
     novel: chaosheng
-    source: https://art.archives.gov.tw/tw/art/1506-13185.html
-
-  - id: end-of-military-administration
-    start: 1992
-    date: 1992-11-07
-    title: 金馬終止戰地政務
-    category: retrospective
-    novel: chaosheng
-    source: ""
+    source: https://art.archives.gov.tw/tw/art/1506.html
 
   - id: provincial-streamlining
     start: 1998
@@ -68,7 +61,7 @@ events:
     title: 同性婚姻相關公民投票
     category: experience
     novel: feichang
-    source: https://web.cec.gov.tw/central/article/25933
+    source: https://web.cec.gov.tw/api/file/0132581c-18b5-4951-bc24-3cc083924666.pdf
 
   - id: curriculum-108
     start: 2019
@@ -84,7 +77,7 @@ events:
     title: COVID-19疫情
     category: experience
     novel: chaojian
-    source: ""
+    source: https://www.cdc.gov.tw/Category/Page/vleOMKqwuEbIMgqaTeXG8A
 
   - id: level3-alert-2021
     start: 2021
@@ -100,7 +93,7 @@ events:
     title: COVID-19疫情
     category: experience
     novel: chuwang
-    source: ""
+    source: https://www.cdc.gov.tw/En/Category/ListContent/EmXemht4IT-IRAPrAnyG9A?uaid=izzSHcQu6sBglvhmr0FkkA
 
   - id: hualien-earthquake-2024
     start: 2024
@@ -113,21 +106,22 @@ events:
 research:
   - id: changbin-culture
     title: 長濱文化
-    period: 約距今30,000至5,000年。
+    period: 約距今30,000年起，屬於臺灣舊石器時代的考古文化。
     novel: shiyi
     chapter: 4
-    source: https://icloud.nmp.gov.tw/Classroom/Prehistoric?a=74
+    source: https://nchdb.boch.gov.tw/assets/overview/archaeologicalSite/20060501000007
 
   - id: dabenkeng-culture
     title: 大坌坑文化
-    period: 約距今6,500年起，屬新石器時代早期文化。
+    period: 約距今6,500至4,200年，屬於臺灣新石器時代早期的考古文化。
     novel: shiyi
     chapter: 4
-    source: https://icloud.nmp.gov.tw/library/EPaperContent?a=212&id=6&nid=42
+    source_title: 館藏臺灣西部大坌坑文化陶片刻劃紋研究
+    source: https://file.moc.gov.tw/001/Upload/OldFiles/AdminUploads/files/201807/613.pdf
 
   - id: austronesian-origin
     title: 南島語族起源
-    period: 臺灣可能是南島語族早期祖居地及向外擴散的重要起點。
+    period: 臺灣可能是南島語族向外擴散的重要起源地之一。
     hypothesis: true
     novel: shiyi
     chapter: 5
