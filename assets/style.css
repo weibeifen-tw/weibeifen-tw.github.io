@@ -821,3 +821,20 @@ a.ig-name:hover{text-decoration:underline}
 .ev-meta a{text-decoration:none}
 .ev-meta .ev-src{color:var(--sub);font-size:12px;text-decoration:underline}
 .ev-sep{color:var(--sub)}
+/* 首頁置頂文：關於畝 MU 連結（P05） */
+.pinned-ig .ip-about{margin-top:8px}
+.pinned-ig .ip-about a{font-size:14px;color:var(--sub)}
+/* 關於畝 MU（P05） */
+.about h1{margin:10px 0 4px;text-align:center}
+.about h2{margin:0 0 10px;font-family:"Noto Serif TC",serif;font-size:19px;font-weight:600;letter-spacing:.04em}
+.about p{margin:0 0 .9em;font-size:15px;line-height:1.9;color:var(--ink)}
+.ab-sec{padding:20px 0;border-top:1px solid var(--line)}
+.ab-sec:first-child{border-top:0;padding-top:4px}
+.ab-me{text-align:center}
+.ab-me h2{margin-top:18px}
+.ab-avatar{display:block;width:132px;height:132px;margin:0 auto;border-radius:50%;object-fit:cover}
+.ab-focus{display:flex;flex-wrap:wrap;gap:8px;list-style:none;margin:0;padding:0}
+.ab-focus li{padding:4px 12px;border-radius:999px;background:var(--chip);font-size:14px}
+.ab-family{display:block;width:100%;max-width:440px;height:auto;margin:6px auto 0;border-radius:12px}
+.ab-links{display:flex;gap:10px;flex-wrap:wrap}
+.ab-links a{padding:8px 18px;border:1px solid var(--line);border-radius:999px;font-size:14px;color:var(--ink);text-decoration:none}
