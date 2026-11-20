@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" role="img" aria-label="《劃記》封面"><rect width="600" height="800" fill="#E6E2D4"/>
+<path d="M0 470 C 80 420, 140 330, 260 300 C 330 280, 380 230, 450 260 C 520 290, 560 380, 600 420 V520 H0Z" fill="#4C8F9A"/>
+<rect x="190" y="150" width="220" height="380" rx="28" fill="#E6E2D4" stroke="#304D62" stroke-width="10"/>
+<g stroke="#304D62" stroke-width="16" stroke-linecap="round"><path d="M242 260V420M282 260V420M322 260V420M362 260V420"/><path d="M222 390L382 290"/></g>
+<path d="M0 560 Q75 535 150 560 T300 560 T450 560 T600 560" stroke="#304D62" stroke-width="10" fill="none"/><path d="M0 620 Q75 595 150 620 T300 620 T450 620 T600 620" stroke="#4C8F9A" stroke-width="10" fill="none"/><rect y="680" width="600" height="120" fill="#31566A"/><text x="300" y="762" text-anchor="middle" font-family="'Noto Serif TC','Noto Serif CJK TC','Songti TC','PMingLiU',serif" font-size="62" font-weight="700" letter-spacing="12" fill="#FFFFFF">劃記</text></svg>

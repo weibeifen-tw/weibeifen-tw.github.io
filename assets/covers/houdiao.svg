@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" role="img" aria-label="《後調》封面"><rect width="600" height="800" fill="#E6D7BF"/>
+<circle cx="440" cy="190" r="170" fill="#F1E8D8"/>
+<path d="M285 150 C 255 110, 310 90, 290 50 M315 150 C 345 110, 290 90, 330 40" stroke="#9B8BA7" stroke-width="5" fill="none" stroke-linecap="round"/>
+<rect x="268" y="150" width="64" height="40" fill="#75556B"/><rect x="284" y="190" width="32" height="24" fill="#9B8BA7"/>
+<path d="M200 214 H400 L440 330 L400 560 H200 L160 330Z" fill="#FFFFFF" opacity=".55" stroke="#75556B" stroke-width="6"/>
+<clipPath id="b"><path d="M200 214 H400 L440 330 L400 560 H200 L160 330Z"/></clipPath>
+<g clip-path="url(#b)" opacity=".75"><path d="M150 380 C 230 350, 330 410, 450 370 V570 H150Z" fill="#E6D7BF"/><path d="M150 440 C 250 410, 330 470, 450 430 V570 H150Z" fill="#9B8BA7"/><path d="M150 500 C 240 480, 340 520, 450 490 V570 H150Z" fill="#75556B"/></g><rect y="680" width="600" height="120" fill="#62465D"/><text x="300" y="762" text-anchor="middle" font-family="'Noto Serif TC','Noto Serif CJK TC','Songti TC','PMingLiU',serif" font-size="62" font-weight="700" letter-spacing="12" fill="#FFFFFF">後調</text></svg>

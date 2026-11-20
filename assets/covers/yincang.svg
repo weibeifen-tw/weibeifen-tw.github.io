@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" role="img" aria-label="《隱藏》封面"><rect width="600" height="800" fill="#E4E6E8"/>
+<rect x="420" y="70" width="70" height="70" fill="none" stroke="#3D4650" stroke-width="7"/>
+<rect x="110" y="170" width="230" height="420" fill="#899DA8"/>
+<g fill="#C9A7AD"><rect x="290" y="300" width="230" height="56" rx="10"/><rect x="290" y="250" width="40" height="156" rx="10"/><rect x="480" y="250" width="40" height="156" rx="10"/></g>
+<path d="M340 300 V356 H310 C 300 345, 300 335, 308 328 C 300 322, 296 314, 300 306 Z" fill="#E4E6E8"/>
+<path d="M340 200 C 300 205, 288 240, 292 270 L 280 298 L 294 302 C 292 318, 300 334, 314 340 L 312 372 C 308 400, 320 420, 340 430 Z" fill="#3D4650"/><rect y="680" width="600" height="120" fill="#414D56"/><text x="300" y="762" text-anchor="middle" font-family="'Noto Serif TC','Noto Serif CJK TC','Songti TC','PMingLiU',serif" font-size="62" font-weight="700" letter-spacing="12" fill="#FFFFFF">隱藏</text></svg>
