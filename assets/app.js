@@ -631,25 +631,56 @@ window.WBRenderShelf();
   });
 })();
 
-// 頂端搜尋：點放大鏡展開，即時列出符合的小說
+// 頂端搜尋（V1.0 R06）：分類「全部／小說／角色／歷史事件／文學文章」，索引 /assets/search.json 第一次打開才載入
 (function () {
   var btn = document.querySelector('.search-btn'), box = document.querySelector('.sbox'); if (!btn || !box) return;
   var q = box.querySelector('.sbox-q'), out = box.querySelector('.sbox-r');
-  var nv = {}, ch = {};
-  try { nv = JSON.parse(document.getElementById('novels').textContent); ch = JSON.parse(document.getElementById('chars').textContent); } catch (e) {}
-  var list = Object.keys(nv).map(function (id) {
-    var n = nv[id], who = Object.keys(ch).filter(function (c) { return ch[c].novel === id; }).map(function (c) { return ch[c].name + ' ' + ch[c].handle; }).join(' ');
-    return { id: id, t: n.title, era: n.era || '', key: [n.title, n.era, n.tag, (n.tags || []).join(' '), n.blurb, n.intro, who].join(' ').toLowerCase() };
-  });
-  function open(v) { box.hidden = !v; btn.setAttribute('aria-expanded', v); if (v) { q.focus(); } else { q.value = ''; out.innerHTML = ''; } }
+  var CATS = [['all', '全部'], ['novels', '小說'], ['chars', '角色'], ['events', '歷史事件'], ['arts', '文學文章']];
+  var tabs = document.createElement('div'); tabs.className = 'sbox-tabs'; tabs.setAttribute('role', 'tablist'); tabs.setAttribute('aria-label', '搜尋分類');
+  var cat = 'all';
+  CATS.forEach(function (c) { var b = document.createElement('button'); b.type = 'button'; b.setAttribute('role', 'tab'); b.dataset.cat = c[0]; b.textContent = c[1]; b.setAttribute('aria-selected', c[0] === cat); b.onclick = function () { cat = c[0]; tabs.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-selected', x.dataset.cat === cat); }); run(); }; tabs.appendChild(b); });
+  box.insertBefore(tabs, out);
+  var idx = null, loading = null;
+  function load() {
+    if (idx || loading) return loading;
+    loading = fetch((window.BASE || '') + '/assets/search.json?v=' + (window.VER || '')).then(function (r) { return r.json(); })
+      .then(function (d) { idx = d; ['novels', 'chars', 'events', 'arts'].forEach(function (k) { (idx[k] || []).forEach(function (x) { x._k = String(x.k || '').toLowerCase(); }); }); })
+      .catch(function () { idx = { novels: [], chars: [], events: [], arts: [] }; });
+    return loading;
+  }
+  function el(t, c, txt) { var e = document.createElement(t); if (c) e.className = c; if (txt != null) e.textContent = txt; return e; }
+  function pic(x) { var s = el('span', 'avatar sr-pic'); s.style.setProperty('--c', x.c || '#999'); if (x.img) { var i = new Image(); i.src = x.img; i.alt = ''; i.loading = 'lazy'; s.appendChild(i); } else s.textContent = x.g || (x.t || '').charAt(0); return s; }
+  function item(kind, x) {
+    var li = el('li', 'sr-' + kind), a = el('a'); a.href = x.u;
+    if (kind === 'novels') { a.append(pic(x), wrap(x.t, x.b)); }
+    else if (kind === 'chars') { a.append(pic(x), wrap(x.t, '《' + x.n + '》' + (x.h ? '・@' + x.h : ''))); }
+    else if (kind === 'events') { a.append(wrap(x.t, [x.y, x.p].filter(Boolean).join('・') + '　《' + x.n + '》')); }
+    else { a.append(wrap(x.t, x.s)); }
+    li.appendChild(a); return li;
+  }
+  function wrap(t, sub) { var w = el('span', 'sr-txt'); w.appendChild(el('b', null, t)); if (sub) w.appendChild(el('small', null, sub)); return w; }
+  function run() {
+    var v = q.value.trim().toLowerCase(); out.innerHTML = ''; if (!v) return;
+    if (!idx) { load().then(run); return; }
+    var kinds = cat === 'all' ? ['novels', 'chars', 'events', 'arts'] : [cat], n = 0;
+    kinds.forEach(function (k) {
+      var hit = (idx[k] || []).filter(function (x) { return x._k.indexOf(v) >= 0; });
+      if (!hit.length) return;
+      if (cat === 'all') out.appendChild(el('li', 'sr-h', CATS.filter(function (c) { return c[0] === k; })[0][1]));
+      hit.slice(0, cat === 'all' ? 6 : 50).forEach(function (x) { out.appendChild(item(k, x)); n++; });
+    });
+    if (!n) out.appendChild(el('li', 'none', '找不到符合的結果'));
+  }
+  function open(v) { box.hidden = !v; btn.setAttribute('aria-expanded', v); if (v) { load(); q.focus(); } else { q.value = ''; out.innerHTML = ''; } }
   btn.onclick = function () { open(box.hidden); };
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !box.hidden) open(false); });
-  q.addEventListener('input', function () {
-    var v = q.value.trim().toLowerCase(); out.innerHTML = ''; if (!v) return;
-    var hit = list.filter(function (x) { return x.key.indexOf(v) >= 0; });
-    if (!hit.length) { var li = document.createElement('li'); li.className = 'none'; li.textContent = '找不到符合的小說'; out.appendChild(li); return; }
-    hit.forEach(function (x) { var li = document.createElement('li'), a = document.createElement('a'), b = document.createElement('b'), sm = document.createElement('small'); a.href = (window.BASE || '') + '/novel/' + x.id + '/'; b.textContent = x.t; sm.textContent = x.era; a.append(b, sm); li.appendChild(a); out.appendChild(li); });
-  });
+  q.addEventListener('input', run);
+})();
+
+// 年代誌：從搜尋點進來（#ev-事件 id）時捲到那張事件卡
+(function () {
+  if (location.hash.indexOf('#ev-') !== 0) return;
+  addEventListener('load', function () { var e = document.querySelector('.ev[data-id="' + decodeURIComponent(location.hash.slice(4)) + '"]'); if (e && e.offsetParent) e.scrollIntoView({ block: 'center' }); });
 })();
 
 // 作品貼文：點人像圖示顯示／收起標註的角色
