@@ -165,7 +165,7 @@
     if (window.confirm('收藏需要登入會員，要前往登入嗎？')) location.href = BASE + '/member/';
   }
 
-  // 建一顆收藏按鈕；labels = [未收藏, 已收藏]
+  // （R02-R1 起不再使用，保留備查）建一顆收藏按鈕；labels = [未收藏, 已收藏]
   function favButton(cls, labels, row) {
     var b = el('button', cls, labels[0]);
     b.type = 'button';
@@ -188,25 +188,44 @@
 
   var buttons = []; // [按鈕, row]
 
-  // 小說介紹頁：收藏整本
-  var btns = document.querySelector('.nv-btns');
-  if (btns && window.NOVEL) {
-    var nr = { novel: window.NOVEL, path: '', title: (novels[window.NOVEL] || {}).title || '' };
-    var nb = favButton('nv-btn nv-fav', ['☆ 收藏這本', '★ 已收藏'], nr);
-    btns.appendChild(nb);
-    buttons.push([nb, nr]);
+  // V1.0 R02-R1：愛心＝收藏。作品頁貼文的愛心收藏整本，章節頁的愛心加書籤。
+  // 沿用 favorites 原本的資料（整本 path=''，章節 path=網址），再按一次取消。空心＝未收藏，紅心＝已收藏。
+  function favHeart(b, labels, row) {
+    if (!b) return;
+    var nEl = b.querySelector('.n'), base = parseInt(nEl && nEl.textContent, 10) || 0, on = false;
+    function no4(n) { while (String(n).indexOf('4') >= 0) n++; return n; }
+    function paint() {
+      b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on));
+      b.setAttribute('aria-label', labels[on ? 1 : 0]);
+      if (nEl && base) nEl.textContent = String(on ? no4(base + 1) : base);
+    }
+    b.onclick = async function () {
+      if (!signedIn()) { askLogin(); return; }
+      b.disabled = true;
+      var err = null;
+      try { var A = await getAuth(); err = await setFav(A, !on, row); }
+      catch (e) { err = '連不上會員伺服器，請稍後再試。'; }
+      b.disabled = false;
+      if (err) { window.alert(err); return; }
+      on = !on; paint();
+      b.classList.add('pop'); setTimeout(function () { b.classList.remove('pop'); }, 300);
+    };
+    b.setOn = function (v) { on = !!v; paint(); };
+    paint();
+    buttons.push([b, row]);
   }
 
-  // 章節頁：加書籤
+  // 小說介紹頁：作品貼文的愛心＝收藏整本
+  if (window.NOVEL) {
+    favHeart(document.querySelector('.nv-post .act.like'), ['收藏這本', '已收藏，再按一次取消'],
+      { novel: window.NOVEL, path: '', title: (novels[window.NOVEL] || {}).title || '' });
+  }
+
+  // 章節頁：章節下方的愛心＝加書籤
   var sec = document.querySelector('.chapter.read');
   if (sec && sec.dataset.novel) {
-    var cr = { novel: sec.dataset.novel, path: location.pathname, title: sec.dataset.title || '', no: sec.dataset.no || '' };
-    var cb = favButton('ch-fav', ['🔖 加入書籤', '🔖 已加入書籤'], cr);
-    // 放在愛心、留言、轉發、分享那一排的最右邊
-    var row = sec.querySelector('.r-acts');
-    if (row) row.appendChild(cb);
-    else { var wrap = el('p', 'ch-fav-wrap'); wrap.appendChild(cb); sec.appendChild(wrap); }
-    buttons.push([cb, cr]);
+    favHeart(sec.querySelector('.r-acts .act.like'), ['加入書籤', '已加入書籤，再按一次取消'],
+      { novel: sec.dataset.novel, path: location.pathname, title: sec.dataset.title || '', no: sec.dataset.no || '' });
   }
 
   /* ---------- 會員頁：我的收藏 ---------- */
