@@ -155,6 +155,12 @@
     var sv = card.querySelector('.mb-save');
     if (sv) acts.appendChild(sv);
     card.appendChild(acts);
+    // 刪除帳號（管理員不顯示）：灰色小字，放在最下面
+    if (role !== 'admin') {
+      var del = el('button', 'mb-del', '刪除帳號');
+      del.type = 'button'; del.onclick = deleteAccount;
+      card.appendChild(del);
+    }
     if (future) future.hidden = false;
     paintEntries(p);
   }
@@ -398,6 +404,30 @@
     if (r.error) { setNote(r.error, true); if (b) b.disabled = false; return; }
     setNote('已登出。書櫃留在這台裝置，不受影響。');
     renderGuest();
+  }
+
+  async function deleteAccount() {
+    if (busy || !A) return;
+    var t = prompt('刪除帳號後，你的個人資料、留言、私訊、收藏和書籤都會永久刪除，無法復原。\n\n確定要刪除，請輸入「刪除」兩個字：');
+    if (t === null) return;
+    if (t.trim() !== '刪除') { setNote('沒有刪除。要刪除帳號，請輸入「刪除」兩個字。', true); return; }
+    busy = true;
+    var b = card.querySelector('.mb-del'); if (b) b.disabled = true;
+    var res;
+    try { res = await A.getClient().rpc('delete_my_account'); } catch (e) { res = { error: e }; }
+    if (res && res.error) {
+      busy = false; if (b) b.disabled = false;
+      var m = String(res.error.message || '');
+      setNote(m.indexOf('WB_BANNED') >= 0 ? '這個帳號已被封鎖，無法自行刪除。如有疑問請私訊 @weibe.ifen。'
+        : m.indexOf('WB_ADMIN_CANNOT_DELETE') >= 0 ? '管理員帳號不能在這裡刪除。'
+        : '刪除失敗，請稍後再試。', true);
+      return;
+    }
+    try { await A.signOut(); } catch (e) {}
+    try { localStorage.removeItem(ME_KEY); } catch (e) {}
+    busy = false;
+    renderGuest();
+    setNote('帳號已刪除。謝謝你來讀過這些故事。書櫃（閱讀紀錄）是存在這台裝置上的，不受影響。');
   }
 
   async function logoutAll() {
