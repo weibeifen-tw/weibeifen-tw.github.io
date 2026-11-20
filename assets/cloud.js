@@ -24,6 +24,7 @@
   var L = window.WB_AUTH_LAZY || {};
   var BASE = window.BASE || '';
   var novels = {};
+  var CHARS = {}; try { CHARS = JSON.parse(document.getElementById('chars').textContent || '{}'); } catch (e) {}
   try { novels = JSON.parse(document.getElementById('novels').textContent || '{}'); } catch (e) {}
 
   function el(tag, cls, text) {
@@ -165,7 +166,7 @@
     if (window.confirm('收藏需要登入會員，要前往登入嗎？')) location.href = BASE + '/member/';
   }
 
-  // 建一顆收藏按鈕；labels = [未收藏, 已收藏]
+  // （R02-R1 起不再使用，保留備查）建一顆收藏按鈕；labels = [未收藏, 已收藏]
   function favButton(cls, labels, row) {
     var b = el('button', cls, labels[0]);
     b.type = 'button';
@@ -188,25 +189,44 @@
 
   var buttons = []; // [按鈕, row]
 
-  // 小說介紹頁：收藏整本
-  var btns = document.querySelector('.nv-btns');
-  if (btns && window.NOVEL) {
-    var nr = { novel: window.NOVEL, path: '', title: (novels[window.NOVEL] || {}).title || '' };
-    var nb = favButton('nv-btn nv-fav', ['☆ 收藏這本', '★ 已收藏'], nr);
-    btns.appendChild(nb);
-    buttons.push([nb, nr]);
+  // V1.0 R02-R1：愛心＝收藏。作品頁貼文的愛心收藏整本，章節頁的愛心加書籤。
+  // 沿用 favorites 原本的資料（整本 path=''，章節 path=網址），再按一次取消。空心＝未收藏，紅心＝已收藏。
+  function favHeart(b, labels, row) {
+    if (!b) return;
+    var nEl = b.querySelector('.n'), base = parseInt(nEl && nEl.textContent, 10) || 0, on = false;
+    function no4(n) { while (String(n).indexOf('4') >= 0) n++; return n; }
+    function paint() {
+      b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on));
+      b.setAttribute('aria-label', labels[on ? 1 : 0]);
+      if (nEl && base) nEl.textContent = String(on ? no4(base + 1) : base);
+    }
+    b.onclick = async function () {
+      if (!signedIn()) { askLogin(); return; }
+      b.disabled = true;
+      var err = null;
+      try { var A = await getAuth(); err = await setFav(A, !on, row); }
+      catch (e) { err = '連不上會員伺服器，請稍後再試。'; }
+      b.disabled = false;
+      if (err) { window.alert(err); return; }
+      on = !on; paint();
+      b.classList.add('pop'); setTimeout(function () { b.classList.remove('pop'); }, 300);
+    };
+    b.setOn = function (v) { on = !!v; paint(); };
+    paint();
+    buttons.push([b, row]);
   }
 
-  // 章節頁：加書籤
+  // 小說介紹頁：作品貼文的愛心＝收藏整本
+  if (window.NOVEL) {
+    favHeart(document.querySelector('.nv-post .act.like'), ['收藏這本', '已收藏，再按一次取消'],
+      { novel: window.NOVEL, path: '', title: (novels[window.NOVEL] || {}).title || '' });
+  }
+
+  // 章節頁：章節下方的愛心＝加書籤
   var sec = document.querySelector('.chapter.read');
   if (sec && sec.dataset.novel) {
-    var cr = { novel: sec.dataset.novel, path: location.pathname, title: sec.dataset.title || '', no: sec.dataset.no || '' };
-    var cb = favButton('ch-fav', ['🔖 加入書籤', '🔖 已加入書籤'], cr);
-    // 放在愛心、留言、轉發、分享那一排的最右邊
-    var row = sec.querySelector('.r-acts');
-    if (row) row.appendChild(cb);
-    else { var wrap = el('p', 'ch-fav-wrap'); wrap.appendChild(cb); sec.appendChild(wrap); }
-    buttons.push([cb, cr]);
+    favHeart(sec.querySelector('.r-acts .act.like'), ['加入書籤', '已加入書籤，再按一次取消'],
+      { novel: sec.dataset.novel, path: location.pathname, title: sec.dataset.title || '', no: sec.dataset.no || '' });
   }
 
   /* ---------- 會員頁：我的收藏 ---------- */
@@ -261,7 +281,7 @@
 
   /* ---------- 公開留言（章節頁最下面） ---------- */
   var AU = window.WB_AUTH_CONFIG || {};
-  var CM_COLS = 'id,user_id,body,hidden,removed,as_author,created_at,profiles(display_name,username,avatar_color,bio)';
+  var CM_COLS = 'id,user_id,body,hidden,removed,as_author,as_char,created_at,profiles(display_name,username,avatar_color,bio)';
 
   function cmError(e) {
     var m = (e && e.message) || '';
@@ -270,6 +290,7 @@
     if (/WB_TOO_FAST/.test(m)) return '留言太快了，請等 15 秒再試。';
     if (/WB_TOO_MANY/.test(m)) return '一小時最多留 5 則，請晚點再來。';
     if (/WB_LOGIN_REQUIRED/.test(m)) return '請先登入會員。';
+    if (/WB_NOT_ADMIN/.test(m)) return '只有管理員（通過兩步驟驗證）能用角色身分留言。';
     if (e && e.code === '23514') return '留言要 1～100 個字。';
     if (e && e.code === '23505') return '你已經檢舉過這則留言了。';
     return errText('沒有成功，請稍後再試。', e);
@@ -371,6 +392,16 @@
         var item = el('div', 'cm-item' + (r.hidden || r.removed ? ' is-hidden' : ''));
         var top = el('div', 'cm-top');
         // 點頭貼或名字：跳出會員小卡片（頭貼、名字、@帳號、簡介）
+        var rc = r.as_char && CHARS[r.as_char];
+        if (rc) {
+          // 管理員用角色身分回覆：顯示角色的頭貼、名字、@帳號，點了到作品頁的角色介紹
+          var ca = el('a', 'cm-who cm-as-char'); ca.href = BASE + '/novel/' + rc.novel + '/?c=' + r.as_char;
+          var cav = el('span', 'avatar cm-av'); cav.style.setProperty('--c', rc.color || '#999');
+          if (rc.avatar) { var ci = new Image(); ci.src = BASE + '/assets/avatars/' + rc.avatar; ci.alt = ''; cav.appendChild(ci); } else cav.textContent = rc.glyph || rc.name.charAt(0);
+          ca.appendChild(cav); ca.appendChild(el('b', 'cm-name', rc.name));
+          top.appendChild(ca);
+          if (rc.handle) top.appendChild(el('span', 'cm-user', '@' + rc.handle));
+        } else {
         var who = el('button', 'cm-who'); who.type = 'button';
         who.setAttribute('aria-label', '看 ' + (p.display_name || '新會員') + ' 的簡介');
         if (window.WBAvatar) who.appendChild(window.WBAvatar.make({ name: p.display_name || '新會員', color: p.avatar_color, id: r.user_id, author: r.as_author }, 'cm-av'));
@@ -379,6 +410,7 @@
         top.appendChild(who);
         if (r.as_author) top.appendChild(el('span', 'cm-author', '作者'));
         if (p.username) top.appendChild(el('span', 'cm-user', '@' + p.username));
+        }
         var side = el('div', 'cm-side'); side.appendChild(el('time', 'cm-time', fmtDate(r.created_at)));
         item.appendChild(top);
         if (r.removed) item.appendChild(el('p', 'cm-note', '已被管理員刪除，只有管理員看得到。'));
@@ -471,6 +503,18 @@
       ta.oninput = function () { cnt.textContent = ta.value.length + ' / 100'; };
       row.appendChild(cnt); row.appendChild(b);
       var warn = el('p', 'cm-warn', '⚠️ 講髒話、罵人或騷擾，留言會被刪除，帳號會被封鎖。');
+      var asSel = null;
+      if (admin) {
+        // 管理員：選擇用畝 MU 或這部小說的角色身分回覆
+        var cs = Object.keys(CHARS).filter(function (k) { return CHARS[k].novel === novelId; });
+        if (cs.length) {
+          asSel = el('select', 'cm-as'); asSel.setAttribute('aria-label', '用誰的身分留言');
+          var o0 = el('option', null, '畝 MU（作者）'); o0.value = ''; asSel.appendChild(o0);
+          cs.forEach(function (k) { var o = el('option', null, CHARS[k].name + '（角色）'); o.value = k; asSel.appendChild(o); });
+          var lab = el('label', 'cm-as-row'); lab.appendChild(el('span', null, '回覆身分')); lab.appendChild(asSel);
+          f.appendChild(lab);
+        }
+      }
       f.appendChild(warn); f.appendChild(ta); f.appendChild(row); f.appendChild(msg);
       f.onsubmit = async function (ev) {
         ev.preventDefault();
@@ -478,7 +522,9 @@
         if (!body) { msg.textContent = '請先寫點什麼。'; msg.hidden = false; return; }
         b.disabled = true; msg.hidden = true;
         var res;
-        try { res = await A.getClient().from('comments').insert({ novel: novelId, path: path, body: body }); }
+        var rowIn = { novel: novelId, path: path, body: body };
+        if (asSel && asSel.value) rowIn.as_char = asSel.value;
+        try { res = await A.getClient().from('comments').insert(rowIn); }
         catch (e) { res = { error: { message: '連不上會員伺服器' } }; }
         b.disabled = false;
         if (res.error) { msg.textContent = cmError(res.error); msg.hidden = false; return; }
