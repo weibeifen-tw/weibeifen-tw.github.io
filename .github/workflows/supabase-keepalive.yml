@@ -1,0 +1,26 @@
+# 讓 Supabase 免費專案保持清醒：每 3 天讀一次資料庫（只讀 1 筆公開留言的 id）。
+# Supabase 免費方案連續 7 天沒動靜會暫停專案；暫停時登入、留言、私訊都會失效。
+# 用的是網站本來就公開的 publishable key（_data/auth.yml），不需要任何密鑰。
+# 如果失敗，GitHub 會寄信通知；通常代表專案已被暫停，去 Supabase 後台按 Resume project。
+name: Supabase 保持清醒
+on:
+  schedule:
+    - cron: "17 3 */3 * *"   # UTC 03:17 = 台灣 11:17，每 3 天一次
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: _data/auth.yml
+          sparse-checkout-cone-mode: false
+      - name: 讀一次資料庫
+        run: |
+          URL=$(grep '^supabase_url:' _data/auth.yml | sed -E 's/.*"(.*)".*/\1/')
+          KEY=$(grep '^publishable_key:' _data/auth.yml | sed -E 's/.*"(.*)".*/\1/')
+          code=$(curl -s -o /tmp/out.txt -w '%{http_code}' "$URL/rest/v1/comments?select=id&limit=1" -H "apikey: $KEY")
+          echo "HTTP $code"
+          if [ "$code" != "200" ]; then cat /tmp/out.txt; echo "::error::Supabase 沒有回應（HTTP $code），可能已被暫停"; exit 1; fi
