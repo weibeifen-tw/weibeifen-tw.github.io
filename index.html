@@ -76,7 +76,18 @@ layout: default
     {%- if ok %}<div class="ip-dots"><i class="on"></i><i></i><i></i></div>{% endif %}
     {% capture u %}{{ '/novel/' | append: nv[0] | append: '/' | relative_url }}{% endcapture %}{% capture k %}intro-{{ nv[0] }}{% endcapture %}{% include actions.html key=k url=u norepost=true read=u readlabel='進入故事' %}
     <div class="ip-text">
-      <p><a class="ig-name" href="{{ '/novel/' | append: nv[0] | append: '/' | relative_url }}">{{ nv[1].title }}</a> {{ nv[1].caption | default: nv[1].intro }}</p>
+      {%- comment -%} 貼文文案可以分段（P07）：第一段接在書名後面，其餘每段一個 <p> {%- endcomment -%}
+      {%- capture psep %}
+
+{% endcapture -%}
+      {%- assign cps = nv[1].caption | default: nv[1].intro | split: psep -%}
+      {%- assign cfirst = true -%}
+      {%- for para in cps -%}{%- assign pt = para | strip -%}{%- if pt == '' -%}{%- continue -%}{%- endif -%}
+      {%- if cfirst %}
+      <p><a class="ig-name" href="{{ '/novel/' | append: nv[0] | append: '/' | relative_url }}">{{ nv[1].title }}</a> {{ pt | newline_to_br }}</p>
+      {%- assign cfirst = false -%}{%- else %}
+      <p>{{ pt | newline_to_br }}</p>
+      {%- endif -%}{%- endfor -%}
     </div>
   </article>
   {%- endif -%}

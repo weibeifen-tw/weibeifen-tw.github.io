@@ -63,7 +63,11 @@
     {%- endif %}
   </div>
   {%- endif %}
-  {%- if nv.intro %}<p class="nv-intro">{{ nv.intro }}</p>{% endif %}
+  {%- comment -%} 簡介可以分段（P07）：novels.yml 的 intro 用空行分段，每段一個 <p> {%- endcomment -%}
+  {%- capture psep %}
+
+{% endcapture -%}
+  {%- if nv.intro %}{% assign ips = nv.intro | split: psep %}{% for para in ips %}{% assign pt = para | strip %}{% if pt != '' %}<p class="nv-intro">{{ pt | newline_to_br }}</p>{% endif %}{% endfor %}{% endif %}
   {%- comment -%} 說明區（P04-2）：架空世界說明（world_note）、虛構聲明（fiction_note）。年代誌不收架空設定，改放這裡。 {%- endcomment -%}
   {%- if nv.world_note or nv.fiction_note %}
   <div class="nv-notes">
