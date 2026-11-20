@@ -1,21 +1,45 @@
 ---
 layout: default
 title: 年代誌
-description: 未備份的小說，各自發生在台灣的哪個年代，又寫到了哪些真實發生過的事。
+description: 未備份的小說，各自發生在台灣的哪個年代，又寫到了哪些真實發生過的事。從史前時代、歷史時期到現當代。
 permalink: /era/
 ---
 {%- comment -%}
-  年代誌（P04-2）：資料在 _data/era.yml。
-  - 史前年代／歷史研究（research）放在最前面。
-  - 近現代事件（events）每筆只存一次；用 start～end 判斷落在哪幾個十年，跨年代事件會出現在每個相關區塊。
-  - 分類：experience＝親身經歷、retrospective＝歷史回顧。
+  年代誌（P08-3）：資料在 _data/era.yml。
+  三大區塊：史前時代（periods block: prehistoric）、歷史時期（block: historical）、現當代（1950–2050 每十年，自動產生）。
+  - 事件（events）每筆只存一次，用 start～end 判斷落在哪幾個分期／十年；跨期事件會出現在每個相關區塊。
+  - 史前研究（research）用 phase 對到史前分期；沒有 phase 的是跨時期研究，顯示在史前時代區塊下方。
+  - 所有分期都顯示；沒有資料時顯示空白提示。
 {%- endcomment -%}
 {%- assign evs = site.data.era.events -%}
 {%- assign rs = site.data.era.research -%}
+{%- assign pds = site.data.era.periods -%}
+{%- assign empty_msg = '此時期尚無相關作品或歷史事件' -%}
+{%- capture blocks -%}prehistoric|史前時代,historical|歷史時期,modern|現當代{%- endcapture -%}
+{%- assign blocks = blocks | split: ',' -%}
 <h1 class="ov-h">年代誌</h1>
-<div class="era-axis" role="tablist" aria-label="年代">
-  <button type="button" role="tab" class="era-cell era-pre{% if rs.size == 0 %} empty{% endif %}" data-dec="pre" aria-selected="false"><b>史前</b><small>{% if rs.size > 0 %}{{ rs.size }} 筆{% else %}－{% endif %}</small></button>
-{%- for i in (0..9) -%}
+<div class="era-blocks" role="tablist" aria-label="年代區塊">
+{%- for b in blocks -%}{%- assign bp = b | split: '|' -%}
+  <button type="button" role="tab" class="era-block" data-block="{{ bp[0] }}" aria-selected="false">{{ bp[1] }}</button>
+{%- endfor -%}
+</div>
+
+{%- comment -%} ===== 各區塊的分期列 ===== {%- endcomment -%}
+<div class="era-axis era-axis-pre" data-block="prehistoric" role="tablist" aria-label="史前時代分期" hidden>
+{%- for p in pds -%}{%- if p.block != 'prehistoric' -%}{%- continue -%}{%- endif -%}
+  {%- assign cnt = rs | where: "phase", p.id | size -%}
+  <button type="button" role="tab" class="era-cell era-cell-wide{% if cnt == 0 %} empty{% endif %}" data-dec="{{ p.id }}" aria-selected="false"><b>{{ p.name }}</b><small>{% if cnt > 0 %}{{ cnt }} 筆{% else %}－{% endif %}</small></button>
+{%- endfor -%}
+</div>
+<div class="era-axis era-axis-his" data-block="historical" role="tablist" aria-label="歷史時期分期" hidden>
+{%- for p in pds -%}{%- if p.block != 'historical' -%}{%- continue -%}{%- endif -%}
+  {%- assign ps = p.start | default: -100000 -%}{%- assign cnt = 0 -%}
+  {%- for e in evs -%}{%- assign ee = e.end | default: e.start -%}{%- if e.start <= p.end and ee >= ps -%}{%- assign cnt = cnt | plus: 1 -%}{%- endif -%}{%- endfor -%}
+  <button type="button" role="tab" class="era-cell era-cell-wide{% if cnt == 0 %} empty{% endif %}" data-dec="{{ p.id }}" aria-selected="false"><b>{{ p.name }}</b><small>{% if cnt > 0 %}{{ cnt }} 筆{% else %}－{% endif %}</small></button>
+{%- endfor -%}
+</div>
+<div class="era-axis era-axis-mod" data-block="modern" role="tablist" aria-label="現當代年代" hidden>
+{%- for i in (0..10) -%}
   {%- assign d = i | times: 10 | plus: 1950 -%}{%- assign d9 = d | plus: 9 -%}{%- capture ds -%}{{ d }}{%- endcapture -%}
   {%- assign cnt = 0 -%}
   {%- for e in evs -%}{%- assign ee = e.end | default: e.start -%}{%- if e.start <= d9 and ee >= d -%}{%- assign cnt = cnt | plus: 1 -%}{%- endif -%}{%- endfor -%}
@@ -23,54 +47,69 @@ permalink: /era/
 {%- endfor -%}
 </div>
 
-<section class="era-dec" data-dec="pre" hidden>
-  <h2>史前年代／歷史研究</h2>
-  {%- for r in rs -%}
-  {%- assign n = site.data.novels[r.novel] -%}
-  {%- assign col = '#6b665c' -%}{%- for ch in site.data.characters -%}{%- if ch[1].novel == r.novel -%}{%- assign col = ch[1].color -%}{%- break -%}{%- endif -%}{%- endfor -%}
-  {%- assign src_post = nil -%}{%- for p in site.posts -%}{%- if p.novel == r.novel and p.chapter == r.chapter -%}{%- assign src_post = p -%}{%- break -%}{%- endif -%}{%- endfor -%}
-  <div class="ev" id="{{ r.id }}" data-cat="research">
-    <div class="ev-head"><span class="ev-cat ev-research">史前年代／歷史研究</span>{% if r.hypothesis %}<span class="ev-cat ev-hypo">研究假說</span>{% endif %}</div>
-    <b class="ev-title">{{ r.title | escape }}</b>
-    <p class="ev-period">{{ r.period | escape }}</p>
-    <p class="ev-meta">
-      {%- if src_post %}<a href="{{ src_post.url | relative_url }}" style="color:{{ col }}">《{{ n.title }}》第 {{ r.chapter }} 篇</a>{% else %}<a href="{{ '/novel/' | append: r.novel | append: '/' | relative_url }}" style="color:{{ col }}">《{{ n.title }}》</a>{% endif -%}
-      {%- if r.source != '' and r.source %}<span class="ev-sep">・</span><a class="ev-src" href="{{ r.source }}" target="_blank" rel="noopener">來源</a>{% endif -%}
-    </p>
-  </div>
-  {%- endfor -%}
-  {%- if rs.size == 0 %}<p class="era-none">這個年代，還沒有人發文。</p>{% endif %}
-</section>
-
-{%- for i in (0..9) -%}
-{%- assign d = i | times: 10 | plus: 1950 -%}{%- assign d9 = d | plus: 9 -%}{%- capture ds -%}{{ d }}{%- endcapture -%}
-<section class="era-dec" data-dec="{{ ds }}" hidden>
-  <h2>{{ ds }} 年代</h2>
-  {%- assign any = false -%}
-  {%- for e in evs -%}{%- assign ee = e.end | default: e.start -%}{%- if e.start <= d9 and ee >= d -%}{%- assign any = true -%}
-  {%- assign n = site.data.novels[e.novel] -%}
-  {%- assign col = '#6b665c' -%}{%- for ch in site.data.characters -%}{%- if ch[1].novel == e.novel -%}{%- assign col = ch[1].color -%}{%- break -%}{%- endif -%}{%- endfor -%}
-  <div class="ev" data-id="{{ e.id }}" data-cat="{{ e.category }}">
-    <div class="ev-head"><span class="ev-date">{{ e.date }}</span>{% if e.category == 'experience' %}<span class="ev-cat ev-exp">親身經歷</span>{% elsif e.category == 'retrospective' %}<span class="ev-cat ev-retro">歷史回顧</span>{% endif %}</div>
-    <b class="ev-title">{{ e.title | escape }}</b>
-    <p class="ev-meta">
-      <a href="{{ '/novel/' | append: e.novel | append: '/' | relative_url }}" style="color:{{ col }}">《{{ n.title }}》</a>
-      {%- if e.source != '' and e.source %}<span class="ev-sep">・</span><a class="ev-src" href="{{ e.source }}" target="_blank" rel="noopener">來源</a>{% endif -%}
-    </p>
-  </div>
-  {%- endif -%}{%- endfor -%}
-  {%- unless any %}<p class="era-none">這個年代，還沒有人發文。</p>{% endunless %}
+{%- comment -%} ===== 史前時代 ===== {%- endcomment -%}
+{%- for p in pds -%}{%- if p.block != 'prehistoric' -%}{%- continue -%}{%- endif -%}
+<section class="era-dec" data-dec="{{ p.id }}" data-block="prehistoric" hidden>
+  <h2>{{ p.name }}<small class="era-range">{{ p.range }}</small></h2>
+  {%- assign items = rs | where: "phase", p.id -%}
+  {%- for r in items -%}{% include era-research.html r=r %}{%- endfor -%}
+  {%- if items.size == 0 %}<p class="era-none">{{ empty_msg }}</p>{% endif %}
 </section>
 {%- endfor -%}
+
+{%- comment -%} ===== 歷史時期 ===== {%- endcomment -%}
+{%- for p in pds -%}{%- if p.block != 'historical' -%}{%- continue -%}{%- endif -%}
+{%- assign ps = p.start | default: -100000 -%}
+<section class="era-dec" data-dec="{{ p.id }}" data-block="historical" hidden>
+  <h2>{{ p.name }}<small class="era-range">{{ p.range }}</small></h2>
+  {%- assign any = false -%}
+  {%- for e in evs -%}{%- assign ee = e.end | default: e.start -%}{%- if e.start <= p.end and ee >= ps -%}{%- assign any = true -%}{% include era-event.html e=e %}{%- endif -%}{%- endfor -%}
+  {%- unless any %}<p class="era-none">{{ empty_msg }}</p>{% endunless %}
+</section>
+{%- endfor -%}
+
+{%- comment -%} ===== 現當代 ===== {%- endcomment -%}
+{%- for i in (0..10) -%}
+{%- assign d = i | times: 10 | plus: 1950 -%}{%- assign d9 = d | plus: 9 -%}{%- capture ds -%}{{ d }}{%- endcapture -%}
+<section class="era-dec" data-dec="{{ ds }}" data-block="modern" hidden>
+  <h2>{{ ds }} 年代</h2>
+  {%- assign any = false -%}
+  {%- for e in evs -%}{%- assign ee = e.end | default: e.start -%}{%- if e.start <= d9 and ee >= d -%}{%- assign any = true -%}{% include era-event.html e=e %}{%- endif -%}{%- endfor -%}
+  {%- unless any %}<p class="era-none">{{ empty_msg }}</p>{% endunless %}
+</section>
+{%- endfor -%}
+
+{%- comment -%} 跨時期研究（沒有指定史前分期的研究，例如南島語族起源），顯示在史前時代區塊下方 {%- endcomment -%}
+{%- assign cross = rs | where_exp: "r", "r.phase == nil" -%}
+{%- if cross.size > 0 %}
+<section class="era-cross" data-block="prehistoric" hidden>
+  <h2>跨時期研究</h2>
+  {%- for r in cross -%}{% include era-research.html r=r %}{%- endfor -%}
+</section>
+{%- endif %}
+<p class="era-foot" data-block="prehistoric" hidden>史前年代為約略範圍，各考古文化與時期可能重疊，不代表全臺一致的絕對分界。</p>
 <script>
 (function () {
-  var cells = document.querySelectorAll('.era-cell'), secs = document.querySelectorAll('.era-dec');
-  function pick(d) {
-    cells.forEach(function (c) { c.setAttribute('aria-selected', c.dataset.dec === d); });
-    secs.forEach(function (s) { s.hidden = s.dataset.dec !== d; });
-    try { history.replaceState(null, '', '#' + d); } catch (e) {}
+  var blocks = document.querySelectorAll('.era-block'), axes = document.querySelectorAll('.era-axis'),
+      cells = document.querySelectorAll('.era-cell'), secs = document.querySelectorAll('.era-dec'),
+      extras = document.querySelectorAll('.era-cross, .era-foot');
+  var first = { prehistoric: 'paleolithic', historical: 'before-1624', modern: '2020' };
+  function blockOf(id) { var s = document.querySelector('.era-dec[data-dec="' + id + '"]'); return s ? s.dataset.block : null; }
+  function pick(id) {
+    var b = blockOf(id); if (!b) { id = '2020'; b = 'modern'; }
+    blocks.forEach(function (x) { x.setAttribute('aria-selected', x.dataset.block === b); });
+    axes.forEach(function (x) { x.hidden = x.dataset.block !== b; });
+    extras.forEach(function (x) { x.hidden = x.dataset.block !== b; });
+    cells.forEach(function (c) { c.setAttribute('aria-selected', c.dataset.dec === id); });
+    secs.forEach(function (s) { s.hidden = s.dataset.dec !== id; });
+    var on = document.querySelector('.era-cell[aria-selected="true"]');
+    if (on && on.scrollIntoView) { try { on.scrollIntoView({ block: 'nearest', inline: 'center' }); } catch (e) {} }
+    try { history.replaceState(null, '', '#' + id); } catch (e) {}
   }
+  blocks.forEach(function (x) { x.onclick = function () { pick(first[x.dataset.block]); }; });
   cells.forEach(function (c) { c.onclick = function () { pick(c.dataset.dec); }; });
-  var h = location.hash.slice(1); pick(/^(\d{4}|pre)$/.test(h) ? h : '2020');
+  var h = decodeURIComponent(location.hash.slice(1));
+  if (h === 'pre') h = 'paleolithic'; // 舊連結 #pre
+  pick(h || '2020');
 })();
 </script>
