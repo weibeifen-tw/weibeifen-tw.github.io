@@ -13,3 +13,16 @@ exclude:
 plugins:
   - jekyll-seo-tag
   - jekyll-sitemap
+# 文學專區（P06）：文章放 _literature/，不進 _posts，不混入首頁動態與 posts.json。
+collections:
+  literature:
+    output: true
+    permalink: /literature/:name/
+defaults:
+  - scope:
+      path: ""
+      type: literature
+    values:
+      layout: literature-article
+      author: 畝 MU
+      description: ""
