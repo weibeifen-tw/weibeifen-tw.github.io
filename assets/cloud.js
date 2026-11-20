@@ -576,7 +576,7 @@
       c.rpc('comment_notices')
     ]);
     window.WBDM.notices = (!r[2].error && r[2].data) || [];
-    var mine = !r[0].error && r[0].count > 0;
+    var mine = false; // R02-R1：讀者不再看私訊，角色回覆不亮紅點
     window.WBDM.adminUnseen = (!r[1].error && r[1].count) || 0;
     btn.classList.toggle('has-new', mine || window.WBDM.adminUnseen > 0 || window.WBDM.notices.length > 0);
   }
