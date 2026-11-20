@@ -11,7 +11,7 @@
 #   source：官方或學術來源網址（P04-2 核准清單）；空字串＝待補證。來源頁面的可存取性仍待補證。
 #   source_title：來源名稱（選填）。
 # research：史前年代／歷史研究，顯示在 1950 年代之前。
-#   period：年代說明。hypothesis: true 表示是研究假說，頁面會標「研究假說」，不能寫成定論。
+#   period：年代說明（顯示用文字）。phase：歸屬的史前分期 id（選填；沒填＝跨時期研究）。hypothesis: true 表示是研究假說，頁面會標「研究假說」，不能寫成定論。
 
 events:
   - id: matsu-military-administration
@@ -106,6 +106,7 @@ events:
 research:
   - id: changbin-culture
     title: 長濱文化
+    phase: paleolithic
     period: 約距今30,000年起，屬於臺灣舊石器時代的考古文化。
     novel: shiyi
     chapter: 4
@@ -113,6 +114,7 @@ research:
 
   - id: dabenkeng-culture
     title: 大坌坑文化
+    phase: neolithic
     period: 約距今6,500至4,200年，屬於臺灣新石器時代早期的考古文化。
     novel: shiyi
     chapter: 4
@@ -126,3 +128,74 @@ research:
     novel: shiyi
     chapter: 5
     source: https://research.sinica.edu.tw/formosan-languages/
+
+# 導覽分期（P08-3 核准候選分期）。三大區塊：prehistoric 史前時代、historical 歷史時期、modern 現當代。
+# 史前年代為約略範圍，各考古文化與時期可能重疊，不代表全臺一致的絕對分界。
+# 歷史時期用 start／end（西元年）判斷事件落在哪一期；分期允許重疊（例如 1661–1662）。
+# 現當代 1950–2050 每十年一格，由 era.html 產生，不需要列在這裡。
+periods:
+  - id: paleolithic
+    block: prehistoric
+    name: 舊石器時代
+    range: 約距今30,000～5,000年
+  - id: neolithic
+    block: prehistoric
+    name: 新石器時代
+    range: 約距今7,000～2,000年
+  - id: metal-age
+    block: prehistoric
+    name: 金屬器時代
+    range: 約距今2,000年起
+  - id: before-1624
+    block: historical
+    name: 十七世紀以前的臺灣
+    range: 1624年以前
+    end: 1623
+  - id: dutch-spanish
+    block: historical
+    name: 荷西時期
+    range: 1624–1662
+    start: 1624
+    end: 1662
+  - id: zheng
+    block: historical
+    name: 鄭氏時期
+    range: 1661–1683
+    start: 1661
+    end: 1683
+  - id: qing-early
+    block: historical
+    name: 清領前期
+    range: 1683–1860
+    start: 1683
+    end: 1860
+  - id: qing-late
+    block: historical
+    name: 清領後期
+    range: 1860–1895
+    start: 1860
+    end: 1895
+  - id: japan-early
+    block: historical
+    name: 日治前期
+    range: 1895–1919
+    start: 1895
+    end: 1919
+  - id: japan-mid
+    block: historical
+    name: 日治中期
+    range: 1919–1937
+    start: 1919
+    end: 1937
+  - id: japan-late
+    block: historical
+    name: 日治後期
+    range: 1937–1945
+    start: 1937
+    end: 1945
+  - id: postwar
+    block: historical
+    name: 戰後初期
+    range: 1945–1949
+    start: 1945
+    end: 1949

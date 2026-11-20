@@ -1,0 +1,13 @@
+{%- comment -%} 年代誌史前研究卡（P08-3 從 era.html 抽出，標記與 P04 相同）。參數 r＝_data/era.yml 的一筆 research {%- endcomment -%}
+{%- assign r = include.r -%}{%- assign n = site.data.novels[r.novel] -%}
+{%- assign col = '#6b665c' -%}{%- for ch in site.data.characters -%}{%- if ch[1].novel == r.novel -%}{%- assign col = ch[1].color -%}{%- break -%}{%- endif -%}{%- endfor -%}
+{%- assign src_post = nil -%}{%- for p in site.posts -%}{%- if p.novel == r.novel and p.chapter == r.chapter -%}{%- assign src_post = p -%}{%- break -%}{%- endif -%}{%- endfor -%}
+  <div class="ev" id="{{ r.id }}" data-cat="research">
+    <div class="ev-head"><span class="ev-cat ev-research">史前年代／歷史研究</span>{% if r.hypothesis %}<span class="ev-cat ev-hypo">研究假說</span>{% endif %}</div>
+    <b class="ev-title">{{ r.title | escape }}</b>
+    <p class="ev-period">{{ r.period | escape }}</p>
+    <p class="ev-meta">
+      {%- if src_post %}<a href="{{ src_post.url | relative_url }}" style="color:{{ col }}">《{{ n.title }}》第 {{ r.chapter }} 篇</a>{% else %}<a href="{{ '/novel/' | append: r.novel | append: '/' | relative_url }}" style="color:{{ col }}">《{{ n.title }}》</a>{% endif -%}
+      {%- if r.source != '' and r.source %}<span class="ev-sep">・</span><a class="ev-src" href="{{ r.source }}" target="_blank" rel="noopener">來源</a>{% endif -%}
+    </p>
+  </div>
