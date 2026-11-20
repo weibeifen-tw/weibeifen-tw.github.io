@@ -790,3 +790,8 @@ a.ig-name:hover{text-decoration:underline}
 .mb-acts .mb-save{margin:0 0 0 auto;align-self:auto}
 .mb-static{margin:2px 0 0;font-size:16px}
 .mb-color-now .lt-av{pointer-events:none}
+.mb-del{display:block;margin:18px 0 0;padding:0;border:0;background:none;color:var(--sub);font:inherit;font-size:13px;text-decoration:underline;cursor:pointer}
+.mb-del:disabled{opacity:.5}
+.privacy h2{margin:1.6em 0 .4em;font-size:17px}
+.privacy ul{padding-left:1.2em;line-height:1.9}
+.privacy p{line-height:1.9}
