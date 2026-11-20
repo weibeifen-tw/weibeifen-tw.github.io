@@ -236,7 +236,7 @@ window.WBAvatar = (function () {
   if (!btn) return;
   function toggle(open) {
     d.classList.toggle('open', open); sc.hidden = !open; document.body.classList.toggle('lock', open);
-    btn.setAttribute('aria-expanded', open); d.setAttribute('aria-hidden', !open);
+    btn.setAttribute('aria-expanded', open); d.setAttribute('aria-hidden', !open); d.inert = !open; if (open) { var f = d.querySelector('a,button'); if (f) f.focus(); } else if (document.activeElement && d.contains(document.activeElement)) btn.focus();
   }
   btn.onclick = function () { toggle(!d.classList.contains('open')); };
   // V1.0 R05：選單裡的「搜尋」＝關掉選單、打開頂端搜尋
