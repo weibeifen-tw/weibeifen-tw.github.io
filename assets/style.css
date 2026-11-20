@@ -919,3 +919,10 @@ body.lit-reading .nv-tags li{color:var(--sub)}
 .era-cross{margin-top:22px;padding-top:12px;border-top:1px solid var(--line)}
 .era-cross h2{margin:0 0 6px;font-family:"Noto Serif TC",serif;font-size:18px}
 .era-foot{margin:18px 0 0;font-size:12px;color:var(--sub)}
+/* V1.0 R02：作品頁上的原作品介紹貼文（圖片＋互動） */
+.nv-post{background:none;border:0;padding:0;margin:4px 0 12px}
+.nv-post .ip-slides,.nv-post .ip-one,.nv-post .ip-cover{margin-top:0;border-radius:12px;overflow:hidden}
+.nv-post .ip-one img{width:100%;height:auto;aspect-ratio:4/5;object-fit:cover}
+.nv-post .ip-slides img{height:auto}
+.nv-post .actions{padding:4px 0 0;margin-bottom:2px}
+body.roles-only .cm-intro{display:none}
