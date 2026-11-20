@@ -1,5 +1,8 @@
 <div class="actions" data-key="{{ include.key }}" data-url="{{ include.url }}">
   <button type="button" class="act like" aria-label="喜歡"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.6 8.4 3.4 5 6.8 5c2 0 3.4 1.1 5.2 3 1.8-1.9 3.2-3 5.2-3 3.4 0 5.2 3.4 4.1 6.3-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg><span class="n"></span></button>
+  {%- if include.cmt %}
+  <button type="button" class="act cmt" aria-label="留言" aria-haspopup="dialog"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 11.5a8.5 8.5 0 0 1-12.6 7.4L3.5 20l1.2-4.1A8.5 8.5 0 1 1 20.5 11.5z"/><path d="M8 10h8M8 13.5h5"/></svg><span class="n"></span></button>
+  {%- endif %}
   {%- unless include.notalk %}
   <button type="button" class="act talk" aria-label="私訊角色"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 11.5a8.5 8.5 0 0 1-12.6 7.4L3.5 20l1.2-4.1A8.5 8.5 0 1 1 20.5 11.5z"/></svg><span class="n"></span></button>
   {%- endunless %}

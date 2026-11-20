@@ -1,6 +1,7 @@
 {%- comment -%}
   V1.0 R02：首頁作品介紹貼文搬到作品頁（圖片＋互動）。
-  互動鍵沿用首頁的 intro-{id}，愛心、私訊、分享的數字和私訊來源跟首頁那則貼文相同。
+  互動鍵沿用首頁的 intro-{id}，愛心、分享的數字跟首頁那則貼文相同。
+  R02-R1：私訊角色換成留言按鈕，點了跳出整本小說的公開留言視窗（cloud.js）。
   圖片：有三張漫畫用漫畫（左右滑）；沒有漫畫就用限動圖；都沒有就用主角頭貼（跟首頁一樣）。
 {%- endcomment -%}
 {%- assign pid = include.id -%}
@@ -29,6 +30,6 @@
     </div>
   </div>
   {%- if pok %}<div class="ip-dots"><i class="on"></i><i></i><i></i></div>{% endif %}
-  {% capture u %}{{ '/novel/' | append: pid | append: '/' | relative_url }}{% endcapture %}{% capture k %}intro-{{ pid }}{% endcapture %}{% include actions.html key=k url=u norepost=true %}
+  {% capture u %}{{ '/novel/' | append: pid | append: '/' | relative_url }}{% endcapture %}{% capture k %}intro-{{ pid }}{% endcapture %}{% include actions.html key=k url=u norepost=true notalk=true cmt=true %}
 </div>
 {%- endif -%}
