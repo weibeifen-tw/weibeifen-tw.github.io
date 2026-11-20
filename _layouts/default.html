@@ -84,7 +84,7 @@
 <button type="button" class="chat-btn" aria-label="通知"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5c-4.8 0-8.5 3.4-8.5 7.7 0 2.4 1.2 4.6 3.1 6l-.6 3.3 3.4-1.8c.8.2 1.7.3 2.6.3 4.8 0 8.5-3.4 8.5-7.8S16.8 3.5 12 3.5z"/><path d="m7.5 13 3-3.2 2.4 2 3.6-2.4-3 3.3-2.4-2z"/></svg></button>
 <div class="scrim" hidden></div>
 <div class="inbox" hidden></div>
-<nav class="drawer" aria-label="選單" aria-hidden="true">
+<nav class="drawer" id="drawer" aria-label="選單" aria-hidden="true" inert>
   <h2><a href="{{ '/' | relative_url }}">未備份</a></h2>
   {%- comment -%} V1.0 R05：三區分類（故事探索／個人功能／故事之外），圖示加文字 {%- endcomment -%}
   <h3 class="d-sec">故事探索</h3>
