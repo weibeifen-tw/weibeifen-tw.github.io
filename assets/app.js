@@ -79,107 +79,6 @@ window.WBAvatar = (function () {
     if (lr) { b0.textContent = '繼續讀第 ' + lr.no + ' 篇'; b0.href = lr.url; }
     else if (list[0]) { b0.textContent = '從第一篇開始讀'; b0.href = list[0].href; }
     if (b0.href) btns.appendChild(b0);
-  } else if (who) {
-    // 個人頁：像她的社群主頁，動態牆只放她發的貼文，照章節順序從第一則往下滑
-    var box = document.querySelector('.chapters');
-    box.hidden = true;
-    var mineT = Array.prototype.slice.call(feed.querySelectorAll('.teaser')).filter(function (t) {
-      t.hidden = true; return t.dataset.char === c && (!n || t.dataset.novel === n);
-    });
-    mineT.sort(function (a, b) { return (+a.dataset.no || 0) - (+b.dataset.no || 0); });
-    mineT.forEach(function (t) { feed.appendChild(t); });
-    shown = mineT.length;
-    var PAGE1 = 15, upto1 = 0, more1 = document.querySelector('.more-btn');
-    function step1() { mineT.slice(upto1, upto1 + PAGE1).forEach(function (t) { t.hidden = false; }); upto1 += PAGE1; more1.hidden = upto1 >= mineT.length; }
-    more1.onclick = step1; step1();
-
-    var prof = document.getElementById('profile');
-    var av = document.createElement('div');
-    av.className = 'avatar'; av.style.setProperty('--c', who.color || '#999');
-    if (who.avatar) { var im = new Image(); im.src = BASE + '/assets/avatars/' + who.avatar + '?v=' + (window.VER || ''); im.alt = ''; av.appendChild(im); }
-    else av.textContent = who.glyph || who.name.charAt(0);
-    var info = document.createElement('div');
-    var h = document.createElement('h1'); h.textContent = who.name;
-    var hd = document.createElement('span'); hd.className = 'handle'; hd.textContent = '@' + who.handle;
-    var bio = document.createElement('p'); bio.textContent = who.bio || '';
-    info.append(h, hd, bio);
-    prof.append(av, info); prof.hidden = false;
-    prof.style.setProperty('--c', who.color || '#999');
-    function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
-    function chLink(no) { return no ? box.querySelector('a.toc[data-novel="' + who.novel + '"][data-no="' + no + '"]') : null; }
-    // 置頂一句話
-    if (who.pin) {
-      var pin = el('blockquote', 'pin', who.pin);
-      var src = chLink(who.pin_ch);
-      if (src) { var sm = el('small', null, '—— '); var sa = el('a', null, '〈' + src.querySelector('.ch-title').textContent + '〉'); sa.href = src.href; sm.appendChild(sa); pin.appendChild(sm); }
-      prof.appendChild(pin);
-    }
-    var after = prof;
-    function addBox(title, list) { var s = el('section', 'pbox'); s.style.setProperty('--c', who.color || '#999'); s.append(el('h3', null, title), list); after.after(s); after = s; }
-    // 那些年
-    if (who.eras && who.eras.length) {
-      var ul = el('ul', 'eras');
-      who.eras.forEach(function (e) { var li = el('li'); li.append(el('b', null, e.year), el('span', null, e.bio)); ul.appendChild(li); });
-      addBox('那些年的' + who.name, ul);
-    }
-    // 她的東西
-    if (who.items && who.items.length) {
-      var il = el('ul', 'items');
-      who.items.forEach(function (it) {
-        var li = el('li'), src = chLink(it.ch), w = src ? el('a') : el('div');
-        if (src) w.href = src.href;
-        w.append(el('b', null, it.name), el('span', null, it.note));
-        if (src) w.appendChild(el('em', null, '第一次出現：〈' + src.querySelector('.ch-title').textContent + '〉 ›'));
-        li.appendChild(w); il.appendChild(li);
-      });
-      addBox('她的東西', il);
-    }
-    document.title = who.name + '｜未備份';
-
-    if (location.hash) {
-      var key0 = decodeURIComponent(location.hash.slice(1)), idx = -1;
-      mineT.forEach(function (t, i) { if (t.querySelector('.actions').dataset.key === key0) idx = i; });
-      if (idx >= 0) { while (upto1 <= idx) step1(); setTimeout(function () { mineT[idx].scrollIntoView(); }, 50); }
-    }
-  } else {
-    // 動態牆：每章一則重點（也可篩選小說、已說讚、已轉發）
-    var liked = q.get('liked'), rp = q.get('reposted');
-    function has(k) { try { return JSON.parse(localStorage.getItem('wb:' + k)) === true; } catch (e) { return false; } }
-    var hits = [];
-    feed.querySelectorAll('.teaser').forEach(function (t) {
-      var key = t.querySelector('.actions').dataset.key;
-      var ok = (!n || t.dataset.novel === n) && (!liked || has('like:' + key)) && (!rp || has('rp:' + key));
-      t.hidden = true; if (ok) { shown++; hits.push(t); }
-    });
-    // 首頁動態：每次打開都隨機排，盡量讓相鄰兩則不是同一部小說
-    if (!liked && !rp && !n) {
-      for (var i = hits.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), tmp = hits[i]; hits[i] = hits[j]; hits[j] = tmp; }
-      var out = [], prev = null;
-      while (hits.length) {
-        var k = 0; while (k < hits.length && hits[k].dataset.novel === prev) k++;
-        if (k === hits.length) k = 0;
-        prev = hits[k].dataset.novel; out.push(hits.splice(k, 1)[0]);
-      }
-      hits = out;
-      // 作品介紹貼文：滿 4 部就只放介紹；不到 4 部先放在最上面，下面接章節動態
-      var ips = Array.prototype.slice.call(document.querySelectorAll('.intros .intro-post'));
-      for (var a = ips.length - 1; a > 0; a--) { var b = Math.floor(Math.random() * (a + 1)), tt = ips[a]; ips[a] = ips[b]; ips[b] = tt; }
-      // 有插畫的排前面（各自隨機），沒插畫的排後面
-      ips = ips.filter(function (x) { return x.dataset.has === '1'; }).concat(ips.filter(function (x) { return x.dataset.has !== '1'; }));
-      if (ips.length >= 4) { hits.forEach(function (t) { t.remove(); }); hits = ips; }
-      else if (ips.length) { hits = ips.concat(hits); }
-      // 畝 MU 的貼文：不置頂，隨機放在前 3 則裡
-      var pin = document.querySelector('.pinned-ig');
-      if (pin) {
-        var tag = pin.querySelector('.pin-tag'); if (tag) tag.remove();
-        hits.splice(Math.floor(Math.random() * Math.min(3, hits.length + 1)), 0, pin);
-      }
-      hits.forEach(function (t) { feed.appendChild(t); });
-    }
-    // 一次先放 15 則，按「載入更多」再放 15 則
-    var PAGE = 15, upto = 0, more = document.querySelector('.more-btn');
-    function step() { hits.slice(upto, upto + PAGE).forEach(function (t) { t.hidden = false; }); upto += PAGE; more.hidden = upto >= hits.length; }
-    more.onclick = step; step();
   }
   document.querySelector('.empty').hidden = shown > 0;
 })();
@@ -577,42 +476,6 @@ window.WBRenderShelf();
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !box.hidden) close(); });
 })();
 
-// 首頁頭像列：每次打開隨機排序（最左邊「我的帳號」固定不動）
-(function () {
-  var s = document.querySelector('.stories'); if (!s) return;
-  var bs = Array.prototype.slice.call(s.children).filter(function (e) { return e.classList.contains('story'); });
-  for (var i = bs.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = bs[i]; bs[i] = bs[j]; bs[j] = t; }
-  bs.forEach(function (b) { s.appendChild(b); });
-})();
-
-// 首頁頭像列：點了跳出角色卡片
-(function () {
-  var layer = document.querySelector('.st-layer'); if (!layer) return;
-  var box = layer.querySelector('.st-in');
-  function close() { layer.hidden = true; document.body.style.overflow = ''; box.innerHTML = ''; }
-  document.querySelectorAll('.story').forEach(function (b) {
-    b.onclick = function () {
-      var t = document.getElementById('st-' + b.dataset.story); if (!t) return;
-      box.innerHTML = ''; box.appendChild(t.content.cloneNode(true));
-      layer.hidden = false; document.body.style.overflow = 'hidden';
-    };
-  });
-  layer.querySelector('.st-x').onclick = close;
-  layer.onclick = function (e) { if (e.target === layer) close(); };
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !layer.hidden) close(); });
-})();
-
-// 頭像列：電腦用滑鼠滾輪、拖曳也能左右滑
-(function () {
-  var s = document.querySelector('.stories'); if (!s) return;
-  s.addEventListener('wheel', function (e) { if (Math.abs(e.deltaY) > Math.abs(e.deltaX) && s.scrollWidth > s.clientWidth) { e.preventDefault(); s.scrollLeft += e.deltaY; } }, { passive: false });
-  var down = false, x0 = 0, l0 = 0, moved = false;
-  s.addEventListener('mousedown', function (e) { down = true; moved = false; x0 = e.pageX; l0 = s.scrollLeft; });
-  addEventListener('mousemove', function (e) { if (!down) return; var d = e.pageX - x0; if (Math.abs(d) > 4) moved = true; s.scrollLeft = l0 - d; });
-  addEventListener('mouseup', function () { down = false; });
-  s.addEventListener('click', function (e) { if (moved) { e.stopPropagation(); e.preventDefault(); moved = false; } }, true);
-})();
-
 // 作品介紹貼文：多張圖左右滑，下方圓點
 (function () {
   document.querySelectorAll('.intro-post').forEach(function (p) {
@@ -621,13 +484,6 @@ window.WBRenderShelf();
     dots.forEach(function (d, i) { d.onclick = function () { go(i); }; });
     sl.onclick = function (e) { var r = sl.getBoundingClientRect(), k = Math.round(sl.scrollLeft / sl.clientWidth); go(e.clientX - r.left > r.width / 2 ? Math.min(k + 1, dots.length - 1) : Math.max(k - 1, 0)); };
     sl.addEventListener('scroll', function () { var k = Math.round(sl.scrollLeft / sl.clientWidth); dots.forEach(function (d, i) { d.classList.toggle('on', i === k); }); }, { passive: true });
-  });
-})();
-
-// 作品介紹貼文：讀過的人，按鈕改成「繼續讀第 N 篇」
-(function () {
-  document.querySelectorAll('.st-go[data-novel]').forEach(function (a) {
-    try { var r = JSON.parse(localStorage.getItem('wb:last:' + a.dataset.novel) || 'null'); if (r && r.url) { a.href = r.url; var rl = a.querySelector('.rl'); if (rl) rl.textContent = '讀第 ' + r.no + ' 篇'; else a.textContent = '繼續讀第 ' + r.no + ' 篇'; } } catch (e) {}
   });
 })();
 
