@@ -56,11 +56,11 @@ gongdi:
     - [尺度, 一般]
     - [結局, HE，遠距但在一起, hide]
 hongdian:
-  city: yilan
-  region: yilan-plain
+  city: taichung
+  region: taichung-basin
   title: 紅點
   caption: 經營情侶帳號的網紅，紅點亮著是大家想看的樣子，紅點關掉之後呢？
-  era: 2026・宜蘭
+  era: 2026・台中
   tag: 網紅
   icon: 🔴
   blurb: 錄影中的那顆紅點。看得見的是被拍的，看不見的才是真的。
