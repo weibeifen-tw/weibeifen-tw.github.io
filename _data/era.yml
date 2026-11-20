@@ -141,7 +141,7 @@ periods:
   - id: neolithic
     block: prehistoric
     name: 新石器時代
-    range: 約距今6,000～2,000年
+    range: 約距今7,000～2,000年
   - id: metal-age
     block: prehistoric
     name: 金屬器時代
