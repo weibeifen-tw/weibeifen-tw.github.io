@@ -4,25 +4,60 @@ title: 年代誌
 description: 未備份的小說，各自發生在台灣的哪個年代，又寫到了哪些真實發生過的事。
 permalink: /era/
 ---
+{%- comment -%}
+  年代誌（P04-2）：資料在 _data/era.yml。
+  - 史前年代／歷史研究（research）放在最前面。
+  - 近現代事件（events）每筆只存一次；用 start～end 判斷落在哪幾個十年，跨年代事件會出現在每個相關區塊。
+  - 分類：experience＝親身經歷、retrospective＝歷史回顧。
+{%- endcomment -%}
+{%- assign evs = site.data.era.events -%}
+{%- assign rs = site.data.era.research -%}
 <h1 class="ov-h">年代誌</h1>
 <div class="era-axis" role="tablist" aria-label="年代">
+  <button type="button" role="tab" class="era-cell era-pre{% if rs.size == 0 %} empty{% endif %}" data-dec="pre" aria-selected="false"><b>史前</b><small>{% if rs.size > 0 %}{{ rs.size }} 筆{% else %}－{% endif %}</small></button>
 {%- for i in (0..9) -%}
-  {%- assign d = i | times: 10 | plus: 1950 -%}{%- capture ds -%}{{ d }}{%- endcapture -%}
-  {%- assign cnt = 0 -%}{%- for n in site.data.novels -%}{%- assign nid = n[0] -%}{%- assign e = site.data.era[nid] -%}{%- if e and e[ds] != nil and e[ds] != "" -%}{%- assign cnt = cnt | plus: 1 -%}{%- endif -%}{%- endfor -%}
-  <button type="button" role="tab" class="era-cell{% if cnt == 0 %} empty{% endif %}" data-dec="{{ ds }}" aria-selected="false"><b>{{ ds }}</b><small>{% if cnt > 0 %}{{ cnt }} 部{% else %}－{% endif %}</small></button>
+  {%- assign d = i | times: 10 | plus: 1950 -%}{%- assign d9 = d | plus: 9 -%}{%- capture ds -%}{{ d }}{%- endcapture -%}
+  {%- assign cnt = 0 -%}
+  {%- for e in evs -%}{%- assign ee = e.end | default: e.start -%}{%- if e.start <= d9 and ee >= d -%}{%- assign cnt = cnt | plus: 1 -%}{%- endif -%}{%- endfor -%}
+  <button type="button" role="tab" class="era-cell{% if cnt == 0 %} empty{% endif %}" data-dec="{{ ds }}" aria-selected="false"><b>{{ ds }}</b><small>{% if cnt > 0 %}{{ cnt }} 筆{% else %}－{% endif %}</small></button>
 {%- endfor -%}
 </div>
+
+<section class="era-dec" data-dec="pre" hidden>
+  <h2>史前年代／歷史研究</h2>
+  {%- for r in rs -%}
+  {%- assign n = site.data.novels[r.novel] -%}
+  {%- assign col = '#6b665c' -%}{%- for ch in site.data.characters -%}{%- if ch[1].novel == r.novel -%}{%- assign col = ch[1].color -%}{%- break -%}{%- endif -%}{%- endfor -%}
+  {%- assign src_post = nil -%}{%- for p in site.posts -%}{%- if p.novel == r.novel and p.chapter == r.chapter -%}{%- assign src_post = p -%}{%- break -%}{%- endif -%}{%- endfor -%}
+  <div class="ev" id="{{ r.id }}" data-cat="research">
+    <div class="ev-head"><span class="ev-cat ev-research">史前年代／歷史研究</span>{% if r.hypothesis %}<span class="ev-cat ev-hypo">研究假說</span>{% endif %}</div>
+    <b class="ev-title">{{ r.title | escape }}</b>
+    <p class="ev-period">{{ r.period | escape }}</p>
+    <p class="ev-meta">
+      {%- if src_post %}<a href="{{ src_post.url | relative_url }}" style="color:{{ col }}">《{{ n.title }}》第 {{ r.chapter }} 篇</a>{% else %}<a href="{{ '/novel/' | append: r.novel | append: '/' | relative_url }}" style="color:{{ col }}">《{{ n.title }}》</a>{% endif -%}
+      {%- if r.source != '' and r.source %}<span class="ev-sep">・</span><a class="ev-src" href="{{ r.source }}" target="_blank" rel="noopener">來源</a>{% endif -%}
+    </p>
+  </div>
+  {%- endfor -%}
+  {%- if rs.size == 0 %}<p class="era-none">這個年代，還沒有人發文。</p>{% endif %}
+</section>
+
 {%- for i in (0..9) -%}
-{%- assign d = i | times: 10 | plus: 1950 -%}{%- capture ds -%}{{ d }}{%- endcapture -%}
+{%- assign d = i | times: 10 | plus: 1950 -%}{%- assign d9 = d | plus: 9 -%}{%- capture ds -%}{{ d }}{%- endcapture -%}
 <section class="era-dec" data-dec="{{ ds }}" hidden>
   <h2>{{ ds }} 年代</h2>
   {%- assign any = false -%}
-  {%- for n in site.data.novels -%}{%- assign nid = n[0] -%}{%- assign e = site.data.era[nid] -%}{%- if e and e[ds] != nil and e[ds] != "" -%}{%- assign any = true -%}
-  {%- assign col = '#6b665c' -%}{%- for ch in site.data.characters -%}{%- if ch[1].novel == n[0] -%}{%- assign col = ch[1].color -%}{%- break -%}{%- endif -%}{%- endfor -%}
-  <a class="era-item" href="{{ '/novel/' | append: n[0] | append: '/' | relative_url }}">
-    <span class="era-t"><b style="color:{{ col }}">{{ n[1].title }}</b><small>{{ n[1].era }}</small></span>
-    <span class="era-h">{{ e[ds] }}</span>
-  </a>
+  {%- for e in evs -%}{%- assign ee = e.end | default: e.start -%}{%- if e.start <= d9 and ee >= d -%}{%- assign any = true -%}
+  {%- assign n = site.data.novels[e.novel] -%}
+  {%- assign col = '#6b665c' -%}{%- for ch in site.data.characters -%}{%- if ch[1].novel == e.novel -%}{%- assign col = ch[1].color -%}{%- break -%}{%- endif -%}{%- endfor -%}
+  <div class="ev" data-id="{{ e.id }}" data-cat="{{ e.category }}">
+    <div class="ev-head"><span class="ev-date">{{ e.date }}</span>{% if e.category == 'experience' %}<span class="ev-cat ev-exp">親身經歷</span>{% elsif e.category == 'retrospective' %}<span class="ev-cat ev-retro">歷史回顧</span>{% endif %}</div>
+    <b class="ev-title">{{ e.title | escape }}</b>
+    <p class="ev-meta">
+      <a href="{{ '/novel/' | append: e.novel | append: '/' | relative_url }}" style="color:{{ col }}">《{{ n.title }}》</a>
+      {%- if e.source != '' and e.source %}<span class="ev-sep">・</span><a class="ev-src" href="{{ e.source }}" target="_blank" rel="noopener">來源</a>{% endif -%}
+    </p>
+  </div>
   {%- endif -%}{%- endfor -%}
   {%- unless any %}<p class="era-none">這個年代，還沒有人發文。</p>{% endunless %}
 </section>
@@ -36,6 +71,6 @@ permalink: /era/
     try { history.replaceState(null, '', '#' + d); } catch (e) {}
   }
   cells.forEach(function (c) { c.onclick = function () { pick(c.dataset.dec); }; });
-  var h = location.hash.slice(1); pick(/^\d{4}$/.test(h) ? h : '2020');
+  var h = location.hash.slice(1); pick(/^(\d{4}|pre)$/.test(h) ? h : '2020');
 })();
 </script>

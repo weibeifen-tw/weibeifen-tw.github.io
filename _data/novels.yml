@@ -11,6 +11,17 @@ yu:
   blurb: 竹子做的球門、第一支手機、一張找不到的照片。
   tags: [成長, 非線性]
   intro: 在大里三合院長大的模，小時候沒有手機，現在每天跟 AI 說話。二十四歲，還是會怕，但還在找。
+  reading_info:
+    relationship: 穩定交往
+    tone: 日常寫實
+    rating: "一般"
+    psychology:
+      - 童年受暴
+      - 自我探索
+      - 情緒壓力
+      - 親密關係
+    writing_completed: false
+    final_post_id: ""
 market:
   city: taichung
   region: taichung-basin
@@ -23,10 +34,15 @@ market:
   blurb: 凌晨四點半的菜攤，和早上九點才開門的咖啡廳。
   tags: [日常, 市場, 療癒]
   intro: 「她的番茄，我挑了一年。」市場裡賣菜的芋，市場口開咖啡廳的陽。看天吃飯的人，慢慢學會看另一個人。
-  info:
-    - [甜或虐, 溫暖療癒]
-    - [尺度, 一般]
-    - [結局, HE，共同生活, hide]
+  reading_info:
+    relationship: 慢熱、共同生活
+    tone: 溫暖療癒
+    rating: "一般"
+    psychology:
+      - 安全感
+      - 生活陪伴
+    writing_completed: false
+    final_post_id: ""
 feichang:
   city: changhua
   region: changhua-plain
@@ -39,6 +55,16 @@ feichang:
   blurb: 彰化的藝術系，到台中。兩個人，一隻撿來的狗，七年。
   tags: [校園, 藝術系, 七年]
   intro: 吳和林大一就在一起了。後來多了一隻從米腸山撿回來的狗，少了一頭長髮，吵了很多次架。從十八歲到二十四歲，從彰化到台中。
+  reading_info:
+    relationship: 校園戀愛、長期交往
+    tone: 青春寫實
+    rating: "一般"
+    psychology:
+      - 性傾向認同
+      - 家庭期待
+      - 親密關係磨合
+    writing_completed: false
+    final_post_id: ""
 gongdi:
   city: taichung
   region: taichung-basin
@@ -50,11 +76,16 @@ gongdi:
   blurb: 一個超慢、一個超快，兩個機電科女生在機器人比賽場邊撞在一起。
   tags: [校園, 機電科, 甜]
   intro: 「我量了十次，她看一眼就裝好了。」2023 年，興大附農的川在機器人比賽遇到台中高工的萌。從那天起，川的紀錄裡多了一個人。
-  info:
-    - [年齡關係, 同齡（萌大 28 天）]
-    - [甜或虐, 甜多於虐]
-    - [尺度, 一般]
-    - [結局, HE，遠距但在一起, hide]
+  reading_info:
+    relationship: 校園戀愛
+    tone: 甜多於虐
+    rating: "一般"
+    psychology:
+      - 自我價值
+      - 個性差異
+      - 情感溝通
+    writing_completed: false
+    final_post_id: ""
 hongdian:
   city: taichung
   region: taichung-basin
@@ -66,10 +97,16 @@ hongdian:
   blurb: 錄影中的那顆紅點。看得見的是被拍的，看不見的才是真的。
   tags: [網紅, 情侶帳號, 曖昧]
   intro: 秦經營情侶帳號「秦與栩，收音中」，靠拍她和女友栩的日常累積追蹤。紅點亮著的時候，她們是大家想看的樣子。紅點關掉之後呢？
-  info:
-    - [甜或虐, 甜中帶虐，後段修復]
-    - [尺度, 18+]
-    - [結局, HE，仍是戀人, hide]
+  reading_info:
+    relationship: 情侶、關係修復
+    tone: 甜中帶虐
+    rating: "18+"
+    psychology:
+      - 隱私界線
+      - 社群壓力
+      - 表演式親密
+    writing_completed: false
+    final_post_id: ""
 hue:
   city: tainan
   region: chianan-plain
@@ -81,10 +118,17 @@ hue:
   blurb: 台南府城。一個禮儀師看得到別人身上的顏色，一個八家將領隊看不到自己的。
   tags: [ABO, 末日, 禮儀師]
   intro: 病毒讓 Alpha 失去嗅覺，人和人之間變得難看。台南府城的禮儀師澄看得見別人身上的顏色，卻從沒告訴過誰。直到一場八家將老師傅的喪禮，她遇見了領陣的溫硯。
-  info:
-    - [甜或虐, 先壓抑後療癒]
-    - [尺度, 一般]
-    - [結局, HE，不再隱藏, hide]
+  world_note: 跟現實不同：台南府城裡，人有 ABO 第二性別。
+  reading_info:
+    relationship: ABO、相互理解
+    tone: 先壓抑後療癒
+    rating: "一般"
+    psychology:
+      - 社會規訓
+      - 自我接納
+      - 性別偏見
+    writing_completed: false
+    final_post_id: ""
 exam:
   city: taipei
   region: taipei-basin
@@ -96,11 +140,16 @@ exam:
   blurb: 同一本行政法，畫了兩種顏色的重點。
   tags: [國考, 補習班, 甜]
   intro: 兩個重考生，一張自習室的桌子，一年的倒數。行政法說，手段要合乎比例。可是喜歡一個人，要怎麼剛剛好？
-  info:
-    - [年齡關係, 年上，大 3 歲]
-    - [甜或虐, 偏甜，有現實挫折]
-    - [尺度, 18+]
-    - [結局, HE，花蓮重聚, hide]
+  reading_info:
+    relationship: 共同備考
+    tone: 偏甜、現實挫折
+    rating: "18+"
+    psychology:
+      - 成就焦慮
+      - 自我要求
+      - 失敗壓力
+    writing_completed: false
+    final_post_id: ""
 yincang:
   city: chiayi
   region: chianan-plain
@@ -112,6 +161,17 @@ yincang:
   blurb: MSN 顯示為離線。兩個人都在線，都設成隱藏。
   tags: [年代, 虐, 迴避型]
   intro: 2005 年，嘉義的網聚。很會熱場的設計師霜，遇到一個跟她一樣會熱場、也一樣會說謊的健身教練堤。說好就這樣，說好不過夜、不問家裡、不要喜歡上。她們都很會藏，直到藏不住。
+  reading_info:
+    relationship: 無名關係
+    tone: 壓抑、虐戀
+    rating: "18+"
+    psychology:
+      - 迴避型依附
+      - 情感壓抑
+      - 家庭衝突
+      - 婚姻壓力
+    writing_completed: false
+    final_post_id: ""
 shiyi:
   city: zhongxing
   region: taichung-basin
@@ -123,6 +183,16 @@ shiyi:
   blurb: 黑板最左邊那條線，一整個學期都不會擦掉。
   tags: [校園, 歷史, 成長]
   intro: 2019 年，中興新村。108 課綱第一屆的拾，在第一堂歷史課看見簡老師盤起長髮、畫下一條時間軸。從那天起，她把每一堂課都記下來，從台灣、東亞到世界，一直記到她自己也開始寫歷史。
+  reading_info:
+    relationship: 師生、仰慕
+    tone: 校園成長
+    rating: "一般"
+    psychology:
+      - 青春期自我探索
+      - 仰慕
+      - 自我認同
+    writing_completed: false
+    final_post_id: ""
 chaojian:
   city: keelung
   region: north-hills
@@ -136,11 +206,16 @@ chaojian:
   intro: 2020 年夏天，雨都基隆。報關行的澗在 HER 上滑到一個看心情回訊息的女生，在仁愛區開公仔店的嶼。距離 1.2 公里，一個已讀太久就會想很多，一個說她也不知道自己認不認真。潮水漲上來的時候淹沒一切，退下去的時候，她們都還在。
   page: true
   seo_title: 《潮間》｜基隆，HER 上距離 1.2 公里的兩個女生
-  info:
-    - [年齡關係, 年上，大 5 歲]
-    - [甜或虐, 有刀，偏甜]
-    - [尺度, 18+]
-    - [結局, HE, hide]
+  reading_info:
+    relationship: 交友軟體、親密關係
+    tone: 有刀、偏甜
+    rating: "18+"
+    psychology:
+      - 焦慮型依附
+      - 迴避型依附
+      - 不安全感
+    writing_completed: false
+    final_post_id: ""
 weigongkai:
   city: qingjing
   region: mountains
@@ -152,6 +227,16 @@ weigongkai:
   blurb: 真正發生的事，都在鏡頭拍不到的地方。
   tags: [實境秀, 群像, 甜]
   intro: 2025 年夏天，清境山上一棟像歐洲的民宿。八個女生、二十八天、心動不限性別。節目組什麼都不干涉，鏡頭什麼都拍，可是真正發生的事，都在鏡頭拍不到的地方。
+  reading_info:
+    relationship: 多線感情、群像
+    tone: 慢熱曖昧
+    rating: "一般"
+    psychology:
+      - 自我呈現
+      - 社交壓力
+      - 親密界線
+    writing_completed: false
+    final_post_id: ""
 chuwang:
   city: hualien
   region: huadong-valley
@@ -163,11 +248,16 @@ chuwang:
   blurb: 她可以抱很多人，就是不讓人碰到。
   tags: [校園, 虐, 焦慮型]
   intro: 2021 年秋天，東華大學的戶外排球場，球燈要投錢才會亮。國企系大一的垣，在新生盃第一次看見資工系的舉球學姊托。托很細心、很溫柔，會抱很多人，也有女朋友。兩個從小安慰媽媽長大的人，一個接住了另一個，可是誰都接不住自己。
-  info:
-    - [年齡關係, 學姊學妹，差一屆]
-    - [甜或虐, 先甜後虐]
-    - [尺度, 18+]
-    - [結局, 分手，沒有復合, hide]
+  reading_info:
+    relationship: 學姊學妹
+    tone: 先甜後虐
+    rating: "18+"
+    psychology:
+      - 焦慮型依附
+      - 討好傾向
+      - 家庭角色倒置
+    writing_completed: false
+    final_post_id: ""
 mizi:
   city: taipei
   region: taipei-basin
@@ -179,6 +269,17 @@ mizi:
   blurb: 週日早上的粥，十年來都是先給最小的，最後給自己。
   tags: [家庭, 甜寵, 日常]
   intro: 在一個從來只有女生的世界，陽明山上住著錦和蘅，還有她們的五個孩子。錦是海運集團最年輕的董事長，蘅是寫詩的中文系老師。十年前一場聯姻，一個颱風夜，抽屜裡五百多張寫歪了米字旁的「粥」。
+  world_note: 跟現實不同：一個只有女生的台灣。
+  reading_info:
+    relationship: 聯姻、婚後生活
+    tone: 家庭甜寵
+    rating: "一般"
+    psychology:
+      - 家庭責任
+      - 親密陪伴
+      - 情感表達
+    writing_completed: false
+    final_post_id: ""
 pendi:
   city: puli
   region: puli-basin
@@ -190,6 +291,18 @@ pendi:
   blurb: 她什麼都講，就是不講最糟的那件。
   tags: [群像, 女同圈, 成長]
   intro: 2025 年秋天，埔里。高一的茵在脆上找到一個鎮上的女同群，第一次見面，就遇到了燼。燼什麼都講，所以大家都以為自己認識她。
+  reading_info:
+    relationship: 女同社群、群像
+    tone: 寫實心理向
+    rating: "一般"
+    psychology:
+      - 自殺經歷
+      - 家庭暴力
+      - 創傷
+      - 人際界線
+      - 群體歸屬
+    writing_completed: false
+    final_post_id: ""
 shuangshuang:
   city: gukeng
   region: south-hills
@@ -201,11 +314,16 @@ shuangshuang:
   blurb: 「T跟T在一起，那是同性戀。」
   tags: [喜劇, TTL, 鄉下]
   intro: 2010 年夏天，雲林古坑。瓦斯行的焰跟廟口炸粿攤的埕，兩個二十六歲、短頭髮、身材都很有份量的女生，同時看上從台北回來的柳。柳跟男人跑了，兩個家裡又開始逼婚，她們只好假裝在一起。問題是，兩個T在一起，誰要當男人？
-  info:
-    - [年齡關係, 同齡，都 26 歲]
-    - [甜或虐, 甜中帶虐，喜劇收尾]
-    - [尺度, 一般]
-    - [結局, HE，公開牽手, hide]
+  reading_info:
+    relationship: TTL、假戲真做
+    tone: 甜中帶虐、喜劇
+    rating: "一般"
+    psychology:
+      - 性別刻板印象
+      - 家庭逼婚
+      - 自我接納
+    writing_completed: false
+    final_post_id: ""
 duanqiao:
   city: kinmen
   region: continental-isles
@@ -215,8 +333,20 @@ duanqiao:
   tag: 末日・敵對
   icon: 🌉
   blurb: 兩截斷掉的橋，在海上互相指著，中間什麼都沒有。
-  tags: [末日, 年上, 敵對]
+  tags: [末日, 敵對]
   intro: 災變第三年，金門分成兩座島。大金門用首領的女兒霙，換烈嶼的十二桶柴油。碼頭上等她的，是半張臉燒傷的守備隊長硝。一個想要水，一個想要那天橋上的真相，兩個人都在利用對方，誰都沒打算動真心。
+  world_note: 跟現實不同：末日之後的金門。
+  reading_info:
+    relationship: 敵對關係
+    tone: 緊張慢熱
+    rating: "一般"
+    psychology:
+      - 權力不對等
+      - 生存壓力
+      - 人質交換
+      - 信任與防備
+    writing_completed: false
+    final_post_id: ""
 huaji:
   city: lanyu
   region: volcanic-isles
@@ -228,6 +358,17 @@ huaji:
   blurb: 那本書她畫了重點，她丟了回去。
   tags: [成長, 父權, 離島]
   intro: 2010 年，蘭嶼。短頭髮的礁是工程包商家「當過兒子」的女兒，長頭髮的漪在自家民宿裡從來沒人理。高三那年，漪把畫滿重點的書塞給礁，礁丟了回去。從離島到台北、嘉義，再到台東，兩個人花了十年，才學會怎麼讀懂對方。
+  reading_info:
+    relationship: 共同成長
+    tone: 寫實成長
+    rating: "一般"
+    psychology:
+      - 父權
+      - 重男輕女
+      - 情感忽視
+      - 性別刻板印象
+    writing_completed: false
+    final_post_id: ""
 xiwei:
   city: chiayi
   region: chianan-plain
@@ -239,11 +380,18 @@ xiwei:
   blurb: 她坐上了議員的位子，家裡餐桌靠窗那張椅子，還是留給弟弟。
   tags: [地方政治, 父權, 單戀]
   intro: 2025 年下半年，嘉義。政治世家出身的無黨籍市議員矜，在一場婦女活動上被短髮記者禾問了一句：妳的政治資源，有多少是妳自己決定的？父親開始替弟弟鋪路，禾開始查證，矜喜歡上了那個問問題的人。一個女人坐上了席位，不代表她能決定自己的位置。
-  info:
-    - [年齡關係, 年上，大 6 歲]
-    - [甜或虐, 單戀，有刀]
-    - [尺度, 一般]
-    - [結局, 三重平行結局，兩人沒有在一起, hide]
+  fiction_note: 書中的政治人物與事件皆為虛構。
+  reading_info:
+    relationship: 單戀
+    tone: 現實、有刀
+    rating: "一般"
+    psychology:
+      - 父權
+      - 家庭權力
+      - 政治壓力
+      - 自主性
+    writing_completed: false
+    final_post_id: ""
 chaosheng:
   city: matsu
   region: continental-isles
@@ -255,11 +403,17 @@ chaosheng:
   blurb: 六年沒聯絡的人，在南竿的海風裡說：好久不見。
   tags: [久別重逢, 地方記憶, 先虐後甜]
   intro: 2025 年五月，馬祖南竿。整理史料的研究員澄，和做口述歷史的晞，六年沒有聯絡，重逢後一起做一檔地方記憶展覽。一卷祖母留下的錄音帶、一份別人代為保管的文件、一封當年沒有寄出的信。島上的記憶各說各話，她們之間的那一段，也終於得有人先開口。
-  info:
-    - [年齡關係, 年上，大 1 歲]
-    - [甜或虐, 先虐後甜]
-    - [尺度, 一般]
-    - [結局, HE，兩人在一起, hide]
+  reading_info:
+    relationship: 久別重逢
+    tone: 先虐後甜
+    rating: "一般"
+    psychology:
+      - 失落
+      - 記憶
+      - 情感修復
+      - 信任
+    writing_completed: false
+    final_post_id: ""
 houdiao:
   city: taipei
   region: taipei-basin
@@ -271,8 +425,15 @@ houdiao:
   blurb: 一瓶專屬香水，三個條件。她要的不是好聞，是不被定義。
   tags: [ABO, 調香, 職場, 甜寵]
   intro: 2020 年秋天，臺北。高端香水品牌「序」的負責人斂，委託獨立調香師沐做一瓶只屬於她的香水。Alpha 調香師、Omega 品牌主，從試香紙上的停頓開始，慢慢相愛；配方外流、樣品被調包，兩個人一起把事情查清楚。前調會散，中調會變，她想留下的是後調。
-  info:
-    - [年齡關係, 年上，大 5 歲]
-    - [甜或虐, 全程甜寵]
-    - [尺度, 一般]
-    - [結局, HE，穩定交往, hide]
+  world_note: 跟現實不同：ABO 架空世界，第二性別不決定愛與同意。
+  reading_info:
+    relationship: ABO、職場戀愛
+    tone: 全程甜寵
+    rating: "一般"
+    psychology:
+      - 自主性
+      - 同意
+      - 信任
+      - 性別身分
+    writing_completed: false
+    final_post_id: ""
