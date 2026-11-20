@@ -11,6 +11,7 @@ on:
     branches:
       - feature/member-entry-4-2
       - "feat/member-*"
+      - "feat/site-*"
 
 permissions:
   contents: read
