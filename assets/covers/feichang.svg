@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" role="img" aria-label="《蘿蔔》封面"><rect width="600" height="800" fill="#F1EBDD"/>
+<path d="M-20 520 C 150 380, 300 620, 620 300 L620 380 C 320 680, 150 460, -20 600Z" fill="#D99B83" opacity=".55"/>
+<rect x="60" y="70" width="170" height="140" fill="none" stroke="#58694B" stroke-width="10"/><rect x="85" y="95" width="120" height="90" fill="#D99B83" opacity=".5"/>
+<path d="M420 120 L560 150 L530 300 L400 270Z" fill="#83977C" opacity=".8"/><path d="M450 200 L590 190 L570 330 L430 320Z" fill="#D99B83" opacity=".85"/>
+<g transform="rotate(-28 300 470)"><path d="M300 610 C 250 560, 235 420, 255 330 L345 330 C 365 420, 350 560, 300 610Z" fill="#FFFCF5" stroke="#D8CDB8" stroke-width="3"/>
+<path d="M270 330 L230 220 L292 300Z" fill="#83977C"/><path d="M300 330 L300 190 L318 310Z" fill="#6E8768"/><path d="M330 330 L380 230 L320 306Z" fill="#83977C"/></g><rect y="680" width="600" height="120" fill="#58694B"/><text x="300" y="762" text-anchor="middle" font-family="'Noto Serif TC','Noto Serif CJK TC','Songti TC','PMingLiU',serif" font-size="62" font-weight="700" letter-spacing="12" fill="#F1EBDD">蘿蔔</text></svg>

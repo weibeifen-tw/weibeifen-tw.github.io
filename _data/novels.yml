@@ -4,6 +4,7 @@ yu:
   city: taichung
   region: taichung-basin
   title: 上釉
+  cover: /assets/covers/yu.svg
   caption: |-
     小時候的模沒有手機，三合院裡的日子也沒有留下多少照片。
 
@@ -35,6 +36,7 @@ market:
   region: taichung-basin
   split: true  # 兩個角色各自編章號
   title: 看天
+  cover: /assets/covers/market.svg
   caption: |-
     凌晨四點半，芋的菜攤已經開張。九點，陽才打開咖啡廳的門。
 
@@ -66,6 +68,7 @@ feichang:
   region: changhua-plain
   split: true  # 兩個角色各自編章號
   title: 蘿蔔
+  cover: /assets/covers/feichang.svg
   caption: |-
     吳和林在彰化的藝術系認識。她們一起畫畫、打球，也一起面對那些課堂上沒有人教過的事。
 
@@ -97,6 +100,7 @@ gongdi:
   city: taichung
   region: taichung-basin
   title: 共地
+  cover: /assets/covers/gongdi.svg
   caption: |-
     一個量了十次才敢動手，一個看一眼就知道怎麼裝。
 
@@ -128,6 +132,7 @@ hongdian:
   city: taichung
   region: taichung-basin
   title: 紅點
+  cover: /assets/covers/hongdian.svg
   caption: |-
     秦和栩的戀愛日常，是觀眾每天等待的影片。
 
@@ -159,6 +164,7 @@ hue:
   city: tainan
   region: chianan-plain
   title: 忌色
+  cover: /assets/covers/hue.svg
   caption: |-
     當 Alpha 失去嗅覺，原本熟悉的世界開始改變。台南府城的禮儀師澄，卻能看見別人身上的顏色。
 
@@ -189,6 +195,7 @@ exam:
   city: taipei
   region: taipei-basin
   title: 比例原則
+  cover: /assets/covers/exam.svg
   caption: |-
     兩個重考生，一張自習室的桌子。她們讀著同一本行政法，畫下不同顏色的重點，為下一場國考做準備。
 
@@ -222,6 +229,7 @@ yincang:
   city: chiayi
   region: chianan-plain
   title: 隱藏
+  cover: /assets/covers/yincang.svg
   caption: |-
     2005 年，嘉義的一場網聚。霜和堤都很會聊天，也都知道怎麼把自己藏起來。
 
@@ -256,6 +264,7 @@ shiyi:
   city: zhongxing
   region: taichung-basin
   title: 拾遺
+  cover: /assets/covers/shiyi.svg
   caption: |-
     2019 年，中興新村。簡老師在第一堂歷史課畫了一條時間軸，說那條線一整個學期都不會擦掉。
 
@@ -289,6 +298,7 @@ chaojian:
   city: keelung
   region: north-hills
   title: 潮間
+  cover: /assets/covers/chaojian.svg
   caption: |-
     雨都基隆，兩個住得不遠的女生在 HER 上認識。澗會反覆查看訊息，嶼習慣看心情回覆。
 
@@ -324,6 +334,7 @@ weigongkai:
   city: qingjing
   region: mountains
   title: 未公開
+  cover: /assets/covers/weigongkai.svg
   caption: |-
     清境山上的戀愛實境秀。八個女生、二十八天，心動不限性別。
 
@@ -355,6 +366,7 @@ chuwang:
   city: hualien
   region: huadong-valley
   title: 觸網
+  cover: /assets/covers/chuwang.svg
   caption: |-
     東華大學的戶外排球場。一個打出界就忍不住道歉的學妹，一個告訴她不用每球都道歉的學姊。
 
@@ -388,6 +400,7 @@ mizi:
   city: taipei
   region: taipei-basin
   title: 米字旁
+  cover: /assets/covers/mizi.svg
   caption: |-
     海運集團的董事長與寫詩的中文系老師。十年前的一場聯姻，陽明山上的一棟房子，五個孩子。
 
@@ -418,6 +431,7 @@ pendi:
   city: puli
   region: puli-basin
   title: 盆底
+  cover: /assets/covers/pendi.svg
   caption: |-
     埔里，高一的茵在脆上找到鎮上的女同群。第一次見面，她遇見了燼。
 
@@ -453,6 +467,7 @@ shuangshuang:
   city: gukeng
   region: south-hills
   title: 雙雙
+  cover: /assets/covers/shuangshuang.svg
   caption: |-
     雲林古坑的瓦斯行和廟口炸粿攤，各有一個短頭髮的 T。從台北回來的柳，讓兩個原本不怎麼說話的人有了共同的話題。
 
@@ -486,6 +501,7 @@ duanqiao:
   city: kinmen
   region: continental-isles
   title: 斷橋
+  cover: /assets/covers/duanqiao.svg
   caption: |-
     架空末日，金門。首領的女兒霙，被當作十二桶柴油的交換條件送往烈嶼。
 
@@ -521,6 +537,7 @@ huaji:
   city: lanyu
   region: volcanic-isles
   title: 劃記
+  cover: /assets/covers/huaji.svg
   caption: |-
     2010 年，蘭嶼。國一開學第一天，老師把礁當成了男生。
 
@@ -553,6 +570,7 @@ xiwei:
   city: chiayi
   region: chianan-plain
   title: 席位
+  cover: /assets/covers/xiwei.svg
   caption: |-
     矜出生在嘉義的政治世家，也坐上了市議員的席位。記者禾在一場婦女活動上問她，手裡握著的政治資源，有多少是自己決定的？
 
@@ -590,6 +608,7 @@ chaosheng:
   city: matsu
   region: continental-isles
   title: 潮聲未歇
+  cover: /assets/covers/chaosheng.svg
   caption: |-
     五月的馬祖，海風穿過港口與老屋。澄整理史料，晞記錄島上的人口述的往事。
 
@@ -622,6 +641,7 @@ houdiao:
   city: taipei
   region: taipei-basin
   title: 後調
+  cover: /assets/covers/houdiao.svg
   caption: |-
     香水品牌的負責人斂，向獨立調香師沐提出一份委託。一瓶只屬於她的香水，三個條件。
 

@@ -558,6 +558,8 @@ document.querySelectorAll('.ip-tagbtn').forEach(function (b) {
     note.hidden = k !== 'hot';
     (k === 'hot' ? hot : rand).forEach(function (b) { shelf.appendChild(b); });
     shelf.scrollLeft = 0;
+    // 排序後前 6 本先載入，其餘滑到才載入
+    Array.prototype.forEach.call(shelf.querySelectorAll('.bk img'), function (im, i) { im.loading = i < 6 ? 'eager' : 'lazy'; });
   }
   tabs.forEach(function (b, i) {
     b.onclick = function () { show(b.dataset.sort); };
