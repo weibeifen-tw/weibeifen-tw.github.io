@@ -24,6 +24,7 @@
   var L = window.WB_AUTH_LAZY || {};
   var BASE = window.BASE || '';
   var novels = {};
+  var CHARS = {}; try { CHARS = JSON.parse(document.getElementById('chars').textContent || '{}'); } catch (e) {}
   try { novels = JSON.parse(document.getElementById('novels').textContent || '{}'); } catch (e) {}
 
   function el(tag, cls, text) {
@@ -280,7 +281,7 @@
 
   /* ---------- 公開留言（章節頁最下面） ---------- */
   var AU = window.WB_AUTH_CONFIG || {};
-  var CM_COLS = 'id,user_id,body,hidden,removed,as_author,created_at,profiles(display_name,username,avatar_color,bio)';
+  var CM_COLS = 'id,user_id,body,hidden,removed,as_author,as_char,created_at,profiles(display_name,username,avatar_color,bio)';
 
   function cmError(e) {
     var m = (e && e.message) || '';
@@ -289,6 +290,7 @@
     if (/WB_TOO_FAST/.test(m)) return '留言太快了，請等 15 秒再試。';
     if (/WB_TOO_MANY/.test(m)) return '一小時最多留 5 則，請晚點再來。';
     if (/WB_LOGIN_REQUIRED/.test(m)) return '請先登入會員。';
+    if (/WB_NOT_ADMIN/.test(m)) return '只有管理員（通過兩步驟驗證）能用角色身分留言。';
     if (e && e.code === '23514') return '留言要 1～100 個字。';
     if (e && e.code === '23505') return '你已經檢舉過這則留言了。';
     return errText('沒有成功，請稍後再試。', e);
@@ -390,6 +392,16 @@
         var item = el('div', 'cm-item' + (r.hidden || r.removed ? ' is-hidden' : ''));
         var top = el('div', 'cm-top');
         // 點頭貼或名字：跳出會員小卡片（頭貼、名字、@帳號、簡介）
+        var rc = r.as_char && CHARS[r.as_char];
+        if (rc) {
+          // 管理員用角色身分回覆：顯示角色的頭貼、名字、@帳號，點了到作品頁的角色介紹
+          var ca = el('a', 'cm-who cm-as-char'); ca.href = BASE + '/novel/' + rc.novel + '/?c=' + r.as_char;
+          var cav = el('span', 'avatar cm-av'); cav.style.setProperty('--c', rc.color || '#999');
+          if (rc.avatar) { var ci = new Image(); ci.src = BASE + '/assets/avatars/' + rc.avatar; ci.alt = ''; cav.appendChild(ci); } else cav.textContent = rc.glyph || rc.name.charAt(0);
+          ca.appendChild(cav); ca.appendChild(el('b', 'cm-name', rc.name));
+          top.appendChild(ca);
+          if (rc.handle) top.appendChild(el('span', 'cm-user', '@' + rc.handle));
+        } else {
         var who = el('button', 'cm-who'); who.type = 'button';
         who.setAttribute('aria-label', '看 ' + (p.display_name || '新會員') + ' 的簡介');
         if (window.WBAvatar) who.appendChild(window.WBAvatar.make({ name: p.display_name || '新會員', color: p.avatar_color, id: r.user_id, author: r.as_author }, 'cm-av'));
@@ -398,6 +410,7 @@
         top.appendChild(who);
         if (r.as_author) top.appendChild(el('span', 'cm-author', '作者'));
         if (p.username) top.appendChild(el('span', 'cm-user', '@' + p.username));
+        }
         var side = el('div', 'cm-side'); side.appendChild(el('time', 'cm-time', fmtDate(r.created_at)));
         item.appendChild(top);
         if (r.removed) item.appendChild(el('p', 'cm-note', '已被管理員刪除，只有管理員看得到。'));
@@ -490,6 +503,18 @@
       ta.oninput = function () { cnt.textContent = ta.value.length + ' / 100'; };
       row.appendChild(cnt); row.appendChild(b);
       var warn = el('p', 'cm-warn', '⚠️ 講髒話、罵人或騷擾，留言會被刪除，帳號會被封鎖。');
+      var asSel = null;
+      if (admin) {
+        // 管理員：選擇用畝 MU 或這部小說的角色身分回覆
+        var cs = Object.keys(CHARS).filter(function (k) { return CHARS[k].novel === novelId; });
+        if (cs.length) {
+          asSel = el('select', 'cm-as'); asSel.setAttribute('aria-label', '用誰的身分留言');
+          var o0 = el('option', null, '畝 MU（作者）'); o0.value = ''; asSel.appendChild(o0);
+          cs.forEach(function (k) { var o = el('option', null, CHARS[k].name + '（角色）'); o.value = k; asSel.appendChild(o); });
+          var lab = el('label', 'cm-as-row'); lab.appendChild(el('span', null, '回覆身分')); lab.appendChild(asSel);
+          f.appendChild(lab);
+        }
+      }
       f.appendChild(warn); f.appendChild(ta); f.appendChild(row); f.appendChild(msg);
       f.onsubmit = async function (ev) {
         ev.preventDefault();
@@ -497,7 +522,9 @@
         if (!body) { msg.textContent = '請先寫點什麼。'; msg.hidden = false; return; }
         b.disabled = true; msg.hidden = true;
         var res;
-        try { res = await A.getClient().from('comments').insert({ novel: novelId, path: path, body: body }); }
+        var rowIn = { novel: novelId, path: path, body: body };
+        if (asSel && asSel.value) rowIn.as_char = asSel.value;
+        try { res = await A.getClient().from('comments').insert(rowIn); }
         catch (e) { res = { error: { message: '連不上會員伺服器' } }; }
         b.disabled = false;
         if (res.error) { msg.textContent = cmError(res.error); msg.hidden = false; return; }
