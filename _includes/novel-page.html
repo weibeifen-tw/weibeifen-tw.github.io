@@ -11,27 +11,46 @@
   <h1>{{ nv.title }}</h1>
   {%- if nv.era %}<p class="nv-era">{{ nv.era }}</p>{% endif %}
   {%- comment -%}
-    標籤兩行，都在年份・地點下面：
-    第一行：題材（拿掉甜、虐這類詞）
-    第二行：調性（原本的「甜或虐」；沒填的話用第一行拿掉的那個詞）、尺度、結局（不顯示年齡關係）
+    題材標籤：nv.tags，拿掉甜、虐這類詞（調性另外顯示）。
+    閱讀資訊：nv.reading_info，感情關係、故事調性、內容尺度；心理議題、結局預設收合。
+    完結：writing_completed 為 true 才顯示「完結」。
+    結局：完結，而且這部小說有一篇「已經上線」的章節在 front matter 寫了 ending: 才顯示。
+          排程中（未來日期）的章節不在 site.posts 裡，所以最終章上線前不會出現。
   {%- endcomment -%}
-  {%- assign tone = nil -%}
-  {%- for r in nv.info -%}{%- if r[0] == '甜或虐' -%}{%- assign tone = r[1] -%}{%- endif -%}{%- endfor -%}
+  {%- assign ri = nv.reading_info -%}
   {%- capture topic_tags -%}
   {%- for t in nv.tags -%}
-    {%- if t contains '甜' or t contains '虐' -%}{%- unless tone -%}{%- assign tone = t -%}{%- endunless -%}{%- continue -%}{%- endif -%}
-    <li>{{ t }}</li>
+    {%- if t contains '甜' or t contains '虐' -%}{%- continue -%}{%- endif -%}
+    <li>{{ t | escape }}</li>
   {%- endfor -%}
   {%- endcapture -%}
   {%- if topic_tags != '' %}<ul class="nv-tags nv-topic-tags">{{ topic_tags }}</ul>{% endif %}
-  {%- capture info_tags -%}
-  {%- if tone -%}<li><small>調性</small>{{ tone }}</li>{%- endif -%}
-  {%- for r in nv.info -%}
-    {%- if r[0] == '甜或虐' or r[0] == '年齡關係' -%}{%- continue -%}{%- endif -%}
-    {%- if r[2] == 'hide' -%}<li class="spoil"><details><summary>{{ r[0] }}：點開可查看</summary>{{ r[1] }}</details></li>{%- else -%}<li><small>{{ r[0] }}</small>{{ r[1] }}</li>{%- endif -%}
-  {%- endfor -%}
-  {%- endcapture -%}
-  {%- if info_tags != '' %}<ul class="nv-tags nv-info-tags">{{ info_tags }}</ul>{% endif %}
+  {%- if ri %}
+  {%- assign end_post = nil -%}
+  {%- if ri.writing_completed == true -%}
+    {%- for p in site.posts -%}{%- if p.novel == id and p.ending -%}{%- assign end_post = p -%}{%- break -%}{%- endif -%}{%- endfor -%}
+  {%- endif %}
+  <div class="reading-info">
+    <ul class="nv-tags nv-info-tags">
+      {%- if ri.relationship %}<li><small>感情關係</small>{{ ri.relationship | escape }}</li>{% endif -%}
+      {%- if ri.tone %}<li><small>故事調性</small>{{ ri.tone | escape }}</li>{% endif -%}
+      {%- if ri.rating %}<li><small>內容尺度</small>{{ ri.rating | escape }}</li>{% endif -%}
+      {%- if ri.writing_completed == true %}<li class="ri-done">完結</li>{% endif -%}
+    </ul>
+    {%- if ri.psychology and ri.psychology.size > 0 %}
+    <details class="reading-details">
+      <summary>心理議題｜內容提醒</summary>
+      <ul>{% for item in ri.psychology %}<li>{{ item | escape }}</li>{% endfor %}</ul>
+    </details>
+    {%- endif %}
+    {%- if end_post %}
+    <details class="reading-details">
+      <summary>結局｜劇透提醒</summary>
+      <p>{{ end_post.ending | escape }}</p>
+    </details>
+    {%- endif %}
+  </div>
+  {%- endif %}
   {%- if nv.intro %}<p class="nv-intro">{{ nv.intro }}</p>{% endif %}
   {%- if nv.sample %}
   <figure class="nv-sample"><blockquote>{{ nv.sample | newline_to_br }}</blockquote>{% if nv.sample_from %}<figcaption>{{ nv.sample_from }}</figcaption>{% endif %}</figure>

@@ -795,3 +795,13 @@ a.ig-name:hover{text-decoration:underline}
 .privacy h2{margin:1.6em 0 .4em;font-size:17px}
 .privacy ul{padding-left:1.2em;line-height:1.9}
 .privacy p{line-height:1.9}
+/* 作品頁：閱讀資訊（P04-1）— 心理議題、結局預設收合 */
+.reading-info{margin:0 0 14px}
+.reading-info .nv-info-tags{margin-bottom:8px}
+.reading-info .ri-done{background:var(--ink);color:var(--card)}
+.reading-details{margin:6px 0 0;padding:8px 12px;border-radius:12px;background:var(--chip);font-size:14px}
+.reading-details summary{cursor:pointer;color:var(--sub);font-size:13px}
+.reading-details[open] summary{margin-bottom:6px}
+.reading-details ul{display:flex;flex-wrap:wrap;gap:6px;list-style:none;margin:0;padding:0}
+.reading-details li{padding:2px 10px;border-radius:999px;background:var(--card);font-size:13px;color:#5e594f}
+.reading-details p{margin:0;line-height:1.7}

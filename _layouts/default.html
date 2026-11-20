@@ -64,7 +64,8 @@
 </main>
 <footer class="foot"><p>© 畝 MU 版權所有，禁止轉載　·　<a href="{{ '/privacy/' | relative_url }}">隱私權政策</a></p><p>所有故事皆為虛構，若有雷同，可能是記憶出了錯。</p><p>有錯就說，姐姐聽得進去。私訊 → <a href="https://www.threads.com/@weibe.ifen" target="_blank" rel="noopener">@weibe.ifen</a></p>{% unless page.url == "/support/" %}<p class="candy"><a href="https://portaly.cc/weibeifen/support" target="_blank" rel="noopener">🍬 請畝 MU 吃糖果</a>　·　<a href="{{ '/support/' | relative_url }}">贊助說明</a></p>{% endunless %}</footer>
 <script id="chars" type="application/json">{{ site.data.characters | jsonify }}</script>
-<script id="novels" type="application/json">{{ site.data.novels | jsonify }}</script>
+{% comment %} 共用小說資料：不放 reading_info（心理議題、完結、結局只在介紹頁顯示） {% endcomment -%}
+<script id="novels" type="application/json">{ {%- for n in site.data.novels -%}{{ n[0] | jsonify }}:{ {%- assign f = true -%}{%- for kv in n[1] -%}{%- if kv[0] == 'reading_info' -%}{%- continue -%}{%- endif -%}{%- unless f -%},{%- endunless -%}{{ kv[0] | jsonify }}:{{ kv[1] | jsonify }}{%- assign f = false -%}{%- endfor -%} }{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%} }</script>
 {%- comment -%} 兩個角色各自編章號的小說（章號會重複），選單要分角色記讀到哪 {%- endcomment -%}
 {%- capture split -%}{%- for n in site.data.novels -%}{%- assign g = site.posts | where: "novel", n[0] | group_by: "chapter" -%}{%- for x in g -%}{%- if x.size > 1 -%}{{ n[0] }},{%- break -%}{%- endif -%}{%- endfor -%}{%- endfor -%}{%- endcapture -%}
 <script>window.SPLIT = "{{ split }}".split(",");</script>
