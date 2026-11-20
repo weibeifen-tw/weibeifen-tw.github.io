@@ -336,8 +336,26 @@
     var formWrap = el('div', 'cm-form-wrap');
     var list = el('div', 'cm-list'); list.appendChild(el('p', 'cm-empty', '載入留言中…'));
     box.appendChild(formWrap); box.appendChild(list);
+    var cmtBtn = null;
     if (mount) mount.appendChild(box);
-    else { box.classList.add('novel', 'cm-intro'); introList.parentNode.insertBefore(box, introList.nextSibling); }
+    else {
+      // R02-R1：作品頁不再另外顯示整本留言區，改成點留言按鈕跳出視窗
+      box.classList.add('cm-intro', 'cm-pop');
+      var layer = el('div', 'cm-layer'); layer.hidden = true;
+      var dlg = el('div', 'cm-dlg'); dlg.setAttribute('role', 'dialog'); dlg.setAttribute('aria-modal', 'true'); dlg.setAttribute('aria-label', '整本小說的留言');
+      var x = el('button', 'cm-x', '✕'); x.type = 'button'; x.setAttribute('aria-label', '關閉留言');
+      dlg.appendChild(x); dlg.appendChild(box); layer.appendChild(dlg); document.body.appendChild(layer);
+      cmtBtn = document.querySelector('.nv-post .act.cmt');
+      var lastFocus = null;
+      var openCm = function () { lastFocus = document.activeElement; layer.hidden = false; document.body.classList.add('lock'); x.focus(); };
+      var closeCm = function () { if (layer.hidden) return; layer.hidden = true; document.body.classList.remove('lock'); if (location.hash === '#comments') { try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {} } if (lastFocus && lastFocus.focus) lastFocus.focus(); };
+      if (cmtBtn) cmtBtn.onclick = openCm;
+      x.onclick = closeCm;
+      layer.addEventListener('click', function (e) { if (e.target === layer) closeCm(); });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !cardEl) closeCm(); });
+      // 從「我的留言」點進來（網址帶 #comments）：直接打開
+      if (location.hash === '#comments') openCm();
+    }
 
     var me = null, admin = false, A = null;
 
@@ -345,6 +363,7 @@
       list.textContent = '';
       var shown = rows.filter(function (r) { return !r.hidden && !r.removed; }).length;
       hn.textContent = shown ? '（' + shown + '）' : '';
+      if (cmtBtn) cmtBtn.querySelector('.n').textContent = shown ? String(shown) : '';
       setTalkCount(shown);
       if (!rows.length) { list.appendChild(el('p', 'cm-empty', '還沒有留言，來當第一個吧。')); return; }
       rows.forEach(function (r) {
@@ -557,7 +576,7 @@
       c.rpc('comment_notices')
     ]);
     window.WBDM.notices = (!r[2].error && r[2].data) || [];
-    var mine = !r[0].error && r[0].count > 0;
+    var mine = false; // R02-R1：讀者不再看私訊，角色回覆不亮紅點
     window.WBDM.adminUnseen = (!r[1].error && r[1].count) || 0;
     btn.classList.toggle('has-new', mine || window.WBDM.adminUnseen > 0 || window.WBDM.notices.length > 0);
   }

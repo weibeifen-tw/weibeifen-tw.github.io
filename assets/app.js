@@ -467,7 +467,9 @@ window.WBRenderShelf();
   function listView() {
     var by = collect(), ids = Object.keys(by).filter(function (c) { return chars[c]; });
     ids.sort(function (a, b) { var x = by[a][by[a].length - 1], y = by[b][by[b].length - 1]; return (y.at || y.ord || 0) - (x.at || x.ord || 0); });
-    var h = '<div class="ib-head"><b>私訊</b><button type="button" class="ib-x" aria-label="關閉">✕</button></div>';
+    // V1.0 R02-R1：私訊角色入口取消，收件匣只當通知用（留言新回應、管理員未讀私訊）。舊私訊資料保留在資料庫，不顯示。
+    ids = [];
+    var h = '<div class="ib-head"><b>通知</b><button type="button" class="ib-x" aria-label="關閉">✕</button></div>';
     var au = window.WBDM && window.WBDM.adminUnseen;
     if (au > 0) h += '<a class="ib-admin" href="' + window.BASE + '/admin/#dm">讀者傳來 ' + au + ' 則未讀私訊，前往後台回覆 ›</a>';
     var nt = (window.WBDM && window.WBDM.notices) || [];
@@ -479,7 +481,7 @@ window.WBRenderShelf();
         return '<a href="' + esc(x.path) + '#comments">' + esc(t) + '<span>' + x.n + ' 則新留言</span></a>';
       }).join('') + '</div>';
     }
-    if (!ids.length) h += '<p class="ib-empty">還沒有對話。<br>' + (cloud ? '在貼文按 💬 就能私訊角色，角色會回覆你。' : '登入會員後，在貼文按 💬 就能私訊角色。') + '</p>';
+    if (!ids.length && !nt.length && !(au > 0)) h += '<p class="ib-empty">' + (dm() ? '目前沒有新通知。<br>有人在你留過言的地方留言，會顯示在這裡。' : '登入會員後，有人在你留過言的地方留言，會通知你。') + '</p>';
     else h += '<ul class="ib-list">' + ids.map(function (c) {
       var ms = by[c], last = ms[ms.length - 1], ch = chars[c];
       var nNew = ms.filter(function (m) { return m.unseen; }).length;
@@ -556,7 +558,7 @@ window.WBRenderShelf();
   }
   btn.onclick = function () { ctx = null; open(); };
   // 貼文的留言按鈕：直接打開跟這個角色的私訊
-  window.openDM = function (c, key) { if (!chars[c]) return; ctx = { c: c, key: key }; open(function () { chatView(c); }); };
+  window.openDM = function () { ctx = null; open(); };
   box.addEventListener('click', function (e) {
     if (e.target === box || e.target.closest('.ib-x')) return close();
     if (e.target.closest('.ib-back')) { ctx = null; return listView(); }

@@ -10,6 +10,8 @@
   <a class="nv-back" href="{{ '/' | relative_url }}">← 回首頁</a>
   <h1>{{ nv.title }}</h1>
   {%- if nv.era %}<p class="nv-era">{{ nv.era }}</p>{% endif %}
+  {%- comment -%} V1.0 R02：原首頁作品介紹貼文的圖片與互動 {%- endcomment -%}
+  {% include novel-post.html id=id %}
   {%- comment -%}
     題材標籤：nv.tags，拿掉甜、虐這類詞（調性另外顯示）。
     閱讀資訊：nv.reading_info，感情關係、故事調性、內容尺度；心理議題、結局預設收合。
@@ -80,6 +82,18 @@
   {%- endif %}
   <div class="nv-btns"></div>
 </section>
+<h2 class="nv-h ch-h">篇章</h2>
+<div class="chapters nv-list">
+{%- for post in ordered -%}
+  {%- assign pc = site.data.characters[post.character] -%}
+  <a class="chapter toc" id="{{ post.slug }}" href="{{ post.url | relative_url }}" data-novel="{{ post.novel }}" data-char="{{ post.character }}" data-no="{{ post.chapter }}">
+    <span class="ch-no">第 {{ post.chapter }} 篇</span>
+    <span class="ch-title">{{ post.title }}{% if posters.size > 1 %}<small class="ch-who" style="--c:{{ pc.color }}">{{ pc.name }}</small>{% endif %}</span>
+    <span class="ch-go" aria-hidden="true">›</span>
+  </a>
+{%- endfor -%}
+</div>
+<div class="feed" hidden></div>
 {%- comment -%} 相關文學文章（P06）：由文章的 related_novels 反向列出，資料只存在文章那邊，所以兩邊一定一致；沒有就不顯示 {%- endcomment -%}
 {%- assign lit_rel = site.literature | where_exp: "a", "a.related_novels contains id" | sort: "date" | reverse -%}
 {%- if lit_rel.size > 0 %}
@@ -121,18 +135,6 @@
   </div>
   {%- endfor -%}
 </section>
-<h2 class="nv-h ch-h">篇章</h2>
-<div class="chapters nv-list">
-{%- for post in ordered -%}
-  {%- assign pc = site.data.characters[post.character] -%}
-  <a class="chapter toc" id="{{ post.slug }}" href="{{ post.url | relative_url }}" data-novel="{{ post.novel }}" data-char="{{ post.character }}" data-no="{{ post.chapter }}">
-    <span class="ch-no">第 {{ post.chapter }} 篇</span>
-    <span class="ch-title">{{ post.title }}{% if posters.size > 1 %}<small class="ch-who" style="--c:{{ pc.color }}">{{ pc.name }}</small>{% endif %}</span>
-    <span class="ch-go" aria-hidden="true">›</span>
-  </a>
-{%- endfor -%}
-</div>
-<div class="feed" hidden></div>
 <p class="ro-only ro-go-wrap"><a class="ro-go" href="{{ '/novel/' | append: id | append: '/' | relative_url }}">看《{{ nv.title }}》的篇章 →</a></p>
 <button type="button" class="more-btn" hidden>載入更多</button>
 <p class="empty" hidden>這裡還沒有貼文。</p>

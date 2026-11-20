@@ -1,0 +1,35 @@
+{%- comment -%}
+  V1.0 R02：首頁作品介紹貼文搬到作品頁（圖片＋互動）。
+  互動鍵沿用首頁的 intro-{id}，愛心、分享的數字跟首頁那則貼文相同。
+  R02-R1：私訊角色換成留言按鈕，點了跳出整本小說的公開留言視窗（cloud.js）。
+  圖片：有三張漫畫用漫畫（左右滑）；沒有漫畫就用限動圖；都沒有就用主角頭貼（跟首頁一樣）。
+{%- endcomment -%}
+{%- assign pid = include.id -%}
+{%- assign pnv = site.data.novels[pid] -%}
+{%- assign pok = true -%}
+{%- for i in (1..3) -%}{%- capture cp -%}/assets/comics/{{ pid }}-{{ i }}.webp{%- endcapture -%}{%- assign f = site.static_files | where: "path", cp | first -%}{%- unless f -%}{%- assign pok = false -%}{%- endunless -%}{%- endfor -%}
+{%- capture sp -%}/assets/stories/{{ pid }}.webp{%- endcapture -%}
+{%- assign psimg = site.static_files | where: "path", sp | first -%}
+{%- assign plead = nil -%}{%- for ch in site.data.characters -%}{%- if ch[1].novel == pid -%}{%- assign plead = ch[0] -%}{%- break -%}{%- endif -%}{%- endfor -%}
+{%- if plead -%}
+{%- assign plc = site.data.characters[plead] -%}
+<div class="intro-post nv-post" data-novel="{{ pid }}" data-char="{{ plead }}" style="--c:{{ plc.color }}">
+  <div class="ip-media">
+  {%- if pok %}
+    <div class="ip-slides">{%- for i in (1..3) -%}<img src="{{ '/assets/comics/' | append: pid | append: '-' | append: i | append: '.webp' | relative_url }}" width="900" height="1125" alt="《{{ pnv.title }}》{{ i }}/3"{% if i == 1 %} fetchpriority="high"{% else %} loading="lazy"{% endif %} decoding="async">{%- endfor -%}</div>
+  {%- elsif psimg %}
+    <div class="ip-one"><img src="{{ sp | relative_url }}" width="900" height="1125" alt="《{{ pnv.title }}》" fetchpriority="high" decoding="async"></div>
+  {%- else %}
+    <div class="ip-cover"><span class="avatar">{%- if plc.avatar -%}<img src="{{ '/assets/avatars/' | append: plc.avatar | relative_url }}" alt="《{{ pnv.title }}》{{ plc.name }}">{%- else -%}{{ plc.glyph }}{%- endif -%}</span><b>《{{ pnv.title }}》</b></div>
+  {%- endif %}
+    <button type="button" class="ip-tagbtn" aria-label="標註的角色" aria-expanded="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4.2"/><path d="M3.8 21c.9-4.4 4.2-7 8.2-7s7.3 2.6 8.2 7z"/></svg></button>
+    <div class="ip-tags" hidden>
+    {%- for ch in site.data.characters -%}{%- if ch[1].novel == pid -%}
+      <a href="{{ '/novel/' | append: pid | append: '/?roles=1' | relative_url }}">@{{ ch[1].handle }}</a>
+    {%- endif -%}{%- endfor -%}
+    </div>
+  </div>
+  {%- if pok %}<div class="ip-dots"><i class="on"></i><i></i><i></i></div>{% endif %}
+  {% capture u %}{{ '/novel/' | append: pid | append: '/' | relative_url }}{% endcapture %}{% capture k %}intro-{{ pid }}{% endcapture %}{% include actions.html key=k url=u norepost=true notalk=true cmt=true %}
+</div>
+{%- endif -%}

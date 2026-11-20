@@ -15,5 +15,5 @@
     </div>
   </div>
   <a class="text" href="{{ p.url | relative_url }}">{{ p.teaser | markdownify }}</a>
-  {% capture u %}{{ p.url | relative_url }}{% endcapture %}{% include actions.html key=p.slug url=u %}
+  {% capture u %}{{ p.url | relative_url }}{% endcapture %}{% include actions.html key=p.slug url=u notalk=true %}
 </article>
