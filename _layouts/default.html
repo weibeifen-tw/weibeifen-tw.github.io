@@ -86,10 +86,7 @@
 <div class="inbox" hidden></div>
 <nav class="drawer" id="drawer" aria-label="選單" aria-hidden="true" inert>
   <h2><a href="{{ '/' | relative_url }}">未備份</a></h2>
-  {%- comment -%} V1.0 R05：三區分類（故事探索／個人功能／故事之外），圖示加文字 {%- endcomment -%}
-  <h3 class="d-sec">故事探索</h3>
-  <a class="d-item" href="{{ '/' | relative_url }}"><span class="d-icon line"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></svg></span>探索故事</a>
-  <button type="button" class="d-item d-search"><span class="d-icon line"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg></span>搜尋</button>
+  {%- comment -%} V1.0 R05：分區（個人功能／故事之外），圖示加文字；「故事探索」兩項依蔡要求拿掉 {%- endcomment -%}
   <h3 class="d-sec">個人功能</h3>
   <a class="d-item d-mine" href="{{ '/shelf/' | relative_url }}"><span class="d-icon line"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4v16H5zM10 4h4v16h-4z"/><path d="m15.5 5 3.6-1 2.4 15.4-3.6 1z"/></svg></span>我的書櫃</a>
   <a class="d-item" href="{{ '/favorites/' | relative_url }}" data-member-only hidden><span class="d-icon line"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.6 8.4 3.4 5 6.8 5c2 0 3.4 1.1 5.2 3 1.8-1.9 3.2-3 5.2-3 3.4 0 5.2 3.4 4.1 6.3-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg></span>我的收藏</a>
