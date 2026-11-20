@@ -19,7 +19,7 @@ body_class: wide
     {%- assign lead = nil -%}{%- for ch in site.data.characters -%}{%- if ch[1].novel == nv[0] -%}{%- assign lead = ch[1] -%}{%- break -%}{%- endif -%}{%- endfor -%}
     <a class="bk" href="{{ '/novel/' | append: nv[0] | append: '/' | relative_url }}" data-ord="{{ forloop.index }}" style="--c:{{ lead.color | default: '#999' }}">
       <span class="bk-cover">
-        {%- if nv[1].cover -%}<img src="{{ nv[1].cover | relative_url }}" alt="" width="300" height="400"{% if forloop.index > 6 %} loading="lazy"{% endif %} decoding="async">
+        {%- if nv[1].cover -%}<img src="{{ nv[1].cover | relative_url }}?v={{ site.time | date: '%s' }}" alt="" width="300" height="400"{% if forloop.index > 6 %} loading="lazy"{% endif %} decoding="async">
         {%- elsif lead -%}<span class="avatar">{%- if lead.avatar -%}<img src="{{ '/assets/avatars/' | append: lead.avatar | relative_url }}" alt="" width="96" height="96"{% if forloop.index > 6 %} loading="lazy"{% endif %} decoding="async">{%- else -%}{{ lead.glyph }}{%- endif -%}</span>
         {%- endif -%}
       </span>
