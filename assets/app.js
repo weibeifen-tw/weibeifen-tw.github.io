@@ -654,3 +654,34 @@ document.querySelectorAll('.ip-tagbtn').forEach(function (b) {
   var t = b.parentNode.querySelector('.ip-tags');
   b.onclick = function (e) { e.stopPropagation(); t.hidden = !t.hidden; b.setAttribute('aria-expanded', !t.hidden); };
 });
+
+// V1.0 R04：首頁探索故事——全部作品（每次隨機）／熱門作品（暫依最新上架）＋書架拖曳、鍵盤
+(function () {
+  var shelf = document.querySelector('.shelf'); if (!shelf) return;
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.ex-tabs [data-sort]')), note = document.querySelector('.ex-note');
+  var books = Array.prototype.slice.call(shelf.querySelectorAll('.bk'));
+  var rand = books.slice();
+  for (var i = rand.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = rand[i]; rand[i] = rand[j]; rand[j] = t; }
+  var hot = books.slice().sort(function (a, b) { return (+b.dataset.ord) - (+a.dataset.ord); });
+  function show(k) {
+    tabs.forEach(function (b) { var on = b.dataset.sort === k; b.setAttribute('aria-selected', on); b.tabIndex = on ? 0 : -1; if (on) shelf.setAttribute('aria-labelledby', b.id); });
+    note.hidden = k !== 'hot';
+    (k === 'hot' ? hot : rand).forEach(function (b) { shelf.appendChild(b); });
+    shelf.scrollLeft = 0;
+  }
+  tabs.forEach(function (b, i) {
+    b.onclick = function () { show(b.dataset.sort); };
+    b.onkeydown = function (e) { if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { var n = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length]; n.focus(); show(n.dataset.sort); e.preventDefault(); } };
+  });
+  show('all');
+  // 電腦：拖曳左右滑（不攔滾輪，頁面照常往下捲）；鍵盤：書架有焦點時左右鍵捲動
+  var down = false, x0 = 0, l0 = 0, moved = false;
+  shelf.addEventListener('mousedown', function (e) { down = true; moved = false; x0 = e.pageX; l0 = shelf.scrollLeft; e.preventDefault(); });
+  addEventListener('mousemove', function (e) { if (!down) return; var d = e.pageX - x0; if (Math.abs(d) > 4) moved = true; shelf.scrollLeft = l0 - d; });
+  addEventListener('mouseup', function () { down = false; });
+  shelf.addEventListener('click', function (e) { if (moved) { e.stopPropagation(); e.preventDefault(); moved = false; } }, true);
+  shelf.addEventListener('keydown', function (e) {
+    if (e.target !== shelf) return;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { shelf.scrollBy({ left: (e.key === 'ArrowRight' ? 1 : -1) * shelf.clientWidth * 0.8, behavior: 'smooth' }); e.preventDefault(); }
+  });
+})();
