@@ -48,8 +48,8 @@ jobs:
           done
           test ! -e _site/supabase || { echo "supabase/ 不應被發布"; exit 1; }
           echo "OK  supabase/ 未被發布"
-          n=$(grep -c 'class="account-story"' _site/index.html); echo "首頁帳號入口：$n"; test "$n" = "1"
-          n=$(grep -o 'class="story"' _site/index.html | wc -l); echo "首頁小說限動：$n"
+          n=$(grep -c 'class="d-item d-account"' _site/index.html); echo "選單個人資料入口：$n"; test "$n" = "1"
+          n=$(grep -o 'class="bk"' _site/index.html | wc -l); echo "首頁書架小說：$n"; test "$n" -gt 0
           n=$(grep -c 'assets/member.js' _site/member/index.html); echo "會員頁 member.js 載入次數：$n"; test "$n" = "1"
           n=$(grep -o 'id="member-default-avatar"' _site/member/index.html | wc -l); echo "會員頁頭像模板數：$n"; test "$n" = "1"
           if grep -rqE 'sb_secret_[A-Za-z0-9]{8,}|eyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}' _site --include=*.html --include=*.js; then echo "發現疑似私密金鑰"; exit 1; fi

@@ -239,6 +239,9 @@ window.WBAvatar = (function () {
     btn.setAttribute('aria-expanded', open); d.setAttribute('aria-hidden', !open);
   }
   btn.onclick = function () { toggle(!d.classList.contains('open')); };
+  // V1.0 R05：選單裡的「搜尋」＝關掉選單、打開頂端搜尋
+  var ds = d.querySelector('.d-search');
+  if (ds) ds.onclick = function () { toggle(false); var sb = document.querySelector('.search-btn'); if (sb) { var bx = document.querySelector('.sbox'); if (!bx || bx.hidden) sb.click(); } };
   sc.onclick = function () { toggle(false); };
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') toggle(false); });
 })();

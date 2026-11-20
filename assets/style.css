@@ -954,3 +954,10 @@ body:not(.roles-only) #roles{display:none}
 .bk-t{margin-top:4px;font-family:"Noto Serif TC",serif;font-size:16px;line-height:1.35}
 .bk-b{font-size:13px;line-height:1.55;color:var(--sub);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .bk:hover .bk-t{text-decoration:underline}
+/* V1.0 R05：選單三區 */
+.d-sec{margin:14px 8px 2px;font-size:12px;font-weight:500;color:var(--sub);letter-spacing:.15em}
+.drawer h2 + .d-sec{margin-top:0}
+button.d-item{width:100%;font:inherit;font-size:17px;font-weight:500;color:inherit;background:none;border:0;cursor:pointer;text-align:left}
+.d-tai{font-family:"Noto Serif TC",serif;font-size:19px;font-weight:700}
+.drawer .d-item[hidden]{display:none}
+.drawer .d-mine{margin-top:0}.drawer .d-mine::before{content:none}
