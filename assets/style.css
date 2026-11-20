@@ -805,3 +805,19 @@ a.ig-name:hover{text-decoration:underline}
 .reading-details ul{display:flex;flex-wrap:wrap;gap:6px;list-style:none;margin:0;padding:0}
 .reading-details li{padding:2px 10px;border-radius:999px;background:var(--card);font-size:13px;color:#5e594f}
 .reading-details p{margin:0;line-height:1.7}
+/* 作品頁：架空說明、虛構聲明（P04-2） */
+.nv-notes{margin:-4px 0 14px}
+.nv-note{margin:0;padding:6px 12px;border-left:3px solid var(--line);font-size:13px;line-height:1.7;color:var(--sub)}
+/* 年代誌（P04-2）：史前 + 1950–2040，事件卡 */
+.era-axis{grid-template-columns:repeat(11,minmax(48px,1fr))}
+.ev{padding:12px 0;border-bottom:1px solid var(--line)}
+.ev-head{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:4px}
+.ev-date{font-size:13px;color:var(--sub);font-variant-numeric:tabular-nums}
+.ev-cat{padding:1px 8px;border-radius:999px;background:var(--chip);font-size:11px;color:#5e594f}
+.ev-hypo{background:none;border:1px solid var(--line)}
+.ev-title{display:block;font-family:"Noto Serif TC",serif;font-size:18px;font-weight:600}
+.ev-period{margin:4px 0 0;font-size:14px;line-height:1.7;color:#5e594f}
+.ev-meta{margin:4px 0 0;font-size:14px}
+.ev-meta a{text-decoration:none}
+.ev-meta .ev-src{color:var(--sub);font-size:12px;text-decoration:underline}
+.ev-sep{color:var(--sub)}

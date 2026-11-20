@@ -1,46 +1,134 @@
-# 年代誌：每本小說在每個十年裡，出現了哪些台灣真實事件（架空的寫跟現實的差別）。空字串＝還沒寫。
-yu:
-  '2000': 還沒有手機的童年，在大里的三合院長大。
-  '2010': 第一支手機，然後是智慧型手機。
-  '2020': 每天跟 AI 說話。
-market:
-  '2020': ''
-feichang:
-  '2010': ''
-  '2020': ''
-gongdi:
-  '2020': ''
-hongdian:
-  '2020': ''
-hue:
-  '2020': 跟現實不同：台南府城裡，人有 ABO 第二性別。
-exam:
-  '2020': ''
-yincang:
-  '2000': MSN 和網聚的年代。
-shiyi:
-  '2010': ''
-  '2020': ''
-chaojian:
-  '2020': 2020 年疫情下的基隆，交友軟體成了認識人的方式。
-weigongkai:
-  '2020': 戀愛實境秀在 YouTube 上播出的年代。
-chuwang:
-  '2020': ''
-mizi:
-  '2020': 跟現實不同：一個只有女生的台灣。
-pendi:
-  '2020': ''
-shuangshuang:
-  '2010': ''
-duanqiao:
-  '2020': 跟現實不同：末日之後的金門。
-huaji:
-  '2010': ''
-  '2020': ''
-xiwei:
-  '2020': 2026 年地方選舉前夕。書中的政治人物與事件皆為虛構。
-chaosheng:
-  '2020': ''
-houdiao:
-  '2020': 跟現實不同：ABO 架空世界，第二性別不決定愛與同意。
+# 年代誌（P04-2 核准版）
+# 只收小說正文實際提到、而且可以查證的台灣歷史事件；流行文化、架空設定、還沒發生的事都不放。
+# 架空說明放在各小說介紹頁（novels.yml 的 world_note / fiction_note），不放這裡。
+#
+# events：近現代事件，每筆只存一次。
+#   start / end：起訖年份（數字）。只有一年的事件 end 可以省略。
+#   跨年代的事件（例如 1956–1992）會自動出現在每一個相關的十年區塊。
+#   date：顯示用的日期文字。
+#   category：experience＝親身經歷（角色自己經歷）、retrospective＝歷史回顧（角色回顧過去）。
+#   novel：小說 ID。
+#   source：官方或學術來源網址；空字串＝待補證。
+# research：史前年代／歷史研究，顯示在 1950 年代之前。
+#   period：年代說明。hypothesis: true 表示是研究假說，頁面會標「研究假說」，不能寫成定論。
+
+events:
+  - id: matsu-military-administration
+    start: 1956
+    end: 1992
+    date: 1956–1992
+    title: 馬祖戰地政務時期
+    category: retrospective
+    novel: chaosheng
+    source: https://art.archives.gov.tw/tw/art/1506-13185.html
+
+  - id: end-of-military-administration
+    start: 1992
+    date: 1992-11-07
+    title: 金馬終止戰地政務
+    category: retrospective
+    novel: chaosheng
+    source: ""
+
+  - id: provincial-streamlining
+    start: 1998
+    date: 1998-12-21
+    title: 精省作業完成
+    category: retrospective
+    novel: shiyi
+    source: https://art.archives.gov.tw/tw/art/1295.html
+
+  - id: chi-chi-earthquake
+    start: 1999
+    date: 1999-09-21
+    title: 九二一大地震
+    category: retrospective
+    novel: shiyi
+    source: https://den.ncdr.nat.gov.tw/1330/1342/20538/20588/
+
+  - id: typhoon-haitang
+    start: 2005
+    date: 2005-07-18
+    title: 海棠颱風
+    category: experience
+    novel: yincang
+    source: https://rdc28.cwa.gov.tw/TDB/public/typhoon_detail?typhoon_id=200505
+
+  - id: typhoon-fanapi
+    start: 2010
+    date: 2010-09-19
+    title: 凡那比颱風
+    category: experience
+    novel: shuangshuang
+    source: https://rdc28.cwa.gov.tw/TDB/public/typhoon_detail?typhoon_id=201011
+
+  - id: referendum-2018
+    start: 2018
+    date: 2018-11-24
+    title: 同性婚姻相關公民投票
+    category: experience
+    novel: feichang
+    source: https://web.cec.gov.tw/central/article/25933
+
+  - id: curriculum-108
+    start: 2019
+    date: "2019"
+    title: 108課綱實施
+    category: experience
+    novel: shiyi
+    source: https://www.edu.tw/News_Content.aspx?n=9E7AC85F1954DDA8&s=D0F033700D0680CC
+
+  - id: covid-2020-chaojian
+    start: 2020
+    date: "2020"
+    title: COVID-19疫情
+    category: experience
+    novel: chaojian
+    source: ""
+
+  - id: level3-alert-2021
+    start: 2021
+    date: 2021-05-19
+    title: 全國疫情三級警戒
+    category: experience
+    novel: chaojian
+    source: https://www.cdc.gov.tw/Bulletin/Detail/abDtRS-xzztQeAchjX9fqw?typeId=9
+
+  - id: covid-2022-chuwang
+    start: 2022
+    date: "2022"
+    title: COVID-19疫情
+    category: experience
+    novel: chuwang
+    source: ""
+
+  - id: hualien-earthquake-2024
+    start: 2024
+    date: 2024-04-03
+    title: 花蓮地震
+    category: experience
+    novel: chuwang
+    source: https://den.ncdr.nat.gov.tw/1330/1342/20538/20588/
+
+research:
+  - id: changbin-culture
+    title: 長濱文化
+    period: 約距今30,000至5,000年。
+    novel: shiyi
+    chapter: 4
+    source: https://icloud.nmp.gov.tw/Classroom/Prehistoric?a=74
+
+  - id: dabenkeng-culture
+    title: 大坌坑文化
+    period: 約距今6,500年起，屬新石器時代早期文化。
+    novel: shiyi
+    chapter: 4
+    source: https://icloud.nmp.gov.tw/library/EPaperContent?a=212&id=6&nid=42
+
+  - id: austronesian-origin
+    title: 南島語族起源
+    period: 臺灣可能是南島語族早期祖居地及向外擴散的重要起點。
+    hypothesis: true
+    novel: shiyi
+    chapter: 5
+    source: https://research.sinica.edu.tw/formosan-languages/
