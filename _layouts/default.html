@@ -57,7 +57,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@400;600;700&display=swap" rel="stylesheet">
+{%- comment -%} V1.0 S05（Q20）：字型表不擋首次繪製（display=swap，先用系統字、字型到了再換） {%- endcomment %}
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@400;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@400;600;700&display=swap" rel="stylesheet"></noscript>
 <link rel="stylesheet" href="{{ '/assets/style.css' | relative_url }}?v={{ site.time | date: '%s' }}">
 {%- comment -%} V1.0 S04（Q11、Q15）：頁面專用樣式只在該頁載入 {%- endcomment -%}
 {%- assign pcss = page.page_css -%}{%- if page.collection == 'literature' -%}{%- assign pcss = 'literature' -%}{%- endif -%}
