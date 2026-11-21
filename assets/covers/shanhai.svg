@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" role="img" aria-label="《山海有痕》封面"><defs><linearGradient id="sk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E7D8BB"/><stop offset=".62" stop-color="#C9C6B4"/><stop offset="1" stop-color="#789BA5"/></linearGradient></defs>
+<rect width="600" height="800" fill="url(#sk)"/>
+<path d="M0 300 L70 236 L128 268 L214 170 L282 232 L346 188 L430 250 L508 196 L600 262 V420 H0Z" fill="#60786B" opacity=".55"/>
+<path d="M0 372 L88 300 L160 338 L248 266 L330 332 L402 290 L476 340 L548 302 L600 330 V440 H0Z" fill="#60786B"/>
+<path d="M0 428 C70 412 140 440 210 426 C290 410 360 440 440 424 C510 410 560 430 600 422 V800 H0Z" fill="#789BA5"/>
+<path d="M0 474 C80 458 150 486 230 470 C310 454 380 484 460 468 C530 456 570 474 600 468" stroke="#F4EBDD" stroke-width="5" fill="none" opacity=".7" stroke-linecap="round"/>
+<path d="M0 524 C90 508 170 536 250 520 C330 504 400 534 480 518 C540 508 575 522 600 518" stroke="#F4EBDD" stroke-width="5" fill="none" opacity=".55" stroke-linecap="round"/>
+<path d="M0 576 C100 560 180 588 270 572 C350 558 420 586 500 570 C550 562 580 572 600 570" stroke="#F4EBDD" stroke-width="5" fill="none" opacity=".4" stroke-linecap="round"/>
+<path d="M0 612 C120 598 230 606 320 616 C420 626 520 604 600 610 V680 H0Z" fill="#665449"/>
+<g fill="#342F2C">
+<path d="M252 456 C241 456 234 465 235 476 C236 484 240 490 245 492 L240 500 C227 504 222 516 221 532 L218 588 L230 590 L232 642 L246 650 L250 600 L254 600 L258 650 L272 642 L274 590 L286 588 L283 532 C282 516 277 504 264 500 L259 492 C265 489 269 482 269 474 C269 464 262 456 252 456 Z"/>
+<path d="M339 469 C329 469 323 477 324 487 C325 494 329 499 333 501 L329 508 C318 512 313 523 312 538 L310 590 L321 592 L323 642 L336 650 L339 604 L343 604 L346 650 L358 642 L360 592 L371 590 L368 538 C367 523 362 512 350 508 L346 501 C351 498 355 492 355 485 C355 476 348 469 339 469 Z"/>
+</g>
+<rect y="680" width="600" height="120" fill="#4A3B33"/><text x="300" y="762" text-anchor="middle" font-family="'Noto Serif TC','Noto Serif CJK TC','Songti TC','PMingLiU',serif" font-size="62" font-weight="700" letter-spacing="12" fill="#F4EBDD">山海有痕</text></svg>

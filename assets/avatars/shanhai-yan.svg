@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<!-- 巖：束起的長髮、方正輪廓，嶺族決策者 -->
+<rect width="64" height="64" fill="#e2dcd2"/>
+<path d="M30 10 C27 6 37 6 34 10 Z" fill="#17130f"/>
+<rect x="27.5" y="44" width="9" height="8" fill="#c08c63"/><path d="M4 64 C6 53 17 50 32 50 C47 50 58 53 60 64 Z" fill="#d7a57b"/><path d="M9 64 C11 56 18 52 25 51 L44 60 L41 64 Z" fill="#5c4d42"/><path d="M25 51 L44 60" stroke="#a99c8a" stroke-width="2.4" stroke-dasharray="2.5 1.6" fill="none"/><path d="M44 52 C50 53 56 56 58 64 L52 64 C50 59 47 56 44 55 Z" fill="#5c4d42" opacity=".85"/>
+<ellipse cx="32" cy="25" rx="15.6" ry="13" fill="#17130f"/>
+<path d="M16.5 32 C16.5 42 23.5 48 32 48 C40.5 48 47.5 42 47.5 32 C47.5 26 40.5 22 32 22 C23.5 22 16.5 26 16.5 32 Z" fill="#d7a57b"/>
+<path d="M16 33 C15 17 24 11 32 11 C40 11 49 17 48 33 C47 25 43 20 32 19 C21 20 17 25 16 33 Z" fill="#17130f"/>
+<path d="M22 30 Q25.5 28.4 29 29.6" stroke="#231b17" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M35 29.6 Q38.5 28.4 42 30" stroke="#231b17" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+<ellipse cx="25.5" cy="34.5" rx="1.8" ry="2.0" fill="#2a211c"/><circle cx="24.9" cy="33.9" r=".55" fill="#fff"/><ellipse cx="38.5" cy="34.5" rx="1.8" ry="2.0" fill="#2a211c"/><circle cx="37.9" cy="33.9" r=".55" fill="#fff"/>
+<path d="M29 42 L35 42" stroke="#7a4436" stroke-width="1.4" stroke-linecap="round"/>
+</svg>

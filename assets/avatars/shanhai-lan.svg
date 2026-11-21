@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<!-- 嵐：短亂髮、年輕，潮族獵人 -->
+<rect width="64" height="64" fill="#e6e3dc"/>
+<rect x="27.5" y="44" width="9" height="8" fill="#c08c63"/><path d="M4 64 C6 53 17 50 32 50 C47 50 58 53 60 64 Z" fill="#d7a57b"/><path d="M9 64 C11 56 18 52 25 51 L44 60 L41 64 Z" fill="#64503f"/><path d="M25 51 L44 60" stroke="#bba78c" stroke-width="2.4" stroke-dasharray="2.5 1.6" fill="none"/><path d="M44 52 C50 53 56 56 58 64 L52 64 C50 59 47 56 44 55 Z" fill="#64503f" opacity=".85"/>
+<ellipse cx="32" cy="25" rx="15.6" ry="13" fill="#17130f"/>
+<path d="M17 32 C17 42 24 48 32 48 C40 48 47 42 47 32 C47 26 40 22 32 22 C24 22 17 26 17 32 Z" fill="#d7a57b"/>
+<path d="M16 33 C14 17 23 10 33 10 C44 10 51 18 48 33 L46 25 L43 28 L41 21 L37 25 L34 18 L31 24 L27 19 L25 26 L21 22 L19 29 Z" fill="#17130f"/>
+<path d="M22.3 30 L28.6 28.6" stroke="#231b17" stroke-width="1.5" stroke-linecap="round"/><path d="M35.4 28.6 L41.7 30" stroke="#231b17" stroke-width="1.5" stroke-linecap="round"/>
+<ellipse cx="25.5" cy="34.5" rx="1.8" ry="2.0" fill="#2a211c"/><circle cx="24.9" cy="33.9" r=".55" fill="#fff"/><ellipse cx="38.5" cy="34.5" rx="1.8" ry="2.0" fill="#2a211c"/><circle cx="37.9" cy="33.9" r=".55" fill="#fff"/>
+<path d="M29.5 42 Q32 42.8 34.5 42" stroke="#8a4b3c" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+</svg>

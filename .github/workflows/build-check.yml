@@ -54,3 +54,8 @@ jobs:
           n=$(grep -o 'id="member-default-avatar"' _site/member/index.html | wc -l); echo "會員頁頭像模板數：$n"; test "$n" = "1"
           if grep -rqE 'sb_secret_[A-Za-z0-9]{8,}|eyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}' _site --include=*.html --include=*.js; then echo "發現疑似私密金鑰"; exit 1; fi
           echo "OK  未發現私密金鑰"
+          # 山海有痕：作品頁與 32 章
+          test -f _site/novel/shanhai/index.html || { echo "缺少山海有痕作品頁"; exit 1; }
+          n=$(ls _site/t | grep -c '^shanhai[0-9][0-9]$'); echo "山海有痕章節：$n"; test "$n" = "32"
+          if ls _site | grep -qiE '\.(docx|xlsx|zip)$' || find _site -iname '*.docx' -o -iname '*.xlsx' -o -iname '*.zip' | grep -q .; then echo "發現不應公開的原始檔"; exit 1; fi
+          echo "OK  未發布原始文件"

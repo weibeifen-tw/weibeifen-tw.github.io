@@ -129,6 +129,14 @@ research:
     chapter: 5
     source: https://research.sinica.edu.tw/formosan-languages/
 
+  - id: shanhai-paleolithic
+    title: 臺灣舊石器時代（約距今27,000年）
+    phase: paleolithic
+    period: 《山海有痕》的故事背景。小說參考臺灣舊石器時代及長濱文化的考古研究創作，人物、族群與事件皆為虛構。
+    novel: shanhai
+    source_title: 史前館：舊石器時代
+    source: https://icloud.nmp.gov.tw/Classroom/Prehistoric?a=74
+
 # 導覽分期（P08-3 核准候選分期）。三大區塊：prehistoric 史前時代、historical 歷史時期、modern 現當代。
 # 史前年代為約略範圍，各考古文化與時期可能重疊，不代表全臺一致的絕對分界。
 # 歷史時期用 start／end（西元年）判斷事件落在哪一期；分期允許重疊（例如 1661–1662）。

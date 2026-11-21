@@ -16,7 +16,9 @@
 <div class="intro-post nv-post" data-novel="{{ pid }}" data-char="{{ plead }}" style="--c:{{ plc.color }}">
   <div class="ip-media">
   {%- if pok %}
-    <div class="ip-slides">{%- for i in (1..3) -%}<img src="{{ '/assets/comics/' | append: pid | append: '-' | append: i | append: '.webp' | relative_url }}" width="900" height="1125" alt="《{{ pnv.title }}》{{ i }}/3"{% if i == 1 %} fetchpriority="high"{% else %} loading="lazy"{% endif %} decoding="async">{%- endfor -%}</div>
+    {%- comment -%} comic_alts（選填）＝三張漫畫各自的描述性 alt；visuals（選填）＝接在漫畫後面依序滑動的主視覺（山海有痕起） {%- endcomment -%}
+    <div class="ip-slides">{%- for i in (1..3) -%}{%- assign ci = i | minus: 1 -%}<img src="{{ '/assets/comics/' | append: pid | append: '-' | append: i | append: '.webp' | relative_url }}" width="900" height="1125" alt="{% if pnv.comic_alts[ci] %}《{{ pnv.title }}》{{ pnv.comic_alts[ci] | escape }}{% else %}《{{ pnv.title }}》{{ i }}/3{% endif %}"{% if i == 1 %} fetchpriority="high"{% else %} loading="lazy"{% endif %} decoding="async">{%- endfor -%}
+    {%- for v in pnv.visuals -%}<img src="{{ v.src | relative_url }}" width="900" height="1125" alt="《{{ pnv.title }}》{{ v.alt | escape }}" loading="lazy" decoding="async">{%- endfor -%}</div>
   {%- elsif psimg %}
     <div class="ip-one"><img src="{{ sp | relative_url }}" width="900" height="1125" alt="《{{ pnv.title }}》" fetchpriority="high" decoding="async"></div>
   {%- else %}
@@ -29,7 +31,7 @@
     {%- endif -%}{%- endfor -%}
     </div>
   </div>
-  {%- if pok %}<div class="ip-dots"><i class="on"></i><i></i><i></i></div>{% endif %}
+  {%- if pok %}<div class="ip-dots"><i class="on"></i><i></i><i></i>{% for v in pnv.visuals %}<i></i>{% endfor %}</div>{% endif %}
   {% capture u %}{{ '/novel/' | append: pid | append: '/' | relative_url }}{% endcapture %}{% capture k %}intro-{{ pid }}{% endcapture %}{% include actions.html key=k url=u norepost=true notalk=true cmt=true %}
 </div>
 {%- endif -%}

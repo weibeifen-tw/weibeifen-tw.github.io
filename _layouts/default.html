@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-{%- if page.layout == 'thread' -%}{%- assign tnv = site.data.novels[page.novel] -%}{%- assign tch = site.data.characters[page.character] -%}{%- capture seo_t -%}《{{ tnv.title }}》・{{ tch.name }}{% if page.chapter %}・第 {{ page.chapter }} 篇{% endif %}｜{{ page.title }}{%- endcapture -%}{%- endif -%}
+{%- if page.layout == 'thread' -%}{%- assign tnv = site.data.novels[page.novel] -%}{%- assign tch = site.data.characters[page.character] -%}{%- capture seo_t -%}《{{ tnv.title }}》・{{ tch.name }}{% if page.chapter %}・第 {{ page.chapter }} 篇{% endif %}｜{{ page.title }}{%- endcapture -%}{%- if page.seo_title -%}{%- assign seo_t = page.seo_title -%}{%- endif -%}{%- endif -%}
 {%- if page.collection == 'literature' -%}{%- comment -%} 文學文章（P06）：seo_title／seo_desc 選填，空白就用標題／公開摘要；不會抓正文 {%- endcomment -%}{%- assign lit_t = page.seo_title | append: '' | strip -%}{%- if lit_t == '' -%}{%- assign lit_t = page.title | append: '' | strip -%}{%- endif -%}{%- assign lit_d = page.seo_desc | append: '' | strip -%}{%- if lit_d == '' -%}{%- assign lit_d = page.description | append: '' | strip -%}{%- endif -%}{%- endif -%}
 <title>{% if lit_t %}{{ lit_t | escape }}｜{% elsif seo_t %}{{ seo_t }}｜{% elsif page.title %}{{ page.title }}｜{% endif %}{{ site.title }}</title>
 {% if page.collection == 'literature' -%}
@@ -29,6 +29,21 @@
 <meta property="twitter:title" content="{{ lit_t | escape }}" />
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Article","headline":{{ lit_t | jsonify }},{% if lit_d != '' %}"description":{{ lit_d | jsonify }},{% endif %}"author":{"@type":"Person","name":{{ page.author | default: site.author | jsonify }},"url":{{ '/about/' | absolute_url | jsonify }}},"datePublished":{{ page.date | date_to_xmlschema | jsonify }},"dateModified":{{ page.updated | default: page.date | date_to_xmlschema | jsonify }},{% if page.cover %}"image":{{ page.cover | absolute_url | jsonify }},{% endif %}"mainEntityOfPage":{{ page.url | absolute_url | jsonify }},"url":{{ page.url | absolute_url | jsonify }},"inLanguage":"zh-Hant","publisher":{"@type":"Organization","name":{{ site.title | jsonify }}}}</script>
+{%- elsif page.og_title -%}{%- comment -%} 作品頁自訂分享標題（山海有痕起）：og_title／og_description／image 選填欄位，有填 og_title 才走這段，其他頁照舊用 jekyll-seo-tag {%- endcomment -%}
+<meta name="description" content="{{ page.description | escape }}" />
+<link rel="canonical" href="{{ page.url | absolute_url }}" />
+<meta property="og:title" content="{{ page.og_title | escape }}" />
+<meta property="og:description" content="{{ page.og_description | default: page.description | escape }}" />
+<meta property="og:url" content="{{ page.url | absolute_url }}" />
+<meta property="og:site_name" content="{{ site.title }}" />
+<meta property="og:locale" content="zh_Hant" />
+<meta property="og:type" content="website" />
+{%- if page.image %}
+<meta property="og:image" content="{{ page.image | absolute_url }}" />
+<meta property="og:image:alt" content="{{ page.image_alt | default: page.og_title | escape }}" />
+{%- endif %}
+<meta name="twitter:card" content="{% if page.image %}summary_large_image{% else %}summary{% endif %}" />
+<meta property="twitter:title" content="{{ page.og_title | escape }}" />
 {%- else -%}
 {% seo title=false %}
 {%- endif %}
@@ -105,7 +120,7 @@
 <footer class="foot"><p>© 畝 MU 版權所有，禁止轉載　·　<a href="{{ '/privacy/' | relative_url }}">隱私權政策</a></p><p>所有故事皆為虛構，若有雷同，可能是記憶出了錯。</p><p>有錯就說，姐姐聽得進去。私訊 → <a href="https://www.threads.com/@weibe.ifen" target="_blank" rel="noopener">@weibe.ifen</a></p>{% unless page.url == "/support/" %}<p class="candy"><a href="https://portaly.cc/weibeifen/support" target="_blank" rel="noopener">🍬 請畝 MU 吃糖果</a>　·　<a href="{{ '/support/' | relative_url }}">贊助說明</a></p>{% endunless %}</footer>
 <script id="chars" type="application/json">{{ site.data.characters | jsonify }}</script>
 {% comment %} 共用小說資料：不放 reading_info（心理議題、完結、結局、最終章）、world_note（架空說明）、fiction_note（虛構聲明）；這些只在介紹頁顯示 {% endcomment -%}
-<script id="novels" type="application/json">{ {%- for n in site.data.novels -%}{{ n[0] | jsonify }}:{ {%- assign f = true -%}{%- for kv in n[1] -%}{%- if kv[0] == 'reading_info' or kv[0] == 'world_note' or kv[0] == 'fiction_note' -%}{%- continue -%}{%- endif -%}{%- unless f -%},{%- endunless -%}{{ kv[0] | jsonify }}:{{ kv[1] | jsonify }}{%- assign f = false -%}{%- endfor -%} }{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%} }</script>
+<script id="novels" type="application/json">{ {%- for n in site.data.novels -%}{{ n[0] | jsonify }}:{ {%- assign f = true -%}{%- for kv in n[1] -%}{%- if kv[0] == 'reading_info' or kv[0] == 'world_note' or kv[0] == 'fiction_note' or kv[0] == 'history' or kv[0] == 'visuals' or kv[0] == 'stories' or kv[0] == 'comic_alts' or kv[0] == 'series_note' -%}{%- continue -%}{%- endif -%}{%- unless f -%},{%- endunless -%}{{ kv[0] | jsonify }}:{{ kv[1] | jsonify }}{%- assign f = false -%}{%- endfor -%} }{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%} }</script>
 {%- comment -%} 兩個角色各自編章號的小說（章號會重複），選單要分角色記讀到哪 {%- endcomment -%}
 {%- capture split -%}{%- for n in site.data.novels -%}{%- assign g = site.posts | where: "novel", n[0] | group_by: "chapter" -%}{%- for x in g -%}{%- if x.size > 1 -%}{{ n[0] }},{%- break -%}{%- endif -%}{%- endfor -%}{%- endfor -%}{%- endcapture -%}
 <script>window.SPLIT = "{{ split }}".split(",");</script>

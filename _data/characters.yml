@@ -341,3 +341,102 @@ mu:
   glyph: 畝
   color: "#d97a3a"
   bio: 未備份的作者。有話想說，可以直接傳訊息給我。
+# 《山海有痕》：主角霧、刃；support: true 是配角（作品頁「認識角色」放在主角下方，不做分頁）。
+# story：角色專屬限動圖，點頭像才載入；不能當頭像。says：網站新撰的自我介紹，不是正文引句。
+shanhai-wu:
+  name: 霧
+  handle: wu.stone
+  novel: shanhai
+  avatar: shanhai-wu.svg
+  glyph: 霧
+  color: "#5d6b78"
+  story: /assets/stories/shanhai-wu.webp
+  bio: 十九歲，160 公分，嶺族祭司。黑色長直髮，身形纖瘦。沉靜、克制，能透過石頭感知過往的記憶。習慣承擔族人的責任，卻很少說出自己的感受。
+  says: 我是霧。石頭有時會留下人的聲音，但我聽見的，不一定是事情的全部。
+shanhai-ren:
+  name: 刃
+  handle: ren.tide
+  novel: shanhai
+  avatar: shanhai-ren.svg
+  glyph: 刃
+  color: "#a64236"
+  story: /assets/stories/shanhai-ren.webp
+  bio: 二十歲，167 公分，潮族獵人。黑色及肩髮，身形高挑精實，右膝留有舊傷。警覺而堅韌，擅長狩獵與辨認地形，重視承諾及自主選擇。
+  says: 我是刃。走過的路，我會記得。但下一步往哪走，我想自己決定。
+shanhai-he:
+  name: 禾
+  handle: he.flake
+  novel: shanhai
+  support: true
+  avatar: shanhai-he.svg
+  glyph: 禾
+  color: "#8a6a3f"
+  story: /assets/stories/shanhai-he.webp
+  bio: 嶺族石器製作者。霧的親近同伴，擅長製作石器。關心身邊的人，經常以直接的言語與實際行動照顧霧。
+  says: 我是禾。石片敲壞了就再做一塊，人累了，就該停下來吃點東西。
+shanhai-huai:
+  name: 槐
+  handle: huai.ridge
+  novel: shanhai
+  support: true
+  avatar: shanhai-huai.svg
+  glyph: 槐
+  color: "#7a6656"
+  story: /assets/stories/shanhai-huai.webp
+  bio: 嶺族成員。關心霧的身體與安危，理解讀石能力所帶來的負擔。在族群的需求與霧的處境之間，有自己的判斷。
+  says: 我是槐。不知道所有事情，也不代表我們什麼都做不了。
+shanhai-yan:
+  name: 巖
+  handle: yan.cliff
+  novel: shanhai
+  support: true
+  avatar: shanhai-yan.svg
+  glyph: 巖
+  color: "#5e5650"
+  story: /assets/stories/shanhai-yan.webp
+  bio: 嶺族重要決策者。重視族群的生存與安全，參與道路、資源及族人行動的決策。
+  says: 我是巖。我要知道前面的路能不能走，還有出去的人能不能回來。
+shanhai-jiao:
+  name: 礁
+  handle: jiao.reef
+  novel: shanhai
+  support: true
+  avatar: shanhai-jiao.svg
+  glyph: 礁
+  color: "#4f6470"
+  story: /assets/stories/shanhai-jiao.webp
+  bio: 潮族領袖，刃的父親。肩負潮族的生存責任，在族群利益、資源與親情之間面對不同的選擇。
+  says: 我是礁。海邊的人需要食物，也需要一處能安心過夜的地方。
+shanhai-ling:
+  name: 翎
+  handle: ling.feather
+  novel: shanhai
+  support: true
+  avatar: shanhai-ling.svg
+  glyph: 翎
+  color: "#94584a"
+  story: /assets/stories/shanhai-ling.webp
+  bio: 潮族成員。與刃相識已久，兩人擁有共同的過往。她的選擇與族群立場，使這段關係並不單純。
+  says: 我是翎。有些事情，並不像我們當初想的那麼容易。
+shanhai-quan:
+  name: 泉
+  handle: quan.spring
+  novel: shanhai
+  support: true
+  avatar: shanhai-quan.svg
+  glyph: 泉
+  color: "#a8744a"
+  story: /assets/stories/shanhai-quan.webp
+  bio: 潮族孩童。對周遭事物充滿好奇，喜歡嘗試製作石片。她對其他人的認識，往往來自親眼所見，而非族群之間的成見。
+  says: 我是泉。今天又敲出了一塊石片，這次沒有碎成好幾塊！
+shanhai-lan:
+  name: 嵐
+  handle: lan.hunter
+  novel: shanhai
+  support: true
+  avatar: shanhai-lan.svg
+  glyph: 嵐
+  color: "#66708a"
+  story: /assets/stories/shanhai-lan.webp
+  bio: 潮族獵人。刃的狩獵同伴，參與探路、救援及族群遷移，在危險環境中與其他獵人相互協助。
+  says: 我是嵐。路不好走的時候，別忘了看看後面的人有沒有跟上。
