@@ -108,7 +108,7 @@
 {%- assign last_vol = '' -%}
 {%- for post in ordered -%}
   {%- assign pc = site.data.characters[post.character] -%}
-  {%- if post.volume and post.volume != last_vol %}<h3 class="ch-vol">{{ post.volume }}</h3>{% assign last_vol = post.volume %}{% endif -%}
+  {%- if post.volume and post.volume != last_vol %}<h3 class="grp">{{ post.volume }}</h3>{% assign last_vol = post.volume %}{% endif -%}
   <a class="chapter toc" id="{{ post.slug }}" href="{{ post.url | relative_url }}" data-novel="{{ post.novel }}" data-char="{{ post.character }}" data-no="{{ post.chapter }}">
     <span class="ch-no">第 {{ post.chapter }} 篇</span>
     <span class="ch-title">{{ post.title }}{% if posters.size > 1 %}<small class="ch-who" style="--c:{{ pc.color }}">{{ pc.name }}</small>{% endif %}</span>

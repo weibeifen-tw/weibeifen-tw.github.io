@@ -935,8 +935,6 @@ button.d-item{width:100%;font:inherit;font-size:17px;font-weight:500;color:inher
 /* ===== 角色專屬限動檢視器（山海有痕起）：只在角色有 story 的作品頁出現；作品主視覺滑動區 .nv-gallery ===== */
 .nv-gallery{margin:4px 0 14px}
 .nv-gallery .ip-slides{margin-top:0;border-radius:12px}
-.ch-vol{margin:18px 0 6px;font-size:13px;color:var(--sub);letter-spacing:.2em;font-weight:500}
-.nv-list .ch-vol:first-child{margin-top:4px}
 .sv-ring{display:inline-flex;padding:2px;border-radius:50%;background:conic-gradient(#a64236,#a77a58,#5d6b78,#a64236)}
 .sv-av{padding:0;border:0;background:none;cursor:pointer;border-radius:50%}
 .sv-av .avatar{border:2px solid var(--card)}
