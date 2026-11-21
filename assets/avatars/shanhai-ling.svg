@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<!-- 翎：半束的波浪長髮、目光偏向一側，潮族成員 -->
+<rect width="64" height="64" fill="#efe2d6"/>
+<path d="M15 30 C14 16 23 11 32 11 C41 11 50 16 49 30 C52 40 49 50 52 60 L42 56 L22 56 L12 60 C15 50 12 40 15 30 Z" fill="#17130f"/>
+<rect x="27.5" y="44" width="9" height="8" fill="#c08c63"/><path d="M4 64 C6 53 17 50 32 50 C47 50 58 53 60 64 Z" fill="#d7a57b"/><path d="M9 64 C11 56 18 52 25 51 L44 60 L41 64 Z" fill="#6c5242"/><path d="M25 51 L44 60" stroke="#c4ae94" stroke-width="2.4" stroke-dasharray="2.5 1.6" fill="none"/><path d="M44 52 C50 53 56 56 58 64 L52 64 C50 59 47 56 44 55 Z" fill="#6c5242" opacity=".85"/>
+<ellipse cx="32" cy="25" rx="15.6" ry="13" fill="#17130f"/>
+<path d="M18 32 C18 41 25 47 32 47 C39 47 46 41 46 32 C46 26 39 22 32 22 C25 22 18 26 18 32 Z" fill="#d7a57b"/>
+<path d="M17 33 C16 19 24 13 32 13 C41 13 48 19 47 33 C44 25 38 21 31 21 C25 22 20 26 17 33 Z" fill="#17130f"/>
+<path d="M22.6 30.2 Q25.5 28.8 28.5 29.8" stroke="#3a2c24" stroke-width="1.1" fill="none" stroke-linecap="round"/><path d="M35.5 29.8 Q38.5 28.8 41.4 30.2" stroke="#3a2c24" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+<ellipse cx="26.6" cy="34.5" rx="1.8" ry="2" fill="#2a211c"/><ellipse cx="39.6" cy="34.5" rx="1.8" ry="2" fill="#2a211c"/><circle cx="26.1" cy="33.9" r=".55" fill="#fff"/><circle cx="39.1" cy="33.9" r=".55" fill="#fff"/>
+<path d="M29.5 41.5 Q32 42.3 34.5 41.5" stroke="#8a4b3c" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+</svg>

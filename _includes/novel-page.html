@@ -4,12 +4,20 @@
 {%- assign ordered = site.posts | where: "novel", id | reverse -%}
 {%- unless nv.split -%}{%- assign ordered = ordered | sort: "chapter" -%}{%- endunless -%}
 {%- assign leads = "" | split: "" -%}
-{%- for c in site.data.characters -%}{%- if c[1].novel == id -%}{%- assign leads = leads | push: c[0] -%}{%- endif -%}{%- endfor -%}
+{%- assign sups = "" | split: "" -%}
+{%- for c in site.data.characters -%}{%- if c[1].novel == id -%}{%- if c[1].support -%}{%- assign sups = sups | push: c[0] -%}{%- else -%}{%- assign leads = leads | push: c[0] -%}{%- endif -%}{%- endif -%}{%- endfor -%}
+{%- comment -%} 限動（山海有痕起）：作品限動 nv.stories、角色專屬限動 characters.yml 的 story；都是點了才載入大圖（assets/story.js） {%- endcomment -%}
+{%- assign has_story = false -%}{%- if nv.stories -%}{%- assign has_story = true -%}{%- endif -%}
+{%- for cid in leads -%}{%- if site.data.characters[cid].story -%}{%- assign has_story = true -%}{%- endif -%}{%- endfor -%}
+{%- for cid in sups -%}{%- if site.data.characters[cid].story -%}{%- assign has_story = true -%}{%- endif -%}{%- endfor -%}
 {%- assign posters = ordered | map: "character" | uniq -%}
 <section id="novel" class="novel" data-static="1">
   <a class="nv-back" href="{{ '/' | relative_url }}">← 回首頁</a>
   <h1>{{ nv.title }}</h1>
   {%- if nv.era %}<p class="nv-era">{{ nv.era }}</p>{% endif %}
+  {%- if nv.stories %}
+  <button type="button" class="nv-story sv-open" data-sv="{% for st in nv.stories %}{{ st.src | relative_url }}|{{ st.alt | escape }}{% unless forloop.last %}^{% endunless %}{% endfor %}" aria-label="看《{{ nv.title }}》作品限動"><span class="sv-ring"><img src="{{ nv.cover | relative_url }}" alt="" width="45" height="60" loading="lazy" decoding="async"></span><small>作品限動</small></button>
+  {%- endif %}
   {%- comment -%} V1.0 R02：原首頁作品介紹貼文的圖片與互動 {%- endcomment -%}
   {% include novel-post.html id=id %}
   {%- comment -%}
@@ -71,11 +79,20 @@
 {% endcapture -%}
   {%- if nv.intro %}{% assign ips = nv.intro | split: psep %}{% for para in ips %}{% assign pt = para | strip %}{% if pt != '' %}<p class="nv-intro">{{ pt | newline_to_br }}</p>{% endif %}{% endfor %}{% endif %}
   {%- comment -%} 說明區（P04-2）：架空世界說明（world_note）、虛構聲明（fiction_note）。年代誌不收架空設定，改放這裡。 {%- endcomment -%}
-  {%- if nv.world_note or nv.fiction_note %}
+  {%- if nv.world_note or nv.fiction_note or nv.series_note %}
   <div class="nv-notes">
+    {%- if nv.series_note %}<p class="nv-note">{{ nv.series_note | escape }}</p>{% endif -%}
     {%- if nv.world_note %}<p class="nv-note">{{ nv.world_note | escape }}</p>{% endif -%}
     {%- if nv.fiction_note %}<p class="nv-note">{{ nv.fiction_note | escape }}</p>{% endif -%}
   </div>
+  {%- endif %}
+  {%- comment -%} 歷史背景與延伸閱讀（山海有痕起）：novels.yml 的 history.intro／history.refs；只列公開參考資料 {%- endcomment -%}
+  {%- if nv.history %}
+  <details class="reading-details nv-history">
+    <summary>歷史背景與延伸閱讀</summary>
+    {%- if nv.history.intro %}<p>{{ nv.history.intro | escape }}</p>{% endif %}
+    {%- if nv.history.refs %}<ul>{% for r in nv.history.refs %}<li><a href="{{ r.url }}" target="_blank" rel="noopener">{{ r.title | escape }}</a></li>{% endfor %}</ul>{% endif %}
+  </details>
   {%- endif %}
   {%- if nv.sample %}
   <figure class="nv-sample"><blockquote>{{ nv.sample | newline_to_br }}</blockquote>{% if nv.sample_from %}<figcaption>{{ nv.sample_from }}</figcaption>{% endif %}</figure>
@@ -113,13 +130,17 @@
     {%- endfor -%}
   </div>
   {%- endif %}
-  {%- for cid in leads -%}{%- assign c = site.data.characters[cid] -%}
-  <div class="role" data-char="{{ cid }}" style="--c:{{ c.color }}">
+  {%- assign role_ids = leads | concat: sups -%}
+  {%- for cid in role_ids -%}{%- assign c = site.data.characters[cid] -%}
+  {%- if c.support and sups.first == cid %}<h3 class="role-sub">配角</h3>{% endif %}
+  <div class="role{% if c.support %} role-sup{% endif %}" data-char="{{ cid }}" style="--c:{{ c.color }}">
     <div class="role-head">
-      <span class="avatar" style="--c:{{ c.color }}">{% if c.avatar %}<img src="{{ '/assets/avatars/' | append: c.avatar | relative_url }}?v={{ site.time | date: '%s' }}" alt="">{% else %}{{ c.glyph }}{% endif %}</span>
+      {%- capture av -%}<span class="avatar" style="--c:{{ c.color }}">{% if c.avatar %}<img src="{{ '/assets/avatars/' | append: c.avatar | relative_url }}?v={{ site.time | date: '%s' }}" alt="">{% else %}{{ c.glyph }}{% endif %}</span>{%- endcapture -%}
+      {%- if c.story %}<button type="button" class="sv-open sv-av" data-sv="{{ c.story | relative_url }}|{{ c.name | escape }}的角色限動" aria-label="看{{ c.name }}的角色限動"><span class="sv-ring">{{ av }}</span></button>{% else %}{{ av }}{% endif %}
       <span class="role-t"><b>{{ c.name }}</b><small>@{{ c.handle }}</small></span>
     </div>
     <p class="role-bio">{{ c.bio }}</p>
+    {%- if c.says %}<p class="role-says">「{{ c.says | escape }}」</p>{% endif %}
     {%- if c.eras %}
     <div class="role-more">
       <h3>那些年的{{ c.name }}</h3>
@@ -139,6 +160,10 @@
 <button type="button" class="more-btn" hidden>載入更多</button>
 <p class="empty" hidden>這裡還沒有貼文。</p>
 <script>window.NOVEL = {{ id | jsonify }};</script>
+{%- if has_story %}
+<div class="sv" hidden role="dialog" aria-modal="true" aria-label="限動"><div class="sv-bars"></div><img class="sv-img" alt=""><button type="button" class="sv-x" aria-label="關閉">×</button><button type="button" class="sv-prev" aria-label="上一張"></button><button type="button" class="sv-next" aria-label="下一張"></button></div>
+<script src="{{ '/assets/story.js' | relative_url }}?v={{ site.time | date: '%s' }}" defer></script>
+{%- endif %}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -151,7 +176,7 @@
   "description": {{ nv.intro | default: nv.seo_desc | jsonify }},
   "temporalCoverage": {{ nv.era | split: "・" | first | replace: "–", "/" | jsonify }},
   "contentLocation": { "@type": "Place", "name": {{ nv.era | split: "・" | last | jsonify }} },
-  "character": [{% for cid in leads %}{% unless forloop.first %},{% endunless %}{ "@type": "Person", "name": {{ site.data.characters[cid].name | jsonify }} }{% endfor %}],
+  "character": [{% assign ld_ids = leads | concat: sups %}{% for cid in ld_ids %}{% unless forloop.first %},{% endunless %}{ "@type": "Person", "name": {{ site.data.characters[cid].name | jsonify }} }{% endfor %}],
   "publisher": { "@type": "Organization", "name": {{ site.title | jsonify }} }
 }
 </script>

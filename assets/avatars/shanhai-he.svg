@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<!-- 禾：綁起的黑髮、笑容爽朗，嶺族石器製作者 -->
+<rect width="64" height="64" fill="#ece2d1"/>
+<path d="M45 22 C54 22 56 32 52 40 C50 34 48 30 45 29 Z" fill="#17130f"/>
+<rect x="27.5" y="44" width="9" height="8" fill="#c08c63"/><path d="M4 64 C6 53 17 50 32 50 C47 50 58 53 60 64 Z" fill="#d7a57b"/><path d="M9 64 C11 56 18 52 25 51 L44 60 L41 64 Z" fill="#6a5644"/><path d="M25 51 L44 60" stroke="#bfae95" stroke-width="2.4" stroke-dasharray="2.5 1.6" fill="none"/><path d="M44 52 C50 53 56 56 58 64 L52 64 C50 59 47 56 44 55 Z" fill="#6a5644" opacity=".85"/>
+<ellipse cx="32" cy="25" rx="15.6" ry="13" fill="#17130f"/>
+<path d="M17.5 32 C17.5 41 24.5 47 32 47 C39.5 47 46.5 41 46.5 32 C46.5 26 39.5 22 32 22 C24.5 22 17.5 26 17.5 32 Z" fill="#d7a57b"/>
+<path d="M17 32 C16 18 24 12 32 12 C41 12 48 18 47 31 C44 24 39 20 32 20 C26 20 21 23 17 32 Z" fill="#17130f"/><path d="M30 13 C27 17 25 21 24 24" stroke="#3a3029" stroke-width=".8" fill="none"/>
+<path d="M22.6 30 Q25.5 28.6 28.5 29.6" stroke="#3a2c24" stroke-width="1.1" fill="none" stroke-linecap="round"/><path d="M35.5 29.6 Q38.5 28.6 41.4 30" stroke="#3a2c24" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+<path d="M23 34.5 Q25.5 32.1 28 34.5" stroke="#2a211c" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M36 34.5 Q38.5 32.1 41 34.5" stroke="#2a211c" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+<path d="M28.5 41.0 Q32 44.1 35.5 41.0" stroke="#8a4b3c" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+<ellipse cx="22" cy="38.5" rx="2.6" ry="1.4" fill="#d27d64" opacity=".35"/><ellipse cx="42" cy="38.5" rx="2.6" ry="1.4" fill="#d27d64" opacity=".35"/>
+</svg>

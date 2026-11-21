@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<!-- 泉：短髮、圓臉、笑容燦爛，潮族孩童 -->
+<rect width="64" height="64" fill="#f1e6d4"/>
+<path d="M14 34 C13 19 22 13 32 13 C42 13 51 19 50 34 L49 44 L15 44 Z" fill="#17130f"/>
+<rect x="27.5" y="44" width="9" height="8" fill="#c08c63"/><path d="M4 64 C6 53 17 50 32 50 C47 50 58 53 60 64 Z" fill="#d7a57b"/><path d="M9 64 C11 56 18 52 25 51 L44 60 L41 64 Z" fill="#7a5e47"/><path d="M25 51 L44 60" stroke="#d1bc9f" stroke-width="2.4" stroke-dasharray="2.5 1.6" fill="none"/>
+<ellipse cx="32" cy="25" rx="15.6" ry="13" fill="#17130f"/>
+<path d="M17 32 C17 41 24 47 32 47 C40 47 47 41 47 32 C47 28 40 24 32 24 C24 24 17 28 17 32 Z" fill="#d7a57b"/>
+<path d="M17 34 C16 21 24 15 32 15 C41 15 48 21 47 34 L44 28 L41 31 L38 26 L34 30 L31 25 L27 29 L24 26 L20 31 Z" fill="#17130f"/>
+<path d="M22.6 31.5 Q25.5 30.1 28.5 31.1" stroke="#3a2c24" stroke-width="1.1" fill="none" stroke-linecap="round"/><path d="M35.5 31.1 Q38.5 30.1 41.4 31.5" stroke="#3a2c24" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+<ellipse cx="25.5" cy="36" rx="2.2" ry="2.4000000000000004" fill="#2a211c"/><circle cx="24.9" cy="35.4" r=".55" fill="#fff"/><ellipse cx="38.5" cy="36" rx="2.2" ry="2.4000000000000004" fill="#2a211c"/><circle cx="37.9" cy="35.4" r=".55" fill="#fff"/>
+<path d="M28.5 41.7 Q32 46.1 35.5 41.7 Z" fill="#7a3a30"/>
+<ellipse cx="22" cy="38.5" rx="2.6" ry="1.4" fill="#d27d64" opacity=".35"/><ellipse cx="42" cy="38.5" rx="2.6" ry="1.4" fill="#d27d64" opacity=".35"/>
+</svg>
