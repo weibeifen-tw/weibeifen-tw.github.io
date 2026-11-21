@@ -1,0 +1,54 @@
+name: 發布章節
+
+# 2026-11-22 小說發布制度：只有站長授權的章節可以公開。
+#   - 立即發布：站長在 Actions →「發布章節」→ Run workflow，輸入章節代號（例如 hongdian11,exam40）
+#   - 指定時間：章節保留 published: false，並寫 release_at: 2026-12-01T20:00:00+08:00（只能依站長指定的時間寫）；
+#     本工作流程每小時檢查一次，時間到才發布。沒有 release_at 的未發布章節永遠不會自動公開。
+#   - 發布＝拿掉 published: false、加進 .github/release/authorized.txt；正文、日期、順序都不改。
+#   - 推上 main 後，「部署網站」會在本工作流程完成後部署（含驗證）。
+
+on:
+  workflow_dispatch:
+    inputs:
+      chapters:
+        description: "要立即發布的章節代號（逗號分隔，例如 hongdian11,exam40）"
+        required: true
+  schedule:
+    - cron: "7 * * * *"   # 每小時檢查站長指定的 release_at（沒有指定就什麼都不做）
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-chapters
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: 改為公開
+        id: rel
+        env:
+          CHAPTERS: ${{ github.event.inputs.chapters }}
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            ruby .github/scripts/release_chapters.rb --now "$CHAPTERS"
+          else
+            ruby .github/scripts/release_chapters.rb --due
+          fi
+      - name: 發布前驗證
+        if: steps.rel.outputs.released != ''
+        run: ruby .github/scripts/validate_release.rb .
+      - name: 推上去
+        if: steps.rel.outputs.released != ''
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add -A _posts .github/release/authorized.txt
+          git commit -m "發布章節：${{ steps.rel.outputs.released }}"
+          git pull --rebase
+          git push

@@ -9,7 +9,7 @@ on:
   push:
     branches: [main]
   workflow_run:
-    workflows: ["排程發章"]
+    workflows: ["排程發章", "發布章節"]
     types: [completed]
   workflow_dispatch:
 permissions:
@@ -21,7 +21,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   build:
-    # workflow_run：只在「排程發章」成功時部署
+    # workflow_run：只在「排程發章」「發布章節」成功時部署
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
@@ -30,8 +30,11 @@ jobs:
       - run: ruby .github/scripts/validate_literature.rb .
       - run: ruby .github/scripts/validate_research.rb .
       - run: ruby .github/scripts/verify_approvals.rb . --strict
+      - run: ruby .github/scripts/validate_release.rb .
       - uses: actions/jekyll-build-pages@v1
         with: { source: ./, destination: ./_site }
+      - name: 建置輸出檢查：已授權章節都在、未授權章節沒有出現
+        run: ruby .github/scripts/validate_release.rb . --site _site
       - uses: actions/upload-pages-artifact@v3
   deploy:
     needs: build
