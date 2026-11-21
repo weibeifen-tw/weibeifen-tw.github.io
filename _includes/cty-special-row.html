@@ -1,0 +1,22 @@
+{%- comment -%}
+  臺灣故事頁的特殊分類列（2026-11-22）：史前與古地理（最上方）、地點未定（最下方）。
+  用法：{% include cty-special-row.html g=site.data.counties.prehistoric %}
+  外觀與縣市列完全相同（左圖示、中名稱、右數量＋箭頭）；圖示來自 assets/taiwan/special.svg 的 #s-<key>。
+  novels 是 [{id, era, area}]；沒有作品時沿用縣市的空分類樣式（.none、尚無故事、不可展開）。
+{%- endcomment -%}
+{%- assign g = include.g -%}
+{%- assign n = g.novels.size | default: 0 -%}
+{%- assign sp = '/assets/taiwan/special.svg' | relative_url -%}
+<li class="cty-row cty-sp{% if n == 0 %} none{% endif %}" id="cty-{{ g.key }}" data-k="{{ g.key }}">
+      <button type="button" class="cty-btn" aria-expanded="false"{% if n > 0 %} aria-controls="cty-n-{{ g.key }}"{% else %} aria-disabled="true"{% endif %}>
+        <svg class="cty-ico {{ g.key }}" viewBox="0 0 100 100" aria-hidden="true"><use href="{{ sp }}#s-{{ g.key }}"/></svg>
+        <b class="cty-t">{{ g.name }}</b><small class="cty-n">{% if n > 0 %}{{ n }} 部故事{% else %}尚無故事{% endif %}</small>
+      </button>
+      {%- if n > 0 %}
+      <ul class="cty-novels" id="cty-n-{{ g.key }}" hidden>
+        {%- for u in g.novels -%}{%- assign nv = site.data.novels[u.id] -%}
+        <li><a href="{{ '/novel/' | append: u.id | append: '/' | relative_url }}"><b>《{{ nv.title }}》</b><small>{% if u.era %}{{ u.era }}・{% endif %}{{ u.area }}</small></a></li>
+        {%- endfor -%}
+      </ul>
+      {%- endif %}
+    </li>
