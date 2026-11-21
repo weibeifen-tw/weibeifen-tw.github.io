@@ -10,6 +10,11 @@ permalink: /t/:title/
 exclude:
   - README.md
   - supabase
+  # V1.0 S01／S03：開發文件不進網站
+  - PROGRESS.md
+  - CLAUDE.md
+  - AGENTS.md
+  - docs
 plugins:
   - jekyll-seo-tag
   - jekyll-sitemap
