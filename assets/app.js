@@ -355,6 +355,12 @@ window.WBRenderShelf();
 (function () {
   document.querySelectorAll('.intro-post, .nv-gallery').forEach(function (p) {
     var sl = p.querySelector('.ip-slides'), dots = p.querySelectorAll('.ip-dots i'); if (!sl) return;
+    // V1.0 S12：延後下載的第 2、3 張（data-src）——讀者一碰輪播、或整頁載完後空檔，才開始載
+    var rest = function () { sl.querySelectorAll('img[data-src]').forEach(function (im) { im.src = im.dataset.src; im.removeAttribute('data-src'); }); rest = function () {}; };
+    ['pointerdown', 'touchstart', 'scroll', 'focusin'].forEach(function (ev) { sl.addEventListener(ev, function () { rest(); }, { once: true, passive: true }); });
+    dots.forEach(function (d) { d.addEventListener('click', function () { rest(); }); });
+    var later = function () { (window.requestIdleCallback || setTimeout)(function () { rest(); }, { timeout: 2500 }); };
+    if (document.readyState === 'complete') later(); else addEventListener('load', later);
     function go(k) { sl.scrollTo({ left: k * sl.clientWidth, behavior: 'smooth' }); }
     dots.forEach(function (d, i) { d.onclick = function () { go(i); }; });
     sl.onclick = function (e) { var r = sl.getBoundingClientRect(), k = Math.round(sl.scrollLeft / sl.clientWidth); go(e.clientX - r.left > r.width / 2 ? Math.min(k + 1, dots.length - 1) : Math.max(k - 1, 0)); };

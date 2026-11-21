@@ -81,7 +81,7 @@ counties:
   - key: chiayi-city
     name: 嘉義市
     bbox: [222.5, 456.7, 28.3, 20.2]
-    novels: []
+    novels: [yincang, xiwei]
   - key: chiayi-county
     name: 嘉義縣
     bbox: [158.6, 426.6, 197.5, 108]
@@ -90,7 +90,7 @@ counties:
     name: 澎湖
     bbox: [0, 651.3, 90.3, 150.9]
     novels: []
-pending:  # 待站長確認縣市
-  yincang: 雲嘉（已放雲林；嘉義市或嘉義縣待確認）
-  xiwei: 嘉義（嘉義市或嘉義縣待確認）
-  shanhai: 臺灣東部概略區域（非單一縣市）
+# 站長 2026-11-22 確認：xiwei＝嘉義市；yincang＝嘉義市（主要，霜為嘉義市人）＋雲林（堤為北港人），依《隱藏》設定集核對
+unassigned:  # 不歸入單一縣市，保留區域資訊（顯示在縣市列表下方）
+  - id: shanhai
+    area: 臺灣東部史前山地與海岸（現代縣市未指定）

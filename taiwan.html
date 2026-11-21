@@ -39,6 +39,12 @@ body_class: wide
     </li>
     {%- endfor %}
   </ol>
+{%- if site.data.counties.unassigned.size > 0 %}
+<section class="cty-un" aria-labelledby="cty-un-h">
+  <h2 id="cty-un-h">未指定縣市</h2>
+  <ul>{%- for u in site.data.counties.unassigned -%}{%- assign nv = site.data.novels[u.id] -%}<li><a href="{{ '/novel/' | append: u.id | append: '/' | relative_url }}"><b>《{{ nv.title }}》</b><small>{{ u.area }}</small></a></li>{%- endfor -%}</ul>
+</section>
+{%- endif %}
 </div>
 <p class="cty-src">縣市界：內政部國土測繪中心「村里界圖」（政府資料開放授權條款第 1 版），經 taiwan-atlas 整理；離島為插入框，位置不代表實際距離。</p>
 <nav class="sr-only" aria-label="所有小說">{% for n in site.data.novels %}<a href="{{ '/novel/' | append: n[0] | append: '/' | relative_url }}">{{ n[1].title }}</a>{% endfor %}</nav>
