@@ -114,7 +114,8 @@
 - 設計：docs/research/indigenous-design.md；功能：專書首頁 /literature/indigenous/（七卷、只列 repo 內已核准文章）、證據卡（手機底部／電腦側邊面板＋文末清單）、歷史版本 /literature/<檔名>/<版本>/＋瀏覽器差異比較、舊版引用 claim_hash 對應、撤回 L1–L3＋/withdrawn.json（SW 清離線副本）、可收合目錄、註腳標示
 - 驗證：validate_research.rb（證據卡／版本／撤回）、verify_approvals.rb（站長 SSH 簽章 tag；main 與 PR strict）；build-check 加跑 main／PR
 - 測試（假資料在 /tmp，未提交）：14 項變造測試全部被擋；簽章基準可擋「改正文＋重算指紋」；離線快取撤回實測通過；非研究頁輸出與 main 完全相同；12 寬度無溢出
-- 上線前需站長：放公鑰、設定分支保護／Pages 改 Actions／環境核准人、決定排程發章處理、填已核准的卷名與介紹
+- 上線前補驗（同日）：已合併最新 main（a0394e8）無衝突；GitHub「研究所自我測試」以官方 Jekyll 建置假資料，網站地圖、kramdown 註腳、證據卡、版本、撤回、搜尋 19 項全過；SSH 簽章 8 情境（無公鑰、未核准、無效簽章、無簽章、改舊版重算指紋）全部擋下；revert 演練通過；非研究頁輸出與 main 相同
+- 上線計畫：docs/research/release-plan.md（排程發章不改，部署用 workflow_run）
 
 ## 待蔡決定／待補證（S11 彙整）
 - 《雙雙》等首圖較大的作品頁 LCP 仍約 2.9 s
