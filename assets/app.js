@@ -133,7 +133,19 @@ window.WBAvatar = (function () {
 (function () {
   var btn = document.querySelector('.menu-btn'), d = document.querySelector('.drawer'), sc = document.querySelector('.scrim');
   if (!btn) return;
+  // V1.0 S06：≥768px 且不是閱讀頁 → 選單固定在左側（不是彈出層，不需要 inert／scrim）
+  var mq = window.matchMedia ? matchMedia('(min-width:768px)') : null, reading = document.body.classList.contains('reading');
+  function docked() { return document.body.classList.contains('docked'); }
+  function dock() {
+    var on = !!(mq && mq.matches && !reading);
+    document.body.classList.toggle('docked', on);
+    if (on) { d.classList.remove('open'); sc.hidden = true; document.body.classList.remove('lock'); btn.setAttribute('aria-expanded', 'false'); d.removeAttribute('aria-hidden'); d.inert = false; }
+    else if (!d.classList.contains('open')) { d.setAttribute('aria-hidden', 'true'); d.inert = true; }
+  }
+  if (mq) { if (mq.addEventListener) mq.addEventListener('change', dock); else if (mq.addListener) mq.addListener(dock); }
+  dock();
   function toggle(open) {
+    if (docked()) return;
     d.classList.toggle('open', open); sc.hidden = !open; document.body.classList.toggle('lock', open);
     btn.setAttribute('aria-expanded', open); d.setAttribute('aria-hidden', !open); d.inert = !open; if (open) { var f = d.querySelector('a,button'); if (f) f.focus(); } else if (document.activeElement && d.contains(document.activeElement)) btn.focus();
   }
@@ -143,6 +155,16 @@ window.WBAvatar = (function () {
   if (ds) ds.onclick = function () { toggle(false); var sb = document.querySelector('.search-btn'); if (sb) { var bx = document.querySelector('.sbox'); if (!bx || bx.hidden) sb.click(); } };
   sc.onclick = function () { toggle(false); };
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') toggle(false); });
+})();
+
+// V1.0 S06（Q26）：手機底部導覽「探索」＝臺灣故事、互動年代、未備份研究所
+(function () {
+  var b = document.querySelector('.bnav-ex-btn'), m = document.getElementById('bnav-ex');
+  if (!b || !m) return;
+  function set(open) { m.hidden = !open; b.setAttribute('aria-expanded', open); if (open) { var f = m.querySelector('a'); if (f) f.focus(); } }
+  b.onclick = function (e) { e.stopPropagation(); set(m.hidden); };
+  document.addEventListener('click', function (e) { if (!m.hidden && !m.contains(e.target)) set(false); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !m.hidden) { set(false); b.focus(); } });
 })();
 
 // 章節頁：正文裡第一次出現的同一本小說的其他角色，變成可以點的名字
@@ -290,50 +312,7 @@ window.WBRenderShelf = function () {
 };
 window.WBRenderShelf();
 
-// 小說總覽的台灣地圖：滑到（手機點）一個地形區，旁邊列出那區的小說
-(function () {
-  var wrap = document.querySelector('.tw-wrap'); if (!wrap) return;
-  var panel = wrap.querySelector('.tw-panel'), hint = panel.innerHTML;
-  var novels = JSON.parse(document.getElementById('novels').textContent || '{}');
-  var chars = JSON.parse(document.getElementById('chars').textContent || '{}');
-  var regions = JSON.parse(document.getElementById('regions').textContent || '[]'), names = {};
-  var notes = {}, places = JSON.parse((document.getElementById('places') || {}).textContent || '{}');
-  regions.forEach(function (s) { (s.areas || []).forEach(function (a) { names[a.key] = a.name; notes[a.key] = a.note || ''; }); });
-  function color(id) { for (var k in chars) if (chars[k].novel === id) return chars[k].color; return '#6b665c'; }
-  function list(key) { return Object.keys(novels).filter(function (id) { return novels[id].region === key; }); }
-  var cur = null, pinned = null;
-  function show(key) {
-    if (key === cur) return; cur = key;
-    wrap.querySelectorAll('.tw-rg').forEach(function (r) { r.classList.toggle('on', r.dataset.rg === key); });
-    panel.innerHTML = '';
-    // 手機版：小說列表從底部滑出，右上角可以收起來
-    var x = document.createElement('button'); x.type = 'button'; x.className = 'tw-close'; x.setAttribute('aria-label', '收起'); x.textContent = '✕';
-    x.onclick = function (e) { e.stopPropagation(); wrap.classList.remove('open'); pinned = null; cur = null; wrap.querySelectorAll('.tw-rg').forEach(function (r) { r.classList.remove('on', 'pin'); }); };
-    panel.appendChild(x); wrap.classList.add('open');
-    var h = document.createElement('h3'); h.textContent = names[key] || ''; panel.appendChild(h);
-    if (notes[key]) { var nt = document.createElement('p'); nt.className = 'tw-note'; nt.textContent = notes[key]; panel.appendChild(nt); }
-    var ids = list(key);
-    if (!ids.length) { var p = document.createElement('p'); p.className = 'tw-empty'; p.textContent = '這裡還沒有小說。'; panel.appendChild(p); return; }
-    ids.forEach(function (id) {
-      var a = document.createElement('a'); a.className = 'tw-item'; a.href = BASE + '/novel/' + id + '/'; a.style.color = color(id);
-      var row = document.createElement('span'); row.className = 'tw-row';
-      var b = document.createElement('b'); b.textContent = novels[id].title; row.appendChild(b);
-      a.appendChild(row);
-      if (novels[id].era) { var s = document.createElement('small'); s.textContent = novels[id].era; a.appendChild(s); }
-      if (places[id]) { var pl = document.createElement('span'); pl.className = 'tw-place'; pl.textContent = places[id]; a.appendChild(pl); }
-      panel.appendChild(a);
-    });
-  }
-  wrap.querySelectorAll('.tw-rg').forEach(function (r) {
-    if (list(r.dataset.rg).length) r.classList.add('has');
-    // 還沒點選時，滑過去先預覽；點了就固定，滑到別區也不會換
-    r.addEventListener('mouseenter', function () { if (!pinned) show(r.dataset.rg); });
-    r.addEventListener('click', function () {
-      pinned = r.dataset.rg; cur = null; show(pinned);
-      wrap.querySelectorAll('.tw-rg').forEach(function (x) { x.classList.toggle('pin', x.dataset.rg === pinned); });
-    });
-  });
-})();
+// （臺灣故事地圖已拆到 assets/js/taiwan.js）
 
 // 私訊：讀者跟角色的對話
 //   登入會員：訊息存在雲端（cloud.js 的 window.WBDM），蔡在管理後台用角色身分回覆，回覆出現在左邊。
@@ -545,35 +524,4 @@ document.querySelectorAll('.ip-tagbtn').forEach(function (b) {
   b.onclick = function (e) { e.stopPropagation(); t.hidden = !t.hidden; b.setAttribute('aria-expanded', !t.hidden); };
 });
 
-// V1.0 R04：首頁探索故事——全部作品（每次隨機）／熱門作品（暫依最新上架）＋書架拖曳、鍵盤
-(function () {
-  var shelf = document.querySelector('.shelf'); if (!shelf) return;
-  var tabs = Array.prototype.slice.call(document.querySelectorAll('.ex-tabs [data-sort]')), note = document.querySelector('.ex-note');
-  var books = Array.prototype.slice.call(shelf.querySelectorAll('.bk'));
-  var rand = books.slice();
-  for (var i = rand.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = rand[i]; rand[i] = rand[j]; rand[j] = t; }
-  var hot = books.slice().sort(function (a, b) { return (+b.dataset.ord) - (+a.dataset.ord); });
-  function show(k) {
-    tabs.forEach(function (b) { var on = b.dataset.sort === k; b.setAttribute('aria-selected', on); b.tabIndex = on ? 0 : -1; if (on) shelf.setAttribute('aria-labelledby', b.id); });
-    note.hidden = k !== 'hot';
-    (k === 'hot' ? hot : rand).forEach(function (b) { shelf.appendChild(b); });
-    shelf.scrollLeft = 0;
-    // 排序後前 6 本先載入，其餘滑到才載入
-    Array.prototype.forEach.call(shelf.querySelectorAll('.bk img'), function (im, i) { im.loading = i < 6 ? 'eager' : 'lazy'; });
-  }
-  tabs.forEach(function (b, i) {
-    b.onclick = function () { show(b.dataset.sort); };
-    b.onkeydown = function (e) { if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { var n = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length]; n.focus(); show(n.dataset.sort); e.preventDefault(); } };
-  });
-  show('all');
-  // 電腦：拖曳左右滑（不攔滾輪，頁面照常往下捲）；鍵盤：書架有焦點時左右鍵捲動
-  var down = false, x0 = 0, l0 = 0, moved = false;
-  shelf.addEventListener('mousedown', function (e) { down = true; moved = false; x0 = e.pageX; l0 = shelf.scrollLeft; e.preventDefault(); });
-  addEventListener('mousemove', function (e) { if (!down) return; var d = e.pageX - x0; if (Math.abs(d) > 4) moved = true; shelf.scrollLeft = l0 - d; });
-  addEventListener('mouseup', function () { down = false; });
-  shelf.addEventListener('click', function (e) { if (moved) { e.stopPropagation(); e.preventDefault(); moved = false; } }, true);
-  shelf.addEventListener('keydown', function (e) {
-    if (e.target !== shelf) return;
-    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { shelf.scrollBy({ left: (e.key === 'ArrowRight' ? 1 : -1) * shelf.clientWidth * 0.8, behavior: 'smooth' }); e.preventDefault(); }
-  });
-})();
+// （首頁探索故事書架已拆到 assets/js/home.js）

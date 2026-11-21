@@ -24,7 +24,7 @@ const srv = http.createServer((q, r) => {
       await pg.goto(`http://127.0.0.1:${port}${p}`, { waitUntil: 'load', timeout: 20000 }); await pg.waitForTimeout(400);
       const m = await pg.evaluate(() => ({ sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth }));
       const name = p.replace(/[\/?=&]+/g, '_').replace(/^_|_$/g, '') || 'home';
-      await pg.screenshot({ path: `${OUT}/${name}_${w}.png`, fullPage: false });
+      await pg.screenshot({ path: `${OUT}/${name}_${w}.png`, fullPage: !!process.env.FULL });
       report.push({ p, w, overflow: m.sw > m.cw ? m.sw - m.cw : 0, errs });
     } catch (e) { report.push({ p, w, fail: e.message.slice(0, 100) }); }
     await ctx.close();
