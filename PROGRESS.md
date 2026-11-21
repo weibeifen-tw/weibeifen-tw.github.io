@@ -75,7 +75,13 @@
   - 互動年代（D05）：頁面標題改名，網址 /era/ 不變
   - 臺字：網站自己寫的標題、說明、年份・地點、地圖註記改「臺」；小說簡介、角色介紹、作品頁 SEO 標題等作者文案未改（待蔡決定）；台中高工、台地不改
   - 搜尋：臺／台互通；分類名「研究文章」
-- [ ] S09 會員／私訊前端退役
+- [x] S09 會員／私訊前端退役（feat/site-v1-s09）
+  - 前端：app.js 收件匣只剩「留言新回應」通知；cloud.js 不再讀寫 dm_messages、不呼叫 dm_mark_seen／dm_delete_thread；後台私訊分頁移除（admin_dm_threads 不再呼叫）；💬 按鈕原本就全站 notalk，標籤改「留言」、點了前往公開留言
+  - 本機瀏覽器測試：私訊相關請求 0、後台無私訊分頁、無 JS 錯誤
+  - 後端：supabase/drafts/022_dm_retire_DRAFT.sql（撤銷權限、拿掉政策、停用 RPC、保留歷史）**未執行** → 私訊「後端」尚未安全退役
+  - FIX-01／FIX-06：supabase/drafts/023_admin_whitelist_session_DRAFT.sql（白名單表＋aal2＋8 小時＋閒置 30 分，is_admin 簽章不變）**未執行**
+  - FIX-02～10、T01–T15、DM-T 狀態：supabase/drafts/README.md（全部未驗證）
+  - 會員、書櫃、後台版面：12 寬度無溢出；管理後台手機實機操作待人工測試
 - [ ] S10 PWA
 - [ ] S11 總測試與部署
 

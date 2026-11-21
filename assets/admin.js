@@ -227,6 +227,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var badge = tabs.querySelector('[data-tab="dm"] .ad-badge');
   function setBadge(n) { if (!badge) return; badge.hidden = !n; badge.textContent = n ? String(n) : ''; }
   async function refreshBadge() {
+    if (!badge) return; // V1.0 S09：私訊分頁已移除，不再呼叫 admin_dm_threads
     var res = await c().rpc('admin_dm_threads');
     if (!res.error) setBadge((res.data || []).reduce(function (s, r) { return s + (+r.unseen || 0); }, 0));
     if (window.WBDM && window.WBDM.refresh) window.WBDM.refresh();  // 右下角紅點跟著更新
@@ -508,7 +509,7 @@ document.addEventListener('DOMContentLoaded', function () {
     p.appendChild(tb);
   }
 
-  var LOADERS = { stats: loadStats, comments: loadComments, dm: loadDM, members: loadMembers, roles: loadRoles };
+  var LOADERS = { stats: loadStats, comments: loadComments, members: loadMembers, roles: loadRoles }; // V1.0 S09：私訊分頁退役（DM-A）
 
   /* ---------- 啟動：確認權限 ---------- */
   async function init() {
@@ -529,7 +530,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     say('已通過兩步驟驗證。');
     tabs.hidden = false;
-    show(location.hash === '#dm' ? 'dm' : 'stats');
+    show('stats');
     refreshBadge().catch(function () {});
   }
   init();
