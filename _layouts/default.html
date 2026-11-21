@@ -59,6 +59,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{{ '/assets/style.css' | relative_url }}?v={{ site.time | date: '%s' }}">
+{%- comment -%} V1.0 S04（Q11、Q15）：頁面專用樣式只在該頁載入 {%- endcomment -%}
+{%- assign pcss = page.page_css -%}{%- if page.collection == 'literature' -%}{%- assign pcss = 'literature' -%}{%- endif -%}
+{%- if pcss %}
+<link rel="stylesheet" href="{{ '/assets/css/' | append: pcss | append: '.css' | relative_url }}?v={{ site.time | date: '%s' }}">
+{%- endif %}
 <script>try{var d=document.documentElement;d.dataset.fs=localStorage.getItem('wb:fs')||'m';d.dataset.theme=localStorage.getItem('wb:theme')||'day';}catch(e){}</script>
 {%- if page.collection == 'literature' %}<script>try{document.documentElement.dataset.lfs=localStorage.getItem('wb:lfs')||'m';}catch(e){}</script>{% endif %}
   <script data-goatcounter="https://sierra2121.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -126,6 +131,9 @@
 <script>window.SPLIT = "{{ split }}".split(",");</script>
 <script>window.BASE = "{{ site.baseurl }}"; window.VER = "{{ site.time | date: '%s' }}";</script>
 <script src="{{ '/assets/app.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>
+{%- if page.page_js %}
+<script src="{{ '/assets/js/' | append: page.page_js | append: '.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>
+{%- endif %}
 {% include member-avatar.html %}
 <script src="{{ '/assets/member.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>
 {% include auth-config.html lazy=true %}

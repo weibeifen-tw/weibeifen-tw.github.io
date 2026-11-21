@@ -34,7 +34,11 @@
   - 回歸：441 頁渲染輸出與基準相同（.dev/regress.sh）
   - 待蔡：Threads 憑證（GitHub Secrets／Meta 後台）自行撤銷；「新章節上架」技能的「排脆」步驟改手動
 - [x] S03 AI 開發索引（CLAUDE.md、AGENTS.md、docs/ai/ 六區；_config exclude）
-- [ ] S04 CSS／JS
+- [x] S04 CSS／JS（feat/site-v1-s04）
+  - style.css 70,188→55,442 bytes：依 class 前綴拆出 assets/css/admin、literature、era、taiwan.css（頁面 front matter `page_css:`；研究文章依 collection 自動載入）
+  - app.js 38,465→32,769：拆出 assets/js/taiwan.js、home.js（front matter `page_js:`）；搜尋索引原本就按需載入
+  - 回歸：像素比對 11 頁×390／1440 與基準相同（首頁、admin、member 的差異在基準自比也出現＝隨機排序與動態文字）；首頁熱門分頁、臺灣地圖點選互動正常、無 JS 錯誤
+  - 私訊區塊（app.js 338–477）留到 S09 前端退役時移除
 - [ ] S05 效能
 - [ ] S06 跨裝置導覽
 - [ ] S07 小說頁面
