@@ -791,19 +791,7 @@ button.d-item{width:100%;font:inherit;font-size:17px;font-weight:500;color:inher
 .sv-prev{left:0}.sv-next{right:0}
 @media (prefers-reduced-motion:reduce){.sv-bars i.on b{animation:none;width:100%}}
 
-/* ===== V1.0 S06 跨裝置導覽（Q22–Q26）：手機 ≤767 底部導覽；平板 768–1023 窄版圖示欄；電腦 ≥1024 固定左側；閱讀頁（body.reading）維持專注模式 ===== */
-.bnav,.bnav-ex{display:none}
-@media (max-width:767px){
-  .bnav{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:8;background:rgba(247,246,243,.96);backdrop-filter:blur(8px);border-top:1px solid var(--line);padding:2px 4px env(safe-area-inset-bottom)}
-  .bnav a,.bnav button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:56px;border:0;background:none;color:var(--sub);font:inherit;font-size:12px;line-height:1.2;letter-spacing:.06em;cursor:pointer;-webkit-tap-highlight-color:transparent}
-  .bnav [aria-current="page"],.bnav button[aria-expanded="true"]{color:var(--ink);font-weight:500}
-  .bnav a:focus-visible,.bnav button:focus-visible{outline:2px solid var(--accent);outline-offset:-4px;border-radius:12px}
-  .bnav-ex:not([hidden]){display:block;position:fixed;left:12px;right:12px;bottom:calc(66px + env(safe-area-inset-bottom));z-index:9;background:#fff;border:1px solid var(--line);border-radius:16px;padding:6px;box-shadow:0 8px 28px rgba(0,0,0,.14)}
-  .bnav-ex a{display:flex;align-items:center;gap:12px;padding:12px 12px;border-radius:10px;font-size:16px}
-  .bnav-ex a:hover,.bnav-ex a:focus-visible{background:var(--chip);outline:0}
-  body:has(.bnav){padding-bottom:calc(62px + env(safe-area-inset-bottom))}
-  body:has(.bnav) .chat-btn{bottom:calc(74px + env(safe-area-inset-bottom))}
-}
+/* ===== V1.0 S06 跨裝置導覽（Q22–Q25）：手機 ≤767 用左上角選單（底部導覽 2026-11-22 移除）；平板 768–1023 窄版圖示欄；電腦 ≥1024 固定左側；閱讀頁（body.reading）維持專注模式 ===== */
 @media (min-width:768px){
   body.docked .drawer{transform:none;transition:none;box-shadow:none;border-right:1px solid var(--line);z-index:4;background:var(--bg)}
   body.docked .menu-btn,body.docked .scrim{display:none}
@@ -874,4 +862,6 @@ button.d-item{width:100%;font:inherit;font-size:17px;font-weight:500;color:inher
 .sw-up button{font:inherit;font-size:13px;border:0;border-radius:999px;padding:6px 12px;cursor:pointer}
 .sw-go{background:#fff;color:var(--ink);font-weight:600}
 .sw-no{background:transparent;color:#cfcac2}
-@media (max-width:767px){body:has(.bnav) .sw-up{bottom:calc(74px + env(safe-area-inset-bottom))}}
+
+/* 2026-11-22 側邊選單：個人資料移到我的書櫃正上方，間距跟其他項目一樣（取消原本推到底部的 margin-top:auto） */
+.drawer .d-account{margin-top:0}

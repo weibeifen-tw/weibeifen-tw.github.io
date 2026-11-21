@@ -10,4 +10,4 @@
 | 研究所 | literature.html＋_literature/ | /literature/ |
 | 會員 | member.html、shelf.html、favorites.html、my-comments.html | /member/ 等 |
 | 管理 | admin.html＋assets/admin.js | /admin/ |
-- 樣式：`assets/style.css`（S04 起依功能拆分，見檔頭說明）。斷點：手機 ≤767、平板 768–1023、電腦 ≥1024。
+- 樣式：`assets/style.css`（S04 起依功能拆分，見檔頭說明）。斷點：手機 ≤767（左上角選單，無底部導覽）、平板 768–1023（窄欄）、電腦 ≥1024（左欄）。

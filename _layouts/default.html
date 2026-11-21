@@ -114,10 +114,10 @@
   <h2><a href="{{ '/' | relative_url }}">未備份</a></h2>
   {%- comment -%} V1.0 R05：分區（個人功能／探索），圖示加文字；「故事探索」兩項依蔡要求拿掉 {%- endcomment -%}
   <h3 class="d-sec">個人功能</h3>
+  <a class="d-item d-account" href="{{ '/member/' | relative_url }}" title="個人資料"><span class="d-icon line"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8.5" r="4"/><path d="M4.5 20.5c1-4 4-6 7.5-6s6.5 2 7.5 6"/></svg></span>個人資料</a>
   <a class="d-item d-mine" href="{{ '/shelf/' | relative_url }}" title="我的書櫃"><span class="d-icon line"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4v16H5zM10 4h4v16h-4z"/><path d="m15.5 5 3.6-1 2.4 15.4-3.6 1z"/></svg></span>我的書櫃</a>
   <a class="d-item" href="{{ '/favorites/' | relative_url }}" data-member-only hidden title="我的收藏"><span class="d-icon line"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.6 8.4 3.4 5 6.8 5c2 0 3.4 1.1 5.2 3 1.8-1.9 3.2-3 5.2-3 3.4 0 5.2 3.4 4.1 6.3-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg></span>我的收藏</a>
   <a class="d-item" href="{{ '/my-comments/' | relative_url }}" data-member-only hidden title="我的留言"><span class="d-icon line"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 11.5a8.5 8.5 0 0 1-12.6 7.4L3.5 20l1.2-4.1A8.5 8.5 0 1 1 20.5 11.5z"/><path d="M8 10h8M8 13.5h5"/></svg></span>我的留言</a>
-  <a class="d-item d-account" href="{{ '/member/' | relative_url }}" title="個人資料"><span class="d-icon line"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8.5" r="4"/><path d="M4.5 20.5c1-4 4-6 7.5-6s6.5 2 7.5 6"/></svg></span>個人資料</a>
   {%- comment -%} V1.0 S06（D02）：原「故事之外」區更名「探索」，固定臺灣故事、互動年代、未備份研究所；搜尋仍是頂端放大鏡 {%- endcomment %}
   <h3 class="d-sec">探索</h3>
   <a class="d-item" title="臺灣故事" href="{{ '/taiwan/' | relative_url }}"><span class="d-icon d-tai" aria-hidden="true">臺</span>臺灣故事</a>
@@ -126,22 +126,8 @@
   <a class="d-item d-about" title="關於畝" href="{{ '/about/' | relative_url }}"><span class="d-icon d-tai" aria-hidden="true">畝</span>關於畝</a>
   <a class="d-candy" href="{{ '/support/' | relative_url }}">🍬 請畝 MU 吃糖果</a>
 </nav>
-{%- comment -%} V1.0 S06（Q22–Q26）：≥768px 選單固定在左側（平板窄欄、電腦完整），閱讀頁維持專注模式；手機底部導覽 {%- endcomment %}
+{%- comment -%} V1.0 S06（Q22–Q25）：≥768px 選單固定在左側（平板窄欄、電腦完整），閱讀頁維持專注模式。手機底部導覽已於 2026-11-22 依站長決策移除（統一用左上角選單） {%- endcomment %}
 <script>(function(){try{var b=document.body,d=document.getElementById('drawer');if(matchMedia('(min-width:768px)').matches&&!b.classList.contains('reading')){b.classList.add('docked');d.inert=false;d.removeAttribute('aria-hidden');}}catch(e){}})();</script>
-{%- unless layout.body_class contains 'reading' or page.body_class contains 'reading' %}
-{%- assign u = page.url %}
-<nav class="bnav" aria-label="主要導覽">
-  <a href="{{ '/' | relative_url }}"{% if u == '/' %} aria-current="page"{% endif %}><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 10.5 12 4l8.5 6.5V20h-5.5v-6h-6v6H3.5z"/></svg>首頁</a>
-  <button type="button" class="bnav-ex-btn" aria-expanded="false" aria-controls="bnav-ex"{% if u contains '/taiwan/' or u contains '/era/' or u contains '/literature/' %} aria-current="page"{% endif %}><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></svg>探索</button>
-  <a href="{{ '/shelf/' | relative_url }}"{% if u == '/shelf/' %} aria-current="page"{% endif %}><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4v16H5zM10 4h4v16h-4z"/><path d="m15.5 5 3.6-1 2.4 15.4-3.6 1z"/></svg>書櫃</a>
-  <a href="{{ '/member/' | relative_url }}"{% if u == '/member/' or u == '/favorites/' or u == '/my-comments/' %} aria-current="page"{% endif %}><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8.5" r="4"/><path d="M4.5 20.5c1-4 4-6 7.5-6s6.5 2 7.5 6"/></svg>會員</a>
-</nav>
-<div class="bnav-ex" id="bnav-ex" role="menu" aria-label="探索" hidden>
-  <a role="menuitem" href="{{ '/taiwan/' | relative_url }}"><span class="d-icon d-tai" aria-hidden="true">臺</span>臺灣故事</a>
-  <a role="menuitem" href="{{ '/era/' | relative_url }}"><span class="d-icon line"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg></span>互動年代</a>
-  <a role="menuitem" href="{{ '/literature/' | relative_url }}"><span class="d-icon line"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19.5 15.5 9M15.5 9l3-3a2.1 2.1 0 0 0-3-3l-3 3M15.5 9l-3-3M12.5 6 6 12.5 5 19l6.5-1L18 11.5"/></svg></span>未備份研究所</a>
-</div>
-{%- endunless %}
 <main class="wrap">
 {{ content }}
 </main>
