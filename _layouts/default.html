@@ -159,6 +159,11 @@
 {% include auth-config.html lazy=true %}
 <script src="{{ '/assets/cloud.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>
 <script>(function(){var ok=function(e){if(document.documentElement.classList.contains('can-copy'))return true;var t=e.target;return t&&t.closest&&t.closest('input,textarea');};['contextmenu','selectstart','copy','cut','dragstart'].forEach(function(n){document.addEventListener(n,function(e){if(!ok(e))e.preventDefault();});});})();</script>
-<script>if('serviceWorker' in navigator){addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){});});}</script>
+{%- comment -%} V1.0 S10（Q46）：有新版本時由讀者按「更新」才換；換版前記住捲動位置，重新載入後回到原處 {%- endcomment %}
+<script>(function(){if(!('serviceWorker' in navigator))return;var want=false;var K='wb:swpos:'+location.pathname;try{var y=sessionStorage.getItem(K);if(y!==null){sessionStorage.removeItem(K);addEventListener('load',function(){setTimeout(function(){scrollTo(0,+y);},60);});}}catch(e){}
+function ask(w){if(document.querySelector('.sw-up'))return;var d=document.createElement('div');d.className='sw-up';d.setAttribute('role','status');d.innerHTML='<span>網站有新版本</span><button type="button" class="sw-go">更新</button><button type="button" class="sw-no" aria-label="稍後">稍後</button>';document.body.appendChild(d);
+d.querySelector('.sw-go').onclick=function(){want=true;try{sessionStorage.setItem(K,String(scrollY));}catch(e){}w.postMessage('SKIP_WAITING');};d.querySelector('.sw-no').onclick=function(){d.remove();};}
+var reloading=false;navigator.serviceWorker.addEventListener('controllerchange',function(){if(!want||reloading)return;reloading=true;location.reload();});
+addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').then(function(r){if(r.waiting&&navigator.serviceWorker.controller)ask(r.waiting);r.addEventListener('updatefound',function(){var n=r.installing;if(!n)return;n.addEventListener('statechange',function(){if(n.state==='installed'&&navigator.serviceWorker.controller)ask(n);});});}).catch(function(){});});})();</script>
 </body>
 </html>
