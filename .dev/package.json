@@ -1,0 +1,6 @@
+{
+  "name": "weibeifen-dev-tools",
+  "private": true,
+  "description": "本機測試工具（不進網站建置）：render.js 用 liquidjs 模擬 Jekyll；shot.js 多尺寸截圖與水平溢出檢查",
+  "dependencies": { "liquidjs": "^10", "js-yaml": "^4", "gray-matter": "^4", "marked": "^15", "playwright-core": "^1" }
+}
