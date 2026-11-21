@@ -59,3 +59,36 @@ body.lit-reading .lit-article{background:var(--card)}
 body.lit-reading .lit-body details.spoiler,body.lit-reading .lit-toc{border-color:var(--line)}
 @media (max-width:480px){.lit-reading .r-tools{gap:6px}}
 body.lit-reading .nv-tags li{color:var(--sub)}
+
+/* V1.0 S08 未備份研究所（Q59、Q62、Q63）：六大專區＝電腦三欄、平板兩欄、手機直向列表；未有公開文章顯示「籌備中」 */
+.rz-grid{list-style:none;margin:8px 0 22px;padding:0;display:grid;grid-template-columns:1fr;gap:0;border-top:1px solid var(--line)}
+.rz-in{display:grid;grid-template-columns:1fr auto;gap:2px 12px;align-items:baseline;padding:14px 4px;border-bottom:1px solid var(--line);color:inherit;text-decoration:none}
+.rz-t{font-family:"Noto Serif TC",serif;font-size:18px;font-weight:600;letter-spacing:.06em}
+.rz-s{grid-column:1 / -1;grid-row:2;font-size:13px;line-height:1.6;color:var(--sub)}
+.rz-n{grid-column:2;grid-row:1;font-size:12px;color:var(--sub);white-space:nowrap}
+.rz-wait .rz-n{padding:1px 8px;border:1px solid var(--line);border-radius:999px}
+a.rz-in:hover .rz-t{text-decoration:underline}
+.rz-h{margin:6px 0 10px;font-family:"Noto Serif TC",serif;font-size:19px;font-weight:600;letter-spacing:.06em}
+@media (min-width:768px){
+  .rz-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;border-top:0}
+  .rz-in{height:100%;padding:16px 18px;border:1px solid var(--line);border-radius:14px;background:var(--card)}
+}
+@media (min-width:1024px){.rz-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (min-width:1024px){body:has(.rz-grid) .bar,body:has(.rz-grid) .wrap,body:has(.rz-grid) .foot{max-width:1040px}}
+/* V1.0 S08 研究文章：修訂紀錄、系列目錄、上下篇 */
+.lit-h small{margin-left:8px;font-family:"Noto Sans TC",sans-serif;font-size:12px;font-weight:400;color:var(--sub)}
+.lit-revs ol{list-style:none;margin:0;padding:0}
+.lit-revs li{display:flex;gap:10px;flex-wrap:wrap;padding:6px 0;border-top:1px solid var(--line);font-size:14px}
+.lit-revs time{color:var(--sub)}
+.lit-series details{border-top:1px solid var(--line)}
+.lit-series summary{display:flex;justify-content:space-between;gap:8px;padding:10px 4px;cursor:pointer;font-weight:600}
+.lit-series summary small{font-weight:400;color:var(--sub);font-size:12px}
+.lit-series .ls-ch{margin-left:14px;border-top:0}
+.lit-series .ls-ch summary{font-weight:500;font-size:15px;padding:6px 4px}
+.lit-series ol{margin:0 0 8px;padding-left:34px}
+.lit-series li{padding:3px 0;font-size:15px}
+.lit-series a[aria-current="page"]{font-weight:700;text-decoration:underline}
+.lit-pn{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:22px 0}
+.lit-pn a{display:flex;flex-direction:column;padding:12px 14px;border:1px solid var(--line);border-radius:12px;line-height:1.5}
+.lit-pn .lit-next{text-align:right;grid-column:2}
+.lit-pn small{font-size:12px;color:var(--sub)}

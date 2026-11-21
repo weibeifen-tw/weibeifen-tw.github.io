@@ -3,7 +3,7 @@ layout: default
 body_class: reading lit-reading
 ---
 {%- comment -%}
-  文學專區文章版型（P06）
+  研究文章版型（P06；V1.0 S08 更名未備份研究所）
   文章放在 _literature/檔名.md，網址是 /literature/檔名/。未經畝 MU 核准的文章不可以放進 repo。
 
   front matter：
@@ -32,7 +32,7 @@ body_class: reading lit-reading
 {%- assign mins = words | divided_by: 400 | plus: 1 -%}
 {%- assign h2parts = content | split: '<h2 id="' -%}
 <article class="lit-article page-box">
-  <a class="nv-back" href="{{ '/literature/' | relative_url }}">← 文學專區</a>
+  <a class="nv-back" href="{{ '/literature/' | relative_url }}">← 未備份研究所</a>
   <h1 class="lit-title">{{ page.title | escape }}</h1>
   <p class="lit-meta">
     <a class="lit-author" href="{{ '/about/' | relative_url }}">{{ page.author | default: site.author }}</a>
@@ -73,6 +73,44 @@ body_class: reading lit-reading
     {%- endfor -%}
     </ol>
   </section>
+  {%- endif %}
+  {%- comment -%} V1.0 S08（Q61、Q64、Q65）：修訂紀錄、大型系列卷／章摺疊目錄、上一篇／下一篇。欄位都選填；沒有就不顯示 {%- endcomment -%}
+  {%- if page.revisions and page.revisions.size > 0 %}
+  <section class="lit-sec lit-revs">
+    <h2 class="lit-h">修訂紀錄{% if page.version %}<small>目前版本 {{ page.version | escape }}</small>{% endif %}</h2>
+    <ol>{%- for r in page.revisions -%}<li><time datetime="{{ r.date | date: '%Y-%m-%d' }}">{{ r.date | date: '%Y-%m-%d' }}</time>{% if r.version %}<b>{{ r.version | escape }}</b>{% endif %}{{ r.note | escape }}</li>{%- endfor -%}</ol>
+  </section>
+  {%- endif %}
+  {%- if page.series %}
+  {%- assign sarts = site.literature | where: "series", page.series | sort: "date" -%}
+  {%- assign sarts = sarts | sort: "piece" | sort: "chapter_no" | sort: "volume" -%}
+  {%- assign vols = sarts | group_by: "volume" -%}
+  <nav class="lit-sec lit-series" aria-label="系列目錄">
+    <h2 class="lit-h">{{ page.series | escape }}<small>系列目錄</small></h2>
+    {%- for v in vols -%}
+    <details class="ls-vol"{% if v.name == page.volume or vols.size == 1 %} open{% endif %}>
+      <summary>{% if v.name != '' %}{{ v.name | escape }}{% else %}未分卷{% endif %}<small>{{ v.items.size }} 篇</small></summary>
+      {%- assign chs = v.items | group_by: "chapter_no" -%}
+      {%- for c in chs -%}
+      <details class="ls-ch"{% if c.name == page.chapter_no or chs.size == 1 %} open{% endif %}>
+        <summary>{% if c.name != '' %}{{ c.name | escape }}{% else %}未分章{% endif %}</summary>
+        <ol>{%- for a in c.items -%}<li><a href="{{ a.url | relative_url }}"{% if a.url == page.url %} aria-current="page"{% endif %}>{{ a.title | escape }}</a></li>{%- endfor -%}</ol>
+      </details>
+      {%- endfor -%}
+    </details>
+    {%- endfor -%}
+  </nav>
+  {%- assign seq = sarts -%}
+  {%- else -%}
+  {%- assign seq = site.literature | where: "category", page.category | sort: "date" -%}
+  {%- endif %}
+  {%- assign lpv = nil -%}{%- assign lnx = nil -%}{%- assign lhit = false -%}
+  {%- for a in seq -%}{%- if lhit -%}{%- assign lnx = a -%}{%- break -%}{%- endif -%}{%- if a.url == page.url -%}{%- assign lhit = true -%}{%- else -%}{%- assign lpv = a -%}{%- endif -%}{%- endfor -%}
+  {%- if lpv or lnx %}
+  <nav class="lit-pn" aria-label="上一篇、下一篇">
+    {%- if lpv %}<a class="lit-prev" href="{{ lpv.url | relative_url }}"><small>← 上一篇</small><span>{{ lpv.title | escape }}</span></a>{% else %}<span></span>{% endif -%}
+    {%- if lnx %}<a class="lit-next" href="{{ lnx.url | relative_url }}"><small>下一篇 →</small><span>{{ lnx.title | escape }}</span></a>{% endif -%}
+  </nav>
   {%- endif %}
   {%- capture rel_novels -%}
   {%- for nid in page.related_novels -%}{%- assign n = site.data.novels[nid] -%}{%- if n -%}
