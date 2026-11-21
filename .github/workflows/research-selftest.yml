@@ -1,0 +1,61 @@
+# 研究所自我測試（只在研究開發分支或手動執行；不部署、不推送、權限唯讀）
+# 在臨時機器上產生假資料 → 用 GitHub 的 git 測 SSH 簽章核准 → 用 GitHub Pages 官方 Jekyll 建置 → 檢查網站地圖、註腳等
+name: 研究所自我測試（不部署）
+on:
+  workflow_dispatch:
+  push:
+    branches: ["feat/research-*"]
+permissions:
+  contents: read
+concurrency:
+  group: research-selftest-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  selftest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with: { persist-credentials: false, fetch-depth: 0 }
+      - name: 產生假資料並本機 commit（不推送）
+        run: |
+          ruby .github/scripts/research_fixture.rb .
+          git config user.name selftest; git config user.email selftest@example.invalid
+          git add -A && git -c commit.gpgsign=false commit -qm "selftest fixture (local only)"
+      - name: 驗證規則
+        run: |
+          ruby .github/scripts/validate_literature.rb .
+          ruby .github/scripts/validate_research.rb .
+      - name: SSH 簽章核准機制（拋棄式金鑰，只在這台機器）
+        run: |
+          set -u
+          ssh-keygen -q -t ed25519 -N "" -C approver -f "$RUNNER_TEMP/k"
+          ssh-keygen -q -t ed25519 -N "" -C intruder -f "$RUNNER_TEMP/x"
+          sha() { ruby -rdigest -e 'b=File.read(ARGV[0]).split(/^---\s*$/,3)[2];puts Digest::SHA256.hexdigest(b.gsub(/\s+/,""))' "$1"; }
+          sign() { git -c gpg.format=ssh -c gpg.ssh.program=ssh-keygen -c user.signingkey="$1" tag -f -s "$2" -m "$(printf 'article_id: %s\nversion: %s\nbody_sha256: %s' "$3" "$4" "$5")" >/dev/null; }
+          expect() { if ruby .github/scripts/verify_approvals.rb . --strict >/tmp/o.txt 2>&1; then r=pass; else r=FAIL; fi; if [ "$r" = "$1" ]; then echo "通過 $2（$r）"; else echo "失敗 $2：預期 $1 實際 $r"; cat /tmp/o.txt; exit 1; fi; }
+          A=_literature/ind-test-a.md; B=_literature/ind-test-b.md; V=_lit_versions/ind-test-a/v1.0.md
+          expect FAIL "1 沒有公鑰、沒有 tag → 擋下"
+          echo "selftest@example.invalid namespaces=\"git\" $(cat $RUNNER_TEMP/k.pub)" > .github/approver/allowed_signers
+          expect FAIL "2 有公鑰但文章未核准（沒有 tag）→ 擋下"
+          sign "$RUNNER_TEMP/k" ind/IND-1-01-01/v2.0 IND-1-01-01 v2.0 "$(sha $A)"
+          sign "$RUNNER_TEMP/k" ind/IND-1-01-02/v2.0 IND-1-01-02 v2.0 "$(sha $B)"
+          sign "$RUNNER_TEMP/k" ind/IND-1-01-01/v1.0 IND-1-01-01 v1.0 "$(sha $V)"
+          expect pass "3 全部由站長金鑰簽章 → 通過"
+          sign "$RUNNER_TEMP/x" ind/IND-1-01-02/v2.0 IND-1-01-02 v2.0 "$(sha $B)"
+          expect FAIL "4 用別把金鑰簽（無效簽章）→ 擋下"
+          git tag -f -a ind/IND-1-01-02/v2.0 -m "article_id: IND-1-01-02" --no-sign >/dev/null
+          expect FAIL "5 沒有簽章的 tag → 擋下"
+          sign "$RUNNER_TEMP/k" ind/IND-1-01-02/v2.0 IND-1-01-02 v2.0 "$(sha $B)"
+          expect pass "6 恢復正確簽章 → 通過"
+          sed -i 's/第一段測試文字/第一段被偷改/' $V
+          ruby -rdigest -e 'f=ARGV[0];s=File.read(f);b=s.split(/^---\s*$/,3)[2];File.write(f,s.sub(/body_sha256: \h+/,"body_sha256: "+Digest::SHA256.hexdigest(b.gsub(/\s+/,""))))' $V
+          ruby .github/scripts/validate_research.rb . >/dev/null && echo "（repo 內指紋已被重算，同 repo 檢查會通過）"
+          expect FAIL "7 改舊版正文並重算指紋 → 簽章基準擋下"
+          git checkout -q -- $V
+          expect pass "8 還原舊版 → 通過"
+      - name: GitHub Pages 官方 Jekyll 建置（含假資料）
+        uses: actions/jekyll-build-pages@v1
+        with: { source: ./, destination: ./_site }
+      - name: 檢查正式輸出：網站地圖、註腳、證據卡、歷史版本、撤回、搜尋
+        run: ruby .github/scripts/research_site_check.rb _site

@@ -1,14 +1,16 @@
-# 範本，未啟用（副檔名 .example，GitHub 不會執行）。
-# 要讓研究文章有「人工發布關卡」，站長需要在 GitHub 設定：
-#   1. Settings → Pages → Build and deployment → Source 改成「GitHub Actions」
-#   2. Settings → Environments → github-pages → Required reviewers 加自己；勾選不允許自己以外略過
-#   3. Settings → Branches → main：Require a pull request、Require status checks（選「建置檢查（不部署）」的 build）、Do not allow bypassing
-#   4. 再把這個檔案改名成 .github/workflows/deploy-pages.yml
-# 注意：開了分支保護後，schedule-chapters.yml 直接推 main 會被擋，需先另行決定處理方式（站長指示：不得擅自停用）。
-name: 部署網站（需人工核准）
+# 範本，未啟用（副檔名 .example，GitHub 不會執行）。啟用方式見 docs/research/release-plan.md。
+# 設計重點：
+#   - 發布關卡＝部署前的 strict 驗證：研究文章必須有站長簽章的核准 tag，否則整次部署失敗、網站維持舊版
+#   - 小說章節排程不受影響：schedule-chapters.yml 用內建權杖推 main，那種推送不會觸發其他工作流程，
+#     所以這裡另外用 workflow_run 在「排程發章」跑完後部署（不需要改 schedule-chapters.yml）
+#   - 一般推送 main、手動按，也會部署
+name: 部署網站（研究文章需站長簽章核准）
 on:
   push:
     branches: [main]
+  workflow_run:
+    workflows: ["排程發章"]
+    types: [completed]
   workflow_dispatch:
 permissions:
   contents: read
@@ -22,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with: { fetch-depth: 0, fetch-tags: true, persist-credentials: false }
+        with: { ref: main, fetch-depth: 0, fetch-tags: true, persist-credentials: false }
       - run: ruby .github/scripts/validate_literature.rb .
       - run: ruby .github/scripts/validate_research.rb .
       - run: ruby .github/scripts/verify_approvals.rb . --strict
@@ -33,7 +35,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     environment:
-      name: github-pages      # 這個環境設了 Required reviewers → 站長按核准才會上線
+      name: github-pages
       url: ${{ steps.d.outputs.page_url }}
     steps:
       - id: d

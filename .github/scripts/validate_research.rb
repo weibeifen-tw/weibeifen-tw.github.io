@@ -126,6 +126,12 @@ Dir.glob(File.join(vdir, '**', '*')).select { |f| File.file?(f) }.sort.each do |
   end
 end
 
+# 排程發章資料夾（.github/scheduled，公開 repo）只能放小說章節：研究文章不得用排程，也不得事先放進 repo
+Dir.glob(File.join(ROOT, '.github/scheduled/**/*')).select { |f| File.file?(f) }.each do |f|
+  rel = f.sub(ROOT + '/', ''); t = File.read(f, encoding: 'UTF-8') rescue ''
+  err.(rel, '研究文章不得放進排程資料夾（未發布內容會先公開在 repo）') if t.match?(/^(series_key|article_id|category:\s*原住民族|body_sha256):/)
+end
+
 # 撤回清單
 wd = (YAML.safe_load(File.read(File.join(ROOT, '_data/withdrawn.yml'), encoding: 'UTF-8'), permitted_classes: [Date]) || {})['urls'] || [] rescue []
 wd.each do |w|
