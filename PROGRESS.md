@@ -96,13 +96,20 @@
   - 最終效能（同基準條件；實驗室數據）：/ 100／1.7 s、作品頁 95／2.9 s（未達 2.5 s）、章節 100／0.9 s、臺灣故事 100／1.3 s、互動年代 100／1.3 s、研究所 100／1.3 s；CLS 全部 ≤0.002；A11y 95–96（扣分：color-contrast）
   - 未做／需人工：Android Chrome、iOS Safari、Edge、Firefox、PWA 獨立模式實機；真實使用者效能數據；後端 T01–T15、DM-T 實測
 
+## S12 補充決策（2026-11-22 站長補充，納入原授權；feat/site-v1-s12）
+- 縣市：《席位》＝嘉義市；《隱藏》＝嘉義市＋雲林（依專案設定集：霜嘉義市人、主要場景嘉義市；堤雲林北港人）；《山海有痕》不歸縣市，臺灣故事頁「未指定縣市」顯示區域（臺灣東部史前山地與海岸）
+- 臺字：小說簡介、角色介紹、作品頁 SEO 標題的地名改「臺」（39 字）；「台中高工」（校名）與「」引號內台詞不改；章節正文、書名、URL、id 不動
+- LCP（不降畫質）：試過重新壓縮（q85 也比原檔大）、AVIF、模糊預覽（LCP 不變）→ 均不採用；採用「第 2、3 張漫畫延後到頁面載完或讀者滑動才下載」＋head 預載第一張原圖。作品頁 LCP：《潮間》2.9→2.3 s、《忌色》2.9→2.3 s、《雙雙》4.3→2.9 s（首圖 207KB，仍未達 2.5 s）
+- Threads：移除 threads.yml、threads-token.yml（已停用空殼）。專用金鑰＝THREADS_TOKEN（發文）、GH_PAT（只被 threads-token.yml 用來寫回金鑰）；現行 workflow 沒有任何一支用到 secrets。GitHub Secrets 與 Meta 權杖撤銷 Claude 無權限 → 站長手動（見最終回報）；新章節技能已提出修改卡片（排脆改手動），待站長儲存
+- schedule-chapters.yml：未動（獨立待核對）
+- 020：本環境連不到 Supabase（連線被拒）→ 未核對；唯讀檢查 SQL：supabase/drafts/check_020_readonly.sql（repo 版函式內容指紋 15031cb36d60df5f1a8bc98949919d42）
+
 ## 待蔡決定／待補證（S11 彙整）
-- 《隱藏》（嘉義市／縣）、《席位》（嘉義市／縣）、《山海有痕》（東部哪個縣市）→ _data/counties.yml
-- 作者文案的「台」要不要改「臺」（小說簡介、角色介紹、作品頁 SEO 標題）
-- 作品頁 LCP 2.9 s：第一張漫畫圖；再降要降畫質
+- 《雙雙》等首圖較大的作品頁 LCP 仍約 2.9 s
 - SQL 草案 022（私訊後端封鎖）、023（管理員白名單＋工作階段）待站長審閱、執行；020 是否已執行
 - FIX-02／05／09 需最新資料庫結構（export_schema.sql）
-- Threads 憑證撤銷；新章節技能「排脆」改手動
+- Threads：GitHub Secrets 刪 THREADS_TOKEN、GH_PAT；Meta 端撤銷授權；儲存技能修改卡片
+- 020：在 SQL Editor 跑 check_020_readonly.sql，結果交給 Claude 比對
 - 原始條文待補證：設計 R01–R09、S02-01-C、C01–C10、T01–T15、DM-A／DM-T、D17–D21、X1–X6、G01–G08、E01–E25、P01–P09、JU／PU／NU／VU／MU／CW
 - schedule-chapters.yml（每天自動發章）vs 會員進度「排程發章：不做」：本次不停用（第十一章）。
 - 22 縣市 SVG 幾何資料來源（需開放授權）。

@@ -73,3 +73,9 @@ body.wide .rg{max-width:700px;margin-left:auto;margin-right:auto}
   .cty-novels{padding-left:58px}
   .cty-row.on{background:var(--card);border-radius:12px}
 }
+.cty-un{margin:22px 0 0}
+.cty-un h2{margin:0 0 6px;font-family:"Noto Serif TC",serif;font-size:16px;font-weight:600;letter-spacing:.06em;color:var(--sub)}
+.cty-un ul{list-style:none;margin:0;padding:0}
+.cty-un a{display:flex;flex-direction:column;padding:10px 4px;border-top:1px solid var(--line);line-height:1.5}
+.cty-un small{font-size:13px;color:var(--sub)}
+@media (min-width:768px){.cty .cty-map{grid-row:1 / span 2}.cty-un{grid-column:2;margin-top:6px}}

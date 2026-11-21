@@ -12,7 +12,7 @@ mo:
   avatar: mo.svg
   glyph: 模
   color: "#b9653f"
-  bio: 大里長大，花蓮念書，回台中工作。小時候怕球，但喜歡踢。
+  bio: 大里長大，花蓮念書，回臺中工作。小時候怕球，但喜歡踢。
 taro:
   name: 芋
   handle: taro.morning
@@ -20,7 +20,7 @@ taro:
   avatar: taro.svg
   glyph: 芋
   color: "#7a6a9e"
-  bio: 三十一歲，在台中的老市場賣菜。四點半起床，番茄放最旁邊。
+  bio: 三十一歲，在臺中的老市場賣菜。四點半起床，番茄放最旁邊。
 yang:
   name: 陽
   handle: yang.coffee
@@ -28,7 +28,7 @@ yang:
   avatar: yang.svg
   glyph: "365"
   color: "#d98a2b"
-  bio: 台北來的，在台中市場口開咖啡廳。番茄硬的切片，軟的煮醬。
+  bio: 臺北來的，在臺中市場口開咖啡廳。番茄硬的切片，軟的煮醬。
 lin:
   name: 林
   handle: LIN.YA
@@ -36,7 +36,7 @@ lin:
   novel: feichang
   glyph: 林
   color: "#4f6d7a"
-  bio: 頭髮一直都是短的。彰化念藝術系，現在在台中。
+  bio: 頭髮一直都是短的。彰化念藝術系，現在在臺中。
 wu:
   name: 吳
   handle: WWW.U
@@ -172,7 +172,7 @@ xiu:
   avatar: xiu.svg
   glyph: 岫
   color: "#46557e"
-  bio: 二十二歲，仁愛鄉人，在台中讀中興大學。對誰都很有禮貌，問她是哪裡人，她會說在台中讀書。
+  bio: 二十二歲，仁愛鄉人，在臺中讀中興大學。對誰都很有禮貌，問她是哪裡人，她會說在臺中讀書。
 linrain:
   name: 霖
   handle: lin.shipper
@@ -196,7 +196,7 @@ yuan:
   avatar: yuan.svg
   glyph: 垣
   color: "#8c4a5e"
-  bio: 國企系，台中人。系排攻擊手，長髮及肩，打球綁馬尾。每一球打壞，都會先說對不起。
+  bio: 國企系，臺中人。系排攻擊手，長髮及肩，打球綁馬尾。每一球打壞，都會先說對不起。
 heng:
   name: 蘅
   handle: heng.sundayporridge
@@ -244,7 +244,7 @@ jing:
   avatar: jing.svg
   glyph: 菁
   color: "#8a6f9e"
-  bio: 十八歲，剛去台中讀大學，週末才回埔里。淡棕色頭髮，寬褲。群裡最冷靜的人。
+  bio: 十八歲，剛去臺中讀大學，週末才回埔里。淡棕色頭髮，寬褲。群裡最冷靜的人。
 yan:
   name: 焰
   handle: huoyan.zhanshen
