@@ -133,7 +133,19 @@ window.WBAvatar = (function () {
 (function () {
   var btn = document.querySelector('.menu-btn'), d = document.querySelector('.drawer'), sc = document.querySelector('.scrim');
   if (!btn) return;
+  // V1.0 S06：≥768px 且不是閱讀頁 → 選單固定在左側（不是彈出層，不需要 inert／scrim）
+  var mq = window.matchMedia ? matchMedia('(min-width:768px)') : null, reading = document.body.classList.contains('reading');
+  function docked() { return document.body.classList.contains('docked'); }
+  function dock() {
+    var on = !!(mq && mq.matches && !reading);
+    document.body.classList.toggle('docked', on);
+    if (on) { d.classList.remove('open'); sc.hidden = true; document.body.classList.remove('lock'); btn.setAttribute('aria-expanded', 'false'); d.removeAttribute('aria-hidden'); d.inert = false; }
+    else if (!d.classList.contains('open')) { d.setAttribute('aria-hidden', 'true'); d.inert = true; }
+  }
+  if (mq) { if (mq.addEventListener) mq.addEventListener('change', dock); else if (mq.addListener) mq.addListener(dock); }
+  dock();
   function toggle(open) {
+    if (docked()) return;
     d.classList.toggle('open', open); sc.hidden = !open; document.body.classList.toggle('lock', open);
     btn.setAttribute('aria-expanded', open); d.setAttribute('aria-hidden', !open); d.inert = !open; if (open) { var f = d.querySelector('a,button'); if (f) f.focus(); } else if (document.activeElement && d.contains(document.activeElement)) btn.focus();
   }
@@ -143,6 +155,16 @@ window.WBAvatar = (function () {
   if (ds) ds.onclick = function () { toggle(false); var sb = document.querySelector('.search-btn'); if (sb) { var bx = document.querySelector('.sbox'); if (!bx || bx.hidden) sb.click(); } };
   sc.onclick = function () { toggle(false); };
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') toggle(false); });
+})();
+
+// V1.0 S06（Q26）：手機底部導覽「探索」＝臺灣故事、互動年代、未備份研究所
+(function () {
+  var b = document.querySelector('.bnav-ex-btn'), m = document.getElementById('bnav-ex');
+  if (!b || !m) return;
+  function set(open) { m.hidden = !open; b.setAttribute('aria-expanded', open); if (open) { var f = m.querySelector('a'); if (f) f.focus(); } }
+  b.onclick = function (e) { e.stopPropagation(); set(m.hidden); };
+  document.addEventListener('click', function (e) { if (!m.hidden && !m.contains(e.target)) set(false); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !m.hidden) { set(false); b.focus(); } });
 })();
 
 // 章節頁：正文裡第一次出現的同一本小說的其他角色，變成可以點的名字
