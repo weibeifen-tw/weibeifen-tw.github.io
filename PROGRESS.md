@@ -33,7 +33,7 @@
   - 外部備份：weibeifen_S02_backup_2026-11-22.zip（117 檔，sha256 前綴 cda78a4395cf1bb8，已交給蔡）；另可 git checkout ebc7b8c -- <路徑> 還原
   - 回歸：441 頁渲染輸出與基準相同（.dev/regress.sh）
   - 待蔡：Threads 憑證（GitHub Secrets／Meta 後台）自行撤銷；「新章節上架」技能的「排脆」步驟改手動
-- [ ] S03 AI 開發索引
+- [x] S03 AI 開發索引（CLAUDE.md、AGENTS.md、docs/ai/ 六區；_config exclude）
 - [ ] S04 CSS／JS
 - [ ] S05 效能
 - [ ] S06 跨裝置導覽
