@@ -31,7 +31,7 @@ jobs:
           set -u
           ssh-keygen -q -t ed25519 -N "" -C approver -f "$RUNNER_TEMP/k"
           ssh-keygen -q -t ed25519 -N "" -C intruder -f "$RUNNER_TEMP/x"
-          sha() { ruby -rdigest -e 'b=File.read(ARGV[0]).split(/^---\s*$/,3)[2];puts Digest::SHA256.hexdigest(b.gsub(/\s+/,""))' "$1"; }
+          sha() { ruby -E UTF-8:UTF-8 -rdigest -e 'b=File.read(ARGV[0]).split(/^---\s*$/,3)[2];puts Digest::SHA256.hexdigest(b.gsub(/\s+/,""))' "$1"; }
           sign() { git -c gpg.format=ssh -c gpg.ssh.program=ssh-keygen -c user.signingkey="$1" tag -f -s "$2" -m "$(printf 'article_id: %s\nversion: %s\nbody_sha256: %s' "$3" "$4" "$5")" >/dev/null; }
           expect() { if ruby .github/scripts/verify_approvals.rb . --strict >/tmp/o.txt 2>&1; then r=pass; else r=FAIL; fi; if [ "$r" = "$1" ]; then echo "通過 $2（$r）"; else echo "失敗 $2：預期 $1 實際 $r"; cat /tmp/o.txt; exit 1; fi; }
           A=_literature/ind-test-a.md; B=_literature/ind-test-b.md; V=_lit_versions/ind-test-a/v1.0.md
@@ -49,7 +49,7 @@ jobs:
           sign "$RUNNER_TEMP/k" ind/IND-1-01-02/v2.0 IND-1-01-02 v2.0 "$(sha $B)"
           expect pass "6 恢復正確簽章 → 通過"
           sed -i 's/第一段測試文字/第一段被偷改/' $V
-          ruby -rdigest -e 'f=ARGV[0];s=File.read(f);b=s.split(/^---\s*$/,3)[2];File.write(f,s.sub(/body_sha256: \h+/,"body_sha256: "+Digest::SHA256.hexdigest(b.gsub(/\s+/,""))))' $V
+          ruby -E UTF-8:UTF-8 -rdigest -e 'f=ARGV[0];s=File.read(f);b=s.split(/^---\s*$/,3)[2];File.write(f,s.sub(/body_sha256: \h+/,"body_sha256: "+Digest::SHA256.hexdigest(b.gsub(/\s+/,""))))' $V
           ruby .github/scripts/validate_research.rb . >/dev/null && echo "（repo 內指紋已被重算，同 repo 檢查會通過）"
           expect FAIL "7 改舊版正文並重算指紋 → 簽章基準擋下"
           git checkout -q -- $V
