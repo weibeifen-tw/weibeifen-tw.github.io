@@ -25,7 +25,14 @@
 
 ## 階段狀態
 - [x] S01 盤點與備份（feat/site-v1-s01）
-- [ ] S02 Threads 與冗餘檔案
+- [x] S02 Threads 與冗餘檔案（feat/site-v1-s02）
+  - Threads：threads.yml、threads-token.yml 早已停用（只剩手動觸發空殼、if:false），保留當退役紀錄；移除 post_threads.py、.github/threads（queue／sent／outbox／done.txt，F06、F07）、__pycache__（F01）
+  - F08–F16＝assets/stories 九張被漫畫取代的備用圖（chaosheng chuwang exam hongdian houdiao hue market shuangshuang xiwei，合計 1,553,318 bytes）；novel-post.html 只在缺漫畫時才用，九本漫畫齊全
+  - F02 logo.webp、F03 mu-couple.webp、F04 pin.webp：原始碼與渲染輸出皆無引用 → 移除
+  - gongdi.webp 有引用，保留；F05 login-test 保留（U08=A）
+  - 外部備份：weibeifen_S02_backup_2026-11-22.zip（117 檔，sha256 前綴 cda78a4395cf1bb8，已交給蔡）；另可 git checkout ebc7b8c -- <路徑> 還原
+  - 回歸：441 頁渲染輸出與基準相同（.dev/regress.sh）
+  - 待蔡：Threads 憑證（GitHub Secrets／Meta 後台）自行撤銷；「新章節上架」技能的「排脆」步驟改手動
 - [ ] S03 AI 開發索引
 - [ ] S04 CSS／JS
 - [ ] S05 效能

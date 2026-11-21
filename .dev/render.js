@@ -46,7 +46,7 @@ function permalinkFor(rel, fm, tpl, extra = {}) {
   return r.replace(/\.(md|markdown)$/, '.html');
 }
 
-const site = { ...cfg, data: readData(path.join(SRC, '_data')), posts: [], pages: [], time: new Date(), collections: [] };
+const site = { ...cfg, data: readData(path.join(SRC, '_data')), posts: [], pages: [], static_files: [], time: new Date(), collections: [] };
 const docs = []; // {rel, fm, body, url, kind}
 
 // posts
@@ -91,6 +91,7 @@ function walk(dir, rel = '') {
       site.pages.push(d); docs.push(d);
     } else {
       const o = path.join(OUT, r); fs.mkdirSync(path.dirname(o), { recursive: true }); fs.copyFileSync(p, o);
+      site.static_files.push({ path: '/' + r, name: f, basename: f.replace(/\.[^.]+$/, ''), extname: path.extname(f) });
     }
   }
 }
