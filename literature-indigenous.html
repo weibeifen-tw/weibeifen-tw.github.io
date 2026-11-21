@@ -1,0 +1,53 @@
+---
+page_css: literature
+layout: default
+title: 臺灣原住民族歷史｜未備份研究所
+description: 未備份研究所原住民族專區：臺灣原住民族歷史數位專書，七卷架構與已公開文章目錄。
+permalink: /literature/indigenous/
+---
+{%- comment -%}
+  原住民族數位歷史專書首頁（DEV-03）。
+  卷名、卷介紹、專書介紹只取 _data/indigenous_book.yml 裡「已核准公開」的文字，沒填就顯示「籌備中」。
+  目錄只列 repo 裡 series_key＝indigenous-history 的文章（repo 只放已核准公開的文章）。依卷→章→篇排序。
+  不顯示：210 篇規劃、未發布篇目、研究進度、審查資料。
+{%- endcomment -%}
+{%- assign book = site.data.indigenous_book -%}
+{%- assign arts = site.literature | where: "series_key", book.series_key -%}
+<section class="lit-list page-box ind-book">
+  <a class="nv-back" href="{{ '/literature/' | relative_url }}">← 未備份研究所</a>
+  <p class="ind-zone">原住民族專區</p>
+  <h1 class="ov-h">{{ book.title }}</h1>
+  {%- if book.intro and book.intro != '' %}
+  <div class="ind-intro">{% assign ps = book.intro | split: '|' %}{% for p in ps %}<p>{{ p | strip | escape }}</p>{% endfor %}</div>
+  {%- endif %}
+  <p class="ind-note">數位歷史專書，共七卷。只列出已正式發布的文章；其餘篇章仍在研究與審查中。</p>
+  <ol class="ind-vols">
+    {%- for v in book.volumes %}
+    {%- assign vas = arts | where: "volume_no", v.no | sort: "article_id" -%}
+    <li class="ind-vol{% if vas.size == 0 %} ind-wait{% endif %}" id="vol-{{ v.no }}">
+      <details{% if vas.size > 0 %} open{% endif %}>
+        <summary>
+          <span class="ind-vno">第{{ "一二三四五六七" | slice: forloop.index0 }}卷</span>
+          <b class="ind-vt">{% if v.title and v.title != '' %}{{ v.title | escape }}{% else %}籌備中{% endif %}</b>
+          <small class="ind-vn">{% if vas.size > 0 %}{{ vas.size }} 篇已發布{% else %}尚無已發布文章{% endif %}</small>
+        </summary>
+        {%- if v.summary and v.summary != '' %}<p class="ind-vs">{{ v.summary | escape }}</p>{% endif %}
+        {%- if vas.size > 0 %}
+        {%- assign chs = vas | group_by: "chapter_no" -%}
+        {%- for c in chs %}
+        <div class="ind-ch">
+          <p class="ind-cht">第 {{ c.name }} 章</p>
+          <ol class="ind-arts">
+            {%- for a in c.items -%}
+            <li><a href="{{ a.url | relative_url }}"><span class="ind-pn">{{ v.no }}.{{ c.name }}.{{ a.piece }}</span><span class="ind-at">{{ a.title | escape }}</span>{% if a.version %}<small>{{ a.version | escape }}</small>{% endif %}</a></li>
+            {%- endfor -%}
+          </ol>
+        </div>
+        {%- endfor %}
+        {%- endif %}
+      </details>
+    </li>
+    {%- endfor %}
+  </ol>
+  <p class="ind-fine">文章中的研究證據會標示來源、核讀狀態與使用授權。</p>
+</section>

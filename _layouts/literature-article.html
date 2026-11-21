@@ -1,6 +1,7 @@
 ---
 layout: default
 body_class: reading lit-reading
+page_js: lit-research
 ---
 {%- comment -%}
   研究文章版型（P06；V1.0 S08 更名未備份研究所）
@@ -32,7 +33,13 @@ body_class: reading lit-reading
 {%- assign mins = words | divided_by: 400 | plus: 1 -%}
 {%- assign h2parts = content | split: '<h2 id="' -%}
 <article class="lit-article page-box">
+  {%- if page.series_key == site.data.indigenous_book.series_key %}
+  <a class="nv-back" href="{{ '/literature/indigenous/' | relative_url }}">← {{ site.data.indigenous_book.title }}</a>
+  {%- assign vi = page.volume_no | minus: 1 %}
+  <p class="ind-pos">第{{ "一二三四五六七" | slice: vi }}卷・第 {{ page.chapter_no }} 章・第 {{ page.piece }} 篇{% if page.version %}・{{ page.version | escape }}{% endif %}</p>
+  {%- else %}
   <a class="nv-back" href="{{ '/literature/' | relative_url }}">← 未備份研究所</a>
+  {%- endif %}
   <h1 class="lit-title">{{ page.title | escape }}</h1>
   <p class="lit-meta">
     <a class="lit-author" href="{{ '/about/' | relative_url }}">{{ page.author | default: site.author }}</a>
@@ -50,8 +57,9 @@ body_class: reading lit-reading
   {%- endif %}
   {%- if page.description and page.description != '' %}<p class="lit-summary">{{ page.description | escape }}</p>{% endif %}
   {%- if h2parts.size > 3 %}
-  <nav class="lit-toc" aria-label="目錄">
-    <p class="lit-toc-h">目錄</p>
+  <details class="lit-toc" open>
+    <summary class="lit-toc-h">目錄</summary>
+    <nav aria-label="目錄">
     <ol>
     {%- for part in h2parts offset: 1 -%}
       {%- assign hid = part | split: '"' | first -%}
@@ -59,7 +67,8 @@ body_class: reading lit-reading
       <li><a href="#{{ hid }}">{{ htxt }}</a></li>
     {%- endfor -%}
     </ol>
-  </nav>
+    </nav>
+  </details>
   {%- endif %}
   <div class="lit-body">
 {{ content }}
@@ -72,6 +81,32 @@ body_class: reading lit-reading
       <li id="ref-{{ forloop.index }}">{% if r.url %}<a href="{{ r.url }}" target="_blank" rel="noopener">{{ r.title | escape }}</a>{% else %}{{ r.title | escape }}{% endif %}{% if r.publisher %}<span class="lit-pub">，{{ r.publisher | escape }}</span>{% endif %}</li>
     {%- endfor -%}
     </ol>
+  </section>
+  {%- endif %}
+  {%- comment -%} 原住民族專區 DEV-03：研究證據（現行卡片；L3 撤回不顯示）。無 JS 也能讀；有 JS 時點正文的證據標記開面板（手機底部、電腦側邊） {%- endcomment -%}
+  {%- assign evcards = site.data.evidence[page.article_id] -%}
+  {%- if page.article_id and evcards.size > 0 %}
+  <section class="lit-sec lit-ev" aria-labelledby="ev-h">
+    <h2 class="lit-h" id="ev-h">研究證據</h2>
+    <ol class="ev-list">
+      {%- for c in evcards -%}{%- if c.withdrawal.level == 'L3' -%}{%- continue -%}{%- endif -%}
+      <li class="ev-card" id="ev-{{ c.id }}">{% include ev-card.html c=c %}</li>
+      {%- endfor -%}
+    </ol>
+  </section>
+  <aside class="ev-panel" id="ev-panel" role="dialog" aria-modal="false" aria-labelledby="ev-panel-h" hidden>
+    <div class="ev-panel-in">
+      <div class="ev-panel-top"><b id="ev-panel-h">研究證據</b><button type="button" class="ev-x" aria-label="關閉">✕</button></div>
+      <div class="ev-panel-body"></div>
+    </div>
+  </aside>
+  {%- endif %}
+  {%- comment -%} 歷史版本（Q05 B：公開；只存完整正文） {%- endcomment -%}
+  {%- assign vers = site.lit_versions | where: "article", page.slug | sort: "date" | reverse -%}
+  {%- if vers.size > 0 %}
+  <section class="lit-sec lit-vers">
+    <h2 class="lit-h">歷史版本</h2>
+    <ul>{%- for v in vers -%}<li><a href="{{ v.url | relative_url }}">{{ v.version | escape }}</a><time datetime="{{ v.date | date: '%Y-%m-%d' }}">{{ v.date | date: '%Y-%m-%d' }}</time><a class="lit-diff-link" href="{{ v.url | relative_url }}#compare">與現行版比較</a></li>{%- endfor -%}</ul>
   </section>
   {%- endif %}
   {%- comment -%} V1.0 S08（Q61、Q64、Q65）：修訂紀錄、大型系列卷／章摺疊目錄、上一篇／下一篇。欄位都選填；沒有就不顯示 {%- endcomment -%}
@@ -101,6 +136,8 @@ body_class: reading lit-reading
     {%- endfor -%}
   </nav>
   {%- assign seq = sarts -%}
+  {%- elsif page.series_key -%}
+  {%- assign seq = site.literature | where: "series_key", page.series_key | sort: "article_id" -%}
   {%- else -%}
   {%- assign seq = site.literature | where: "category", page.category | sort: "date" -%}
   {%- endif %}

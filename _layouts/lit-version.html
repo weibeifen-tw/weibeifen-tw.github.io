@@ -1,0 +1,50 @@
+---
+layout: default
+body_class: reading lit-reading
+page_js: lit-research
+---
+{%- comment -%}
+  研究文章歷史版本（原住民族專區 DEV-03；Q05 B、Q09 A、Q10 B、Q12 A、Q15 B）。
+  檔案：_lit_versions/<文章檔名>/<版本>.md。front matter：
+    article:       現行文章檔名（必填）
+    article_id:    文章代號（必填，跟現行文章相同）
+    version:       版本號（必填，例如 v1.0）
+    date:          這一版的發布日期（必填）
+    title:         這一版當時的標題（必填）
+    note:          這一版的修訂摘要（選填）
+    body_sha256:   正文指紋（去掉所有空白後的 SHA-256；由驗證重算比對）
+    approved_tag:  站長簽章的核准 tag 名稱（可信基準；驗證會檢查簽章與 tag 內的指紋）
+    ev_map:        這一版引用的證據卡 → 當時的 claim_hash（只記對應，不存證據卡快照）
+  正文只存完整文字，不得自動改寫；舊版引用依 ev_map 檢查，對不上顯示「歷史引用對應無法確認」。
+{%- endcomment -%}
+{%- assign cur = site.literature | where: "slug", page.article | first -%}
+<article class="lit-article page-box lit-old" data-current="{% if cur %}{{ cur.url | relative_url }}{% endif %}">
+  <a class="nv-back" href="{% if cur %}{{ cur.url | relative_url }}{% else %}{{ '/literature/' | relative_url }}{% endif %}">← 回到現行版本</a>
+  <p class="lit-old-banner" role="note">這是舊版本 <b>{{ page.version | escape }}</b>（{{ page.date | date: '%Y-%m-%d' }}）。內容保留當時的正文，可能已經修訂；研究證據以現行卡片核對，無法確認對應的會標示出來。</p>
+  <h1 class="lit-title">{{ page.title | escape }}</h1>
+  {%- if page.note %}<p class="lit-summary">修訂摘要：{{ page.note | escape }}</p>{% endif %}
+  <div class="lit-body">
+{{ content }}
+  </div>
+  <section class="lit-sec lit-cmp" id="compare" aria-labelledby="cmp-h">
+    <h2 class="lit-h" id="cmp-h">與現行版比較</h2>
+    {%- if cur %}
+    <p class="lit-cmp-help">比較這一版與現行版本的正文差異：<ins>新增</ins>、<del>刪除</del>。</p>
+    <button type="button" class="lit-share-btn lit-cmp-go">顯示差異</button>
+    <div class="lit-cmp-out" aria-live="polite"></div>
+    {%- else %}
+    <p class="lit-cmp-help">現行版本已不公開，無法比較。</p>
+    {%- endif %}
+  </section>
+</article>
+<script>
+// 字級：小／中／大／特大（與現行研究文章相同，存在 wb:lfs）
+(function () {
+  var d = document.documentElement, fb = document.querySelectorAll('.lfs button');
+  if (!d.dataset.lfs) d.dataset.lfs = 'm';
+  fb.forEach(function (b) {
+    b.setAttribute('aria-pressed', d.dataset.lfs === b.dataset.lfs);
+    b.onclick = function () { d.dataset.lfs = b.dataset.lfs; try { localStorage.setItem('wb:lfs', b.dataset.lfs); } catch (e) {} fb.forEach(function (x) { x.setAttribute('aria-pressed', x === b); }); };
+  });
+})();
+</script>

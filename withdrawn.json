@@ -1,0 +1,5 @@
+---
+layout: null
+sitemap: false
+---
+{"urls":{{ site.data.withdrawn.urls | map: "url" | jsonify }}}

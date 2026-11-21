@@ -23,7 +23,18 @@ collections:
   literature:
     output: true
     permalink: /literature/:name/
+  # 研究文章歷史版本（原住民族專區 DEV-03）：_lit_versions/<文章檔名>/<版本>.md → /literature/<文章檔名>/<版本>/；只存完整正文
+  lit_versions:
+    output: true
+    permalink: /literature/:path/
 defaults:
+  - scope:
+      path: ""
+      type: lit_versions
+    values:
+      layout: lit-version
+      sitemap: false
+      noindex: true
   - scope:
       path: ""
       type: literature

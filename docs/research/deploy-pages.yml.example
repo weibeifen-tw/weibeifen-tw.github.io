@@ -1,0 +1,40 @@
+# 範本，未啟用（副檔名 .example，GitHub 不會執行）。
+# 要讓研究文章有「人工發布關卡」，站長需要在 GitHub 設定：
+#   1. Settings → Pages → Build and deployment → Source 改成「GitHub Actions」
+#   2. Settings → Environments → github-pages → Required reviewers 加自己；勾選不允許自己以外略過
+#   3. Settings → Branches → main：Require a pull request、Require status checks（選「建置檢查（不部署）」的 build）、Do not allow bypassing
+#   4. 再把這個檔案改名成 .github/workflows/deploy-pages.yml
+# 注意：開了分支保護後，schedule-chapters.yml 直接推 main 會被擋，需先另行決定處理方式（站長指示：不得擅自停用）。
+name: 部署網站（需人工核准）
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0, fetch-tags: true, persist-credentials: false }
+      - run: ruby .github/scripts/validate_literature.rb .
+      - run: ruby .github/scripts/validate_research.rb .
+      - run: ruby .github/scripts/verify_approvals.rb . --strict
+      - uses: actions/jekyll-build-pages@v1
+        with: { source: ./, destination: ./_site }
+      - uses: actions/upload-pages-artifact@v3
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages      # 這個環境設了 Required reviewers → 站長按核准才會上線
+      url: ${{ steps.d.outputs.page_url }}
+    steps:
+      - id: d
+        uses: actions/deploy-pages@v4

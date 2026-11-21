@@ -1,0 +1,13 @@
+# 未備份研究所｜原住民族數位歷史專書（DEV-03）。只能放「已核准公開」的文字；沒填的一律顯示「籌備中」。
+# 不得放：未發布篇目名稱、210 篇規劃清單、研究進度、審查資料、未核准正文。
+series_key: indigenous-history
+title: 臺灣原住民族歷史
+intro:        # 已核准公開的專書介紹（多段用 | 換行）；空白＝不顯示
+volumes:      # 卷號固定 1–7；title／summary 為已核准公開的卷名與介紹，空白＝籌備中
+  - { no: 1, title: , summary: }
+  - { no: 2, title: , summary: }
+  - { no: 3, title: , summary: }
+  - { no: 4, title: , summary: }
+  - { no: 5, title: , summary: }
+  - { no: 6, title: , summary: }
+  - { no: 7, title: , summary: }

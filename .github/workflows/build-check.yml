@@ -1,17 +1,22 @@
 # 建置檢查（不部署）
 # 用 GitHub Pages 官方的 Jekyll 建置工具建一次網站，確認沒有建置錯誤。
-# - 手動觸發（workflow_dispatch），或推送 feature/member-entry-4-2、feat/member-* 分支時自動觸發
+# - 手動觸發、推送 main／feat/*、或開 PR 到 main 時觸發（不部署；部署仍由 GitHub Pages 處理）
 # - 權限只有 contents: read；不部署、不推送任何分支、不使用任何私密金鑰
 # - 建置結果只留在這次執行的機器上，執行完就丟棄
 name: 建置檢查（不部署）
 
 on:
   workflow_dispatch:
+  # 研究所 DEV-03：main 與「合併到 main 的 PR」也跑（strict）。注意：要成為發布關卡，還需要站長在 GitHub 設定分支保護＋必要檢查＋Pages 部署核准
+  pull_request:
+    branches: [main]
   push:
     branches:
+      - main
       - feature/member-entry-4-2
       - "feat/member-*"
       - "feat/site-*"
+      - "feat/research-*"
 
 permissions:
   contents: read
@@ -25,13 +30,26 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - name: 取得程式碼（唯讀，不保存憑證）
+      - name: 取得程式碼（唯讀，不保存憑證；含 tags，給核准簽章檢查）
         uses: actions/checkout@v4
         with:
           persist-credentials: false
+          fetch-depth: 0
+          fetch-tags: true
 
-      - name: 文學文章資料驗證（只讀檔案，不需要套件）
+      - name: 研究文章資料驗證（只讀檔案，不需要套件）
         run: ruby .github/scripts/validate_literature.rb .
+
+      - name: 原住民族專書：證據卡、歷史版本、撤回清單驗證
+        run: ruby .github/scripts/validate_research.rb .
+
+      - name: 核准基準（站長簽章 tag）檢查；main 與 PR 為 strict
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/main" ] || [ "${{ github.event_name }}" = "pull_request" ]; then
+            ruby .github/scripts/verify_approvals.rb . --strict
+          else
+            ruby .github/scripts/verify_approvals.rb .
+          fi
 
       - name: Jekyll 建置（GitHub Pages 官方工具）
         uses: actions/jekyll-build-pages@v1

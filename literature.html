@@ -22,9 +22,9 @@ permalink: /literature/
     {%- for c in cats -%}
     {%- assign n = arts | where: "category", c.name | size -%}
     <li class="rz{% if n == 0 %} rz-wait{% endif %}">
-      {%- if n > 0 %}<a class="rz-in" href="?cat={{ c.name | url_encode }}" data-cat="{{ c.name | escape }}">{% else %}<div class="rz-in">{% endif -%}
+      {%- if c.key == 'indigenous' %}<a class="rz-in" href="{{ '/literature/indigenous/' | relative_url }}">{% elsif n > 0 %}<a class="rz-in" href="?cat={{ c.name | url_encode }}" data-cat="{{ c.name | escape }}">{% else %}<div class="rz-in">{% endif -%}
       <b class="rz-t">{{ c.name }}</b><span class="rz-s">{{ c.scope }}</span><small class="rz-n">{% if n > 0 %}{{ n }} 篇{% else %}籌備中{% endif %}</small>
-      {%- if n > 0 %}</a>{% else %}</div>{% endif -%}
+      {%- if n > 0 or c.key == 'indigenous' %}</a>{% else %}</div>{% endif -%}
     </li>
     {%- endfor -%}
   </ul>

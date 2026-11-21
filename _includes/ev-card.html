@@ -1,0 +1,20 @@
+{%- comment -%} 一張研究證據卡（文章末尾清單與面板共用）。參數 c＝_data/evidence/<article_id>.yml 的一筆 {%- endcomment -%}
+{%- assign c = include.c -%}{%- assign s = c.source -%}{%- assign lv = c.withdrawal.level -%}
+<p class="ev-id">{{ c.id }}
+  {%- if c.read_status == 'direct' %}<span class="ev-st ev-direct">直接核讀{% if c.read_date %}・{{ c.read_date | date: '%Y-%m-%d' }}{% endif %}</span>
+  {%- elsif c.read_status == 'indirect' %}<span class="ev-st ev-indirect">間接引用</span>
+  {%- else %}<span class="ev-st ev-unv">尚未核讀</span>{% endif %}
+</p>
+<p class="ev-claim"><span class="ev-k">支持的主張</span>{{ c.claim | escape }}</p>
+<dl class="ev-src">
+  <dt>來源</dt><dd>{% if s.url and lv != 'L1' and lv != 'L2' %}<a href="{{ s.url }}" target="_blank" rel="noopener">{{ s.title | escape }}</a>{% else %}{{ s.title | escape }}{% endif %}{% if s.identifier %}<small>（{{ s.identifier | escape }}）</small>{% endif %}</dd>
+  {%- if s.author %}<dt>作者</dt><dd>{{ s.author | escape }}</dd>{% endif %}
+  {%- if s.institution %}<dt>出版／典藏</dt><dd>{{ s.institution | escape }}</dd>{% endif %}
+  {%- if s.date %}<dt>年代</dt><dd>{{ s.date | escape }}</dd>{% endif %}
+  {%- if s.locator %}<dt>定位</dt><dd>{{ s.locator | escape }}</dd>{% endif %}
+</dl>
+{%- if c.excerpt and lv != 'L2' and c.license.reproduce == 'allowed' %}<blockquote class="ev-ex">{{ c.excerpt | escape }}</blockquote>{% endif %}
+{%- if c.limits %}<p class="ev-lim"><span class="ev-k">限制與待補證</span>{{ c.limits | escape }}</p>{% endif %}
+<p class="ev-lic"><span class="ev-k">使用授權</span>引用：{% case c.license.cite %}{% when 'allowed' %}可{% when 'restricted' %}受限{% else %}未確認{% endcase %}・展示：{% case c.license.display %}{% when 'allowed' %}可{% when 'restricted' %}受限{% else %}未確認{% endcase %}・重製：{% case c.license.reproduce %}{% when 'allowed' %}可{% when 'restricted' %}受限{% else %}未確認{% endcase %}</p>
+{%- if lv == 'L1' %}<p class="ev-wd">來源連結已失效（{{ c.withdrawal.date | date: '%Y-%m-%d' }}）</p>
+{%- elsif lv == 'L2' %}<p class="ev-wd">部分內容因授權限制不公開（{{ c.withdrawal.date | date: '%Y-%m-%d' }}）</p>{% endif %}

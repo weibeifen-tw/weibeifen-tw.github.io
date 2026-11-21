@@ -66,12 +66,13 @@ site.posts.forEach((p, i) => { p.previous = site.posts[i + 1] || null; p.next = 
 // collections
 for (const [name, c] of Object.entries(cfg.collections || {})) {
   const dir = path.join(SRC, '_' + name), arr = [];
-  if (fs.existsSync(dir)) for (const f of fs.readdirSync(dir).filter(f => /\.(md|html)$/.test(f))) {
+  const listDocs = (d, pre = '') => fs.existsSync(d) ? fs.readdirSync(d).flatMap(f => fs.statSync(path.join(d, f)).isDirectory() ? listDocs(path.join(d, f), pre + f + '/') : (/\.(md|html)$/.test(f) ? [pre + f] : [])) : [];
+  for (const f of listDocs(dir)) {
     const raw = matter(fs.readFileSync(path.join(dir, f), 'utf8'));
     let fm = { ...raw.data };
     for (const d of cfg.defaults || []) if (d.scope && d.scope.type === name) fm = { ...d.values, ...fm };
-    const nm = f.replace(/\.(md|html)$/, '');
-    const url = permalinkFor('', fm, c.permalink, { name: nm, title: nm, path: nm });
+    const relp = f.replace(/\.(md|html)$/, ''), nm = path.basename(relp);
+    const url = permalinkFor('', fm, c.permalink, { name: nm, title: nm, path: relp });
     const d = { ...fm, slug: nm, url, collection: name, path: `_${name}/${f}`, _body: raw.content, _md: isMd(f), _out: c.output };
     arr.push(d); if (c.output) docs.push(d);
   }
