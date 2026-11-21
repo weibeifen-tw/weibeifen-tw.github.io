@@ -160,15 +160,6 @@ window.WBAvatar = (function () {
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') toggle(false); });
 })();
 
-// V1.0 S06（Q26）：手機底部導覽「探索」＝臺灣故事、互動年代、未備份研究所
-(function () {
-  var b = document.querySelector('.bnav-ex-btn'), m = document.getElementById('bnav-ex');
-  if (!b || !m) return;
-  function set(open) { m.hidden = !open; b.setAttribute('aria-expanded', open); if (open) { var f = m.querySelector('a'); if (f) f.focus(); } }
-  b.onclick = function (e) { e.stopPropagation(); set(m.hidden); };
-  document.addEventListener('click', function (e) { if (!m.hidden && !m.contains(e.target)) set(false); });
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !m.hidden) { set(false); b.focus(); } });
-})();
 
 // 章節頁：正文裡第一次出現的同一本小說的其他角色，變成可以點的名字
 (function () {
