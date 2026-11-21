@@ -18,7 +18,7 @@
 ## 2. 專書首頁
 - 七卷固定顯示（第一卷～第七卷）。卷名、卷介紹只在 `indigenous_book.yml` 填了已核准公開的文字才顯示，否則顯示「籌備中」。
 - 可點的目錄＝repo 裡 series_key 為 indigenous-history 的文章（repo 只放已核准文章），依卷→章→篇排序、章可摺疊。
-- 不顯示 210 篇規劃、未發布篇目、研究進度、內部審查資料。
+- 不顯示規劃篇目清單、未發布篇目、研究進度、內部審查資料。
 
 ## 3. 證據卡
 欄位：`id`、`source{title, identifier, author, institution, date, locator, url}`、`read_status`（direct 直接核讀／indirect 間接引用／unverified 尚未核讀）、`read_date`、`claim`、`claim_hash`、`limits`、`license{cite, display, reproduce}`（allowed／restricted／unknown）、`excerpt`、`withdrawal{level, date, note}`。
@@ -42,4 +42,4 @@
 - 搜尋、sitemap 在下次建置自動排除。Git 歷史、fork、搜尋引擎快取為殘餘風險（見交付報告）。
 
 ## 6. 發布關卡（需站長設定，程式不能自行完成）
-main 分支保護（PR＋必要檢查、不得略過）、Pages 改 GitHub Actions 部署並綁環境核准人、驗證 strict 模式。範本：`docs/research/deploy-pages.yml.example`。
+部署前 strict 驗證（`.github/workflows/deploy-pages.yml`），Pages Source 須為 GitHub Actions；詳見 `docs/research/release-plan.md`。

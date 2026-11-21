@@ -1,18 +1,16 @@
 name: 排程發章
 
-# 用法：把寫好的章節檔放進 .github/scheduled/上線日期/ 資料夾，
-# 例如 .github/scheduled/2026-11-20/2026-11-20-yang11.md
-# 每天早上 8 點左右（台灣時間），日期到了的章節會自動搬進 _posts/，網站重建後就看得到。
-# 章節檔名裡的日期照舊是故事裡的時間，跟上線日期無關（但不能晚於上線日期，不然會被藏起來）。
+# 2026-11-22 站長決定：小說章節由站長決定何時發布，不再每天自動發布。
+#   - 已停用每日定期觸發；只能在 Actions 頁面手動執行（workflow_dispatch）。
+#   - 用法：把章節檔放進 .github/scheduled/上線日期/，到了想發的那天，由站長在 Actions 頁面按「Run workflow」，
+#     日期已到的章節會搬進 _posts/。搬完後「部署網站」工作流程會在這裡跑完後自動部署（含研究文章驗證）。
+#   - 章節檔名裡的日期照舊是故事裡的時間，跟上線日期無關（但不能晚於上線日期，不然會被藏起來）。
 
 on:
-  schedule:
-    - cron: "53 23 * * *"   # UTC 23:53 = 台灣 07:53（提早幾分鐘，避開整點塞車）
-  workflow_dispatch:         # 也可以在 Actions 頁面手動按一次
+  workflow_dispatch:         # 只能手動執行
 
 permissions:
   contents: write
-  pages: write
 
 concurrency:
   group: schedule-chapters
@@ -52,9 +50,4 @@ jobs:
           git pull --rebase
           git push
 
-      # 每天都重建一次，故意設未來日期的章節到了那天才會自己出現
-      - name: 請 GitHub Pages 重建網站
-        continue-on-error: true
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh api -X POST "repos/${{ github.repository }}/pages/builds"
+      # 舊式「請 GitHub Pages 重建網站」已移除：改由 .github/workflows/deploy-pages.yml 在本工作流程完成後部署

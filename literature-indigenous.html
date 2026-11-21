@@ -9,7 +9,7 @@ permalink: /literature/indigenous/
   原住民族數位歷史專書首頁（DEV-03）。
   卷名、卷介紹、專書介紹只取 _data/indigenous_book.yml 裡「已核准公開」的文字，沒填就顯示「籌備中」。
   目錄只列 repo 裡 series_key＝indigenous-history 的文章（repo 只放已核准公開的文章）。依卷→章→篇排序。
-  不顯示：210 篇規劃、未發布篇目、研究進度、審查資料。
+  不顯示：規劃篇目清單、未發布篇目、研究進度、審查資料。
 {%- endcomment -%}
 {%- assign book = site.data.indigenous_book -%}
 {%- assign arts = site.literature | where: "series_key", book.series_key -%}
