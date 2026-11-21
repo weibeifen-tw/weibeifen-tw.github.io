@@ -10,6 +10,7 @@ body_class: wide
 {%- comment -%}
   V1.0 S08（D04、Q32 A1-2）：22 縣市。電腦／平板＝完整可互動地圖＋縣市列表；手機＝各縣市獨立輪廓列表（不分北中南東，照站長核准的固定順序）。
   兩邊共用 assets/taiwan/counties.svg 一份幾何資料；縣市與小說的對應在 _data/counties.yml。
+  2026-11-22：列表最上方「史前與古地理」、最下方「地點未定」兩個特殊分類（_data/counties.yml 的 prehistoric／unlocated，_includes/cty-special-row.html），不在地圖上、不計入縣市。
   舊的 13 個地理分區（_data/regions.yml、_includes/taiwan-map.html）保留資料，目前不顯示。
 {%- endcomment -%}
 {%- assign geo = '/assets/taiwan/counties.svg' | relative_url -%}
@@ -22,7 +23,8 @@ body_class: wide
     <a class="cty-a{% if c.novels.size == 0 %} none{% endif %}" href="#cty-{{ c.key }}" data-k="{{ c.key }}" aria-label="{{ c.name }}{% if c.novels.size > 0 %}，{{ c.novels.size }} 部故事{% else %}，尚無故事{% endif %}"><title>{{ c.name }}</title><use href="{{ geo }}#c-{{ c.key }}"/>{% if c.bbox[2] < 45 and c.bbox[3] < 45 %}<circle class="cty-hit" cx="{{ c.bbox[2] | divided_by: 2.0 | plus: c.bbox[0] }}" cy="{{ c.bbox[3] | divided_by: 2.0 | plus: c.bbox[1] }}" r="18"/>{% endif %}</a>
     {%- endfor %}
   </svg>
-  <ol class="cty-list" aria-label="22 縣市">
+  <ol class="cty-list" aria-label="史前與古地理、22 縣市、地點未定">
+    {%- include cty-special-row.html g=site.data.counties.prehistoric %}
     {%- for c in site.data.counties.counties %}
     <li class="cty-row{% if c.novels.size == 0 %} none{% endif %}" id="cty-{{ c.key }}" data-k="{{ c.key }}">
       <button type="button" class="cty-btn" aria-expanded="false"{% if c.novels.size > 0 %} aria-controls="cty-n-{{ c.key }}"{% else %} aria-disabled="true"{% endif %}>
@@ -38,13 +40,8 @@ body_class: wide
       {%- endif %}
     </li>
     {%- endfor %}
+    {%- include cty-special-row.html g=site.data.counties.unlocated %}
   </ol>
-{%- if site.data.counties.unassigned.size > 0 %}
-<section class="cty-un" aria-labelledby="cty-un-h">
-  <h2 id="cty-un-h">未指定縣市</h2>
-  <ul>{%- for u in site.data.counties.unassigned -%}{%- assign nv = site.data.novels[u.id] -%}<li><a href="{{ '/novel/' | append: u.id | append: '/' | relative_url }}"><b>《{{ nv.title }}》</b><small>{{ u.area }}</small></a></li>{%- endfor -%}</ul>
-</section>
-{%- endif %}
 </div>
 <p class="cty-src">縣市界：內政部國土測繪中心「村里界圖」（政府資料開放授權條款第 1 版），經 taiwan-atlas 整理；離島為插入框，位置不代表實際距離。</p>
 <nav class="sr-only" aria-label="所有小說">{% for n in site.data.novels %}<a href="{{ '/novel/' | append: n[0] | append: '/' | relative_url }}">{{ n[1].title }}</a>{% endfor %}</nav>
