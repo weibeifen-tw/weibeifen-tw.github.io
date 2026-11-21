@@ -6,8 +6,8 @@
 {%- assign leads = "" | split: "" -%}
 {%- assign sups = "" | split: "" -%}
 {%- for c in site.data.characters -%}{%- if c[1].novel == id -%}{%- if c[1].support -%}{%- assign sups = sups | push: c[0] -%}{%- else -%}{%- assign leads = leads | push: c[0] -%}{%- endif -%}{%- endif -%}{%- endfor -%}
-{%- comment -%} 限動（山海有痕起）：作品限動 nv.stories、角色專屬限動 characters.yml 的 story；都是點了才載入大圖（assets/story.js） {%- endcomment -%}
-{%- assign has_story = false -%}{%- if nv.stories -%}{%- assign has_story = true -%}{%- endif -%}
+{%- comment -%} 角色專屬限動（山海有痕起）：characters.yml 的 story，點頭像才載入大圖（assets/story.js） {%- endcomment -%}
+{%- assign has_story = false -%}
 {%- for cid in leads -%}{%- if site.data.characters[cid].story -%}{%- assign has_story = true -%}{%- endif -%}{%- endfor -%}
 {%- for cid in sups -%}{%- if site.data.characters[cid].story -%}{%- assign has_story = true -%}{%- endif -%}{%- endfor -%}
 {%- assign posters = ordered | map: "character" | uniq -%}
@@ -15,9 +15,6 @@
   <a class="nv-back" href="{{ '/' | relative_url }}">← 回首頁</a>
   <h1>{{ nv.title }}</h1>
   {%- if nv.era %}<p class="nv-era">{{ nv.era }}</p>{% endif %}
-  {%- if nv.stories %}
-  <button type="button" class="nv-story sv-open" data-sv="{% for st in nv.stories %}{{ st.src | relative_url }}|{{ st.alt | escape }}{% unless forloop.last %}^{% endunless %}{% endfor %}" aria-label="看《{{ nv.title }}》作品限動"><span class="sv-ring"><img src="{{ nv.cover | relative_url }}" alt="" width="45" height="60" loading="lazy" decoding="async"></span><small>作品限動</small></button>
-  {%- endif %}
   {%- comment -%} V1.0 R02：原首頁作品介紹貼文的圖片與互動 {%- endcomment -%}
   {% include novel-post.html id=id %}
   {%- comment -%}
@@ -86,6 +83,13 @@
     {%- if nv.fiction_note %}<p class="nv-note">{{ nv.fiction_note | escape }}</p>{% endif -%}
   </div>
   {%- endif %}
+  {%- comment -%} 作品主視覺（山海有痕起）：novels.yml 的 visuals，跟作品介紹貼文的漫畫分開，自己一個滑動區；第一張以外延遲載入 {%- endcomment -%}
+  {%- if nv.visuals %}
+  <figure class="nv-gallery">
+    <div class="ip-slides">{% for v in nv.visuals %}<img src="{{ v.src | relative_url }}" width="900" height="1125" alt="《{{ nv.title }}》{{ v.alt | escape }}" loading="lazy" decoding="async">{% endfor %}</div>
+    {%- if nv.visuals.size > 1 %}<div class="ip-dots">{% for v in nv.visuals %}<i{% if forloop.first %} class="on"{% endif %}></i>{% endfor %}</div>{% endif %}
+  </figure>
+  {%- endif %}
   {%- comment -%} 歷史背景與延伸閱讀（山海有痕起）：novels.yml 的 history.intro／history.refs；只列公開參考資料 {%- endcomment -%}
   {%- if nv.history %}
   <details class="reading-details nv-history">
@@ -101,8 +105,10 @@
 </section>
 <h2 class="nv-h ch-h">篇章</h2>
 <div class="chapters nv-list">
+{%- assign last_vol = '' -%}
 {%- for post in ordered -%}
   {%- assign pc = site.data.characters[post.character] -%}
+  {%- if post.volume and post.volume != last_vol %}<h3 class="grp">{{ post.volume }}</h3>{% assign last_vol = post.volume %}{% endif -%}
   <a class="chapter toc" id="{{ post.slug }}" href="{{ post.url | relative_url }}" data-novel="{{ post.novel }}" data-char="{{ post.character }}" data-no="{{ post.chapter }}">
     <span class="ch-no">第 {{ post.chapter }} 篇</span>
     <span class="ch-title">{{ post.title }}{% if posters.size > 1 %}<small class="ch-who" style="--c:{{ pc.color }}">{{ pc.name }}</small>{% endif %}</span>
