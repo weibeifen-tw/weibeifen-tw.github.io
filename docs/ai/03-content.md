@@ -7,3 +7,4 @@
 - `_data/regions.yml`：舊 13 個地理分區（保留資料，目前不顯示）。
 - `_data/literature.yml`＋`_literature/`：未備份研究所六大專區與文章（選填 series／volume／chapter_no／piece／version／revisions）；`.github/scripts/validate_literature.rb` 驗證欄位。
 - 原住民族歷史 7 卷 30 章 210 篇只是規劃，不得當成已完成或自行撰寫。
+- 原住民族專書：`literature-indigenous.html`、`_data/indigenous_book.yml`、`_data/evidence/`、`_lit_versions/`、`_data/withdrawn.yml`；設計與流程見 `docs/research/indigenous-design.md`、`.github/approver/README.md`。

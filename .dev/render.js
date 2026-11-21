@@ -112,7 +112,7 @@ for (const f of fs.readdirSync(path.join(SRC, '_layouts'))) {
     const page = { ...d }; delete page._body;
     try {
       let content = await liquid.parseAndRender(d._body, { site, page, paginator: null });
-      if (d._md) content = marked.parse(content);
+      if (d._md) { content = marked.parse(content); let hn = 0; content = content.replace(/<h([23])>/g, (m, l) => `<h${l} id="section${hn++ ? '-' + (hn - 1) : ''}">`); } // kramdown 會自動加 id，marked 不會
       page.content = content;
       let lay = d.layout === undefined ? (d.collection === 'posts' ? null : null) : d.layout;
       let guard = 0, layoutVars = {};

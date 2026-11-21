@@ -9,6 +9,8 @@
 # 用法：ruby .github/scripts/verify_approvals.rb [根目錄] [--strict]
 #   --strict（main／發布用）：缺公鑰、缺 tag、驗簽失敗一律失敗
 #   非 strict（開發分支）：列為提醒
+Encoding.default_external = Encoding::UTF_8
+Encoding.default_internal = Encoding::UTF_8
 require 'yaml'
 require 'date'
 require 'digest'
@@ -49,8 +51,8 @@ items.each do |rel, fm, body|
   type, = git('cat-file', '-t', tag)
   unless type.strip == 'tag' then problems << [rel, "#{tag} 不是附註 tag（必須是簽章 tag）"]; next; end
   if have_key
-    _o, e, st = git('-c', 'gpg.format=ssh', '-c', "gpg.ssh.allowedSignersFile=#{SIGNERS}", 'verify-tag', tag)
-    unless st.success? then problems << [rel, "#{tag} 簽章驗證失敗：#{e.lines.first.to_s.strip}"]; next; end
+    _o, e, st = git('-c', 'gpg.format=ssh', '-c', 'gpg.ssh.program=ssh-keygen', '-c', "gpg.ssh.allowedSignersFile=#{SIGNERS}", 'verify-tag', tag)
+    unless st.success? then problems << [rel, "#{tag} 不是站長公鑰簽的（或沒有簽章）：#{e.lines.last.to_s.strip}"]; next; end
   end
   msg, = git('tag', '-l', '--format=%(contents)', tag)
   kv = msg.lines.map { |l| l.strip.split(/:\s*/, 2) }.select { |a| a.size == 2 }.to_h

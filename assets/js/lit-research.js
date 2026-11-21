@@ -45,7 +45,7 @@
   var out = document.querySelector('.lit-cmp-out');
   function blocks(root) {
     var c = root.cloneNode(true);
-    c.querySelectorAll('.ev-ref, sup.footnote, .footnotes, script').forEach(function (x) { x.remove(); });
+    c.querySelectorAll('.ev-ref, sup.footnote, a.footnote, .footnotes, script').forEach(function (x) { x.remove(); });
     var bs = []; c.querySelectorAll('h2, h3, h4, p, li, blockquote, td, th').forEach(function (el) {
       if (el.querySelector('p, li')) return; var t = el.textContent.replace(/\s+/g, ' ').trim(); if (t) bs.push(t);
     });

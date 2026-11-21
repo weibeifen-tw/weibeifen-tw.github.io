@@ -7,6 +7,8 @@
 #   - 歷史版本（指紋、ev_map、對應的現行文章）
 #   - 撤回清單（網址必須已經不存在）
 # 簽章（可信核准基準）另由 verify_approvals.rb 檢查。
+Encoding.default_external = Encoding::UTF_8
+Encoding.default_internal = Encoding::UTF_8
 require 'yaml'
 require 'date'
 require 'digest'
