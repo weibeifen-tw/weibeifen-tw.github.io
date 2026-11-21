@@ -118,8 +118,11 @@ window.WBAvatar = (function () {
       var t = (a.closest('.chapter.read') ? document.title.replace(/｜未備份$/, '') : (host && host.querySelector('.topic') ? host.querySelector('.topic').textContent : document.title));
       window.open('https://www.threads.net/intent/post?text=' + encodeURIComponent(t + '\n' + url), '_blank', 'noopener');
     };
-    // 留言：連到角色私訊
-    if (talk) talk.onclick = function () { if (window.openDM && cid) window.openDM(cid, key); };
+    // 留言（V1.0 S09：私訊退役）：到這篇的公開留言區
+    if (talk) talk.onclick = function () {
+      var here = document.getElementById('comments'), u = url.replace(/^https?:\/\/[^/]+/, '');
+      if (here && (u === location.pathname || !u)) here.scrollIntoView({ behavior: 'smooth' }); else location.href = url + '#comments';
+    };
     a.querySelector('.share').onclick = function () {
       if (navigator.share) { navigator.share({ title: document.title, url: url }).catch(function () {}); return; }
       var toast = a.querySelector('.toast');
@@ -314,51 +317,16 @@ window.WBRenderShelf();
 
 // （臺灣故事地圖已拆到 assets/js/taiwan.js）
 
-// 私訊：讀者跟角色的對話
-//   登入會員：訊息存在雲端（cloud.js 的 window.WBDM），蔡在管理後台用角色身分回覆，回覆出現在左邊。
-//   沒登入：只顯示這台裝置上的舊訊息（以前存在 wb:dm: / wb:c:），要傳新訊息請先登入。
+// V1.0 S09（DM-A 私訊全面退役）：右下角只當通知（你留過言的地方有新回應）。私訊入口、對話、傳送、刪除都已移除；舊私訊資料保留在資料庫，前端不讀不寫。
 (function () {
   var btn = document.querySelector('.chat-btn'), box = document.querySelector('.inbox');
   if (!btn || !box) return;
-  var chars = JSON.parse(document.getElementById('chars').textContent || '{}');
   var novels = JSON.parse(document.getElementById('novels').textContent || '{}');
-  var posts = null, cloud = null; // cloud：雲端訊息陣列；null＝沒登入或讀不到
-  function get(k, d) { try { var v = localStorage.getItem('wb:' + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
+  var posts = null;
   function esc(s) { var d = document.createElement('div'); d.textContent = s == null ? '' : s; return d.innerHTML; }
-  function av(id) { var c = chars[id] || {}; return '<span class="avatar" style="--c:' + esc(c.color || '#999') + '">' + (c.avatar ? '<img src="' + window.BASE + '/assets/avatars/' + esc(c.avatar) + '?v=' + window.VER + '" alt="">' : esc(c.glyph || '?')) + '</span>'; }
-  function when(ms) { if (!ms) return ''; var d = new Date(ms); return (d.getMonth() + 1) + '/' + d.getDate() + ' ' + ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2); }
-  function dm() { return window.WBDM && window.WBDM.on() ? window.WBDM : null; }
-  // 收集：每個角色 → [{t, at, post, me, local, unseen}]
-  function collect() {
-    var by = {};
-    function add(cid, m) { (by[cid] = by[cid] || []).push(m); }
-    try {
-      for (var i = 0; i < localStorage.length; i++) {
-        var k = localStorage.key(i);
-        if (k.indexOf('wb:c:') === 0) {
-          var p = posts[k.slice(5)]; if (!p) continue;
-          (get(k.slice(3), []) || []).forEach(function (m, j) { var o = typeof m === 'string' ? { t: m } : m; add(p.c, { t: o.t, at: o.at || 0, ord: p.d * 1000 + j, post: p, me: true, local: true }); });
-        } else if (k.indexOf('wb:dm:') === 0) {
-          var cid = k.slice(6);
-          (get(k.slice(3), []) || []).forEach(function (o) { add(cid, { t: o.t, at: o.at, ord: o.at, me: true, local: true }); });
-        }
-      }
-    } catch (e) {}
-    (cloud || []).forEach(function (r) {
-      var at = Date.parse(r.created_at) || 0;
-      add(r.chr, { t: r.body, at: at, ord: at, post: (r.post && posts[r.post]) || null, me: !r.from_char, unseen: r.from_char && !r.seen });
-    });
-    Object.keys(by).forEach(function (c) { by[c].sort(function (a, b) { return (a.at || a.ord) - (b.at || b.ord); }); });
-    return by;
-  }
-  function listView() {
-    var by = collect(), ids = Object.keys(by).filter(function (c) { return chars[c]; });
-    ids.sort(function (a, b) { var x = by[a][by[a].length - 1], y = by[b][by[b].length - 1]; return (y.at || y.ord || 0) - (x.at || x.ord || 0); });
-    // V1.0 R02-R1：私訊角色入口取消，收件匣只當通知用（留言新回應、管理員未讀私訊）。舊私訊資料保留在資料庫，不顯示。
-    ids = [];
+  function on() { return !!(window.WBDM && window.WBDM.on && window.WBDM.on()); }
+  function view() {
     var h = '<div class="ib-head"><b>通知</b><button type="button" class="ib-x" aria-label="關閉">✕</button></div>';
-    var au = window.WBDM && window.WBDM.adminUnseen;
-    if (au > 0) h += '<a class="ib-admin" href="' + window.BASE + '/admin/#dm">讀者傳來 ' + au + ' 則未讀私訊，前往後台回覆 ›</a>';
     var nt = (window.WBDM && window.WBDM.notices) || [];
     if (nt.length) {
       var byUrl = {}; Object.keys(posts || {}).forEach(function (k) { byUrl[posts[k].u] = posts[k]; });
@@ -367,91 +335,19 @@ window.WBRenderShelf();
           (pp ? (pp.ch ? '第 ' + pp.ch + ' 篇・' : '') + pp.t : (x.path.indexOf('/novel/') === 0 ? '介紹頁' : ''));
         return '<a href="' + esc(x.path) + '#comments">' + esc(t) + '<span>' + x.n + ' 則新留言</span></a>';
       }).join('') + '</div>';
-    }
-    if (!ids.length && !nt.length && !(au > 0)) h += '<p class="ib-empty">' + (dm() ? '目前沒有新通知。<br>有人在你留過言的地方留言，會顯示在這裡。' : '登入會員後，有人在你留過言的地方留言，會通知你。') + '</p>';
-    else h += '<ul class="ib-list">' + ids.map(function (c) {
-      var ms = by[c], last = ms[ms.length - 1], ch = chars[c];
-      var nNew = ms.filter(function (m) { return m.unseen; }).length;
-      return '<li><button type="button" data-c="' + esc(c) + '">' + av(c) + '<span class="ib-who"><b>' + esc(ch.name) + '</b><small>@' + esc(ch.handle || '') + '</small><span class="ib-last">' + (last.me ? '你' : esc(ch.name)) + '：' + esc(last.t) + '</span></span>' +
-        (nNew ? '<span class="ib-n new">' + nNew + '</span>' : '<span class="ib-n">' + ms.length + '</span>') + '</button></li>';
-    }).join('') + '</ul>';
+    } else h += '<p class="ib-empty">' + (on() ? '目前沒有新通知。<br>有人在你留過言的地方留言，會顯示在這裡。' : '登入會員後，有人在你留過言的地方留言，會通知你。<br><a href="' + window.BASE + '/member/">前往登入</a>') + '</p>';
     box.innerHTML = '<div class="ib-panel">' + h + '</div>';
   }
-  var ctx = null; // 從貼文點留言進來時，記住是哪一篇
-  function chatView(c) {
-    var msgs = collect()[c] || [], ch = chars[c] || {}, nv = novels[ch.novel] || {}, last = null;
-    var h = '<div class="ib-head"><button type="button" class="ib-back" aria-label="返回">‹</button>' + av(c) + '<span class="ib-who"><b>' + esc(ch.name) + '</b><small>' + (nv.title ? '《' + esc(nv.title) + '》' : '') + '</small></span>' + (msgs.length ? '<button type="button" class="ib-del" data-del="' + esc(c) + '">刪除對話</button>' : '') + '<button type="button" class="ib-x" aria-label="關閉">✕</button></div><div class="ib-msgs">';
-    if (msgs.some(function (m) { return m.local; })) h += '<p class="ib-note">淡色的訊息只存在這台裝置，' + esc(ch.name) + '看不到。</p>';
-    msgs.forEach(function (m) {
-      var tag = m.post ? m.post.u : 'dm';
-      if (m.me && tag !== last) { h += m.post ? '<a class="ib-ref" href="' + esc(m.post.u) + '">' + (m.post.ch ? '第 ' + m.post.ch + ' 篇' : '') + '〈' + esc(m.post.t) + '〉</a>' : ''; last = tag; }
-      var tm = m.at ? '<small>' + when(m.at) + '</small>' : '';
-      h += m.me ? '<div class="ib-me' + (m.local ? ' local' : '') + '"><span>' + esc(m.t) + '</span>' + tm + '</div>'
-                : '<div class="ib-them">' + av(c) + '<div><span>' + esc(m.t) + '</span>' + tm + '</div></div>';
-    });
-    h += '</div>';
-    h += cloud
-      ? '<form class="ib-form"><input type="text" maxlength="500" placeholder="傳訊息給' + esc(ch.name) + '…"><button type="submit">送出</button></form>'
-      : '<div class="ib-login">登入會員就能私訊' + esc(ch.name) + '，' + esc(ch.name) + '會回覆你。<a href="' + window.BASE + '/member/">前往登入</a></div>';
-    box.innerHTML = '<div class="ib-panel chat">' + h + '</div>';
-    var ms = box.querySelector('.ib-msgs'); ms.scrollTop = ms.scrollHeight;
-    if (cloud && msgs.some(function (m) { return m.unseen; })) {
-      cloud.forEach(function (r) { if (r.chr === c && r.from_char) r.seen = true; });
-      window.WBDM.seen(c);
-    }
-    var f = box.querySelector('.ib-form'); if (!f) return;
-    f.onsubmit = async function (e) {
-      e.preventDefault();
-      var i = f.querySelector('input'), b = f.querySelector('button'), t = i.value.trim(); if (!t) return;
-      var key = ctx && ctx.c === c && posts && posts[ctx.key] ? ctx.key : null;
-      i.disabled = b.disabled = true;
-      var err = await window.WBDM.send(c, key, t);
-      if (err) { i.disabled = b.disabled = false; window.alert(err); i.focus(); return; }
-      try { cloud = (await window.WBDM.load()) || cloud; } catch (x) {}
-      chatView(c);
-      var ni = box.querySelector('.ib-form input'); if (ni) ni.focus();
-    };
-  }
-  async function open(then) {
+  async function open() {
     box.hidden = false; document.body.classList.add('ib-open');
-    then = typeof then === 'function' ? then : listView;
     box.innerHTML = '<div class="ib-panel"><p class="ib-empty">載入中…</p></div>';
-    if (!posts) {
-      try { posts = await (await fetch(window.BASE + '/assets/posts.json?v=' + window.VER)).json(); } catch (e) { posts = {}; }
-    }
-    cloud = null;
-    if (dm()) { try { var lr = await Promise.all([dm().load(), dm().refresh()]); cloud = lr[0]; } catch (e) { cloud = null; } }
-    if (!box.hidden) then();
+    if (!posts) { try { posts = await (await fetch(window.BASE + '/assets/posts.json?v=' + window.VER)).json(); } catch (e) { posts = {}; } }
+    if (on() && window.WBDM.refresh) { try { await window.WBDM.refresh(); } catch (e) {} }
+    if (!box.hidden) view();
   }
   function close() { box.hidden = true; document.body.classList.remove('ib-open'); }
-  // 刪除跟某個角色的整段對話：雲端的（含角色回覆）＋這台裝置上的舊訊息
-  async function delThread(c, b) {
-    var name = (chars[c] || {}).name || '';
-    if (!window.confirm('刪除跟' + name + '的整段對話？' + (cloud ? name + '的回覆也會一起刪掉，' : '') + '刪了就找不回來。')) return;
-    b.disabled = true;
-    if (cloud) {
-      var err = await window.WBDM.delThread(c);
-      if (err) { b.disabled = false; window.alert(err); return; }
-      cloud = cloud.filter(function (r) { return r.chr !== c; });
-    }
-    try {
-      localStorage.removeItem('wb:dm:' + c);
-      for (var i = localStorage.length - 1; i >= 0; i--) {
-        var k = localStorage.key(i);
-        if (k && k.indexOf('wb:c:') === 0 && posts[k.slice(5)] && posts[k.slice(5)].c === c) localStorage.removeItem(k);
-      }
-    } catch (x) {}
-    ctx = null; listView();
-  }
-  btn.onclick = function () { ctx = null; open(); };
-  // 貼文的留言按鈕：直接打開跟這個角色的私訊
-  window.openDM = function () { ctx = null; open(); };
-  box.addEventListener('click', function (e) {
-    if (e.target === box || e.target.closest('.ib-x')) return close();
-    if (e.target.closest('.ib-back')) { ctx = null; return listView(); }
-    var d = e.target.closest('[data-del]'); if (d) return delThread(d.dataset.del, d);
-    var b = e.target.closest('[data-c]'); if (b) chatView(b.dataset.c);
-  });
+  btn.onclick = function () { open(); };
+  box.addEventListener('click', function (e) { if (e.target === box || e.target.closest('.ib-x')) close(); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !box.hidden) close(); });
 })();
 
