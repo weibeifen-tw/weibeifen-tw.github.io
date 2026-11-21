@@ -711,16 +711,11 @@ shanhai:
         url: https://tci.ncl.edu.tw/cgi-bin/gs32/gsweb.cgi?o=dnclresource&s=id%3D%22SA10000039047%22.&searchmode=basic&tcihsspage=tcisearch_opt1_search
       - title: Hung 等，2024，Early Peopling in and Around Taiwan
         url: https://doi.org/10.4324/9781003427483-9
-  # comic_alts＝作品介紹貼文三張漫畫的 alt；visuals＝作品頁另外放的兩張雙人主視覺（不跟漫畫混在同一個滑動區）
+  # comic_alts＝作品介紹貼文三張漫畫的 alt（作品頁不放雙人主視覺，2026-11-21 蔡決定拿掉）
   comic_alts:
     - 漫畫〈距離〉：霧與刃在山谷溪岸相遇，隔著一段距離對望
     - 漫畫〈靠近〉：岩壁下，兩人相互凝視，手即將碰觸
     - 漫畫〈承諾〉：雨夜的岩蔭下，火光照著兩人相握的手
-  visuals:
-    - src: /assets/visuals/shanhai-1.webp
-      alt: 主視覺：霧手持石頭、刃攜帶石器，並肩站在臺灣東部山海之間的礫石灘
-    - src: /assets/visuals/shanhai-2.webp
-      alt: 主視覺：霧與刃在山海背景前互相凝視
   reading_info:
     relationship: 慢熱、族群對立
     tone: 苦甜
