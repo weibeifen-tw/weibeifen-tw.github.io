@@ -1,0 +1,44 @@
+# 正式部署（2026-11-22 啟用）。前提：Settings → Pages → Source＝GitHub Actions；說明見 docs/research/release-plan.md。
+# 設計重點：
+#   - 發布關卡＝部署前的 strict 驗證：研究文章必須有站長簽章的核准 tag，否則整次部署失敗、網站維持舊版
+#   - 小說章節：站長手動執行「排程發章」→ 它用內建權杖推 main（這種推送不會觸發其他工作流程），
+#     所以這裡用 workflow_run 在「排程發章」成功跑完後部署
+#   - 一般推送 main、手動按，也會部署
+name: 部署網站（研究文章需站長簽章核准）
+on:
+  push:
+    branches: [main]
+  workflow_run:
+    workflows: ["排程發章"]
+    types: [completed]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  build:
+    # workflow_run：只在「排程發章」成功時部署
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: main, fetch-depth: 0, fetch-tags: true, persist-credentials: false }
+      - run: ruby .github/scripts/validate_literature.rb .
+      - run: ruby .github/scripts/validate_research.rb .
+      - run: ruby .github/scripts/verify_approvals.rb . --strict
+      - uses: actions/jekyll-build-pages@v1
+        with: { source: ./, destination: ./_site }
+      - uses: actions/upload-pages-artifact@v3
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.d.outputs.page_url }}
+    steps:
+      - id: d
+        uses: actions/deploy-pages@v4

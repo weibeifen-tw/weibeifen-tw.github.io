@@ -1,0 +1,15 @@
+{%- comment -%}
+  研究證據引用（原住民族專區 DEV-03）：正文寫 {% include ev.html id="EV-001" %}
+  現行文章：連到現行證據卡（撤回 L3 不顯示）。
+  歷史版本（collection lit_versions）：只有當時記錄的 claim_hash（page.ev_map）等於現行卡片的 claim_hash 才連結，否則顯示「歷史引用對應無法確認」（Q10 B、Q15 B）。
+{%- endcomment -%}
+{%- assign evid = include.id -%}
+{%- assign evaid = page.article_id -%}
+{%- assign evcards = site.data.evidence[evaid] -%}
+{%- assign evc = nil -%}{%- for c in evcards -%}{%- if c.id == evid -%}{%- assign evc = c -%}{%- break -%}{%- endif -%}{%- endfor -%}
+{%- assign evok = false -%}
+{%- if evc and evc.withdrawal.level != 'L3' -%}
+  {%- if page.collection == 'lit_versions' -%}{%- if page.ev_map[evid] and page.ev_map[evid] == evc.claim_hash -%}{%- assign evok = true -%}{%- endif -%}
+  {%- else -%}{%- assign evok = true -%}{%- endif -%}
+{%- endif -%}
+{%- if evok -%}<sup class="ev-ref"><a href="#ev-{{ evid }}" data-ev="{{ evid }}" aria-label="研究證據 {{ evid }}">{{ evid }}</a></sup>{%- else -%}<sup class="ev-ref ev-miss" title="歷史引用對應無法確認">（歷史引用對應無法確認）</sup>{%- endif -%}

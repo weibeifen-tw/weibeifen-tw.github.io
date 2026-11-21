@@ -14,7 +14,8 @@ AUTHOR = '畝 MU'
 TYPES = %w[knowledge opinion].freeze
 KNOWN = %w[title date updated category tags article_type description author cover cover_alt
            related_novels related_articles references seo_title seo_desc layout published permalink
-           article_id version keywords series volume chapter_no piece revisions].freeze
+           article_id version keywords series volume chapter_no piece revisions
+           series_key volume_no body_sha256 approved_tag].freeze
 SEO_TITLE_MAX = 32
 SEO_DESC_MAX = 120
 

@@ -20,7 +20,22 @@ self.addEventListener('install', e => {
   e.waitUntil(caches.open(C.static).then(c => c.addAll(PRECACHE)).catch(() => {}));
 });
 
+// 撤回清單（/withdrawn.json，只有網址）：清掉讀者裝置上這些網址的離線副本
+async function purgeWithdrawn() {
+  try {
+    const r = await fetch('/withdrawn.json', { cache: 'no-store' }); if (!r.ok) return;
+    const urls = ((await r.json()).urls || []).map(u => new URL(u, location.origin).pathname);
+    if (!urls.length) return;
+    const c = await caches.open(C.pages), m = await caches.open(C.meta);
+    for (const k of await c.keys()) {
+      const p = new URL(k.url).pathname;
+      if (urls.some(u => p === u || p.startsWith(u.endsWith('/') ? u : u + '/'))) { await c.delete(k); await m.delete(k.url); }
+    }
+  } catch (e) {}
+}
+
 self.addEventListener('activate', e => {
+  e.waitUntil(purgeWithdrawn());
   e.waitUntil(caches.keys().then(keys => Promise.all(keys
     // 舊版本的 CSS／JS 快取、舊架構的 wb-<時間> 快取：刪掉；頁面、圖片快取跨版本保留（網路優先，會自己更新）
     .filter(k => (k.startsWith('wb-static-') && k !== C.static) || /^wb-\d+$/.test(k))
@@ -50,6 +65,7 @@ async function forget(req) {
   const m = await caches.open(C.meta); await m.delete(req.url);
 }
 
+let lastPurge = 0;
 self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET') return;
@@ -59,8 +75,9 @@ self.addEventListener('fetch', e => {
     if (req.mode === 'navigate') e.respondWith(fetch(req).catch(async () => (await caches.match(OFFLINE)) || Response.error()));
     return;
   }
-  if (url.pathname === '/sw.js') return;
+  if (url.pathname === '/sw.js' || url.pathname === '/withdrawn.json') return;
 
+  if (req.mode === 'navigate' && Date.now() - lastPurge > 3600e3) { lastPurge = Date.now(); e.waitUntil(purgeWithdrawn()); }
   // 網頁（含已讀章節、研究文章）與 JSON 索引：網路優先，成功才存；離線才用副本
   if (req.mode === 'navigate' || url.pathname.endsWith('.json')) {
     e.respondWith((async () => {
