@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-# 文學專區文章資料驗證（P06）
+# 未備份研究所文章資料驗證（P06；V1.0 S08 改六大專區）
 # 用法：ruby .github/scripts/validate_literature.rb [網站根目錄，預設 .]
 # 只用 Ruby 標準函式庫（YAML、Date），不需要另外安裝套件。
 # 錯誤（ERROR）會讓檢查失敗；提醒（WARN）只列出，不擋。
@@ -13,7 +13,8 @@ SITE_NAME = '未備份'
 AUTHOR = '畝 MU'
 TYPES = %w[knowledge opinion].freeze
 KNOWN = %w[title date updated category tags article_type description author cover cover_alt
-           related_novels related_articles references seo_title seo_desc layout published permalink].freeze
+           related_novels related_articles references seo_title seo_desc layout published permalink
+           article_id version keywords series volume chapter_no piece revisions].freeze
 SEO_TITLE_MAX = 32
 SEO_DESC_MAX = 120
 
@@ -90,7 +91,7 @@ files.each do |path|
 
   # 分類、文章性質
   if blank?(fm['category']) then err.(rel, 'category 必填')
-  elsif !cats.include?(fm['category']) then err.(rel, "category「#{fm['category']}」不是八大正式分類（#{cats.join('、')}）")
+  elsif !cats.include?(fm['category']) then err.(rel, "category「#{fm['category']}」不是六大研究專區（#{cats.join('、')}）")
   end
   if blank?(fm['article_type']) then err.(rel, 'article_type 必填（knowledge 或 opinion）')
   elsif !TYPES.include?(fm['article_type']) then err.(rel, "article_type 只能是 knowledge 或 opinion，現在是「#{fm['article_type']}」")
@@ -210,13 +211,13 @@ rel_list.each do |rel, self_name, a|
   end
 end
 
-puts "文學專區文章驗證：#{files.size} 個檔案"
+puts "研究所文章驗證：#{files.size} 個檔案"
 puts warns unless warns.empty?
 if errors.empty?
-  puts "OK  文學文章資料驗證通過（錯誤 0、提醒 #{warns.size}）"
+  puts "OK  研究文章資料驗證通過（錯誤 0、提醒 #{warns.size}）"
   exit 0
 else
   puts errors
-  puts "FAIL 文學文章資料驗證失敗（錯誤 #{errors.size}、提醒 #{warns.size}）"
+  puts "FAIL 研究文章資料驗證失敗（錯誤 #{errors.size}、提醒 #{warns.size}）"
   exit 1
 end

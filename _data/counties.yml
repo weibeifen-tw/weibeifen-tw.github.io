@@ -1,0 +1,96 @@
+# 臺灣故事 22 縣市（V1.0 S08、D04）。order 為站長核准的固定順序，不得重排。
+# bbox＝在 assets/taiwan/counties.svg 座標裡的外框（x y 寬 高），給手機各縣市小圖用；由 .dev 產生，勿手改。
+# novels：只列明確在該縣市的小說（同一部可以出現在多個縣市）。不確定的寫在最下面 pending，不顯示。
+counties:
+  - key: kinmen
+    name: 金門
+    bbox: [19.4, 247.5, 126.2, 43.1]
+    novels: [duanqiao]
+  - key: yilan
+    name: 宜蘭
+    bbox: [440.1, 79.4, 150.3, 174.5]
+    novels: []
+  - key: hualien
+    name: 花蓮
+    bbox: [362.9, 238.2, 183.9, 326.4]
+    novels: [chuwang]
+  - key: nantou
+    name: 南投
+    bbox: [276.1, 270.4, 171.7, 207.8]
+    novels: [shiyi, weigongkai, pendi]
+  - key: pingtung
+    name: 屏東
+    bbox: [212.9, 619.1, 130.5, 253.7]
+    novels: []
+  - key: miaoli
+    name: 苗栗
+    bbox: [277.8, 143.6, 149.5, 116]
+    novels: []
+  - key: taoyuan
+    name: 桃園
+    bbox: [361.8, 45.5, 116, 137.6]
+    novels: []
+  - key: kaohsiung
+    name: 高雄
+    bbox: [171.3, 469.1, 206.3, 256.5]
+    novels: []
+  - key: keelung
+    name: 基隆
+    bbox: [511.4, 26.5, 41.8, 36.8]
+    novels: [chaojian]
+  - key: lienchiang
+    name: 連江
+    bbox: [1.2, 55.7, 138.4, 113.4]
+    novels: [chaosheng]
+  - key: yunlin
+    name: 雲林
+    bbox: [130.3, 367.3, 173.8, 109.9]
+    novels: [shuangshuang, yincang]
+  - key: hsinchu-city
+    name: 新竹市
+    bbox: [336.8, 114.6, 36.7, 36.3]
+    novels: []
+  - key: hsinchu-county
+    name: 新竹縣
+    bbox: [348.6, 91, 113.5, 132.9]
+    novels: []
+  - key: new-taipei
+    name: 新北
+    bbox: [431.7, 0, 168.2, 160.8]
+    novels: []
+  - key: taichung
+    name: 臺中
+    bbox: [239, 220.4, 232.5, 113.4]
+    novels: [yu, market, gongdi, hongdian, feichang]
+  - key: taipei
+    name: 臺北
+    bbox: [472.1, 23.2, 48.5, 63.7]
+    novels: [exam, mizi, houdiao]
+  - key: taitung
+    name: 臺東
+    bbox: [304.5, 475.9, 208.2, 384.4]
+    novels: [huaji]
+  - key: tainan
+    name: 臺南
+    bbox: [136.7, 483.5, 148.4, 134.7]
+    novels: [hue]
+  - key: changhua
+    name: 彰化
+    bbox: [183.4, 280.2, 108.6, 108.1]
+    novels: [feichang]
+  - key: chiayi-city
+    name: 嘉義市
+    bbox: [222.5, 456.7, 28.3, 20.2]
+    novels: []
+  - key: chiayi-county
+    name: 嘉義縣
+    bbox: [158.6, 426.6, 197.5, 108]
+    novels: []
+  - key: penghu
+    name: 澎湖
+    bbox: [0, 651.3, 90.3, 150.9]
+    novels: []
+pending:  # 待站長確認縣市
+  yincang: 雲嘉（已放雲林；嘉義市或嘉義縣待確認）
+  xiwei: 嘉義（嘉義市或嘉義縣待確認）
+  shanhai: 臺灣東部概略區域（非單一縣市）

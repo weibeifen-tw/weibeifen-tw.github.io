@@ -1,12 +1,13 @@
 ---
 page_css: literature
 layout: default
-title: 文學專區
-description: 未備份的文學專區：百合文學、女性書寫、心理學、親密關係、性別與社會、臺灣歷史、文學理論與創作筆記。
+title: 未備份研究所
+description: 未備份研究所：哲學專區、社會文化、工程技術、自然科學、文學研究、原住民族六大研究專區。
 permalink: /literature/
 ---
 {%- comment -%}
-  文學專區列表（P06）。文章在 _literature/（collection: literature），分類在 _data/literature.yml。
+  未備份研究所（V1.0 S08，Q53–Q65、R10；原文學專區 P06）。文章在 _literature/（collection: literature），六大專區在 _data/literature.yml。
+  首頁＝六大專區（電腦三欄、平板兩欄、手機直向列表）＋最新發布文章；沒有正式公開文章的專區顯示「籌備中」。
   搜尋只用標題、摘要、分類、標籤（寫在 data-q），不索引正文，所以正文裡的劇透不會被搜到。
   排序只看首次發布日期 date，updated 不影響。
 {%- endcomment -%}
@@ -16,7 +17,18 @@ permalink: /literature/
 {%- for a in arts -%}{%- for t in a.tags -%}{%- assign all_tags = all_tags | push: t -%}{%- endfor -%}{%- endfor -%}
 {%- assign all_tags = all_tags | uniq | sort -%}
 <section class="lit-list page-box">
-  <h1 class="ov-h">文學專區</h1>
+  <h1 class="ov-h">未備份研究所</h1>
+  <ul class="rz-grid" aria-label="六大研究專區">
+    {%- for c in cats -%}
+    {%- assign n = arts | where: "category", c.name | size -%}
+    <li class="rz{% if n == 0 %} rz-wait{% endif %}">
+      {%- if n > 0 %}<a class="rz-in" href="?cat={{ c.name | url_encode }}" data-cat="{{ c.name | escape }}">{% else %}<div class="rz-in">{% endif -%}
+      <b class="rz-t">{{ c.name }}</b><span class="rz-s">{{ c.scope }}</span><small class="rz-n">{% if n > 0 %}{{ n }} 篇{% else %}籌備中{% endif %}</small>
+      {%- if n > 0 %}</a>{% else %}</div>{% endif -%}
+    </li>
+    {%- endfor -%}
+  </ul>
+  <h2 class="rz-h">最新發布文章</h2>
   {%- if arts.size > 0 %}
   <div class="lit-tools">
     <input type="search" class="lit-q" placeholder="搜尋標題、摘要、分類、標籤" aria-label="搜尋文章" autocomplete="off">
@@ -24,19 +36,14 @@ permalink: /literature/
     <button type="button" class="lit-clear">清除篩選</button>
   </div>
   {%- endif %}
-  <ul class="lit-cats" aria-label="分類">
-    {%- for c in cats -%}
-    {%- assign n = arts | where: "category", c.name | size -%}
-    <li><button type="button" class="lit-chip{% if n == 0 %} empty{% endif %}" data-cat="{{ c.name | escape }}" aria-pressed="false">{{ c.name }}<small>{{ n }}</small></button></li>
-    {%- endfor -%}
-  </ul>
+  {%- comment -%} V1.0 S08（Q63）：分類改由上面六大專區卡片篩選，不再另列一排分類標籤 {%- endcomment %}
   {%- if all_tags.size > 0 %}
   <ul class="lit-tagbar" aria-label="標籤">
     {%- for t in all_tags -%}<li><button type="button" class="lit-chip lit-tag" data-tag="{{ t | escape }}" aria-pressed="false">#{{ t }}</button></li>{%- endfor -%}
   </ul>
   {%- endif %}
   {%- if arts.size == 0 %}
-  <p class="lit-empty">文學專區的第一篇文章，還在路上。</p>
+  <p class="lit-empty">研究所的第一篇文章，還在路上。</p>
   {%- else %}
   <div class="lit-cards">
     {%- for a in arts -%}
@@ -75,6 +82,7 @@ permalink: /literature/
     none.hidden = shown > 0; sync();
   }
   document.querySelectorAll('.lit-chip[data-cat]').forEach(function (b) { b.onclick = function () { cat = cat === b.dataset.cat ? '' : b.dataset.cat; apply(); }; });
+  document.querySelectorAll('.rz-in[data-cat]').forEach(function (b) { b.onclick = function (e) { e.preventDefault(); cat = b.dataset.cat; apply(); var h = document.querySelector('.rz-h'); if (h) h.scrollIntoView({ behavior: 'smooth' }); }; });
   document.querySelectorAll('.lit-chip[data-tag]').forEach(function (b) { b.onclick = function () { tag = tag === b.dataset.tag ? '' : b.dataset.tag; apply(); }; });
   document.querySelectorAll('.lit-clear').forEach(function (b) { b.onclick = function () { cat = ''; tag = ''; q.value = ''; sort.value = 'new'; apply(); }; });
   q.addEventListener('input', apply); sort.addEventListener('change', apply);

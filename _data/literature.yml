@@ -1,10 +1,25 @@
-# 文學專區八大分類（第09項原核准版）。文章 front matter 的 category: 要寫這裡的 name。
+# 未備份研究所（V1.0 Q53–Q65、R10）：六大研究專區，名稱與順序已核准，不得自行變更或新增一級分類。
+# 文章 front matter 的 category: 要寫下面的 name。沒有正式公開文章的專區顯示「籌備中」。
 categories:
-  - name: 百合文學
-  - name: 女性書寫
-  - name: 心理學
-  - name: 親密關係
-  - name: 性別與社會
-  - name: 臺灣歷史
-  - name: 文學理論
-  - name: 創作筆記
+  - name: 哲學專區
+    key: philosophy
+    scope: 哲學思想、邏輯、倫理、知識與認知
+  - name: 社會文化
+    key: society
+    scope: 社會制度、性別、歷史、文化、人類行為
+  - name: 工程技術
+    key: engineering
+    scope: 電力、配電、機械、PLC、自動控制
+  - name: 自然科學
+    key: science
+    scope: 數學、物理、化學、生命科學、天文
+  - name: 文學研究
+    key: literary
+    scope: 文學史、敘事學、文學理論、女性文學
+  - name: 原住民族
+    key: indigenous
+    scope: 原住民族歷史、文化、語言、社會及相關研究
+
+# 舊「文學專區」八大分類（第09項原核准版）：V1.0 S08 核對時沒有任何文章使用，改為六大專區；保留紀錄不刪。
+# 「故事之外」移出研究所、「文學創作」取消（R10）：網站上沒有這兩類的文章或資料。
+legacy_categories: [百合文學, 女性書寫, 心理學, 親密關係, 性別與社會, 臺灣歷史, 文學理論, 創作筆記]

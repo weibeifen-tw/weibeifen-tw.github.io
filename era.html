@@ -1,8 +1,8 @@
 ---
 page_css: era
 layout: default
-title: 年代誌
-description: 未備份的小說，各自發生在台灣的哪個年代，又寫到了哪些真實發生過的事。從史前時代、歷史時期到現當代。
+title: 互動年代
+description: 未備份的小說，各自發生在臺灣的哪個年代，又寫到了哪些真實發生過的事。從史前時代、歷史時期到現當代。
 permalink: /era/
 ---
 {%- comment -%}
@@ -18,7 +18,7 @@ permalink: /era/
 {%- assign empty_msg = '此時期尚無相關作品或歷史事件' -%}
 {%- capture blocks -%}prehistoric|史前時代,historical|歷史時期,modern|現當代{%- endcapture -%}
 {%- assign blocks = blocks | split: ',' -%}
-<h1 class="ov-h">年代誌</h1>
+<h1 class="ov-h">互動年代</h1>
 <div class="era-blocks" role="tablist" aria-label="年代區塊">
 {%- for b in blocks -%}{%- assign bp = b | split: '|' -%}
   <button type="button" role="tab" class="era-block" data-block="{{ bp[0] }}" aria-selected="false">{{ bp[1] }}</button>

@@ -470,7 +470,7 @@ window.WBRenderShelf();
 (function () {
   var btn = document.querySelector('.search-btn'), box = document.querySelector('.sbox'); if (!btn || !box) return;
   var q = box.querySelector('.sbox-q'), out = box.querySelector('.sbox-r');
-  var CATS = [['all', '全部'], ['novels', '小說'], ['chars', '角色'], ['events', '歷史事件'], ['arts', '文學文章']];
+  var CATS = [['all', '全部'], ['novels', '小說'], ['chars', '角色'], ['events', '歷史事件'], ['arts', '研究文章']];
   var tabs = document.createElement('div'); tabs.className = 'sbox-tabs'; tabs.setAttribute('role', 'tablist'); tabs.setAttribute('aria-label', '搜尋分類');
   var cat = 'all';
   CATS.forEach(function (c) { var b = document.createElement('button'); b.type = 'button'; b.setAttribute('role', 'tab'); b.dataset.cat = c[0]; b.textContent = c[1]; b.setAttribute('aria-selected', c[0] === cat); b.onclick = function () { cat = c[0]; tabs.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-selected', x.dataset.cat === cat); }); run(); }; tabs.appendChild(b); });
@@ -479,7 +479,7 @@ window.WBRenderShelf();
   function load() {
     if (idx || loading) return loading;
     loading = fetch((window.BASE || '') + '/assets/search.json?v=' + (window.VER || '')).then(function (r) { return r.json(); })
-      .then(function (d) { idx = d; ['novels', 'chars', 'events', 'arts'].forEach(function (k) { (idx[k] || []).forEach(function (x) { x._k = String(x.k || '').toLowerCase(); }); }); })
+      .then(function (d) { idx = d; ['novels', 'chars', 'events', 'arts'].forEach(function (k) { (idx[k] || []).forEach(function (x) { x._k = String(x.k || '').toLowerCase().replace(/臺/g, '台'); }); }); })
       .catch(function () { idx = { novels: [], chars: [], events: [], arts: [] }; });
     return loading;
   }
@@ -495,7 +495,7 @@ window.WBRenderShelf();
   }
   function wrap(t, sub) { var w = el('span', 'sr-txt'); w.appendChild(el('b', null, t)); if (sub) w.appendChild(el('small', null, sub)); return w; }
   function run() {
-    var v = q.value.trim().toLowerCase(); out.innerHTML = ''; if (!v) return;
+    var v = q.value.trim().toLowerCase().replace(/臺/g, '台'); out.innerHTML = ''; if (!v) return; // V1.0 S08：臺／台都搜得到
     if (!idx) { load().then(run); return; }
     var kinds = cat === 'all' ? ['novels', 'chars', 'events', 'arts'] : [cat], n = 0;
     kinds.forEach(function (k) {

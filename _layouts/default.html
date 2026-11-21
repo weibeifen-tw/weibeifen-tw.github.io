@@ -150,8 +150,9 @@
 <script>window.SPLIT = "{{ split }}".split(",");</script>
 <script>window.BASE = "{{ site.baseurl }}"; window.VER = "{{ site.time | date: '%s' }}";</script>
 <script src="{{ '/assets/app.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>
-{%- if page.page_js %}
-<script src="{{ '/assets/js/' | append: page.page_js | append: '.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>
+{%- assign pjs = page.page_js | default: layout.page_js -%}
+{%- if pjs %}
+<script src="{{ '/assets/js/' | append: pjs | append: '.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>
 {%- endif %}
 {% include member-avatar.html %}
 <script src="{{ '/assets/member.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>

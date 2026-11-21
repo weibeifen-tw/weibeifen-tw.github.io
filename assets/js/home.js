@@ -21,13 +21,31 @@
   });
   show('all');
   // 電腦：拖曳左右滑（不攔滾輪，頁面照常往下捲）；鍵盤：書架有焦點時左右鍵捲動
-  var down = false, x0 = 0, l0 = 0, moved = false;
-  shelf.addEventListener('mousedown', function (e) { down = true; moved = false; x0 = e.pageX; l0 = shelf.scrollLeft; e.preventDefault(); });
-  addEventListener('mousemove', function (e) { if (!down) return; var d = e.pageX - x0; if (Math.abs(d) > 4) moved = true; shelf.scrollLeft = l0 - d; });
-  addEventListener('mouseup', function () { down = false; });
-  shelf.addEventListener('click', function (e) { if (moved) { e.stopPropagation(); e.preventDefault(); moved = false; } }, true);
-  shelf.addEventListener('keydown', function (e) {
-    if (e.target !== shelf) return;
-    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { shelf.scrollBy({ left: (e.key === 'ArrowRight' ? 1 : -1) * shelf.clientWidth * 0.8, behavior: 'smooth' }); e.preventDefault(); }
-  });
+  function bind(sh) {
+    var down = false, x0 = 0, l0 = 0, moved = false;
+    sh.addEventListener('mousedown', function (e) { down = true; moved = false; x0 = e.pageX; l0 = sh.scrollLeft; e.preventDefault(); });
+    addEventListener('mousemove', function (e) { if (!down) return; var d = e.pageX - x0; if (Math.abs(d) > 4) moved = true; sh.scrollLeft = l0 - d; });
+    addEventListener('mouseup', function () { down = false; });
+    sh.addEventListener('click', function (e) { if (moved) { e.stopPropagation(); e.preventDefault(); moved = false; } }, true);
+    sh.addEventListener('keydown', function (e) {
+      if (e.target !== sh) return;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { sh.scrollBy({ left: (e.key === 'ArrowRight' ? 1 : -1) * sh.clientWidth * 0.8, behavior: 'smooth' }); e.preventDefault(); }
+    });
+  }
+  bind(shelf);
+
+  // V1.0 S07（Q27）：平板、電腦＝多區書架（全部作品／熱門作品上下排列，整頁往下捲）；手機維持切換（Q28 約 2.5 本）
+  var ex = document.querySelector('.explore'), mq = window.matchMedia ? matchMedia('(min-width:768px)') : null;
+  var h1 = document.createElement('h2'); h1.className = 'ex-sec'; h1.id = 'ex-sec-all'; h1.textContent = '全部作品';
+  var h2 = document.createElement('h2'); h2.className = 'ex-sec'; h2.id = 'ex-sec-hot'; h2.innerHTML = '熱門作品<small>暫依最新上架</small>';
+  var hotShelf = document.createElement('div'); hotShelf.className = 'shelf shelf-hot'; hotShelf.tabIndex = 0; hotShelf.setAttribute('aria-labelledby', 'ex-sec-hot');
+  hot.forEach(function (b, i) { var c = b.cloneNode(true); var im = c.querySelector('img'); if (im) im.loading = 'lazy'; hotShelf.appendChild(c); });
+  shelf.parentNode.insertBefore(h1, shelf); shelf.parentNode.appendChild(h2); shelf.parentNode.appendChild(hotShelf); bind(hotShelf);
+  function layout() {
+    var multi = !!(mq && mq.matches); ex.classList.toggle('multi', multi);
+    if (multi) { show('all'); shelf.removeAttribute('role'); shelf.setAttribute('aria-labelledby', 'ex-sec-all'); }
+    else { shelf.setAttribute('role', 'tabpanel'); var on = tabs.filter(function (b) { return b.getAttribute('aria-selected') === 'true'; })[0]; if (on) shelf.setAttribute('aria-labelledby', on.id); }
+  }
+  if (mq) { if (mq.addEventListener) mq.addEventListener('change', layout); else if (mq.addListener) mq.addListener(layout); }
+  layout();
 })();

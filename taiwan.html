@@ -2,10 +2,43 @@
 page_js: taiwan
 page_css: taiwan
 layout: default
-title: 台灣地圖
+title: 臺灣故事
+description: 未備份的小說散落在臺灣各縣市。點一個縣市，看看那裡有誰在發文。
 permalink: /taiwan/
 body_class: wide
 ---
-<h1 class="ov-h">台灣地圖</h1>
-{% include taiwan-map.html %}
+{%- comment -%}
+  V1.0 S08（D04、Q32 A1-2）：22 縣市。電腦／平板＝完整可互動地圖＋縣市列表；手機＝各縣市獨立輪廓列表（不分北中南東，照站長核准的固定順序）。
+  兩邊共用 assets/taiwan/counties.svg 一份幾何資料；縣市與小說的對應在 _data/counties.yml。
+  舊的 13 個地理分區（_data/regions.yml、_includes/taiwan-map.html）保留資料，目前不顯示。
+{%- endcomment -%}
+{%- assign geo = '/assets/taiwan/counties.svg' | relative_url -%}
+<h1 class="ov-h">臺灣故事</h1>
+<p class="cty-hint">這座島上，有人正在發文。點一個縣市看看。</p>
+<div class="cty">
+  <svg class="cty-map" viewBox="0 0 600 873" role="group" aria-label="臺灣縣市地圖">
+    <use class="cty-insets" href="{{ geo }}#c-insets"/>
+    {%- for c in site.data.counties.counties %}
+    <a class="cty-a{% if c.novels.size == 0 %} none{% endif %}" href="#cty-{{ c.key }}" data-k="{{ c.key }}" aria-label="{{ c.name }}{% if c.novels.size > 0 %}，{{ c.novels.size }} 部故事{% else %}，尚無故事{% endif %}"><title>{{ c.name }}</title><use href="{{ geo }}#c-{{ c.key }}"/>{% if c.bbox[2] < 45 and c.bbox[3] < 45 %}<circle class="cty-hit" cx="{{ c.bbox[2] | divided_by: 2.0 | plus: c.bbox[0] }}" cy="{{ c.bbox[3] | divided_by: 2.0 | plus: c.bbox[1] }}" r="18"/>{% endif %}</a>
+    {%- endfor %}
+  </svg>
+  <ol class="cty-list" aria-label="22 縣市">
+    {%- for c in site.data.counties.counties %}
+    <li class="cty-row{% if c.novels.size == 0 %} none{% endif %}" id="cty-{{ c.key }}" data-k="{{ c.key }}">
+      <button type="button" class="cty-btn" aria-expanded="false"{% if c.novels.size > 0 %} aria-controls="cty-n-{{ c.key }}"{% else %} aria-disabled="true"{% endif %}>
+        <svg class="cty-ico" viewBox="{{ c.bbox[0] | minus: 2 }} {{ c.bbox[1] | minus: 2 }} {{ c.bbox[2] | plus: 4 }} {{ c.bbox[3] | plus: 4 }}" aria-hidden="true"><use href="{{ geo }}#c-{{ c.key }}"/></svg>
+        <b class="cty-t">{{ c.name }}</b><small class="cty-n">{% if c.novels.size > 0 %}{{ c.novels.size }} 部故事{% else %}尚無故事{% endif %}</small>
+      </button>
+      {%- if c.novels.size > 0 %}
+      <ul class="cty-novels" id="cty-n-{{ c.key }}" hidden>
+        {%- for id in c.novels -%}{%- assign nv = site.data.novels[id] -%}
+        <li><a href="{{ '/novel/' | append: id | append: '/' | relative_url }}"><b>《{{ nv.title }}》</b>{% if site.data.places[id] %}<small>{{ site.data.places[id] }}</small>{% endif %}</a></li>
+        {%- endfor -%}
+      </ul>
+      {%- endif %}
+    </li>
+    {%- endfor %}
+  </ol>
+</div>
+<p class="cty-src">縣市界：內政部國土測繪中心「村里界圖」（政府資料開放授權條款第 1 版），經 taiwan-atlas 整理；離島為插入框，位置不代表實際距離。</p>
 <nav class="sr-only" aria-label="所有小說">{% for n in site.data.novels %}<a href="{{ '/novel/' | append: n[0] | append: '/' | relative_url }}">{{ n[1].title }}</a>{% endfor %}</nav>
