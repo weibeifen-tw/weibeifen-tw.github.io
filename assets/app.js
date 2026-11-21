@@ -478,7 +478,7 @@ window.WBRenderShelf();
 
 // 作品介紹貼文：多張圖左右滑，下方圓點
 (function () {
-  document.querySelectorAll('.intro-post').forEach(function (p) {
+  document.querySelectorAll('.intro-post, .nv-gallery').forEach(function (p) {
     var sl = p.querySelector('.ip-slides'), dots = p.querySelectorAll('.ip-dots i'); if (!sl) return;
     function go(k) { sl.scrollTo({ left: k * sl.clientWidth, behavior: 'smooth' }); }
     dots.forEach(function (d, i) { d.onclick = function () { go(i); }; });

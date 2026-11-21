@@ -711,7 +711,7 @@ shanhai:
         url: https://tci.ncl.edu.tw/cgi-bin/gs32/gsweb.cgi?o=dnclresource&s=id%3D%22SA10000039047%22.&searchmode=basic&tcihsspage=tcisearch_opt1_search
       - title: Hung 等，2024，Early Peopling in and Around Taiwan
         url: https://doi.org/10.4324/9781003427483-9
-  # 作品頁貼文：三張漫畫後接兩張主視覺（依序滑動）；作品限動（純圖，點開才載入）
+  # comic_alts＝作品介紹貼文三張漫畫的 alt；visuals＝作品頁另外放的兩張雙人主視覺（不跟漫畫混在同一個滑動區）
   comic_alts:
     - 漫畫〈距離〉：霧與刃在山谷溪岸相遇，隔著一段距離對望
     - 漫畫〈靠近〉：岩壁下，兩人相互凝視，手即將碰觸
@@ -721,11 +721,6 @@ shanhai:
       alt: 主視覺：霧手持石頭、刃攜帶石器，並肩站在臺灣東部山海之間的礫石灘
     - src: /assets/visuals/shanhai-2.webp
       alt: 主視覺：霧與刃在山海背景前互相凝視
-  stories:
-    - src: /assets/visuals/shanhai-1.webp
-      alt: 《山海有痕》作品限動 1：霧與刃並肩站在礫石灘
-    - src: /assets/visuals/shanhai-2.webp
-      alt: 《山海有痕》作品限動 2：霧與刃互相凝視
   reading_info:
     relationship: 慢熱、族群對立
     tone: 苦甜
@@ -739,5 +734,6 @@ shanhai:
       - 情感背叛
       - 自然災害
       - 求生危機
+      - 孩童遇險
     writing_completed: true
-    final_post_id: ""
+    final_post_id: shanhai32

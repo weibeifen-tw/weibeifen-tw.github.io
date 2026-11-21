@@ -932,10 +932,12 @@ button.d-item{width:100%;font:inherit;font-size:17px;font-weight:500;color:inher
 .sbox-r .sr-pic{width:36px;height:36px;flex:none;font-size:15px}
 .sbox-r .sr-txt{display:flex;flex-direction:column;min-width:0}
 .sbox-r .sr-txt small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
-/* ===== 限動檢視器（山海有痕起）：作品限動、角色專屬限動；只在有 stories／story 的作品頁出現 ===== */
-.nv-story{display:inline-flex;align-items:center;gap:8px;margin:2px 0 10px;padding:0;border:0;background:none;color:var(--sub);font:inherit;font-size:13px;cursor:pointer}
+/* ===== 角色專屬限動檢視器（山海有痕起）：只在角色有 story 的作品頁出現；作品主視覺滑動區 .nv-gallery ===== */
+.nv-gallery{margin:4px 0 14px}
+.nv-gallery .ip-slides{margin-top:0;border-radius:12px}
+.ch-vol{margin:18px 0 6px;font-size:13px;color:var(--sub);letter-spacing:.2em;font-weight:500}
+.nv-list .ch-vol:first-child{margin-top:4px}
 .sv-ring{display:inline-flex;padding:2px;border-radius:50%;background:conic-gradient(#a64236,#a77a58,#5d6b78,#a64236)}
-.nv-story .sv-ring img{width:44px;height:44px;border-radius:50%;object-fit:cover;object-position:top;border:2px solid var(--card);display:block}
 .sv-av{padding:0;border:0;background:none;cursor:pointer;border-radius:50%}
 .sv-av .avatar{border:2px solid var(--card)}
 .role-sub{margin:14px 0 2px;padding-top:10px;border-top:1px solid var(--line);font-size:13px;color:var(--sub);letter-spacing:.15em;font-weight:500}
