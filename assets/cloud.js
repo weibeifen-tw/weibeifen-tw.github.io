@@ -357,8 +357,13 @@
     var formWrap = el('div', 'cm-form-wrap');
     var list = el('div', 'cm-list'); list.appendChild(el('p', 'cm-empty', '載入留言中…'));
     box.appendChild(formWrap); box.appendChild(list);
-    var cmtBtn = null;
-    if (mount) mount.appendChild(box);
+    var cmtBtn = null, sheetMode = false, sheetN = null;
+    if (mount) {
+      mount.appendChild(box);
+      // V1.1：手機（≤767px）章節頁不展開大留言區，按留言按鈕從底部滑出視窗；桌機維持原本章末留言區
+      cmtBtn = mount.querySelector('.r-acts .act.cmt');
+      if (cmtBtn && window.matchMedia) setupSheet();
+    }
     else {
       // R02-R1：作品頁不再另外顯示整本留言區，改成點留言按鈕跳出視窗
       box.classList.add('cm-intro', 'cm-pop');
@@ -378,6 +383,95 @@
       if (location.hash === '#comments') openCm();
     }
 
+    function setupSheet() {
+      var mq = window.matchMedia('(max-width:767px)');
+      var U = (window.CSS && CSS.supports && CSS.supports('height', '1dvh')) ? 'dvh' : 'vh';
+      var veil = el('div', 'cm-sheet-layer'); veil.hidden = true;
+      var sh = el('div', 'cm-sheet'); sh.hidden = true;
+      sh.setAttribute('role', 'dialog'); sh.setAttribute('aria-modal', 'true'); sh.setAttribute('aria-label', '這一章的留言');
+      var top = el('div', 'cm-sh-top');
+      var grip = el('span', 'cm-grip'); grip.setAttribute('aria-hidden', 'true');
+      var tt = el('h2', 'cm-sh-t', '留言'); sheetN = el('span', 'cm-n'); tt.appendChild(sheetN);
+      var x2 = el('button', 'cm-x', '✕'); x2.type = 'button'; x2.setAttribute('aria-label', '關閉留言');
+      top.appendChild(grip); top.appendChild(tt); top.appendChild(x2); sh.appendChild(top);
+      document.body.appendChild(veil); document.body.appendChild(sh);
+      var isOpen = false, savedY = 0, lastFocus = null, H = 65, drag = null;
+      function setH(v) { H = v; sh.style.setProperty('--sh', v + U); }
+      function fit() {
+        var v = window.visualViewport, vh = v ? v.height : window.innerHeight;
+        var kb = v ? Math.max(0, window.innerHeight - v.height - v.offsetTop) : 0;
+        sh.style.setProperty('--vvh', vh + 'px'); sh.style.setProperty('--kb', kb + 'px');
+      }
+      function open() {
+        if (isOpen || !sheetMode) return;
+        isOpen = true; lastFocus = document.activeElement; savedY = window.scrollY || window.pageYOffset || 0;
+        // 鎖住背景但記住閱讀位置（iOS 只用 overflow:hidden 鎖不住）
+        document.body.style.top = (-savedY) + 'px'; document.body.classList.add('sheet-lock');
+        setH(65); fit(); veil.hidden = false; sh.hidden = false;
+        requestAnimationFrame(function () { veil.classList.add('on'); sh.classList.add('on'); });
+        // Q03：不主動聚焦輸入欄，點了輸入欄才開鍵盤
+        try { x2.focus({ preventScroll: true }); } catch (e) { x2.focus(); }
+      }
+      function close() {
+        if (!isOpen) return;
+        isOpen = false;
+        var ta = sh.querySelector('textarea'); if (ta) ta.blur();
+        veil.classList.remove('on'); sh.classList.remove('on');
+        setTimeout(function () { if (!isOpen) { veil.hidden = true; sh.hidden = true; } }, 230);
+        document.body.classList.remove('sheet-lock'); document.body.style.top = '';
+        var de = document.documentElement, sb = de.style.scrollBehavior;
+        de.style.scrollBehavior = 'auto'; window.scrollTo(0, savedY); de.style.scrollBehavior = sb;
+        if (location.hash === '#comments') { try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {} }
+        if (lastFocus && lastFocus.focus) { try { lastFocus.focus({ preventScroll: true }); } catch (e) {} }
+      }
+      function place() {
+        sheetMode = mq.matches;
+        if (sheetMode) { if (box.parentNode !== sh) sh.appendChild(box); }
+        else { close(); if (box.parentNode !== mount) mount.appendChild(box); }
+      }
+      // 拖拉上方把手：往上拉到 90%，往下拉關閉或回到 65%
+      top.addEventListener('pointerdown', function (e) {
+        if (e.target.closest('.cm-x')) return;
+        drag = { y: e.clientY, h: sh.getBoundingClientRect().height };
+        sh.classList.add('drag'); try { top.setPointerCapture(e.pointerId); } catch (er) {}
+      });
+      top.addEventListener('pointermove', function (e) {
+        if (!drag) return;
+        var vh = window.innerHeight, nh = Math.max(vh * 0.15, Math.min(vh * 0.9, drag.h + (drag.y - e.clientY)));
+        sh.style.setProperty('--sh', nh + 'px');
+      });
+      function end(e) {
+        if (!drag) return;
+        var dy = e.clientY - drag.y, vh = window.innerHeight, nh = sh.getBoundingClientRect().height;
+        drag = null; sh.classList.remove('drag');
+        if (Math.abs(dy) < 6) { setH(H); return; }
+        if (nh < vh * 0.45) { close(); return; }
+        setH(nh > vh * 0.775 ? 90 : 65);
+      }
+      top.addEventListener('pointerup', end); top.addEventListener('pointercancel', end);
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', function () { if (isOpen) fit(); });
+        window.visualViewport.addEventListener('scroll', function () { if (isOpen) fit(); });
+      }
+      x2.onclick = close;
+      veil.onclick = close;
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && isOpen && !cardEl) close(); });
+      cmtBtn.onclick = function () { if (sheetMode) open(); else box.scrollIntoView({ behavior: 'smooth' }); };
+      if (mq.addEventListener) mq.addEventListener('change', place); else if (mq.addListener) mq.addListener(place);
+      place();
+      document.body.classList.add('cm-ready');
+      if (location.hash === '#comments' && sheetMode) open();
+    }
+
+    // V1.1 Q04：送出成功後，視窗保持開啟並捲到自己剛留的那則
+    function scrollToMine() {
+      var mine = list.querySelectorAll('.cm-item.mine');
+      var last = mine[mine.length - 1];
+      if (!last) return;
+      list.scrollTop += last.getBoundingClientRect().top - list.getBoundingClientRect().top - 8;
+      last.classList.add('mine-new');
+    }
+
     var me = null, admin = false, A = null;
 
     function paint(rows) {
@@ -385,11 +479,13 @@
       var shown = rows.filter(function (r) { return !r.hidden && !r.removed; }).length;
       hn.textContent = shown ? '（' + shown + '）' : '';
       if (cmtBtn) cmtBtn.querySelector('.n').textContent = shown ? String(shown) : '';
+      if (sheetN) sheetN.textContent = hn.textContent;
       setTalkCount(shown);
       if (!rows.length) { list.appendChild(el('p', 'cm-empty', '還沒有留言，來當第一個吧。')); return; }
       rows.forEach(function (r) {
         var p = r.profiles || {};
         var item = el('div', 'cm-item' + (r.hidden || r.removed ? ' is-hidden' : ''));
+        if (me && r.user_id === me) item.classList.add('mine');
         var top = el('div', 'cm-top');
         // 點頭貼或名字：跳出會員小卡片（頭貼、名字、@帳號、簡介）
         var rc = r.as_char && CHARS[r.as_char];
@@ -518,6 +614,7 @@
       f.appendChild(warn); f.appendChild(ta); f.appendChild(row); f.appendChild(msg);
       f.onsubmit = async function (ev) {
         ev.preventDefault();
+        if (b.disabled) return; // 防止連點重複送出
         var body = ta.value.trim();
         if (!body) { msg.textContent = '請先寫點什麼。'; msg.hidden = false; return; }
         b.disabled = true; msg.hidden = true;
@@ -529,7 +626,7 @@
         b.disabled = false;
         if (res.error) { msg.textContent = cmError(res.error); msg.hidden = false; return; }
         ta.value = ''; cnt.textContent = '0 / 100';
-        load();
+        load().then(function () { if (sheetMode) scrollToMine(); });
       };
       formWrap.appendChild(f);
     }
