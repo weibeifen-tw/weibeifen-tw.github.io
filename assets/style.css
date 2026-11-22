@@ -865,3 +865,36 @@ button.d-item{width:100%;font:inherit;font-size:17px;font-weight:500;color:inher
 
 /* 2026-11-22 側邊選單：個人資料移到我的書櫃正上方，間距跟其他項目一樣（取消原本推到底部的 margin-top:auto） */
 .drawer .d-account{margin-top:0}
+
+/* ===== V1.1 手機閱讀頁（≤767px）：拿掉固定換章列、轉發；留言改成從底部滑出的視窗 ===== */
+.r-acts .act.cmt{display:none}
+.cm-sheet-layer{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.4);opacity:0;transition:opacity .2s}
+.cm-sheet-layer.on{opacity:1}
+.cm-sheet-layer[hidden]{display:none}
+.cm-sheet{position:fixed;left:0;right:0;bottom:var(--kb,0px);z-index:61;height:var(--sh,65vh);max-height:calc(var(--vvh,100vh) - 8px);display:flex;flex-direction:column;background:var(--card);border-radius:16px 16px 0 0;box-shadow:0 -4px 24px rgba(0,0,0,.18);transform:translateY(105%);transition:transform .22s ease,height .18s ease;box-sizing:border-box;padding-bottom:env(safe-area-inset-bottom);overscroll-behavior:contain}
+.cm-sheet.on{transform:none}
+.cm-sheet.drag{transition:none}
+.cm-sheet[hidden]{display:none}
+.cm-sh-top{flex:none;position:relative;padding:8px 52px 6px 16px;touch-action:none;cursor:grab}
+.cm-grip{display:block;width:40px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 8px}
+.cm-sh-top .cm-sh-t{margin:0;font-size:16px;font-weight:600}
+.cm-sh-top .cm-x{top:8px;right:8px}
+.cm-sheet .cm{flex:1;min-height:0;display:flex;flex-direction:column;margin:0;padding:0;border:0}
+.cm-sheet .cm-h{display:none}
+.cm-sheet .cm-list{order:1;flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:0 16px 8px}
+.cm-sheet .cm-form-wrap{order:2;flex:none;border-top:1px solid var(--line);padding:8px 16px 10px;background:var(--card)}
+.cm-sheet .cm-form textarea{height:64px;min-height:44px;max-height:30vh;font-size:16px}
+.cm-sheet .cm-warn{font-size:12px;margin:0 0 6px}
+.cm-sheet .cm-item.mine-new{animation:cmFlash 1.6s ease}
+@keyframes cmFlash{0%,40%{background:var(--chip)}100%{background:transparent}}
+body.sheet-lock{position:fixed;left:0;right:0;overflow:hidden}
+body.sheet-lock .cm-card{position:fixed;z-index:65}
+@media (max-width:767px){
+  body.reading .r-bar{display:none}
+  body.reading{padding-bottom:0}
+  body.reading .chat-btn{bottom:calc(18px + env(safe-area-inset-bottom))}
+  body.reading .r-acts .act.repost{display:none}
+  body.reading.cm-ready .r-acts .act.cmt{display:inline-flex}
+  body.reading .chapter.read > .cm{display:none}
+}
+@media (prefers-reduced-motion:reduce){.cm-sheet,.cm-sheet-layer{transition:none}}

@@ -37,7 +37,7 @@ page_js: reader
     {%- if nx -%}<a class="r-next" href="{{ nx.url | relative_url }}"><small>下一篇 →</small><span>{{ nx.title }}</span></a>{%- else -%}<span class="r-next off"><small>下一篇 →</small><span>目前最後一篇</span></span>{%- endif -%}
   </nav>
   <div class="r-acts">
-  {% capture u %}{{ page.url | relative_url }}{% endcapture %}{% include actions.html key=page.slug url=u notalk=true %}
+  {% capture u %}{{ page.url | relative_url }}{% endcapture %}{% include actions.html key=page.slug url=u notalk=true cmt=true %}
   </div>
 </article>
 <nav class="r-bar" aria-label="換章">

@@ -14,6 +14,7 @@ GATE-2、GATE-3：未通過。S02-01-D：未啟動。下表「未驗證」＝沒
 | FIX-05 | comments_as_char_check() 角色與作品歸屬 | 未做：需 021 執行後的實際定義 |
 | FIX-06 | 管理 Session：絕對 8 小時、閒置 30 分鐘 | 草案 023（伺服器端判斷）；高風險操作 5 分鐘重新驗證＋綁定操作／資源（FIX-06c）未設計 |
 | FIX-07 | 跨裝置登出、Refresh Token、舊 JWT | 未驗證；注意：撤銷 refresh token 不會讓已發出的 access JWT 立即失效（到期前仍有效） |
+| V1.1-Q08/Q09 | 封鎖會員自動隱藏全部留言、解除封鎖自動恢復（與個別刪除區分） | 草案 `024_ban_hide_restore_DRAFT.sql`，**未執行** → 前端仍維持現行封鎖行為，不得宣稱已完成 |
 | FIX-08 | delete_my_account()（020） | 程式在 main；正式資料庫是否已套用**未核對**（本環境連不到 Supabase）；唯讀檢查 `check_020_readonly.sql`（只有 SELECT） |
 | FIX-09 | profiles 匿名可讀範圍 | 未做（需最新結構） |
 | FIX-10 | 每日 30 天／每月 12 個月備份 | 政策缺口保留；現行每週手動匯出；不得新增 GitHub 高權限金鑰 |
