@@ -7,6 +7,9 @@ timezone: Asia/Taipei
 lang: zh-Hant
 markdown: kramdown
 permalink: /t/:title/
+# 2026-11-22 小說發布制度：章節日期＝故事時間，不再決定是否公開（日期在未來也照常建置）。
+# 是否公開只看兩件事：front matter 沒有 published: false，且列在 .github/release/authorized.txt（部署前驗證）。
+future: true
 exclude:
   - README.md
   - supabase

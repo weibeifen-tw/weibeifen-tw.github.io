@@ -4,7 +4,7 @@ name: 研究所自我測試（不部署）
 on:
   workflow_dispatch:
   push:
-    branches: ["feat/research-*"]
+    branches: ["feat/research-*", "feat/site-release-*"]
 permissions:
   contents: read
 concurrency:
@@ -17,6 +17,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with: { persist-credentials: false, fetch-depth: 0 }
+      - name: 小說發布制度：未授權章節一律擋下（臨時測試章節，只在這台機器）
+        run: |
+          set -u
+          printf -- '---\nlayout: thread\ntitle: 測試未授權\ncharacter: qin\nnovel: hongdian\nchapter: 98\n---\nZZLEAKTESTA\n' > _posts/2030-01-01-leaktesta.md
+          if ruby .github/scripts/validate_release.rb .; then echo "失敗：未授權、未標 published: false 的章節沒有被擋"; exit 1; else echo "通過 沒有授權的章節被擋下（部署前）"; fi
+          rm _posts/2030-01-01-leaktesta.md
+          printf -- '---\nlayout: thread\ntitle: 測試保留章節\ncharacter: qin\nnovel: hongdian\nchapter: 99\npublished: false\nrelease_at: 2030-01-01T20:00:00+08:00\n---\nZZLEAKTESTB 這段文字不得出現在網站輸出\n' > _posts/2030-01-01-leaktestb.md
+          ruby .github/scripts/validate_release.rb . && echo "通過 published: false 的保留章節驗證通過（不公開）"
       - name: 產生假資料並本機 commit（不推送）
         run: |
           ruby .github/scripts/research_fixture.rb .
@@ -59,3 +67,10 @@ jobs:
         with: { source: ./, destination: ./_site }
       - name: 檢查正式輸出：網站地圖、註腳、證據卡、歷史版本、撤回、搜尋
         run: ruby .github/scripts/research_site_check.rb _site
+
+      - name: 小說發布制度：保留章節沒有出現在任何網站輸出（頁面、搜尋、sitemap、posts.json、作品目錄）
+        run: |
+          ruby .github/scripts/validate_release.rb . --site _site
+          if grep -rl "ZZLEAKTESTB\|leaktestb\|測試保留章節" _site; then echo "失敗：保留章節出現在網站輸出"; exit 1; fi
+          test ! -e _site/t/leaktestb && echo "通過 保留章節在整個 _site 找不到（含 sitemap、search.json、posts.json、作品頁目錄）"
+          for s in hongdian09 hongdian10 yang10 exam39; do test -f _site/t/$s/index.html && grep -q "/t/$s/" _site/sitemap.xml && grep -q "\"$s\"" _site/assets/posts.json && echo "通過 $s 有頁面、在 sitemap、在索引"; done

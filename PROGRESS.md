@@ -127,3 +127,9 @@
 - schedule-chapters.yml（每天自動發章）vs 會員進度「排程發章：不做」：本次不停用（第十一章）。
 - 22 縣市 SVG 幾何資料來源（需開放授權）。
 - 每日 30 天／每月 12 個月備份政策：保留缺口。
+
+## 交接：小說發布制度（2026-11-22 07:30，分支 feat/site-release-gate，未合併、未部署）
+- 已完成（程式在分支，未在 GitHub 跑過）：_config future: true；.github/release/authorized.txt（399 篇＝既有 395＋hongdian09/10、yang10、exam39）；validate_release.rb（repo＋--site 建置輸出檢查）；release_chapters.rb＋release-chapters.yml（手動指定立即發布／release_at 定時）；schedule-chapters 搬檔時加入清單；deploy-pages、build-check 加發布驗證
+- 未完成：推送後看 build-check 結果；CI 測試「published: false 章節不會出現在 _site／posts.json／search／sitemap」；合併 main 部署；部署後確認四篇網址；更新新章節技能（推章時要加進授權清單）
+- 四篇尚未發布（main 仍是 b547f41）
+- 下一步：git push 分支 → 看建置檢查 → 加一篇測試用 published:false 驗證（只在 CI 臨時機器）→ 合併 main → 確認 /t/hongdian09/ 等四頁

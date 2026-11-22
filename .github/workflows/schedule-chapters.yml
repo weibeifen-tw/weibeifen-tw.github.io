@@ -4,7 +4,8 @@ name: 排程發章
 #   - 已停用每日定期觸發；只能在 Actions 頁面手動執行（workflow_dispatch）。
 #   - 用法：把章節檔放進 .github/scheduled/上線日期/，到了想發的那天，由站長在 Actions 頁面按「Run workflow」，
 #     日期已到的章節會搬進 _posts/。搬完後「部署網站」工作流程會在這裡跑完後自動部署（含研究文章驗證）。
-#   - 章節檔名裡的日期照舊是故事裡的時間，跟上線日期無關（但不能晚於上線日期，不然會被藏起來）。
+#   - 手動執行＝站長授權：搬進 _posts 的章節會自動加進 .github/release/authorized.txt。
+#   - 章節檔名裡的日期是故事時間，不影響是否公開（_config.yml future: true）。
 
 on:
   workflow_dispatch:         # 只能手動執行
@@ -35,6 +36,7 @@ jobs:
             if [[ "$day" > "$TODAY" ]]; then continue; fi
             for f in "$dir"*.md; do
               git mv "$f" "_posts/$(basename "$f")"
+              basename "$f" | sed -E 's/^[0-9]{4}-[0-9]{2}-[0-9]{2}-//; s/\.(md|markdown|html)$//' >> .github/release/authorized.txt
               echo "上線：$(basename "$f")"
               moved=$((moved+1))
             done
@@ -46,6 +48,8 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@users.noreply.github.com"
+          git add .github/release/authorized.txt
+          ruby .github/scripts/validate_release.rb .
           git commit -m "排程發章：${{ steps.move.outputs.moved }} 章上線"
           git pull --rebase
           git push
