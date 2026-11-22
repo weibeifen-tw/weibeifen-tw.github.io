@@ -90,7 +90,7 @@ shuang:
   handle: frostline
   novel: yincang
   avatar: shuang.svg
-    story: /assets/stories/yincang-shuang.webp
+  story: /assets/stories/yincang-shuang.webp
   glyph: 霜
   color: "#7d8fa3"
   bio: 二十四歲，嘉義市人，雲科大設計系畢業，在廣告社畫招牌。PTT 帳號 frostline，網聚永遠帶骰子。
@@ -99,7 +99,7 @@ di:
   handle: di.beigang
   novel: yincang
   avatar: di.svg
-    story: /assets/stories/yincang-di.webp
+  story: /assets/stories/yincang-di.webp
   glyph: 堤
   color: "#4b5260"
   bio: 二十七歲，雲林北港人，健身教練，一七六。騎一台黑色 KTR。菸戒了，手上還是要拿一根。
