@@ -4,6 +4,12 @@
 規格：原始 V1.0 Q01–Q65、R01–R10＋D01–D05＋DM-A＋FIX＋T 系列。設計 R01–R09、DM-A/DM-T、FIX/T 原文、D17–D21 原文：待補證。
 新工作階段只讀：本檔 → CLAUDE.md → 當前階段相關檔案。不要重掃全專案。
 
+## V1.1（2026-11-22）
+- 工作 A 小說發布制度：main ed15cbc（分支 feat/site-release-gate：01ee715、7c72e24）。已授權 399 篇（.github/release/authorized.txt）；新章節預設 `published: false`，「推」＝加進授權清單。四篇線上網址：待站長實機確認。
+- 工作 B 手機閱讀頁：commit 024a5a7，main ee0be70（部署 run 44965680513 成功）。≤767px：無固定換章列、無轉發；留言＝底部滑出視窗（65%→90%）。桌機不變。本機互動測試 53 項通過（/tmp 測試腳本，未入 repo）。
+- 因安全限制暫停：Q08 封鎖自動隱藏全部留言／Q09 解除自動恢復 → `supabase/drafts/024_ban_hide_restore_DRAFT.sql`（未執行）。執行前，現行封鎖仍是「選擇是否一併移除留言（removed）」。
+- 待實機：iPhone Safari 鍵盤／安全區、Android Chrome。
+
 ## 基準
 - 開工 main：ebc7b8c（2026-11-21）。復原點：遠端分支 backup/pre-v1-s01-s11-20261122（＝ebc7b8c）。
 - 遠端另有 feat/v1-s01-s11-integration（＝ebc7b8c、無 commit，來源不明，不動它）。
