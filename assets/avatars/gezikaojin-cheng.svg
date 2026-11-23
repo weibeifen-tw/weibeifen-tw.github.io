@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="《各自靠近》澄的角色頭貼">
+  <title>澄｜各自靠近</title>
+  <rect width="64" height="64" fill="#E9E7F0"/>
+  <!-- Side-parted shoulder-length deep brown bob -->
+  <path d="M12.4 34 Q11.6 21 18.5 15 Q24 9.2 33.4 10 Q45 9.5 50 20 Q53 27 50.6 41 L52.2 49 Q48.1 51 44 49 Q35 53 20 49 L13.4 50 Q14.4 44 12.4 34Z" fill="#423333"/>
+  <!-- Neck, natural everyday top -->
+  <rect x="28.2" y="43" width="8" height="10" rx="2" fill="#F1D9CD"/>
+  <path d="M5 64 Q7 53 21 50 Q26 49 28 49.4 Q32 53 36 49.4 Q47 49 54 54 Q58 58 59 64Z" fill="#77788E"/>
+  <path d="M25.6 50.3 Q31.9 57 38.2 50.3" fill="none" stroke="#5F6077" stroke-width="1.25" stroke-linecap="round"/>
+  <!-- Face: slightly rounder than He -->
+  <path d="M18.5 28 Q18 20 24 17.5 Q30 15 37 17.3 Q46 20 46.5 29.3 L46 36 Q45.5 45 38 48 Q32.5 50.6 27.6 48.2 Q19.1 45 18.3 36Z" fill="#F1D9CD"/>
+  <!-- Signature uneven side fringe and short bob cheeks -->
+  <path d="M16.5 31 Q15 20 23 15.7 Q32 10.7 40 16 Q46 17.4 48 27.6 Q43.9 24.5 42.5 20.5 Q38 24.5 33 23.4 Q29 27.9 19.2 28.2Z" fill="#423333"/>
+  <path d="M17.6 29 Q16.2 37 19.2 43.3 L22 45.1 Q19.8 37 21.2 30Z" fill="#423333"/>
+  <path d="M46.3 28 Q48.7 37 45.5 44.2 L42.7 45.4 Q45.2 37 43.8 30.2Z" fill="#423333"/>
+  <path d="M26.1 16.6 Q31.7 14.8 35.8 16.8" stroke="#66504D" stroke-width=".85" fill="none" stroke-linecap="round"/>
+  <!-- Quiet, attentive expression -->
+  <path d="M23.6 32.7 Q26.1 31.6 28.4 32.3 M35.4 32.2 Q37.8 31.6 40.1 32.6" fill="none" stroke="#54403D" stroke-width=".95" stroke-linecap="round"/>
+  <circle cx="26.4" cy="36" r="1.48" fill="#2E282C"/>
+  <circle cx="38" cy="36" r="1.48" fill="#2E282C"/>
+  <path d="M31.2 40.1 q.6.45 1.35 0" stroke="#CAAAA0" stroke-width=".8" fill="none" stroke-linecap="round"/>
+  <path d="M30 43.7 Q32.2 44.5 34.6 43.7" fill="none" stroke="#976862" stroke-width="1.1" stroke-linecap="round"/>
+</svg>

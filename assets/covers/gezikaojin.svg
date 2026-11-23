@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="600" height="800" viewBox="0 0 600 800" role="img" aria-labelledby="cover-title cover-desc">
+  <title id="cover-title">各自靠近</title>
+  <desc id="cover-desc">淡灰紫色的臺南街景中，澄在左側正面站立，禾在右側微微朝向中央，兩位女性以不同色調的簡化剪影呈現；底部深灰紫色帶印有書名。</desc>
+  <g id="background">
+    <rect width="600" height="680" fill="#E9E7F0"/>
+  </g>
+  <g id="cityscape">
+    <!-- 左側騎樓：幾何輪廓，不對應特定地址 -->
+    <path d="M0 119H132V478H0Z" fill="#8E8FAF" opacity=".18"/>
+    <path d="M0 151H160V169H0Z" fill="#77788E" opacity=".25"/>
+    <path d="M110 167H129V489H110Z" fill="#8E8FAF" opacity=".40"/>
+    <path d="M0 214H86V235H0ZM0 285H86V306H0ZM0 355H86V376H0Z" fill="#8E8FAF" opacity=".28"/>
+    <path d="M0 474H151V489H0Z" fill="#77788E" opacity=".22"/>
+    <!-- 右側住宅立面與簡化窗框 -->
+    <path d="M463 115H600V488H463Z" fill="#789BA5" opacity=".17"/>
+    <path d="M450 150H600V169H450Z" fill="#628A99" opacity=".22"/>
+    <path d="M471 169H489V486H471Z" fill="#628A99" opacity=".21"/>
+    <path d="M510 209H576V270H510ZM510 303H576V364H510Z" fill="none" stroke="#628A99" stroke-width="7" opacity=".27"/>
+    <path d="M543 209V270M543 303V364" stroke="#628A99" stroke-width="4" opacity=".22"/>
+    <path d="M455 473H600V488H455Z" fill="#628A99" opacity=".22"/>
+  </g>
+  <g id="ground">
+    <path d="M0 545L300 490L600 545V680H0Z" fill="#C9C8D7" opacity=".38"/>
+    <path d="M0 606L300 520L600 606" fill="none" stroke="#8E8FAF" stroke-width="3" opacity=".53"/>
+    <path d="M0 651L300 553L600 651" fill="none" stroke="#8E8FAF" stroke-width="2" opacity=".40"/>
+  </g>
+  <g id="characters">
+    <!-- 澄：左側正面；及肩、側分短髮的無五官剪影 -->
+    <g id="cheng" fill="#77788E">
+      <path d="M153 350C151 337 154 320 164 312C171 306 182 304 190 309C201 313 208 325 208 341L205 365L196 377H153L149 365Z"/>
+      <path d="M151 346C154 333 158 318 171 313C183 309 194 312 203 323C191 324 180 321 172 315C164 328 158 339 151 346Z" fill="#77788E"/>
+      <path d="M156 373C171 366 188 365 200 374L211 455L213 533L207 559H146L142 533L144 456Z"/>
+      <path d="M154 385L142 484L144 523L154 524L164 426Z"/>
+      <path d="M198 386L216 485L215 523L205 525L193 426Z"/>
+      <path d="M151 551H177L173 624H150Z"/>
+      <path d="M182 551H207L210 624H187Z"/>
+      <path d="M149 618H175V625H145Q145 621 149 618ZM187 618H211Q216 623 212 625H187Z"/>
+    </g>
+    <!-- 禾：右側略朝畫面中央側身；中長髮的無五官剪影 -->
+    <g id="he" fill="#628A99">
+      <path d="M395 377C387 361 386 343 391 327C396 313 406 306 420 308C433 309 442 320 443 336C447 352 443 370 448 397L435 401L395 398Z"/>
+      <path d="M392 336C396 321 406 311 419 310C427 311 434 317 440 329C429 331 418 327 410 319C405 327 400 334 392 336Z"/>
+      <path d="M395 383C408 376 426 376 440 385L453 459L454 536L451 560H383L381 536L383 466Z"/>
+      <path d="M395 393L383 479L383 519L394 520L405 430Z"/>
+      <path d="M439 391L455 480L453 519L443 520L431 431Z"/>
+      <path d="M389 551H414L410 625H390Z"/>
+      <path d="M427 551H450L453 625H430Z"/>
+      <path d="M390 618H411V625H386Q385 622 390 618ZM430 618H454Q459 623 456 625H430Z"/>
+    </g>
+  </g>
+  <g id="title-band">
+    <rect x="0" y="680" width="600" height="120" fill="#656681"/>
+    <text x="300" y="741" fill="#F2E5CE" font-family="Noto Serif TC, Source Han Serif TC, PMingLiU, serif" font-size="57" font-weight="600" letter-spacing="5" text-anchor="middle" dominant-baseline="middle">各自靠近</text>
+  </g>
+</svg>
