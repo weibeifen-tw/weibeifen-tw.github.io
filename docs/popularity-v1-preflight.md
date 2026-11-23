@@ -124,3 +124,12 @@
 - 這些測試用的 `auth.uid()`、`public.is_admin()` 是模擬函式；不能取代正式 JWT／MFA AAL2、真正 RLS 隔離與授權測試。
 - 未涵蓋真正多交易併發、多 Edge 執行個體負載、可信任來源識別、HMAC/Edge 整合、發布清單同步、定時快照與郵件告警。
 - 因此 GATE-01–08 尚未全部通過，Edge API 仍 503 強制停用；正式 Supabase、main 與正式網站均未變更。
+
+## 2026-11-24 第十輪：正式 Supabase 權限只讀盤點
+- 已直接讀取正式資料庫 system catalog（僅 metadata、函式定義和 RLS 政策名稱；不查詢會員私人資料內容）。
+- `public.user_roles` 現有 `admin` 角色數量為 1。
+- 正式 `public.is_admin()` 的安全門檻為 JWT AAL2 和 `user_roles.role='admin'`，並設置 `SECURITY DEFINER SET search_path TO ''`。
+- 七個 `admin_*` 函式為 SECURITY DEFINER，authenticated 具有 EXECUTE、anon 無 EXECUTE；七個函式定義文字皆包含 `is_admin()` 檢查，且設置空 search_path。尚未逐條分析其權限檢查是否覆蓋所有執行路徑，**不能把此檢查視為完整 GATE-02 驗收**。
+- `user_roles` 可讀自身角色政策存在；`comments`、`dm_messages`、`profiles` 已有對應 RLS 政策。尚未做真實匿名、一般會員、MFA 過期及管理員登入的 API 行為測試。
+- 新的人氣 `admin_set_popularity()` 草案與已存在的 `is_admin()` 介面相容，但尚未套用正式資料庫；不得聲稱已正式驗證授權路徑。
+- PostgreSQL 17 隔離測試、既有 GitHub 建置檢查及 Node 單元測試已有成功證據。正式 Supabase、GitHub main 與線上網站未變更。
