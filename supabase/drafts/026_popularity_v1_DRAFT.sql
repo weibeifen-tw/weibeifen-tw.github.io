@@ -129,7 +129,7 @@ BEGIN
     VALUES (p_work_id, auth.uid(), v_old_base, v_old_anchor, p_target, v_views);
 
   RETURN jsonb_build_object('work_id', p_work_id, 'base', p_target, 'anchor', v_views);
-END
+END;
 $fn$;
 
 REVOKE ALL ON FUNCTION public.admin_set_popularity(text, bigint) FROM PUBLIC, anon;
@@ -174,7 +174,7 @@ BEGIN
             updated_at = now();
   END IF;
   RETURN true;
-END
+END;
 $fn$;
 
 REVOKE ALL ON FUNCTION public.popularity_record_view(uuid,text,text)
