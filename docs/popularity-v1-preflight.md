@@ -40,3 +40,13 @@
 - 新建 `feat/site-popularity-v1` 分支。
 - 新增 `supabase/drafts/026_popularity_v1_DRAFT.sql`，僅供安全與相容性審查。
 - 未修改 `main`、未執行 SQL、未觸發正式部署。
+
+## 2026-11-23 正式 Supabase 唯讀核對（GATE-01 局部完成）
+- 已透過 Supabase 專案連線讀取 `weibeifen-members`（project ref：`tqicconarhpddejxdvmf`）。
+- `public` 有 10 張資料表，全部啟用 RLS；現有 `popularity% `資料表 0、同名函式 0，因此人氣結構尚未套用。
+- `public.user_roles` 中 admin 數量為 1；正式 `public.is_admin()` 定義檢查 `auth.jwt()->>'aal' = 'aal2'` 且該使用者 `user_roles.role='admin'`。
+- `public.delete_my_account()` 在正式資料庫存在；修正先前「020 未核對」的狀態，但其安全性與功能行為尚未測試。
+- Supabase migration history 是空陣列；GitHub 的 SQL 檔案不應被當成 migrations 已記錄。
+- Security Advisor 指出 14 個 authenticated 可執行的 SECURITY DEFINER 函式、2 個啟用 RLS 但無政策資料表、密碼外洩保護未啟用；不能直接判斷每項皆為漏洞，需逐一核對函式內部與最小權限。
+- 尚未確認完整的章節 URL→作品對照、Edge Function、事件驗證、防灌水、快照排程、通知及本地效能回歸，因此 GATE-01–08 **仍未全部通過**。
+- 此輪未向正式資料庫寫入或執行 DDL。
