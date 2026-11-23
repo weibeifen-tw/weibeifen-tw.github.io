@@ -53,7 +53,7 @@
     <ul class="nv-tags nv-info-tags">
       {%- if ri.relationship %}<li><small>感情關係</small>{{ ri.relationship | escape }}</li>{% endif -%}
       {%- if ri.tone %}<li><small>故事調性</small>{{ ri.tone | escape }}</li>{% endif -%}
-      {%- if ri.rating %}<li><small>內容尺度</small>{{ ri.rating | escape }}</li>{% endif -%}
+      {%- if ri.rating == '18+' %}<li><small>內容尺度</small>{{ ri.rating | escape }}</li>{% endif -%}
       {%- if ri.writing_completed == true %}<li class="ri-done">完結</li>{% endif -%}
     </ul>
     {%- if ri.psychology and ri.psychology.size > 0 %}
