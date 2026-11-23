@@ -1,0 +1,53 @@
+{%- comment -%}
+  小說作品頁共用 SEO（不含章節頁／研究文章）。
+  資料優先順序：作品頁 front matter > _data/novels.yml > 既有檔案。
+  分享圖：作品頁 image > 作品漫畫第一張 WebP > 書籍 SVG 封面。
+  注意：SVG 社群分享支援度因平台而異，日後可提供專用 JPG/PNG image。
+{%- endcomment -%}
+{%- assign novel_seo = include.novel -%}
+{%- assign novel_og_title = page.og_title | default: page.title -%}
+{%- assign novel_og_desc = page.og_description | default: page.description | default: novel_seo.blurb -%}
+{%- assign novel_description = page.description | default: novel_seo.blurb -%}
+{%- assign novel_seo_image = page.image -%}
+{%- unless novel_seo_image -%}
+  {%- capture novel_comic_path -%}/assets/comics/{{ include.id }}-1.webp{%- endcapture -%}
+  {%- assign novel_comic_file = site.static_files | where: 'path', novel_comic_path | first -%}
+  {%- if novel_comic_file -%}
+    {%- assign novel_seo_image = novel_comic_path -%}
+  {%- elsif novel_seo.cover -%}
+    {%- assign novel_seo_image = novel_seo.cover -%}
+  {%- endif -%}
+{%- endunless -%}
+<meta name="description" content="{{ novel_description | escape }}">
+<link rel="canonical" href="{{ page.url | absolute_url }}">
+<meta property="og:title" content="{{ novel_og_title | escape }}">
+<meta property="og:description" content="{{ novel_og_desc | escape }}">
+<meta property="og:url" content="{{ page.url | absolute_url }}">
+<meta property="og:site_name" content="{{ site.title | escape }}">
+<meta property="og:locale" content="zh_Hant">
+<meta property="og:type" content="book">
+{%- if novel_seo_image %}
+<meta property="og:image" content="{{ novel_seo_image | absolute_url }}">
+<meta property="og:image:alt" content="{{ page.image_alt | default: novel_seo.title | escape }}">
+{%- endif %}
+<meta name="twitter:card" content="{% if novel_seo_image %}summary_large_image{% else %}summary{% endif %}">
+<meta name="twitter:title" content="{{ novel_og_title | escape }}">
+<meta name="twitter:description" content="{{ novel_og_desc | escape }}">
+{%- if novel_seo_image %}
+<meta name="twitter:image" content="{{ novel_seo_image | absolute_url }}">
+{%- endif %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Book",
+  "name": {{ novel_seo.title | jsonify }},
+  "url": {{ page.url | absolute_url | jsonify }},
+  "description": {{ novel_description | jsonify }},
+  "author": {"@type": "Person", "name": {{ site.author | jsonify }}},
+  "publisher": {"@type": "Organization", "name": {{ site.title | jsonify }}},
+  "inLanguage": "zh-Hant",
+  "genre": {{ novel_seo.tags | default: empty | jsonify }},
+  "isAccessibleForFree": true{% if novel_seo_image %},
+  "image": {{ novel_seo_image | absolute_url | jsonify }}{% endif %}
+}
+</script>
