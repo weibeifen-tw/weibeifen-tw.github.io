@@ -59,3 +59,12 @@ test('公開觀看 Edge Function 仍強制停用', () => {
   assert.match(edge, /return json\(503, \{ error: "counter_unavailable" \}, allowedOrigin\);/);
   assert.match(edge, /BLOCKED_UNTIL_GATE_04/);
 });
+
+test('並發去重先於共享配額，避免事件重送多占用限流', () => {
+  const eventInsert = sql.indexOf("INSERT INTO public.popularity_view_events(event_id, work_id, chapter_path)");
+  const bucketInsert = sql.indexOf("INSERT INTO public.popularity_rate_buckets(rate_key, minute_bucket, event_count)");
+  const workUpdate = sql.indexOf("INSERT INTO public.popularity_work_totals(work_id,total_views)");
+  assert.ok(eventInsert >= 0 && bucketInsert > eventInsert && workUpdate > bucketInsert);
+  assert.match(sql, /ON CONFLICT \(event_id\) DO NOTHING/);
+  assert.match(sql, /IF v_inserted IS NULL THEN RETURN false; END IF;/);
+});
