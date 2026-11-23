@@ -149,3 +149,15 @@
 - `index.ts` 新增「來源政策檢查」及「即使未來來源政策改變仍固定停用」兩道阻擋，仍完全不接計數 RPC、也不讀取資料庫密鑰。
 - **仍缺**：託管代理標頭實際信任模型的官方證據、反濫用入口的驗證方案及負載測試、HMAC 與資料庫 RPC 的安全整合、匿名訪客正常行為及共用網路公平性評估。GATE-04 不通過。
 - 此輪只修改獨立 GitHub 開發分支；正式 Supabase、main、正式網站均未改動。
+
+## 2026-11-24 最後整合開發｜不重複盤點
+- 站長同意停止反覆逐輪討論，直接完成必要整合及最後安全驗收；但 GATE-01–08、正式 SQL／角色權限與防灌水必須真正通過才能部署。
+- 依最新 main 整合首頁：作品卡新增固定 18px 小眼睛／人氣欄位（14px 圖示／12px 數字，4px 間隔）；沒有成功取得有效快照顯示「—」，不偽造人氣。
+- `assets/js/home.js`：以公開 publishable key 讀取 `public.popularity_snapshot_read()`（不需要 service_role）；快照有效才將熱門前十按人氣排序、同分沿用上次順序，失敗時原本書架與閱讀不受影響，不要求每天 GitHub Pages 全站部署。
+- `admin.html`／`assets/admin.js`：新增人氣調整分頁，僅出現在既有登入及 MFA 管理員驗證後；手動輸入目標人氣、二次確認，呼叫受後端 `is_admin()` 保護的 `admin_set_popularity` RPC，未建立 RPC 時顯示錯誤，不可繞過權限。
+- `026_popularity_v1_DRAFT.sql`：追加僅 `service_role` 可執行的 `popularity_publish_snapshot(timestamptz)`，使用作品累積真實觀看與管理員基準計算單一原子快照。
+- `tests/popularity-pg-integration.sql`：追加快照讀取／內容核對；GitHub Actions 已在獨立 PostgreSQL 17 隔離庫執行成功，與正式 Supabase 無關。
+- `_config.yml` 加入排除 `tests`，避免測試腳本意外發布到 GitHub Pages。
+- 新增 `027_popularity_cron_DRAFT.sql`：03:00 臺灣時間對應 UTC 19:00，需安裝 `pg_cron` 才可排程。正式 Supabase 唯讀盤點顯示 `pg_cron`／`pg_net` 目前未安裝。此檔仍是**未執行草案**。
+- **不可忽略的阻擋**：仍未有具可信來源辨識的匿名觀看 API（目前固定 503）、站長授權發布清單與後端公開資料同步、正式環境 SQL 套用與恢復演練、03:00 快照三次重試／失敗信件、完整正式前權限及效能測試。不得把已完成的首頁與後台畫面當作人氣系統正式上線。
+- 修改僅在 `feat/site-popularity-v1`；沒有正式 Supabase DDL，沒有合併 main 或部署。
