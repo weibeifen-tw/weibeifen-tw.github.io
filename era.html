@@ -13,6 +13,7 @@ permalink: /era/
   - 所有分期都顯示；沒有資料時顯示空白提示。
 {%- endcomment -%}
 {%- assign evs = site.data.era.events -%}
+{%- assign story_settings = site.data.era.story_settings -%}
 {%- assign rs = site.data.era.research -%}
 {%- assign pds = site.data.era.periods -%}
 {%- assign empty_msg = '此時期尚無相關作品或歷史事件' -%}
@@ -44,6 +45,7 @@ permalink: /era/
   {%- assign d = i | times: 10 | plus: 1950 -%}{%- assign d9 = d | plus: 9 -%}{%- capture ds -%}{{ d }}{%- endcapture -%}
   {%- assign cnt = 0 -%}
   {%- for e in evs -%}{%- assign ee = e.end | default: e.start -%}{%- if e.start <= d9 and ee >= d -%}{%- assign cnt = cnt | plus: 1 -%}{%- endif -%}{%- endfor -%}
+  {%- for s in story_settings -%}{%- if s.year >= d and s.year <= d9 -%}{%- assign cnt = cnt | plus: 1 -%}{%- endif -%}{%- endfor -%}
   <button type="button" role="tab" class="era-cell{% if cnt == 0 %} empty{% endif %}" data-dec="{{ ds }}" aria-selected="false"><b>{{ ds }}</b><small>{% if cnt > 0 %}{{ cnt }} 筆{% else %}－{% endif %}</small></button>
 {%- endfor -%}
 </div>
@@ -76,6 +78,15 @@ permalink: /era/
   <h2>{{ ds }} 年代</h2>
   {%- assign any = false -%}
   {%- for e in evs -%}{%- assign ee = e.end | default: e.start -%}{%- if e.start <= d9 and ee >= d -%}{%- assign any = true -%}{% include era-event.html e=e %}{%- endif -%}{%- endfor -%}
+  {%- for s in story_settings -%}{%- if s.year >= d and s.year <= d9 -%}
+    {%- assign any = true -%}
+    {%- assign sn = site.data.novels[s.novel] -%}
+    <div class="ev" data-id="{{ s.id }}" data-cat="fiction">
+      <div class="ev-head"><span class="ev-date">{{ s.year }} 年・{{ s.location }}</span><span class="ev-cat">小說故事背景</span></div>
+      <b class="ev-title">{{ s.description | escape }}</b>
+      <p class="ev-meta"><a href="{{ '/novel/' | append: s.novel | append: '/' | relative_url }}">《{{ sn.title }}》</a></p>
+    </div>
+  {%- endif -%}{%- endfor -%}
   {%- unless any %}<p class="era-none">{{ empty_msg }}</p>{% endunless %}
 </section>
 {%- endfor -%}

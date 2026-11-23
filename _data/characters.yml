@@ -444,3 +444,19 @@ shanhai-lan:
   story: /assets/stories/shanhai-lan.webp
   bio: 潮族獵人。刃的狩獵同伴，參與探路、救援及族群遷移，在危險環境中與其他獵人相互協助。
   says: 我是嵐。路不好走的時候，別忘了看看後面的人有沒有跟上。
+fendao-rui:
+  name: 芮
+  handle: rui.fendao
+  novel: fendao
+  glyph: 芮
+  color: "#9b6a7b"
+  story: /assets/stories/fendao-rui.webp
+  bio: 二十一歲，158 公分。來宜蘭讀大學的女子一百公尺校隊選手，兼做校內影像整理工讀。喜歡分析起跑影片、拍街景，也常和弟弟互傳語音。希望被理解，但不喜歡別人未經詢問就替她解釋。
+fendao-yu:
+  name: 予
+  handle: yu.fendao
+  novel: fendao
+  glyph: 予
+  color: "#667f86"
+  story: /assets/stories/fendao-yu.webp
+  bio: 二十二歲，160 公分。羅東長大的女子一百公尺校隊選手，平時忙著訓練、專題與兼職。喜歡拼圖、二手市集和烤吐司，習慣主動幫忙，仍在學習如何表達自己的需要。
