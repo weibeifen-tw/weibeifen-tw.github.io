@@ -2,6 +2,7 @@
 -- 不得直接套用正式資料庫；先完成 GATE-01 / GATE-02 與 Supabase 即時結構核對。
 -- 公開訪客不得直接寫表或呼叫計數函式；事件需經可信任 Edge Function 驗證。
 -- 此草案僅建立最小資料層，尚未包含每日排程、通知、快照發布及完整防灌水。
+-- 警告：任何 SECURITY DEFINER / 事件 API 必須在正式環境實測授權隔離後才能套用。
 
 BEGIN;
 
@@ -126,9 +127,8 @@ SET search_path TO ''
 AS $$
 DECLARE v_event uuid;
 BEGIN
-  IF auth.role() IS DISTINCT FROM 'service_role' THEN
-    RAISE EXCEPTION 'WB_FORBIDDEN';
-  END IF;
+  -- 執行權限只授予 service_role；不要使用已淘汰的 auth.role() 作授權。
+  -- 後端仍須先驗證有效頁面事件、章節歸屬、簽章和限速。
   IF p_event_id IS NULL OR p_work_id IS NULL THEN
     RAISE EXCEPTION 'WB_INVALID_EVENT';
   END IF;
