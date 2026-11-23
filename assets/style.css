@@ -906,3 +906,32 @@ body.sheet-lock .cm-card{position:fixed;z-index:65}
 .bk-pop-n{font-variant-numeric:tabular-nums;font-size:12px}
 .bk-pop:not(.has-popularity) .bk-pop-n{opacity:.55}
 .bk .bk-t{margin-top:0}
+
+/* 手機會員頁：前往管理後台靠左、儲存置於正下方；登出維持右上，不更動桌機版。 */
+@media(max-width:767px){
+  .mb-acts.has-admin{
+    display:grid;
+    grid-template-columns:max-content minmax(0,1fr);
+    grid-template-areas:"admin logout" "save .";
+    column-gap:12px;
+    row-gap:10px;
+    align-items:start;
+    justify-content:start;
+  }
+  .mb-acts.has-admin .mb-go-admin{
+    grid-area:admin;
+    justify-self:start;
+    margin:0;
+  }
+  .mb-acts.has-admin .mb-logout{
+    grid-area:logout;
+    justify-self:end;
+    margin:0;
+  }
+  .mb-acts.has-admin .mb-save{
+    grid-area:save;
+    justify-self:start;
+    align-self:start;
+    margin:0;
+  }
+}
