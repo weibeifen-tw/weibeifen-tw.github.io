@@ -4,6 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 {%- if page.layout == 'thread' -%}{%- assign tnv = site.data.novels[page.novel] -%}{%- assign tch = site.data.characters[page.character] -%}{%- capture seo_t -%}《{{ tnv.title }}》・{{ tch.name }}{% if page.chapter %}・第 {{ page.chapter }} 篇{% endif %}｜{{ page.title }}{%- endcapture -%}{%- if page.seo_title -%}{%- assign seo_t = page.seo_title -%}{%- endif -%}{%- endif -%}
+{%- if page.url contains '/novel/' -%}
+  {%- assign novel_seo_id = page.url | remove_first: '/novel/' | remove: '/' -%}
+  {%- assign novel_seo_nv = site.data.novels[novel_seo_id] -%}
+{%- endif -%}
 {%- if page.collection == 'literature' -%}{%- comment -%} 文學文章（P06）：seo_title／seo_desc 選填，空白就用標題／公開摘要；不會抓正文 {%- endcomment -%}{%- assign lit_t = page.seo_title | append: '' | strip -%}{%- if lit_t == '' -%}{%- assign lit_t = page.title | append: '' | strip -%}{%- endif -%}{%- assign lit_d = page.seo_desc | append: '' | strip -%}{%- if lit_d == '' -%}{%- assign lit_d = page.description | append: '' | strip -%}{%- endif -%}{%- endif -%}
 <title>{% if lit_t %}{{ lit_t | escape }}｜{% elsif seo_t %}{{ seo_t }}｜{% elsif page.title %}{{ page.title }}｜{% endif %}{{ site.title }}</title>
 {% if page.collection == 'literature' -%}
@@ -29,6 +33,8 @@
 <meta property="twitter:title" content="{{ lit_t | escape }}" />
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Article","headline":{{ lit_t | jsonify }},{% if lit_d != '' %}"description":{{ lit_d | jsonify }},{% endif %}"author":{"@type":"Person","name":{{ page.author | default: site.author | jsonify }},"url":{{ '/about/' | absolute_url | jsonify }}},"datePublished":{{ page.date | date_to_xmlschema | jsonify }},"dateModified":{{ page.updated | default: page.date | date_to_xmlschema | jsonify }},{% if page.cover %}"image":{{ page.cover | absolute_url | jsonify }},{% endif %}"mainEntityOfPage":{{ page.url | absolute_url | jsonify }},"url":{{ page.url | absolute_url | jsonify }},"inLanguage":"zh-Hant","publisher":{"@type":"Organization","name":{{ site.title | jsonify }}}}</script>
+{%- elsif novel_seo_nv -%}
+{% include novel-seo.html id=novel_seo_id novel=novel_seo_nv %}
 {%- elsif page.og_title -%}{%- comment -%} 作品頁自訂分享標題（山海有痕起）：og_title／og_description／image 選填欄位，有填 og_title 才走這段，其他頁照舊用 jekyll-seo-tag {%- endcomment -%}
 <meta name="description" content="{{ page.description | escape }}" />
 <link rel="canonical" href="{{ page.url | absolute_url }}" />
