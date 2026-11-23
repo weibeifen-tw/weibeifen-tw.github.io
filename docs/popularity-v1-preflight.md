@@ -92,3 +92,13 @@
 - 開發過程發現字串改寫時可能導致重複 SQL，已從最後一份正常 commit 重建，透過 GitHub 重新讀回確認：**1 組 BEGIN/COMMIT、9 張表、3 個函式**；新增 `tests/popularity-sql.test.mjs` 作為靜態契約防回歸測試。
 - 目前已進行**靜態結構核對**，沒有 PostgreSQL 實際解析／遷移測試，也沒有 Edge Function 實際執行測試；GATE-03/04 尚未通過。
 - `main`、正式 Supabase schema、正式 Edge Functions 及網站仍未修改。
+
+## 2026-11-24 第六輪：原子去重順序、來源 HMAC 模組
+- 修正 `popularity_record_view` 草案的並發邏輯：先嘗試插入唯一 `event_id`，成功者才占用限流配額；交易中若超額拋錯，事件插入也回滾。較上一版「先占額度再判斷重送」更符合 Q16 冪等要求。
+- 增加 `supabase/functions/popularity-view/rate-key.mjs`：對**已由可信任代理確定的來源字串**以伺服器密鑰和 UTC 日期執行 HMAC-SHA256，產生 64 字元十六進位雜湊；拒絕無效來源、短密鑰或錯誤日期格式。
+- 增加 `tests/popularity-rate-key.test.mjs`；另在 SQL 靜態測試加入「唯一事件插入必須在限流桶插入之前」檢查。
+- 以 Node 22 在隔離本機環境重建並執行**等效 HMAC 核心功能測試**：3 項通過。但尚未透過 CI 對 GitHub 目前提交的完整測試檔執行測試；不可記為 GATE-04 通過。
+- **阻擋仍存在**：尚未確認任何不可偽造的可信任來源標頭；不能以 Origin、任意的 X-Forwarded-For 或訪客提供的 rate_key 當身分。HMAC 模組未接上 Edge Function，API 仍強制回傳 503。
+- **必要後續驗證**：真正的代理來源辨識、多人同網路正常流量、IPv6/IPv4 來源規格、共享限流併發測試、匿名訪客、SQL 交易回滾、失敗後優雅降級、配額桶清理與成本評估。
+- 先前草案限流數值 30 次／分鐘仍只是假設，非正式設定；現有 SQL 完整語法、RLS、Edge 和資料庫整合尚未實測。
+- 本輪沒有寫入正式 Supabase、沒有修改 main，也沒有部署。
