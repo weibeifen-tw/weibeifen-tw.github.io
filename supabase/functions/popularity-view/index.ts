@@ -66,6 +66,11 @@ Deno.serve(async (request: Request) => {
   if (!allowedOrigin) return json(403, { error: "origin_denied" });
 
   // Fail-closed：尚無正式防濫用機制及 GATE-04 實測，永遠不能預設啟用。
+  // GATE-04 尚未完成：強制停用，不能只靠環境旗標意外啟用。
+  // 完成可信任入口限流及防濫用測試後，才以獨立審查的提交解除此阻擋。
+  return json(503, { error: "counter_unavailable" }, allowedOrigin);
+
+  /* BLOCKED_UNTIL_GATE_04
   if (Deno.env.get("WB_POPULARITY_INGEST_ENABLED") !== "true") {
     return json(503, { error: "counter_unavailable" }, allowedOrigin);
   }
@@ -138,4 +143,5 @@ Deno.serve(async (request: Request) => {
   } catch {
     return json(503, { error: "counter_unavailable" }, allowedOrigin);
   }
+  END_BLOCKED_UNTIL_GATE_04 */
 });
