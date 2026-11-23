@@ -48,10 +48,16 @@
     return true;
   }
   function loadPopularitySnapshot() {
-    // 獨立靜態公開快照：未成功發布前不顯示假數字，且不阻擋首頁閱讀。
+    // 快照由服務端產生，網站只讀公開 RPC；不需每天部署靜態網站。
     if (!window.fetch) return;
-    fetch('/assets/data/popularity-public.json', { cache: 'no-cache', credentials: 'omit' })
-      .then(function (r) { if (!r.ok) throw Error('snapshot_unavailable'); return r.json(); })
+    var cfg = window.WB_AUTH_CONFIG || {};
+    if (!/^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/.test(cfg.supabaseUrl || '') ||
+        !cfg.publishableKey || /^sb_secret_/.test(cfg.publishableKey)) return;
+    fetch(cfg.supabaseUrl.replace(/\/$/, '') + '/rest/v1/rpc/popularity_snapshot_read', {
+      method: 'POST', cache: 'no-store', credentials: 'omit',
+      headers: { 'Content-Type': 'application/json', apikey: cfg.publishableKey },
+      body: '{}'
+    }).then(function (r) { if (!r.ok) throw Error('snapshot_unavailable'); return r.json(); })
       .then(function (payload) {
         if (!applyPopularityPayload(payload)) return;
         var second = document.querySelector('.shelf-hot');
@@ -103,5 +109,6 @@
   }
   if (mq) { if (mq.addEventListener) mq.addEventListener('change', layout); else if (mq.addListener) mq.addListener(layout); }
   layout();
-  loadPopularitySnapshot();
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', loadPopularitySnapshot, { once: true });
+  else loadPopularitySnapshot();
 })();
