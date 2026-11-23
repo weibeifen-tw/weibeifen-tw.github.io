@@ -785,3 +785,46 @@ fendao:
       - 信任與責任
     writing_completed: true
     final_post_id: fendao30
+
+gezikaojin:
+  city: tainan
+  region: chianan-plain
+  title: 各自靠近
+  cover: /assets/covers/gezikaojin.svg
+  caption: |-
+    澄和禾認識很多年了。
+
+    她們會約吃飯、分享電影和音樂，也會因為各自的安排，隔上一陣子才見面。
+
+    後來，一些原本很平常的邀約，慢慢有了不同的意思。
+  era: 2026・臺南
+  tag: 現代・慢熱
+  icon: 🫧
+  blurb: "認識很多年的人，忽然開始想著下一次什麼時候見面。"
+  tags: [現代寫實, 雙女主, 朋友變戀人, 職場, 慢熱]
+  intro: |-
+    2026 年，臺南。
+
+    三十歲的澄在醫院從事病歷資訊管理相關工作，禾則是一名醫務社工。
+
+    她們從大學時期就認識，工作以後仍然保持聯絡。偶爾一起吃飯、散步，聊電影、音樂和各自生活裡發生的事情。
+
+    澄習慣將問題整理清楚，禾更希望有些事情可以照自己的方式慢慢探索。她們不總是同意彼此，也曾經因為工作、時間與相處方式產生摩擦。
+
+    當熟悉的關係漸漸改變，她們開始思考，想和對方更靠近，究竟意味著什麼。
+
+    交往不需要放棄原有的生活。她們仍然有自己的工作、朋友、興趣與安排，只是在那些日常之間，開始為彼此留下位置。
+  comic_alts:
+    - 漫畫〈平常的邀約〉
+    - 漫畫〈一起坐著〉
+    - 漫畫〈回家以後〉
+  reading_info:
+    relationship: 多年好友轉戀人
+    tone: 日常寫實、溫柔慢熱
+    rating: 一般
+    psychology:
+      - 親密界線
+      - 關係溝通
+      - 自主選擇
+    writing_completed: true
+    final_post_id: gezikaojin24
