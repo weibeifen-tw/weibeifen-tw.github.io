@@ -61,6 +61,15 @@ body:has(.admin-page) .wrap{max-width:940px}
 .ad-popularity-field .ad-select{display:block;width:100%;min-height:44px;border-radius:10px;padding:9px 12px;font-size:16px;box-sizing:border-box;font-weight:400}
 .ad-popularity-form>.cm-btn{min-height:44px;white-space:nowrap;padding:8px 20px}
 .ad-popularity-message{grid-column:1 / -1;margin:0;min-height:1.5em;font-weight:400}
+/* 人氣報表獨立收合，避免後台被長表格推得過長。 */
+.ad-popularity-details{border:1px solid var(--line);border-radius:12px;margin:12px 0;overflow:hidden}
+.ad-popularity-summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px;font-weight:650;font-size:18px;min-height:48px}
+.ad-popularity-summary::-webkit-details-marker{display:none}
+.ad-popularity-summary::after{content:"⌄";font-size:22px;line-height:1;transition:transform .15s ease}
+.ad-popularity-details[open]>.ad-popularity-summary::after{transform:rotate(180deg)}
+.ad-popularity-summary:focus-visible{outline:2px solid currentColor;outline-offset:-4px}
+.ad-popularity-details[open]>.ad-popularity-summary{border-bottom:1px solid var(--line)}
+.ad-popularity-current,.ad-popularity-history{padding:8px 14px 14px;min-width:0}
 .ad-popularity-scroll{overflow-x:auto;max-width:100%;-webkit-overflow-scrolling:touch}
 .ad-popularity-table{min-width:470px;width:100%;font-size:14px}
 .ad-popularity-table td,.ad-popularity-table th{padding:10px 8px}
