@@ -219,4 +219,74 @@ $fn$;
 REVOKE ALL ON FUNCTION public.popularity_snapshot_read() FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.popularity_snapshot_read() TO anon, authenticated;
 
+-- 可信服務端發布快照：使用保留的上一個完整排名，避免同分時重新洗牌。
+-- 排程／通知尚未部署；新快照先寫資料庫，正式公開檔須由核准的獨立工作流程發布。
+CREATE FUNCTION public.popularity_publish_snapshot(p_cutoff timestamptz)
+RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path TO ''
+AS $snapshot$
+DECLARE
+  v_previous jsonb;
+  v_works jsonb;
+  v_order jsonb;
+  v_version text;
+  v_payload jsonb;
+BEGIN
+  IF p_cutoff IS NULL OR p_cutoff > now() + interval '5 minutes'
+     OR p_cutoff < now() - interval '3 days' THEN
+    RAISE EXCEPTION 'WB_INVALID_SNAPSHOT_CUTOFF';
+  END IF;
+  SELECT payload INTO v_previous
+    FROM public.popularity_public_snapshot
+    WHERE singleton = 1 FOR UPDATE;
+
+  WITH old_positions AS (
+    SELECT value AS work_id, (ordinality - 1)::integer AS old_rank
+    FROM jsonb_array_elements_text(
+      CASE WHEN jsonb_typeof(v_previous->'previous_order') = 'array'
+        THEN v_previous->'previous_order' ELSE '[]'::jsonb END
+    ) WITH ORDINALITY AS p(value, ordinality)
+  ), calculated AS (
+    SELECT w.work_id AS id,
+      greatest(0, coalesce(b.base_popularity,0) +
+        coalesce(t.total_views,0) - coalesce(b.baseline_views,0))::bigint AS popularity,
+      coalesce(o.old_rank,2147483647) AS old_rank,
+      w.sort_key
+    FROM public.popularity_works w
+    LEFT JOIN public.popularity_work_totals t ON t.work_id=w.work_id
+    LEFT JOIN public.popularity_baselines b ON b.work_id=w.work_id
+    LEFT JOIN old_positions o ON o.work_id=w.work_id
+    WHERE w.is_public
+  ), ranked AS (
+    SELECT id, popularity,
+      row_number() OVER(ORDER BY popularity DESC, old_rank, sort_key, id) AS rank
+    FROM calculated
+  )
+  SELECT
+    coalesce(jsonb_agg(jsonb_build_object('id',id,'popularity',popularity)
+      ORDER BY rank),'[]'::jsonb),
+    coalesce(jsonb_agg(id ORDER BY rank),'[]'::jsonb)
+  INTO v_works,v_order
+  FROM ranked;
+
+  v_version := to_char(p_cutoff AT TIME ZONE 'UTC','YYYYMMDDHH24MISS') || '-v1';
+  v_payload := jsonb_build_object(
+    'version',v_version, 'cutoff_at',to_char(p_cutoff AT TIME ZONE 'UTC',
+      'YYYY-MM-DD"T"HH24:MI:SS"Z"'),
+    'works',v_works,'previous_order',v_order);
+  INSERT INTO public.popularity_public_snapshot
+    (singleton,snapshot_version,cutoff_at,payload)
+    VALUES (1,v_version,p_cutoff,v_payload)
+    ON CONFLICT (singleton) DO UPDATE
+      SET snapshot_version=excluded.snapshot_version,
+          cutoff_at=excluded.cutoff_at,
+          payload=excluded.payload,
+          published_at=now();
+  RETURN v_payload;
+END
+$snapshot$;
+REVOKE ALL ON FUNCTION public.popularity_publish_snapshot(timestamptz)
+  FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.popularity_publish_snapshot(timestamptz)
+  TO service_role;
+
 COMMIT;
