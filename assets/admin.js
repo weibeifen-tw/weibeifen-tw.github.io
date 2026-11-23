@@ -685,14 +685,19 @@ document.addEventListener('DOMContentLoaded', function () {
     form.appendChild(msg);
     p.appendChild(form);
 
-    var currentTitle = el('h3', 'mb-h ad-h', '目前各小說人氣');
-    var current = el('div', 'ad-popularity-current', '');
-    current.appendChild(el('p', 'mb-sub', '讀取中…'));
-    p.appendChild(currentTitle); p.appendChild(current);
-    p.appendChild(el('h3', 'mb-h ad-h', '設定紀錄（最近 50 筆）'));
-    var history = el('div', 'ad-popularity-history', '');
-    history.appendChild(el('p', 'mb-sub', '讀取中…'));
-    p.appendChild(history);
+    // 使用原生 details/summary，鍵盤與手機皆可操作；預設收合以縮短管理頁。
+    function collapsible(label, contentClass) {
+      var details = el('details', 'ad-popularity-details');
+      var summary = el('summary', 'ad-popularity-summary', label);
+      var body = el('div', contentClass);
+      body.appendChild(el('p', 'mb-sub', '讀取中…'));
+      details.appendChild(summary);
+      details.appendChild(body);
+      p.appendChild(details);
+      return body;
+    }
+    var current = collapsible('目前各小說人氣', 'ad-popularity-current');
+    var history = collapsible('設定紀錄（最近 50 筆）', 'ad-popularity-history');
 
     function formatted(v) {
       return typeof v === 'number' && Number.isSafeInteger(v) && v >= 0
