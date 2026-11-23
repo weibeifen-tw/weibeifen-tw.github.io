@@ -56,8 +56,9 @@ test('公開表格已啟用 RLS，訪客不可直接寫觀看事件', () => {
 });
 
 test('公開觀看 Edge Function 仍強制停用', () => {
-  assert.match(edge, /return json\(503, \{ error: "counter_unavailable" \}, allowedOrigin\);/);
-  assert.match(edge, /BLOCKED_UNTIL_GATE_04/);
+  assert.match(edge, /return reply\(503, "counter_unavailable", trustedBrowserOrigin\);/);
+  assert.match(edge, /GATE-04/);
+  assert.doesNotMatch(edge, /SUPABASE_SERVICE_ROLE_KEY/);
 });
 
 test('並發去重先於共享配額，避免事件重送多占用限流', () => {
