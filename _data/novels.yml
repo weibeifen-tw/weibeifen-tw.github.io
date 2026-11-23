@@ -754,3 +754,26 @@ shanhai:
       - 孩童遇險
     writing_completed: true
     final_post_id: shanhai32
+fendao:
+  city: yilan
+  region: yilan-plain
+  title: 分道
+  cover: /assets/covers/fendao.svg
+  caption: |-
+    宜蘭的田徑場上，芮與予從互相拍攝起跑影片開始熟悉。
+
+    兩個跑一百公尺的女生，練習跑自己的路，也慢慢認識彼此。
+  era: 2026・宜蘭
+  tag: 校園・田徑
+  icon: 🏃
+  blurb: "宜蘭的田徑場，兩名短跑選手從互相拍攝起跑影片開始靠近。"
+  tags: [GL, 校園, 田徑, 運動]
+  intro: |-
+    三月的宜蘭，雨剛停，田徑場的跑道還留著積水。芮和予被教練分在同一組，輪流拍下彼此的三十公尺起跑練習。
+
+    她們從訓練影片裡發現彼此動作的細節，也開始在訓練以外的時間傳訊息。
+  reading_info:
+    tone: 現代寫實
+    rating: "一般"
+    writing_completed: true
+    final_post_id: fendao30
