@@ -141,3 +141,11 @@
 - 過程中兩次測試失敗源於測試稿不一致及 SQL DO 區塊分隔符錯誤；修正為 `$gate$` 後，GitHub Actions run `45216363086` 的 `isolated-postgres` 與 `popularity-unit` jobs 均顯示 success。
 - **仍非真實登入／MFA／API 越權測試**，不能據此判定正式 Supabase GATE-02 已完全通過。尚無真正多使用者會話或 Edge Function 流量實測。
 - API 仍強制 503 停用；正式 Supabase、main、線上網站未修改。
+
+## 2026-11-24 第十二輪：來源信任邊界明確阻擋
+- 核對 Supabase 文件未取得可充分證明託管 Edge Function 所有來源 IP 標頭皆由可信代理清理／覆寫的證據；因此**不能**直接採信 `X-Forwarded-For`、`X-Real-IP`、`CF-Connecting-IP`、Origin、Referer 或訪客自報的限流金鑰。
+- 新增 `supabase/functions/popularity-view/source-policy.mjs`：目前所有公開請求一律回傳 `source_unverified`，不會被當成可信觀看事件。此為防誤啟用的保護，不是已完成的來源認證。
+- 新增 `tests/popularity-source-policy.test.mjs`，測試本站 Origin、偽造代理 IP 標頭及空來源的阻擋行為；CI 已納入該組測試。
+- `index.ts` 新增「來源政策檢查」及「即使未來來源政策改變仍固定停用」兩道阻擋，仍完全不接計數 RPC、也不讀取資料庫密鑰。
+- **仍缺**：託管代理標頭實際信任模型的官方證據、反濫用入口的驗證方案及負載測試、HMAC 與資料庫 RPC 的安全整合、匿名訪客正常行為及共用網路公平性評估。GATE-04 不通過。
+- 此輪只修改獨立 GitHub 開發分支；正式 Supabase、main、正式網站均未改動。
