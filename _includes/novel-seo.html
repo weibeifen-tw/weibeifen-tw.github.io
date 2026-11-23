@@ -1,22 +1,23 @@
 {%- comment -%}
   小說作品頁共用 SEO（不含章節頁／研究文章）。
   資料優先順序：作品頁 front matter > _data/novels.yml > 既有檔案。
-  分享圖：作品頁 image > 作品漫畫第一張 WebP > 書籍 SVG 封面。
-  注意：SVG 社群分享支援度因平台而異，日後可提供專用 JPG/PNG image。
+  分享圖：既有有效 JPG > 建置期從批准的 SVG 封面產生的 1200x630 JPG。
+  不要把原始 SVG 或 WebP 用作跨社群通用 og:image；原始網站封面與漫畫保持不變。
 {%- endcomment -%}
 {%- assign novel_seo = include.novel -%}
 {%- assign novel_og_title = page.og_title | default: page.title -%}
 {%- assign novel_og_desc = page.og_description | default: page.description | default: novel_seo.blurb -%}
 {%- assign novel_description = page.description | default: novel_seo.blurb -%}
-{%- assign novel_seo_image = page.image -%}
+{%- comment -%} 只使用可驗證存在的 JPEG；原有專屬 JPEG（如山海）優先。SVG 不適合作為跨平台社群分享圖。 {%- endcomment -%}
+{%- assign novel_seo_image = nil -%}
+{%- if page.image and page.image contains '.jpg' -%}
+  {%- assign custom_og = site.static_files | where: 'path', page.image | first -%}
+  {%- if custom_og -%}{%- assign novel_seo_image = page.image -%}{%- endif -%}
+{%- endif -%}
 {%- unless novel_seo_image -%}
-  {%- capture novel_comic_path -%}/assets/comics/{{ include.id }}-1.webp{%- endcapture -%}
-  {%- assign novel_comic_file = site.static_files | where: 'path', novel_comic_path | first -%}
-  {%- if novel_comic_file -%}
-    {%- assign novel_seo_image = novel_comic_path -%}
-  {%- elsif novel_seo.cover -%}
-    {%- assign novel_seo_image = novel_seo.cover -%}
-  {%- endif -%}
+  {%- capture generated_og -%}/assets/og/{{ include.id }}.jpg{%- endcapture -%}
+  {%- assign generated_file = site.static_files | where: 'path', generated_og | first -%}
+  {%- if generated_file -%}{%- assign novel_seo_image = generated_og -%}{%- endif -%}
 {%- endunless -%}
 <meta name="description" content="{{ novel_description | escape }}">
 <link rel="canonical" href="{{ page.url | absolute_url }}">
@@ -28,6 +29,11 @@
 <meta property="og:type" content="book">
 {%- if novel_seo_image %}
 <meta property="og:image" content="{{ novel_seo_image | absolute_url }}">
+<meta property="og:image:type" content="image/jpeg">
+{%- unless page.image == novel_seo_image %}
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+{%- endunless %}
 <meta property="og:image:alt" content="{{ page.image_alt | default: novel_seo.title | escape }}">
 {%- endif %}
 <meta name="twitter:card" content="{% if novel_seo_image %}summary_large_image{% else %}summary{% endif %}">
