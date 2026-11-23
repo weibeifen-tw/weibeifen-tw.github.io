@@ -22,3 +22,35 @@ jobs:
           node-version: '22'
       - name: Popularity draft contract and HMAC tests
         run: node --test tests/popularity-sql.test.mjs tests/popularity-rate-key.test.mjs tests/popularity-path.test.mjs
+
+  isolated-postgres:
+    # 在 GitHub Action 的臨時 PostgreSQL 17 服務執行；完全不連正式 Supabase。
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: draft-only
+          POSTGRES_DB: popularity_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d popularity_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      PGHOST: localhost
+      PGPORT: '5432'
+      PGUSER: postgres
+      PGPASSWORD: draft-only
+      PGDATABASE: popularity_test
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Prepare isolated Supabase-compatible test stubs
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/popularity-pg-setup.sql
+      - name: Parse and apply draft SQL to ephemeral PostgreSQL only
+        run: psql -X -v ON_ERROR_STOP=1 -f supabase/drafts/026_popularity_v1_DRAFT.sql
+      - name: Run RLS grants, idempotency, rate cap, baseline tests
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/popularity-pg-integration.sql
