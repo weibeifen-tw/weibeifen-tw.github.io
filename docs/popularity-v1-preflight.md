@@ -61,3 +61,11 @@
 - **待驗證**：測試非管理員調整被拒、管理員 MFA 要求、事件重送冪等、併發下重設基準與計數一致、無效章節不能計數、下架作品不計數；不可僅以 SQL 文字閱讀視為通過。
 - **待完成**：Edge Functions、每日快照、郵件告警、GitHub Pages 整合與頁面效能實測。
 - 本輪僅更新 GitHub 開發分支；正式 Supabase **0 項寫入／0 項 schema 變更**。
+
+## 2026-11-23 第三輪：觀看 API 草稿
+- 確認正式 Supabase 無 Edge Functions；新增 `supabase/functions/popularity-view/index.ts` 僅在 GitHub 獨立分支。
+- 草稿示範 POST-only、指定合法作品／章節網址、UUIDv4 事件 ID、限制請求大小、後端核對章節歸屬，且沒有前端暴露 service_role。
+- **刻意強制停用**：在 GATE-04 可信任限流、防灌水與實際整合測試完成前，所有合法 POST 都返回 503，後方的計數範例碼被註解。不得將此草稿視為可用 API。
+- Origin/CORS 只能限制瀏覽器跨來源呼叫，不能證明是真人；UUID 只能防止相同事件重送，不能防惡意大量新事件。
+- 未實作公開入口的攻擊防護、每日彙總、持續快照、郵件通知、管理後台與前端，因此仍不得套用 SQL、部署 Edge Function、合併 main 或發布網站。
+- 目前無本地 Deno 執行環境；API 尚未執行型別檢查及整合測試。
