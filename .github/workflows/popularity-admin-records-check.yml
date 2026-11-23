@@ -1,0 +1,41 @@
+name: 人氣後台紀錄安全測試（不部署）
+on:
+  push:
+    branches: [feat/site-popularity-admin-records]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  admin-records:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: test-only
+          POSTGRES_DB: popularity_admin
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres -d popularity_admin"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      PGHOST: localhost
+      PGPORT: '5432'
+      PGUSER: postgres
+      PGPASSWORD: test-only
+      PGDATABASE: popularity_admin
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Check admin JS syntax
+        run: node --check assets/admin.js
+      - name: Setup isolated database identity
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/popularity-phase1-setup.sql
+      - name: Apply existing phase1 schema in ephemeral DB
+        run: psql -X -v ON_ERROR_STOP=1 -f supabase/drafts/028_popularity_phase1_OWNER_APPROVAL.sql
+      - name: Apply new admin-only read RPC in ephemeral DB
+        run: psql -X -v ON_ERROR_STOP=1 -f supabase/drafts/029_popularity_admin_overview_OWNER_SQL.sql
+      - name: Verify MFA access and history contents
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/popularity-admin-records-pg.sql
