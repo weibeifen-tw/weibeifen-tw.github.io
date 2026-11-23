@@ -10,6 +10,13 @@
 - 因安全限制暫停：Q08 封鎖自動隱藏全部留言／Q09 解除自動恢復 → `supabase/drafts/024_ban_hide_restore_DRAFT.sql`（未執行）。執行前，現行封鎖仍是「選擇是否一併移除留言（removed）」。
 - 待實機：iPhone Safari 鍵盤／安全區、Android Chrome。
 
+## 《上釉》／《來路》拆書（2026-11-23，分支 feat/yu-lailu-split）
+- 下架原 1–5（threads、four-point-one、sea-smell、2029、key-person）：刪檔＋移出授權清單＋_data/withdrawn.yml；原稿在 git 歷史與給站長的 ZIP（weibeifen_yu-lailu_backup_2026-11-23.zip）
+- 《來路》lailu：shutter 1、drumstick 2、net 3、bamboo-goal 4、gutter 5；《上釉》yu：原 100–118 → 1–16；網址不變
+- 角色跨書：characters.yml 選填 `also: [小說id]`（mo → lailu）
+- 閱讀紀錄轉換：app.js window.wbRemap（本機一次性搬移，旗標 wb:mig:yu-split-1）；cloud.js 同步只在記憶體轉換；章節書籤改用網址判斷
+- 會員資料對齊 SQL：supabase/drafts/025_yu_lailu_split_DRAFT.sql（未執行）
+
 ## 基準
 - 開工 main：ebc7b8c（2026-11-21）。復原點：遠端分支 backup/pre-v1-s01-s11-20261122（＝ebc7b8c）。
 - 遠端另有 feat/v1-s01-s11-integration（＝ebc7b8c、無 commit，來源不明，不動它）。
