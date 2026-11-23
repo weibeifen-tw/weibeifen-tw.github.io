@@ -1,7 +1,28 @@
 ---
 layout: default
-title: "分道｜宜蘭田徑 GL 小說・全30章"
-description: "2026年宜蘭，短跑選手芮與予從互相拍攝訓練影片開始熟悉。全30章。"
+title: "分道｜宜蘭田徑・心理寫實 GL 百合小說｜全30章完結"
+description: "《分道》是以2026年宜蘭為背景的雙女主心理寫實 GL 百合小說。田徑校隊的芮與予從互拍起跑影片相識，在依賴、界線與信任之間重新理解關係。全30章完結。"
+og_title: "《分道》｜宜蘭田徑心理寫實 GL 小說"
+og_description: "芮想被理解，予想被需要。宜蘭田徑場上的相遇，走向一段關於依賴、界線與責任的雙女主故事。全30章完結。"
+image: /assets/comics/fendao-1.webp
+image_alt: "《分道》插畫：宜蘭田徑場邊的芮與予一起觀看訓練影片"
 permalink: /novel/fendao/
 ---
 {% include novel-page.html id="fendao" %}
+{%- assign fendao_meta = site.data.novels.fendao -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Book",
+  "name": {{ fendao_meta.title | jsonify }},
+  "headline": {{ page.title | jsonify }},
+  "url": {{ page.url | absolute_url | jsonify }},
+  "description": {{ page.description | jsonify }},
+  "author": {"@type": "Person", "name": {{ site.author | jsonify }}},
+  "publisher": {"@type": "Organization", "name": {{ site.title | jsonify }}},
+  "inLanguage": "zh-Hant",
+  "genre": ["GL", "百合小說", "心理寫實", "校園小說", "運動小說"],
+  "image": {{ page.image | absolute_url | jsonify }},
+  "isAccessibleForFree": true
+}
+</script>
