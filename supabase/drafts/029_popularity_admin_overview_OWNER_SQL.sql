@@ -17,7 +17,7 @@ BEGIN
   SELECT coalesce(pg_catalog.jsonb_agg(pg_catalog.jsonb_build_object(
     'id', w.work_id,
     'configured', (b.work_id IS NOT NULL),
-    'popularity', pg_catalog.greatest(0,
+    'popularity', greatest(0,
       coalesce(b.base_popularity,0) + coalesce(t.total_views,0)
       - coalesce(b.baseline_views,0)),
     'updated_at', b.updated_at
