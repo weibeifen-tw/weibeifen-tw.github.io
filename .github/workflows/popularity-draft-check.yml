@@ -21,7 +21,7 @@ jobs:
         with:
           node-version: '22'
       - name: Popularity draft contract and HMAC tests
-        run: node --test tests/popularity-sql.test.mjs tests/popularity-rate-key.test.mjs tests/popularity-path.test.mjs
+        run: node --test tests/popularity-sql.test.mjs tests/popularity-rate-key.test.mjs tests/popularity-path.test.mjs tests/popularity-source-policy.test.mjs
 
   isolated-postgres:
     # 在 GitHub Action 的臨時 PostgreSQL 17 服務執行；完全不連正式 Supabase。
