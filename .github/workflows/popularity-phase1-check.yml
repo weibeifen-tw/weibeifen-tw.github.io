@@ -29,6 +29,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+      - name: Verify admin front-end syntax
+        run: node --check assets/admin.js
       - name: Prepare isolated Supabase auth stubs
         run: psql -X -v ON_ERROR_STOP=1 -f tests/popularity-phase1-setup.sql
       - name: Install phase1 candidate in ephemeral PostgreSQL 17
