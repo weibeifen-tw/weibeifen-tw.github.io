@@ -18,12 +18,13 @@ body_class: wide home
   <div class="shelf" id="ex-shelf" role="tabpanel" aria-labelledby="ex-t-all" tabindex="0">
   {%- for nv in site.data.novels -%}
     {%- assign lead = nil -%}{%- for ch in site.data.characters -%}{%- if ch[1].novel == nv[0] or ch[1].also contains nv[0] -%}{%- assign lead = ch[1] -%}{%- break -%}{%- endif -%}{%- endfor -%}
-    <a class="bk" href="{{ '/novel/' | append: nv[0] | append: '/' | relative_url }}" data-ord="{{ forloop.index }}" style="--c:{{ lead.color | default: '#999' }}">
+    <a class="bk" href="{{ '/novel/' | append: nv[0] | append: '/' | relative_url }}" data-work-id="{{ nv[0] | escape }}" data-ord="{{ forloop.index }}" style="--c:{{ lead.color | default: '#999' }}">
       <span class="bk-cover">
         {%- if nv[1].cover -%}<img src="{{ nv[1].cover | relative_url }}?v={{ site.time | date: '%s' }}" alt="" width="300" height="400"{% if forloop.index > 6 %} loading="lazy"{% endif %} decoding="async">
         {%- elsif lead -%}<span class="avatar">{%- if lead.avatar -%}<img src="{{ '/assets/avatars/' | append: lead.avatar | relative_url }}" alt="" width="96" height="96"{% if forloop.index > 6 %} loading="lazy"{% endif %} decoding="async">{%- else -%}{{ lead.glyph }}{%- endif -%}</span>
         {%- endif -%}
       </span>
+      <span class="bk-pop" data-work-id="{{ nv[0] | escape }}" aria-label="人氣尚未公布"><svg aria-hidden="true" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.8-6 10-6 10 6 10 6-3.8 6-10 6-10-6-10-6z"/><circle cx="12" cy="12" r="2.5"/></svg><span class="bk-pop-n" aria-hidden="true">—</span></span>
       <b class="bk-t">{{ nv[1].title }}</b>
       <span class="bk-b">{{ nv[1].blurb | default: nv[1].tag }}</span>
     </a>
