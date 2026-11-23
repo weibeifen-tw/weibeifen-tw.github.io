@@ -71,3 +71,48 @@ body:has(.admin-page) .wrap{max-width:940px}
  .ad-popularity-form>.cm-btn{width:100%;font-size:16px}
  .ad-popularity-message{grid-column:1}
 }
+
+
+/* V1.0 手機會員管理：卡片與底部操作面板。桌機保留既有六欄表格。 */
+.ad-member-cards{display:none}
+.ad-member-sheet-layer{position:fixed;inset:0;z-index:1200;background:rgba(0,0,0,.38);display:flex;align-items:flex-end;justify-content:center}
+.ad-member-sheet{box-sizing:border-box;width:100%;max-width:600px;max-height:85dvh;overflow-y:auto;overscroll-behavior:contain;border-radius:20px 20px 0 0;background:var(--card);color:var(--ink);padding:10px 20px calc(20px + env(safe-area-inset-bottom));box-shadow:0 -12px 45px rgba(0,0,0,.16)}
+.ad-member-sheet-grip{display:block;width:42px;height:4px;border-radius:4px;margin:0 auto 15px;background:var(--line)}
+.ad-member-sheet-header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.ad-member-sheet-header h2{margin:0}
+.ad-member-sheet-close{font:inherit;border:1px solid var(--line);border-radius:99px;background:var(--card);color:var(--ink);cursor:pointer;min-width:48px;min-height:44px}
+.ad-member-sheet-person{display:flex;gap:12px;align-items:center;border-bottom:1px solid var(--line);padding:18px 0}
+.ad-member-sheet-person .cm-av{flex:none}
+.ad-member-sheet-person .ad-member-status{flex:none}
+.ad-member-sheet-form{display:grid;gap:16px;padding-top:16px}
+.ad-member-sheet-form .mb-sub{margin:0;line-height:1.6}
+.ad-member-reason-label{display:grid;gap:8px;font-size:14px;font-weight:600}
+.ad-member-reason{box-sizing:border-box;width:100%;max-width:100%;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);font:inherit;font-weight:400;font-size:16px;line-height:1.5;padding:11px;resize:vertical}
+.ad-member-remove-label{display:flex;align-items:flex-start;gap:10px;font-size:14px;line-height:1.5}
+.ad-member-remove-label input{width:20px;height:20px;flex:none;margin:0}
+.ad-member-confirm{width:100%;min-height:46px}
+.ad-member-error{min-height:1.5em;margin:0}
+@media (max-width:767px){
+  .ad-members-desktop{display:none}
+  .ad-member-cards{display:grid;gap:14px;min-width:0;margin:16px 0 4px}
+  .ad-member-card{box-sizing:border-box;width:100%;min-width:0;border:1px solid var(--line);background:var(--card);border-radius:16px;padding:16px;display:grid;gap:13px}
+  .ad-member-card-head{display:flex;align-items:center;gap:10px;min-width:0;padding-bottom:13px;border-bottom:1px solid var(--line)}
+  .ad-member-card-head .cm-av{flex:none}
+  .ad-member-card-person{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1;overflow-wrap:anywhere}
+  .ad-member-card-person strong{font-size:16px;line-height:1.5}
+  .ad-member-username{font-size:13px;color:var(--sub);line-height:1.5}
+  .ad-member-role{flex:none;white-space:nowrap;font-size:12px;padding:5px 10px;border:1px solid var(--line);border-radius:99px;color:var(--sub)}
+  .ad-member-detail{display:flex;align-items:baseline;justify-content:space-between;gap:12px;font-size:14px;line-height:1.5}
+  .ad-member-detail-label{color:var(--sub);flex:none;white-space:nowrap}
+  .ad-member-detail-value{text-align:right;min-width:0;overflow-wrap:anywhere}
+  .ad-member-status{font-size:13px;white-space:nowrap}
+  .ad-member-status.is-normal{color:var(--sub)}
+  .ad-member-status.is-banned{color:#b3263a;font-weight:600}
+  .ad-member-manage{display:block;width:100%;min-height:44px;border-radius:10px;margin-top:3px}
+}
+@media (min-width:768px){
+  .ad-member-sheet-layer{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .ad-member-sheet{scroll-behavior:auto}
+}
