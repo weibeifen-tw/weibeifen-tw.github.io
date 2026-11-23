@@ -53,6 +53,16 @@
   "publisher": {"@type": "Organization", "name": {{ site.title | jsonify }}},
   "inLanguage": "zh-Hant",
   "genre": {{ novel_seo.tags | default: empty | jsonify }},
+  "character": [
+    {%- assign seo_first_character = true -%}
+    {%- for seo_character in site.data.characters -%}
+      {%- if seo_character[1].novel == include.id or seo_character[1].also contains include.id -%}
+        {%- unless seo_first_character -%},{%- endunless -%}
+        {"@type":"Person","name":{{ seo_character[1].name | jsonify }}}
+        {%- assign seo_first_character = false -%}
+      {%- endif -%}
+    {%- endfor -%}
+  ],
   "isAccessibleForFree": true{% if novel_seo_image %},
   "image": {{ novel_seo_image | absolute_url | jsonify }}{% endif %}
 }
