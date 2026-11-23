@@ -73,7 +73,7 @@ counties:
   - key: tainan
     name: 臺南
     bbox: [136.7, 483.5, 148.4, 134.7]
-    novels: [hue]
+    novels: [hue, gezikaojin]
   - key: changhua
     name: 彰化
     bbox: [183.4, 280.2, 108.6, 108.1]
