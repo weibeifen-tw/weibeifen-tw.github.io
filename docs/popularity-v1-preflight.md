@@ -109,3 +109,11 @@
 - 直接從 GitHub 重新讀取 SQL、Edge、HMAC 原始碼，執行 12 項**靜態契約判定**：12/12 通過。此檢查不等於 Node 測試完成，也不等於 PostgreSQL 執行或多實例安全性通過。
 - 本工作階段 GitHub 連線的 workflow run 查詢未回傳可驗證的測試執行結果，因此 CI **狀態待查**，不得宣稱成功。
 - 仍需真實驗證可信任來源訊號、HMAC 接入、Edge Function 服務端共享限流、SQL 實際執行、保留政策、快照與管理後台。
+
+## 2026-11-24 第八輪：取得實際 CI 證據與 API 清理
+- 已直接取得 GitHub Actions 成功證據：`45213250890`（2026-11-23 UTC）：11 個 Node.js 草案測試全部通過、0 失敗；同版網站建置 push/PR 檢查成功。這些僅為草案測試與 Jekyll 建置，不是資料庫交易或真人流量防灌水驗證。
+- 核對 `index.html`：首頁作品路徑為 `/novel/{id}/`，與草案格式吻合；章節 `/t/{slug}/` 的歸屬仍須核准清單。
+- 將 Edge Function 檔案過時的、被註解的示例計數程式刪除，改為小型 **fail-closed 503** 處理器：沒有任何 service_role 秘密金鑰讀取或計數 RPC 呼叫；僅處理方法、CORS 預檢與停用回應。
+- 抽出純路徑解析模組 `path.mjs`，新增 `tests/popularity-path.test.mjs` 驗證合法作品／章節網址及外站／畸形網址拒絕；更新 CI 同時執行三份測試。
+- API 明確仍為不可用草案；HMAC 信任界線尚未實作，不能解除 503，也不能因為 CI 成功就視 GATE-03、04 通過。
+- 本輪只修改 `feat/site-popularity-v1`，不更動正式 Supabase／GitHub main／正式網站。
