@@ -167,17 +167,20 @@ BEGIN
   IF p_rate_key IS NULL OR p_rate_key !~ '^[a-f0-9]{64}$' THEN
     RAISE EXCEPTION 'WB_INVALID_RATE_KEY';
   END IF;
-  -- 同一次事件重送不占用限流配額。
-  IF EXISTS (
-    SELECT 1 FROM public.popularity_view_events WHERE event_id = p_event_id
-  ) THEN RETURN false; END IF;
-
   IF p_chapter_path IS NOT NULL AND NOT EXISTS (
     SELECT 1 FROM public.popularity_chapters
     WHERE work_id = p_work_id AND chapter_path = p_chapter_path AND is_public
   ) THEN RAISE EXCEPTION 'WB_INVALID_CHAPTER_OWNERSHIP'; END IF;
 
-  -- 跨執行個體 DB 原子限流，不使用單一 Edge 記憶體計數器。
+  -- 先對 event_id 做原子唯一性鎖定：並發重送只有第一個插入成功。
+  -- 若下方限流拒絕，整個函式交易將回滾，該事件不會留在資料庫。
+  INSERT INTO public.popularity_view_events(event_id, work_id, chapter_path)
+    VALUES (p_event_id, p_work_id, p_chapter_path)
+    ON CONFLICT (event_id) DO NOTHING
+    RETURNING event_id INTO v_inserted;
+  IF v_inserted IS NULL THEN RETURN false; END IF;
+
+  -- 再進行跨執行個體的共享限流：相同 ID 的重送不會消耗配額。
   v_bucket := floor(extract(epoch FROM clock_timestamp()) / 60)::bigint;
   INSERT INTO public.popularity_rate_buckets(rate_key, minute_bucket, event_count)
     VALUES (p_rate_key, v_bucket, 1)
@@ -186,12 +189,6 @@ BEGIN
       WHERE public.popularity_rate_buckets.event_count < 30
     RETURNING event_count INTO v_hits;
   IF v_hits IS NULL THEN RAISE EXCEPTION 'WB_RATE_LIMITED'; END IF;
-
-  INSERT INTO public.popularity_view_events(event_id, work_id, chapter_path)
-    VALUES (p_event_id, p_work_id, p_chapter_path)
-    ON CONFLICT (event_id) DO NOTHING
-    RETURNING event_id INTO v_inserted;
-  IF v_inserted IS NULL THEN RETURN false; END IF;
 
   INSERT INTO public.popularity_work_totals(work_id,total_views)
     VALUES (p_work_id,1)
