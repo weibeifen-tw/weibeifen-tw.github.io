@@ -47,7 +47,7 @@ try {
     });
     await page.goto("https://member-example.test/admin/");
     await page.locator('[data-tab="members"]').click();
-    await page.locator(".ad-member-card").first().waitFor();
+    await page.locator(".ad-member-card").first().waitFor({state:"attached"});
     const isMobile=width<=767;
     const cardDisplay=await page.locator(".ad-member-cards").evaluate(e=>getComputedStyle(e).display);
     const tableDisplay=await page.locator(".ad-members-desktop").evaluate(e=>getComputedStyle(e).display);
