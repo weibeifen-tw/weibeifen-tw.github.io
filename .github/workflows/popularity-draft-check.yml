@@ -20,6 +20,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Home JavaScript syntax
+        run: node --check assets/js/home.js
       - name: Popularity draft contract and HMAC tests
         run: node --test tests/popularity-sql.test.mjs tests/popularity-rate-key.test.mjs tests/popularity-path.test.mjs tests/popularity-source-policy.test.mjs
 
