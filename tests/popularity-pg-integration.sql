@@ -83,7 +83,7 @@ BEGIN
   IF NOT denied THEN RAISE EXCEPTION 'unpublished chapter was counted'; END IF;
 END $$;
 -- 使用正式 is_admin() 等效邏輯驗證：AAL1 管理員／AAL2 一般會員皆不可調整。
-DO $
+DO $gate$
 DECLARE
   denied boolean;
 BEGIN
@@ -117,13 +117,13 @@ BEGIN
   OR (SELECT baseline_views FROM public.popularity_baselines WHERE work_id='yu') <> 30
   OR (SELECT count(*) FROM public.popularity_adjustment_log) <> 1
   THEN RAISE EXCEPTION 'admin baseline or audit mismatch'; END IF;
-END $;
+END $gate$;
 
 -- 模擬已登入角色實際呼叫 RPC（不是只做 has_function_privilege 目錄檢查）。
 SET ROLE authenticated;
 SELECT set_config('wb_test.uid','bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',false);
 SELECT set_config('wb_test.jwt','{"aal":"aal2"}',false);
-DO $
+DO $gate$
 DECLARE denied boolean:=false;
 BEGIN
   IF public.is_admin() THEN RAISE EXCEPTION 'reader elevated via role'; END IF;
@@ -133,6 +133,6 @@ BEGIN
     IF SQLERRM='WB_NOT_ADMIN' THEN denied:=true; ELSE RAISE; END IF;
   END;
   IF NOT denied THEN RAISE EXCEPTION 'authenticated reader bypassed role guard'; END IF;
-END $;
+END $gate$;
 RESET ROLE;
 SELECT 'isolated draft PostgreSQL checks passed' AS result;
