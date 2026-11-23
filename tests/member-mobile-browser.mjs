@@ -20,6 +20,7 @@ const html = `<!doctype html><html lang="zh-Hant"><head><meta charset="UTF-8"><m
 window.__calls=[];
 window.__members=${JSON.stringify(people)};
 window.WBAuth={
+ configProblem:()=>null,
  getVerifiedUser:async()=>({user:null,error:"測試登入停用"}),
  isAdmin:async()=>false,
  getClient:()=>({rpc:async(name,args)=>{
