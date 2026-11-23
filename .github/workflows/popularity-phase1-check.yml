@@ -1,0 +1,43 @@
+name: 人氣第一階段資料庫隔離驗證（不部署）
+on:
+  push:
+    branches: [feat/site-popularity-backend-phase1]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  isolated-db:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: test-only
+          POSTGRES_DB: popularity_phase1
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres -d popularity_phase1"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      PGHOST: localhost
+      PGUSER: postgres
+      PGPASSWORD: test-only
+      PGDATABASE: popularity_phase1
+      PGPORT: '5432'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify admin front-end syntax
+        run: node --check assets/admin.js
+      - name: Prepare isolated Supabase auth stubs
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/popularity-phase1-setup.sql
+      - name: Install phase1 candidate in ephemeral PostgreSQL 17
+        run: psql -X -v ON_ERROR_STOP=1 -f supabase/drafts/028_popularity_phase1_OWNER_APPROVAL.sql
+      - name: Test RLS, role, MFA, baseline, read-only public snapshot
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/popularity-phase1-integration.sql
+      - name: Confirm other popularity APIs are not installed
+        run: |
+          count=$(psql -XAt -c "select count(*) from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='public' and p.proname='popularity_record_view'")
+          test "$count" = "0"

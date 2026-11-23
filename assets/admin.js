@@ -509,7 +509,50 @@ document.addEventListener('DOMContentLoaded', function () {
     p.appendChild(tb);
   }
 
-  var LOADERS = { stats: loadStats, comments: loadComments, members: loadMembers, roles: loadRoles }; // V1.0 S09：私訊分頁退役（DM-A）
+  /* ---------- 人氣：公開數字基準（只有 is_admin() 後台可操作） ---------- */
+  async function loadPopularity() {
+    var p = panels.popularity;
+    p.textContent = '';
+    p.appendChild(el('h2', 'mb-h ad-h', '人氣管理'));
+    p.appendChild(el('p', 'mb-sub', '設定的是「目前對外顯示的人氣」。往後有效觀看會從這個基準繼續累加；每次調整會由資料庫留存紀錄。'));
+    var form = el('form', 'ad-popularity-form');
+    var select = el('select', 'ad-select');
+    Object.keys(novels).forEach(function (id) {
+      var opt = el('option', null, '《' + title(id) + '》');
+      opt.value = id; select.appendChild(opt);
+    });
+    var number = el('input', 'ad-select');
+    number.type = 'number'; number.min = '0'; number.max = '1000000000'; number.step = '1';
+    number.inputMode = 'numeric'; number.required = true; number.placeholder = '請輸入要顯示的人氣';
+    var submit = el('button', 'cm-btn on', '設定人氣'); submit.type = 'submit';
+    var msg = el('p', 'mb-form-msg', '');
+    var lbl = el('label', null, '小說'); lbl.appendChild(select);
+    var lbl2 = el('label', null, '設定人氣數值'); lbl2.appendChild(number);
+    form.appendChild(lbl); form.appendChild(lbl2); form.appendChild(submit); form.appendChild(msg);
+    form.onsubmit = async function (ev) {
+      ev.preventDefault();
+      var val = Number(number.value);
+      if (!Number.isSafeInteger(val) || val < 0 || val > 1000000000) {
+        msg.textContent = '請輸入 0 至 1,000,000,000 之間的整數。'; return;
+      }
+      var id = select.value;
+      if (!Object.prototype.hasOwnProperty.call(novels, id)) return;
+      if (!window.confirm('確定將《' + title(id) + '》目前對外顯示的人氣設定成 ' +
+                          val.toLocaleString('zh-TW') + ' 嗎？這次調整會留下紀錄。')) return;
+      submit.disabled = true; msg.textContent = '設定中…';
+      try {
+        // 只有正式 Supabase 的 server-side is_admin()（角色 + MFA）能核准操作。
+        var res = await c().rpc('admin_set_popularity', { p_work_id: id, p_target: val });
+        if (res.error) throw res.error;
+        msg.textContent = '已更新基準；公開數字依下次快照更新。';
+      } catch (e) { msg.textContent = '無法設定人氣：' + errMsg(e) + '。如果人氣功能尚未正式啟用，請勿重試。'; }
+      submit.disabled = false;
+    };
+    p.appendChild(form);
+    p.appendChild(el('p', 'mb-sub', '若後端尚未完成部署，這個畫面不會自行建立資料或更動人氣。'));
+  }
+
+  var LOADERS = { stats: loadStats, comments: loadComments, members: loadMembers, roles: loadRoles, popularity: loadPopularity }; // V1.0 S09：私訊分頁退役（DM-A）
 
   /* ---------- 啟動：確認權限 ---------- */
   async function init() {
