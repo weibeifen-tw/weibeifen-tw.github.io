@@ -135,4 +135,28 @@ BEGIN
   IF NOT denied THEN RAISE EXCEPTION 'authenticated reader bypassed role guard'; END IF;
 END $gate$;
 RESET ROLE;
+-- 每日公開快照：回傳格式與前端相容、重設基準後人氣不跳動。
+DO $snapshot_check$
+DECLARE
+  v_result jsonb;
+  v_score bigint;
+  v_rank text;
+BEGIN
+  v_result := public.popularity_publish_snapshot(now());
+  IF jsonb_typeof(v_result->'works') <> 'array' OR
+     jsonb_typeof(v_result->'previous_order') <> 'array' THEN
+    RAISE EXCEPTION 'snapshot format invalid';
+  END IF;
+  SELECT (item->>'popularity')::bigint, item->>'id'
+    INTO v_score, v_rank
+    FROM jsonb_array_elements(v_result->'works') AS item LIMIT 1;
+  IF v_score <> 200 OR v_rank <> 'yu' THEN
+    RAISE EXCEPTION 'snapshot score mismatch: % %',v_rank,v_score;
+  END IF;
+  IF (SELECT payload FROM public.popularity_public_snapshot WHERE singleton=1)
+     IS DISTINCT FROM v_result THEN
+    RAISE EXCEPTION 'published snapshot differs from returned payload';
+  END IF;
+END $snapshot_check$;
+
 SELECT 'isolated draft PostgreSQL checks passed' AS result;
