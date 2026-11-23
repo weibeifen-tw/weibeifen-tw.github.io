@@ -10,7 +10,9 @@
 {%- endif -%}
 {%- if page.collection == 'literature' -%}{%- comment -%} 文學文章（P06）：seo_title／seo_desc 選填，空白就用標題／公開摘要；不會抓正文 {%- endcomment -%}{%- assign lit_t = page.seo_title | append: '' | strip -%}{%- if lit_t == '' -%}{%- assign lit_t = page.title | append: '' | strip -%}{%- endif -%}{%- assign lit_d = page.seo_desc | append: '' | strip -%}{%- if lit_d == '' -%}{%- assign lit_d = page.description | append: '' | strip -%}{%- endif -%}{%- endif -%}
 <title>{% if lit_t %}{{ lit_t | escape }}｜{% elsif seo_t %}{{ seo_t }}｜{% elsif page.title %}{{ page.title }}｜{% endif %}{{ site.title }}</title>
-{% if page.collection == 'literature' -%}
+{% if page.layout == 'thread' and tnv -%}
+{% include chapter-seo.html %}
+{%- elsif page.collection == 'literature' -%}
 <meta property="og:title" content="{{ lit_t | escape }}" />
 <meta name="author" content="{{ page.author | default: site.author | escape }}" />
 <meta property="og:locale" content="zh_Hant" />

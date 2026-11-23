@@ -54,6 +54,12 @@ jobs:
             ruby .github/scripts/verify_approvals.rb .
           fi
 
+      - name: 從核准 SVG 封面產生 JPEG 社群分享圖（1200x630）
+        run: |
+          python3 -m venv /tmp/wb-og-venv
+          /tmp/wb-og-venv/bin/python -m pip install --disable-pip-version-check "CairoSVG==2.8.2" "Pillow==12.0.0"
+          /tmp/wb-og-venv/bin/python .github/scripts/generate_novel_og.py
+
       - name: Jekyll 建置（GitHub Pages 官方工具）
         uses: actions/jekyll-build-pages@v1
         with:
@@ -80,6 +86,9 @@ jobs:
           n=$(ls _site/t | grep -c '^shanhai[0-9][0-9]$'); echo "山海有痕章節：$n"; test "$n" = "32"
           if ls _site | grep -qiE '\.(docx|xlsx|zip)$' || find _site -iname '*.docx' -o -iname '*.xlsx' -o -iname '*.zip' | grep -q .; then echo "發現不應公開的原始檔"; exit 1; fi
           echo "OK  未發布原始文件"
+
+      - name: 作品及章節 SEO 與 JPEG 分享圖驗收
+        run: ruby .github/scripts/validate_novel_seo.rb . --site _site
 
       - name: 建置輸出檢查：已授權章節都在、未授權章節沒有出現
         run: ruby .github/scripts/validate_release.rb . --site _site

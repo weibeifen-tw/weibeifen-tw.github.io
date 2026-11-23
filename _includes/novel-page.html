@@ -170,19 +170,3 @@
 <div class="sv" hidden role="dialog" aria-modal="true" aria-label="限動"><div class="sv-bars"></div><img class="sv-img" alt=""><button type="button" class="sv-x" aria-label="關閉">×</button><button type="button" class="sv-prev" aria-label="上一張"></button><button type="button" class="sv-next" aria-label="下一張"></button></div>
 <script src="{{ '/assets/story.js' | relative_url }}?v={{ site.time | date: '%s' }}" defer></script>
 {%- endif %}
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Book",
-  "name": {{ nv.title | jsonify }},
-  "url": {{ page.url | absolute_url | jsonify }},
-  "author": { "@type": "Person", "name": {{ site.author | jsonify }} },
-  "inLanguage": "zh-Hant",
-  "genre": "百合小說",
-  "description": {{ nv.intro | default: nv.seo_desc | jsonify }},
-  "temporalCoverage": {{ nv.era | split: "・" | first | replace: "–", "/" | jsonify }},
-  "contentLocation": { "@type": "Place", "name": {{ nv.era | split: "・" | last | jsonify }} },
-  "character": [{% assign ld_ids = leads | concat: sups %}{% for cid in ld_ids %}{% unless forloop.first %},{% endunless %}{ "@type": "Person", "name": {{ site.data.characters[cid].name | jsonify }} }{% endfor %}],
-  "publisher": { "@type": "Organization", "name": {{ site.title | jsonify }} }
-}
-</script>

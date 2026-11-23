@@ -1,0 +1,54 @@
+{%- comment -%}
+  全站小說章節 SEO：沿用既有 seo_title，不改 H1 與小說正文。
+  日期屬作品故事時間或舊貼文日期，不視為真實上架日，不輸出 article:published_time。
+  使用全站已批准的小說封面 JPG 分享卡，避免 SVG / WebP 在社群平台相容性不足。
+{%- endcomment -%}
+{%- assign ch_nv = site.data.novels[page.novel] -%}
+{%- assign ch_who = site.data.characters[page.character] -%}
+{%- assign ch_seo_title = page.seo_title | default: page.title -%}
+{%- assign ch_desc = page.seo_desc | append: '' | strip -%}
+{%- if ch_desc == '' -%}
+  {%- capture ch_desc -%}《{{ ch_nv.title }}》{% if page.chapter %}第 {{ page.chapter }} 篇{% endif %}〈{{ page.title }}〉{% if ch_who.name %}，{{ ch_who.name }}的視角{% endif %}。{{ ch_nv.blurb | default: ch_nv.intro | strip_newlines | truncate: 110 }}{%- endcapture -%}
+{%- endif -%}
+{%- capture ch_image_path -%}/assets/og/{{ page.novel }}.jpg{%- endcapture -%}
+{%- assign ch_image = site.static_files | where: 'path', ch_image_path | first -%}
+<meta name="description" content="{{ ch_desc | escape }}">
+<link rel="canonical" href="{{ page.url | absolute_url }}">
+<meta property="og:title" content="{{ ch_seo_title | escape }}">
+<meta property="og:description" content="{{ ch_desc | escape }}">
+<meta property="og:url" content="{{ page.url | absolute_url }}">
+<meta property="og:site_name" content="{{ site.title | escape }}">
+<meta property="og:locale" content="zh_Hant">
+<meta property="og:type" content="article">
+{%- if ch_image %}
+<meta property="og:image" content="{{ ch_image_path | absolute_url }}">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="《{{ ch_nv.title | escape }}》小說分享封面">
+{%- endif %}
+<meta name="twitter:card" content="{% if ch_image %}summary_large_image{% else %}summary{% endif %}">
+<meta name="twitter:title" content="{{ ch_seo_title | escape }}">
+<meta name="twitter:description" content="{{ ch_desc | escape }}">
+{%- if ch_image %}
+<meta name="twitter:image" content="{{ ch_image_path | absolute_url }}">
+{%- endif %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Chapter",
+  "name": {{ page.title | jsonify }},
+  "url": {{ page.url | absolute_url | jsonify }},
+  "description": {{ ch_desc | jsonify }},
+  "author": {"@type": "Person", "name": {{ site.author | jsonify }}},
+  "inLanguage": "zh-Hant",
+  "isAccessibleForFree": true,
+  "isPartOf": {
+    "@type": "Book",
+    "name": {{ ch_nv.title | jsonify }},
+    "url": {{ '/novel/' | append: page.novel | append: '/' | absolute_url | jsonify }}
+  }{% if page.chapter %},
+  "position": {{ page.chapter | jsonify }}{% endif %}{% if ch_image %},
+  "image": {{ ch_image_path | absolute_url | jsonify }}{% endif %}
+}
+</script>
