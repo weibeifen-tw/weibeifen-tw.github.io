@@ -21,4 +21,4 @@ jobs:
         with:
           node-version: '22'
       - name: Popularity draft contract and HMAC tests
-        run: node --test tests/popularity-sql.test.mjs tests/popularity-rate-key.test.mjs
+        run: node --test tests/popularity-sql.test.mjs tests/popularity-rate-key.test.mjs tests/popularity-path.test.mjs
