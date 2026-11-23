@@ -117,3 +117,10 @@
 - 抽出純路徑解析模組 `path.mjs`，新增 `tests/popularity-path.test.mjs` 驗證合法作品／章節網址及外站／畸形網址拒絕；更新 CI 同時執行三份測試。
 - API 明確仍為不可用草案；HMAC 信任界線尚未實作，不能解除 503，也不能因為 CI 成功就視 GATE-03、04 通過。
 - 本輪只修改 `feat/site-popularity-v1`，不更動正式 Supabase／GitHub main／正式網站。
+
+## 2026-11-24 第九輪：PostgreSQL 17 隔離整合測試
+- 新增 `tests/popularity-pg-setup.sql` 和 `tests/popularity-pg-integration.sql`，GitHub Actions `isolated-postgres` job 使用一次性 PostgreSQL 17 service；不連正式 Supabase、不持有正式機密、不保留測試資料。
+- GitHub Actions run `45214792696` 已核對 `isolated-postgres` 與 `popularity-unit` 兩個 job 的各步驟皆成功：SQL 草案可在隔離容器執行；模擬 auth 下的函式授權、事件去重、30 次／分鐘限流、超額回滾、未公開作品／章節拒絕計數、模擬管理員基準調整與稽核紀錄均通過。
+- 這些測試用的 `auth.uid()`、`public.is_admin()` 是模擬函式；不能取代正式 JWT／MFA AAL2、真正 RLS 隔離與授權測試。
+- 未涵蓋真正多交易併發、多 Edge 執行個體負載、可信任來源識別、HMAC/Edge 整合、發布清單同步、定時快照與郵件告警。
+- 因此 GATE-01–08 尚未全部通過，Edge API 仍 503 強制停用；正式 Supabase、main 與正式網站均未變更。
