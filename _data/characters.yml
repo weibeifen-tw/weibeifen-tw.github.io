@@ -444,3 +444,19 @@ shanhai-lan:
   story: /assets/stories/shanhai-lan.webp
   bio: 潮族獵人。刃的狩獵同伴，參與探路、救援及族群遷移，在危險環境中與其他獵人相互協助。
   says: 我是嵐。路不好走的時候，別忘了看看後面的人有沒有跟上。
+fendao-rui:
+  name: 芮
+  handle: rui.fendao
+  novel: fendao
+  glyph: 芮
+  color: "#9b6a7b"
+  story: /assets/stories/fendao-rui.webp
+  bio: 宜蘭的田徑校隊短跑選手，主項一百公尺。習慣反覆觀看訓練影片，也會在課餘工讀。
+fendao-yu:
+  name: 予
+  handle: yu.fendao
+  novel: fendao
+  glyph: 予
+  color: "#667f86"
+  story: /assets/stories/fendao-yu.webp
+  bio: 宜蘭的田徑校隊短跑選手，主項一百公尺。重視訓練紀錄，與室友一起完成系上專題。
