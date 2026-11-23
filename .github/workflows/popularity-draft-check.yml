@@ -1,0 +1,24 @@
+# 《未備份》公開人氣專用測試；不部署、不持有任何資料庫金鑰。
+name: 人氣系統草案測試（不部署）
+on:
+  push:
+    branches:
+      - feat/site-popularity-v1
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  popularity-unit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout only
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Popularity draft contract and HMAC tests
+        run: node --test tests/popularity-sql.test.mjs tests/popularity-rate-key.test.mjs
