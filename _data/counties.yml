@@ -9,7 +9,7 @@ counties:
   - key: yilan
     name: 宜蘭
     bbox: [440.1, 79.4, 150.3, 174.5]
-    novels: []
+    novels: [fendao]
   - key: hualien
     name: 花蓮
     bbox: [362.9, 238.2, 183.9, 326.4]
