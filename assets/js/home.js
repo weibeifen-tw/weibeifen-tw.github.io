@@ -71,6 +71,9 @@
   function show(k) {
     tabs.forEach(function (b) { var on = b.dataset.sort === k; b.setAttribute('aria-selected', on); b.tabIndex = on ? 0 : -1; if (on) shelf.setAttribute('aria-labelledby', b.id); });
     note.hidden = k !== 'hot' || hasTrustedSnapshot;
+    // 切換時先清空原書架：否則熱門只有前十名，剩餘作品會留在前面。
+    // 保留 books/rand/hot 的 DOM 節點參照，切回全部作品時可完整復原。
+    shelf.replaceChildren();
     (k === 'hot' ? hot : rand).forEach(function (b) { shelf.appendChild(b); });
     shelf.scrollLeft = 0;
     // 排序後前 6 本先載入，其餘滑到才載入
