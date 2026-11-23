@@ -509,26 +509,123 @@ document.addEventListener('DOMContentLoaded', function () {
     p.appendChild(tb);
   }
 
-  /* ---------- 人氣：公開數字基準（只有 is_admin() 後台可操作） ---------- */
+  /* ---------- 人氣：當前設定與歷次修改（後端 MFA 權限） ---------- */
   async function loadPopularity() {
     var p = panels.popularity;
     p.textContent = '';
     p.appendChild(el('h2', 'mb-h ad-h', '人氣管理'));
-    p.appendChild(el('p', 'mb-sub', '設定的是「目前對外顯示的人氣」。往後有效觀看會從這個基準繼續累加；每次調整會由資料庫留存紀錄。'));
+    p.appendChild(el('p', 'mb-sub', '設定的人氣保存在 Supabase。可在下面查看目前顯示值及歷次調整紀錄；所有修改都由後端驗證管理員與兩步驟登入。'));
+
     var form = el('form', 'ad-popularity-form');
     var select = el('select', 'ad-select');
     Object.keys(novels).forEach(function (id) {
-      var opt = el('option', null, '《' + title(id) + '》');
-      opt.value = id; select.appendChild(opt);
+      var o = el('option', null, '《' + title(id) + '》');
+      o.value = id; select.appendChild(o);
     });
     var number = el('input', 'ad-select');
     number.type = 'number'; number.min = '0'; number.max = '1000000000'; number.step = '1';
-    number.inputMode = 'numeric'; number.required = true; number.placeholder = '請輸入要顯示的人氣';
+    number.inputMode = 'numeric'; number.required = true; number.placeholder = '輸入要顯示的人氣';
     var submit = el('button', 'cm-btn on', '設定人氣'); submit.type = 'submit';
-    var msg = el('p', 'mb-form-msg', '');
-    var lbl = el('label', null, '小說'); lbl.appendChild(select);
-    var lbl2 = el('label', null, '設定人氣數值'); lbl2.appendChild(number);
-    form.appendChild(lbl); form.appendChild(lbl2); form.appendChild(submit); form.appendChild(msg);
+    var msg = el('p', 'mb-form-msg ad-popularity-message', '');
+    msg.setAttribute('role', 'status');
+
+    function field(label, control) {
+      var wrap = el('label', 'ad-popularity-field');
+      wrap.appendChild(el('span', null, label));
+      wrap.appendChild(control);
+      return wrap;
+    }
+    form.appendChild(field('小說', select));
+    form.appendChild(field('設定人氣數值', number));
+    form.appendChild(submit);
+    form.appendChild(msg);
+    p.appendChild(form);
+
+    var currentTitle = el('h3', 'mb-h ad-h', '目前各小說人氣');
+    var current = el('div', 'ad-popularity-current', '');
+    current.appendChild(el('p', 'mb-sub', '讀取中…'));
+    p.appendChild(currentTitle); p.appendChild(current);
+    p.appendChild(el('h3', 'mb-h ad-h', '設定紀錄（最近 50 筆）'));
+    var history = el('div', 'ad-popularity-history', '');
+    history.appendChild(el('p', 'mb-sub', '讀取中…'));
+    p.appendChild(history);
+
+    function formatted(v) {
+      return typeof v === 'number' && Number.isSafeInteger(v) && v >= 0
+        ? v.toLocaleString('zh-TW') : '—';
+    }
+    function dateText(iso) {
+      if (!iso || Number.isNaN(Date.parse(iso))) return '—';
+      return fmtDate(iso);
+    }
+    function renderRows(rows) {
+      current.textContent = '';
+      var wrap = el('div', 'ad-popularity-scroll');
+      var table = el('table', 'ad-table ad-popularity-table');
+      var head = el('tr');
+      ['小說', '目前顯示人氣', '最後設定'].forEach(function (h) { head.appendChild(el('th', null, h)); });
+      table.appendChild(head);
+      rows.forEach(function (r) {
+        if (!r || !Object.prototype.hasOwnProperty.call(novels, r.id)) return;
+        var tr = el('tr');
+        tr.appendChild(el('td', null, '《' + title(r.id) + '》'));
+        tr.appendChild(el('td', 'num', r.configured ? formatted(r.popularity) : '尚未設定'));
+        tr.appendChild(el('td', null, dateText(r.updated_at)));
+        table.appendChild(tr);
+      });
+      wrap.appendChild(table); current.appendChild(wrap);
+    }
+    function renderHistory(rows) {
+      history.textContent = '';
+      if (!rows.length) {
+        history.appendChild(el('p', 'mb-sub', '目前尚無設定紀錄。')); return;
+      }
+      var wrap = el('div', 'ad-popularity-scroll');
+      var table = el('table', 'ad-table ad-popularity-table');
+      var head = el('tr');
+      ['修改時間', '小說', '原設定', '新設定'].forEach(function (h) { head.appendChild(el('th', null, h)); });
+      table.appendChild(head);
+      rows.forEach(function (r) {
+        if (!r || !Object.prototype.hasOwnProperty.call(novels, r.work_id)) return;
+        var tr = el('tr');
+        tr.appendChild(el('td', null, dateText(r.changed_at)));
+        tr.appendChild(el('td', null, '《' + title(r.work_id) + '》'));
+        tr.appendChild(el('td', 'num', r.old_value == null ? '首次設定' : formatted(r.old_value)));
+        tr.appendChild(el('td', 'num', formatted(r.new_value)));
+        table.appendChild(tr);
+      });
+      wrap.appendChild(table); history.appendChild(wrap);
+    }
+    async function refreshPopularity() {
+      var res;
+      try { res = await c().rpc('admin_popularity_overview', { p_limit: 50 }); }
+      catch (e) { res = { error: e }; }
+      if (res.error || !res.data || !Array.isArray(res.data.works) || !Array.isArray(res.data.history)) {
+        current.textContent = '';
+        history.textContent = '';
+        // 相容第一階段後端：即使尚未建立管理員歷史查閱 RPC，也能先顯示公開快照數字。
+        var snap;
+        try { snap = await c().rpc('popularity_snapshot_read'); }
+        catch (e) { snap = { error: e }; }
+        if (!snap.error && snap.data && Array.isArray(snap.data.works)) {
+          var visible = {};
+          snap.data.works.forEach(function (r) { if (r && typeof r.id === 'string') visible[r.id] = r.popularity; });
+          var rows = Object.keys(novels).map(function (id) {
+            var known = Object.prototype.hasOwnProperty.call(visible, id);
+            return { id: id, configured: known, popularity: visible[id], updated_at: null };
+          });
+          renderRows(rows);
+        } else {
+          current.appendChild(el('p', 'mb-sub', '目前沒有可讀取的人氣快照。'));
+        }
+        history.appendChild(el('p', 'mb-sub',
+          '完整修改紀錄尚未啟用查閱功能；資料仍安全儲存在 Supabase，不會遺失。'));
+        return;
+      }
+      renderRows(res.data.works);
+      renderHistory(res.data.history);
+    }
+
     form.onsubmit = async function (ev) {
       ev.preventDefault();
       var val = Number(number.value);
@@ -541,15 +638,17 @@ document.addEventListener('DOMContentLoaded', function () {
                           val.toLocaleString('zh-TW') + ' 嗎？這次調整會留下紀錄。')) return;
       submit.disabled = true; msg.textContent = '設定中…';
       try {
-        // 只有正式 Supabase 的 server-side is_admin()（角色 + MFA）能核准操作。
         var res = await c().rpc('admin_set_popularity', { p_work_id: id, p_target: val });
         if (res.error) throw res.error;
-        msg.textContent = '已更新基準；公開數字依下次快照更新。';
-      } catch (e) { msg.textContent = '無法設定人氣：' + errMsg(e) + '。如果人氣功能尚未正式啟用，請勿重試。'; }
+        msg.textContent = '設定成功，首頁公開人氣已更新。';
+        await refreshPopularity();
+      } catch (e) {
+        msg.textContent = '無法設定人氣：' + errMsg(e);
+      }
       submit.disabled = false;
     };
-    p.appendChild(form);
-    p.appendChild(el('p', 'mb-sub', '若後端尚未完成部署，這個畫面不會自行建立資料或更動人氣。'));
+
+    await refreshPopularity();
   }
 
   var LOADERS = { stats: loadStats, comments: loadComments, members: loadMembers, roles: loadRoles, popularity: loadPopularity }; // V1.0 S09：私訊分頁退役（DM-A）

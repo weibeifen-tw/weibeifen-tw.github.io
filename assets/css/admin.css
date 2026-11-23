@@ -53,3 +53,21 @@
 .ad-snip-item{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:10px 2px;border-bottom:1px solid var(--line)}
 .ad-snip-item p{margin:0;line-height:1.6;white-space:pre-wrap;word-break:break-word}
 .ad-who{display:flex;align-items:center;gap:8px}
+
+/* 人氣後台：電腦加寬，手機欄位保留完整可點選寬度。 */
+body:has(.admin-page) .wrap{max-width:940px}
+.ad-popularity-form{display:grid;grid-template-columns:minmax(230px,1.25fr) minmax(220px,1fr) auto;align-items:end;gap:14px;width:100%;max-width:100%;margin:16px 0 8px}
+.ad-popularity-field{display:flex;flex-direction:column;gap:5px;min-width:0;font-size:14px;font-weight:600}
+.ad-popularity-field .ad-select{display:block;width:100%;min-height:44px;border-radius:10px;padding:9px 12px;font-size:16px;box-sizing:border-box;font-weight:400}
+.ad-popularity-form>.cm-btn{min-height:44px;white-space:nowrap;padding:8px 20px}
+.ad-popularity-message{grid-column:1 / -1;margin:0;min-height:1.5em;font-weight:400}
+.ad-popularity-scroll{overflow-x:auto;max-width:100%;-webkit-overflow-scrolling:touch}
+.ad-popularity-table{min-width:470px;width:100%;font-size:14px}
+.ad-popularity-table td,.ad-popularity-table th{padding:10px 8px}
+.ad-popularity-table td:first-child{white-space:nowrap}
+.ad-popularity-table .num{font-variant-numeric:tabular-nums}
+@media(max-width:700px){
+ .ad-popularity-form{grid-template-columns:1fr;gap:10px}
+ .ad-popularity-form>.cm-btn{width:100%;font-size:16px}
+ .ad-popularity-message{grid-column:1}
+}
