@@ -898,3 +898,11 @@ body.sheet-lock .cm-card{position:fixed;z-index:65}
   body.reading .chapter.read > .cm{display:none}
 }
 @media (prefers-reduced-motion:reduce){.cm-sheet,.cm-sheet-layer{transition:none}}
+
+
+/* 《未備份》人氣 V1.0：預留固定高度，避免快照更新造成 CLS；不顯示虛構數字。 */
+.bk-pop{display:flex;align-items:center;justify-content:flex-start;gap:5px;height:18px;min-height:18px;line-height:18px;margin:0;color:var(--sub);font-size:12px;white-space:nowrap}
+.bk-pop svg{display:block;flex:none;width:14px;height:14px}
+.bk-pop-n{font-variant-numeric:tabular-nums;font-size:12px}
+.bk-pop:not(.has-popularity) .bk-pop-n{opacity:.55}
+.bk .bk-t{margin-top:0}
