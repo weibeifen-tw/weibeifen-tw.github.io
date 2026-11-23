@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="800" viewBox="0 0 600 800" role="img" aria-labelledby="title desc">
+  <title id="title">分道</title>
+  <desc id="desc">灰藍與霧紫色的兩條田徑跑道向遠方延伸，分道線逐漸拉開，象徵兩位短跑選手的不同道路。</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#DCE2E8"/>
+      <stop offset="1" stop-color="#A8B6C6"/>
+    </linearGradient>
+  </defs>
+  <g id="background">
+    <rect width="600" height="680" fill="url(#sky)"/>
+    <path d="M0 165 L95 135 170 158 265 112 354 150 454 105 600 145 V305 H0Z" fill="#8C9FB1" opacity=".72"/>
+  </g>
+  <g id="track">
+    <path d="M0 330 L290 218 310 218 600 330 V680 H0Z" fill="#B39DAE"/>
+    <path d="M0 680 L290 218 300 218 255 680Z" fill="#7389A0"/>
+    <path d="M345 680 L300 218 310 218 600 680Z" fill="#8D90AF"/>
+  </g>
+  <g id="lane-lines" fill="none" stroke="#F2E5CE" stroke-linecap="round">
+    <path d="M291 220 L93 680" stroke-width="7"/>
+    <path d="M309 220 L507 680" stroke-width="7"/>
+    <path d="M300 220 V680" stroke-width="4" stroke-dasharray="17 15" opacity=".85"/>
+  </g>
+  <g id="title-band">
+    <rect x="0" y="680" width="600" height="120" fill="#465369"/>
+    <text x="300" y="740" fill="#F2E5CE" font-family="Noto Serif TC, Source Han Serif TC, serif" font-size="68" font-weight="600" text-anchor="middle" dominant-baseline="central">分道</text>
+  </g>
+</svg>
