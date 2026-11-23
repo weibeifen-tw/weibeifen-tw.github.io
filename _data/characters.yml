@@ -4,11 +4,13 @@
 #   pin：置頂一句話；pin_ch：那句話在第幾章
 #   eras：跟著年份變的簡介，每筆 year + bio（章節頁會顯示「那一年的她」）
 #   items：她的東西，每筆 name + note，ch 填第一次出現的章節（同一本小說的章節編號）
+#   also：同一個角色也出現在其他小說（例如 mo 的主作品是 yu，也在 lailu）；novel 仍是主作品，角色連結照舊
 #   skip：自動點名時要跳過的詞（例如「秀禾」裡的「禾」不算點名）
 mo:
   name: 模
   handle: mo.unbacked
   novel: yu
+  also: [lailu]
   avatar: mo.svg
   glyph: 模
   color: "#b9653f"

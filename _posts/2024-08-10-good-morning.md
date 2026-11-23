@@ -3,7 +3,7 @@ layout: thread
 title: 早安
 character: mo
 novel: yu
-chapter: 101
+chapter: 2
 teaser: |
   我們的一天是兩個時鐘疊在一起。我的是早餐、午餐、晚餐、睡前；她的是起床、下班、睡前。
 

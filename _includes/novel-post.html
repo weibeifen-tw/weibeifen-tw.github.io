@@ -10,7 +10,7 @@
 {%- for i in (1..3) -%}{%- capture cp -%}/assets/comics/{{ pid }}-{{ i }}.webp{%- endcapture -%}{%- assign f = site.static_files | where: "path", cp | first -%}{%- unless f -%}{%- assign pok = false -%}{%- endunless -%}{%- endfor -%}
 {%- capture sp -%}/assets/stories/{{ pid }}.webp{%- endcapture -%}
 {%- assign psimg = site.static_files | where: "path", sp | first -%}
-{%- assign plead = nil -%}{%- for ch in site.data.characters -%}{%- if ch[1].novel == pid -%}{%- assign plead = ch[0] -%}{%- break -%}{%- endif -%}{%- endfor -%}
+{%- assign plead = nil -%}{%- for ch in site.data.characters -%}{%- if ch[1].novel == pid or ch[1].also contains pid -%}{%- assign plead = ch[0] -%}{%- break -%}{%- endif -%}{%- endfor -%}
 {%- if plead -%}
 {%- assign plc = site.data.characters[plead] -%}
 <div class="intro-post nv-post" data-novel="{{ pid }}" data-char="{{ plead }}" style="--c:{{ plc.color }}">
@@ -26,7 +26,7 @@
   {%- endif %}
     <button type="button" class="ip-tagbtn" aria-label="標註的角色" aria-expanded="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4.2"/><path d="M3.8 21c.9-4.4 4.2-7 8.2-7s7.3 2.6 8.2 7z"/></svg></button>
     <div class="ip-tags" hidden>
-    {%- for ch in site.data.characters -%}{%- if ch[1].novel == pid -%}
+    {%- for ch in site.data.characters -%}{%- if ch[1].novel == pid or ch[1].also contains pid -%}
       <a href="{{ '/novel/' | append: pid | append: '/?roles=1' | relative_url }}">@{{ ch[1].handle }}</a>
     {%- endif -%}{%- endfor -%}
     </div>

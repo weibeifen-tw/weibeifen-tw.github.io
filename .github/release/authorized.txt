@@ -5,7 +5,6 @@
 #   - 只有站長明確授權發布時，才能把章節加進這份清單（或由站長手動執行「發布章節」工作流程自動加入）。
 #   - 章節日期只代表故事時間，不再決定是否公開（_config.yml 設 future: true）。
 # 2026-11-22：既有 395 篇公開章節＋站長授權立即發布的 hongdian09、hongdian10、yang10、exam39。
-2029
 95
 bamboo-goal
 board
@@ -163,7 +162,6 @@ exam37
 exam38
 exam39
 fish-in-fish
-four-point-one
 ghost
 gongdi01
 gongdi02
@@ -286,7 +284,6 @@ hue33
 hue34
 hue35
 ill-keep-you
-key-person
 medicine
 mizi01
 mizi02
@@ -302,7 +299,6 @@ pendi06
 pot
 quilt
 roots
-sea-smell
 shanhai01
 shanhai02
 shanhai03
@@ -354,7 +350,6 @@ shutter
 sticky-notes
 swipe-left
 thick-steak
-threads
 vote
 weigongkai01
 weigongkai02

@@ -1,6 +1,6 @@
 {%- comment -%} 年代誌事件卡（P08-3 從 era.html 抽出，標記與 P04 相同）。參數 e＝_data/era.yml 的一筆 events {%- endcomment -%}
 {%- assign e = include.e -%}{%- assign n = site.data.novels[e.novel] -%}
-{%- assign col = '#6b665c' -%}{%- for ch in site.data.characters -%}{%- if ch[1].novel == e.novel -%}{%- assign col = ch[1].color -%}{%- break -%}{%- endif -%}{%- endfor -%}
+{%- assign col = '#6b665c' -%}{%- for ch in site.data.characters -%}{%- if ch[1].novel == e.novel or ch[1].also contains e.novel -%}{%- assign col = ch[1].color -%}{%- break -%}{%- endif -%}{%- endfor -%}
   <div class="ev" data-id="{{ e.id }}" data-cat="{{ e.category }}">
     <div class="ev-head"><span class="ev-date">{{ e.date }}</span>{% if e.category == 'experience' %}<span class="ev-cat ev-exp">親身經歷</span>{% elsif e.category == 'retrospective' %}<span class="ev-cat ev-retro">歷史回顧</span>{% endif %}</div>
     <b class="ev-title">{{ e.title | escape }}</b>

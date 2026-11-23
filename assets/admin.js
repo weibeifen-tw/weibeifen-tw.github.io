@@ -325,7 +325,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     row(null, '通用', '所有角色都會出現');
     Object.keys(novels).forEach(function (nid) {
-      Object.keys(chars).filter(function (cid) { return chars[cid].novel === nid; }).forEach(function (cid) {
+      Object.keys(chars).filter(function (cid) { return chars[cid].novel === nid || (chars[cid].also || []).indexOf(nid) >= 0; }).forEach(function (cid) {
         row(cid, chrName(cid), '《' + title(nid) + '》' + (chars[cid].handle ? '　@' + chars[cid].handle : ''));
       });
     });

@@ -61,7 +61,7 @@ counties:
   - key: taichung
     name: 臺中
     bbox: [239, 220.4, 232.5, 113.4]
-    novels: [yu, market, gongdi, hongdian, feichang]
+    novels: [yu, lailu, market, gongdi, hongdian, feichang]
   - key: taipei
     name: 臺北
     bbox: [472.1, 23.2, 48.5, 63.7]

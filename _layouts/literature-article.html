@@ -151,7 +151,7 @@ page_js: lit-research
   {%- endif %}
   {%- capture rel_novels -%}
   {%- for nid in page.related_novels -%}{%- assign n = site.data.novels[nid] -%}{%- if n -%}
-    {%- assign col = '#6b665c' -%}{%- for ch in site.data.characters -%}{%- if ch[1].novel == nid -%}{%- assign col = ch[1].color -%}{%- break -%}{%- endif -%}{%- endfor -%}
+    {%- assign col = '#6b665c' -%}{%- for ch in site.data.characters -%}{%- if ch[1].novel == nid or ch[1].also contains nid -%}{%- assign col = ch[1].color -%}{%- break -%}{%- endif -%}{%- endfor -%}
     <li><a href="{{ '/novel/' | append: nid | append: '/' | relative_url }}" style="color:{{ col }}">《{{ n.title }}》</a></li>
   {%- endif -%}{%- endfor -%}
   {%- endcapture -%}

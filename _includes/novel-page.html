@@ -5,7 +5,7 @@
 {%- unless nv.split -%}{%- assign ordered = ordered | sort: "chapter" -%}{%- endunless -%}
 {%- assign leads = "" | split: "" -%}
 {%- assign sups = "" | split: "" -%}
-{%- for c in site.data.characters -%}{%- if c[1].novel == id -%}{%- if c[1].support -%}{%- assign sups = sups | push: c[0] -%}{%- else -%}{%- assign leads = leads | push: c[0] -%}{%- endif -%}{%- endif -%}{%- endfor -%}
+{%- for c in site.data.characters -%}{%- if c[1].novel == id or c[1].also contains id -%}{%- if c[1].support -%}{%- assign sups = sups | push: c[0] -%}{%- else -%}{%- assign leads = leads | push: c[0] -%}{%- endif -%}{%- endif -%}{%- endfor -%}
 {%- comment -%} 角色專屬限動（山海有痕起）：characters.yml 的 story，點頭像才載入大圖（assets/story.js） {%- endcomment -%}
 {%- assign has_story = false -%}
 {%- for cid in leads -%}{%- if site.data.characters[cid].story -%}{%- assign has_story = true -%}{%- endif -%}{%- endfor -%}
