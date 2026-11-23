@@ -602,6 +602,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function close(restore) {
       if(!active||pending)return;
       active=false;document.removeEventListener('keydown',keys,true);
+      window.removeEventListener('resize',onResize);
       layer.remove();document.documentElement.style.overflow=oldOverflow;
       if(closeMemberSheet===close)closeMemberSheet=null;
       if(restore!==false&&trigger.isConnected)trigger.focus();
@@ -621,6 +622,8 @@ document.addEventListener('DOMContentLoaded', function () {
         e.preventDefault();first.focus();
       }
     }
+    function onResize(){if(window.innerWidth>=768&&!pending)close(false);}
+    window.addEventListener('resize',onResize);
     document.addEventListener('keydown',keys,true);x.focus();
     form.onsubmit=async function(e){
       e.preventDefault();if(pending)return;
