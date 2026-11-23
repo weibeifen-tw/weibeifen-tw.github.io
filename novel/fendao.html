@@ -9,20 +9,3 @@ image_alt: "《分道》插畫：宜蘭田徑場邊的芮與予一起觀看訓�
 permalink: /novel/fendao/
 ---
 {% include novel-page.html id="fendao" %}
-{%- assign fendao_meta = site.data.novels.fendao -%}
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Book",
-  "name": {{ fendao_meta.title | jsonify }},
-  "headline": {{ page.title | jsonify }},
-  "url": {{ page.url | absolute_url | jsonify }},
-  "description": {{ page.description | jsonify }},
-  "author": {"@type": "Person", "name": {{ site.author | jsonify }}},
-  "publisher": {"@type": "Organization", "name": {{ site.title | jsonify }}},
-  "inLanguage": "zh-Hant",
-  "genre": ["GL", "百合小說", "心理寫實", "校園小說", "運動小說"],
-  "image": {{ page.image | absolute_url | jsonify }},
-  "isAccessibleForFree": true
-}
-</script>
