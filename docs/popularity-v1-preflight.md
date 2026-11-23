@@ -133,3 +133,11 @@
 - `user_roles` 可讀自身角色政策存在；`comments`、`dm_messages`、`profiles` 已有對應 RLS 政策。尚未做真實匿名、一般會員、MFA 過期及管理員登入的 API 行為測試。
 - 新的人氣 `admin_set_popularity()` 草案與已存在的 `is_admin()` 介面相容，但尚未套用正式資料庫；不得聲稱已正式驗證授權路徑。
 - PostgreSQL 17 隔離測試、既有 GitHub 建置檢查及 Node 單元測試已有成功證據。正式 Supabase、GitHub main 與線上網站未變更。
+
+## 2026-11-24 第十一輪：MFA／管理員授權隔離驗證
+- 已只讀核對正式 `public.is_admin()` 的原始判斷式：JWT `aal = aal2`，且 `public.user_roles` 中當前使用者角色為 `admin`。
+- 在一次性 PostgreSQL 17 測試環境中替換原先 `wb_test.admin` 布林開關，改用相同的 `is_admin()` 邏輯；`auth.uid()` 與 `auth.jwt()` 仍為測試用設定模擬。
+- 驗證 AAL1 管理員與 AAL2 一般會員均無法重設人氣；AAL2 管理員可設定基準並留下稽核紀錄；以 `SET ROLE authenticated` 測試一般會員直接呼叫人氣調整 RPC，仍被拒絕。
+- 過程中兩次測試失敗源於測試稿不一致及 SQL DO 區塊分隔符錯誤；修正為 `$gate$` 後，GitHub Actions run `45216363086` 的 `isolated-postgres` 與 `popularity-unit` jobs 均顯示 success。
+- **仍非真實登入／MFA／API 越權測試**，不能據此判定正式 Supabase GATE-02 已完全通過。尚無真正多使用者會話或 Edge Function 流量實測。
+- API 仍強制 503 停用；正式 Supabase、main、線上網站未修改。
