@@ -102,3 +102,10 @@
 - **必要後續驗證**：真正的代理來源辨識、多人同網路正常流量、IPv6/IPv4 來源規格、共享限流併發測試、匿名訪客、SQL 交易回滾、失敗後優雅降級、配額桶清理與成本評估。
 - 先前草案限流數值 30 次／分鐘仍只是假設，非正式設定；現有 SQL 完整語法、RLS、Edge 和資料庫整合尚未實測。
 - 本輪沒有寫入正式 Supabase、沒有修改 main，也沒有部署。
+
+## 2026-11-24 第七輪：CI 與草稿 PR
+- 新增獨立 `.github/workflows/popularity-draft-check.yml`，僅在 `feat/site-popularity-v1` push/手動觸發時執行 Node.js 22 的兩份測試；無資料庫金鑰與寫入權限，不執行任何部署。
+- 建立 **草稿 PR #1**：https://github.com/weibeifen-tw/weibeifen-tw.github.io/pull/1 。仍為 draft，GATE 未通過前禁止轉成 ready 或合併。
+- 直接從 GitHub 重新讀取 SQL、Edge、HMAC 原始碼，執行 12 項**靜態契約判定**：12/12 通過。此檢查不等於 Node 測試完成，也不等於 PostgreSQL 執行或多實例安全性通過。
+- 本工作階段 GitHub 連線的 workflow run 查詢未回傳可驗證的測試執行結果，因此 CI **狀態待查**，不得宣稱成功。
+- 仍需真實驗證可信任來源訊號、HMAC 接入、Edge Function 服務端共享限流、SQL 實際執行、保留政策、快照與管理後台。
