@@ -20,6 +20,11 @@ story_settings:
     novel: fendao
     location: 宜蘭
     description: 田徑校隊短跑選手芮與予的故事
+  - id: gezikaojin-setting
+    year: 2026
+    novel: gezikaojin
+    location: 臺南
+    description: 澄與禾從多年好友逐漸走向交往的日常故事
 
 events:
   - id: matsu-military-administration
