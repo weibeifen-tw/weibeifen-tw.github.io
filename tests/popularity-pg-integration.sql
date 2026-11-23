@@ -1,7 +1,12 @@
 -- 僅針對測試容器中已套用的草案驗證 API 資料邏輯（不接正式資料）。
 \set ON_ERROR_STOP on
 SELECT set_config('wb_test.uid','aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',false);
-INSERT INTO auth.users(id) VALUES ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa');
+INSERT INTO auth.users(id) VALUES
+  ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'),
+  ('bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb');
+INSERT INTO public.user_roles(user_id,role) VALUES
+  ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa','admin'),
+  ('bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb','reader');
 INSERT INTO public.popularity_works(work_id,is_public) VALUES ('yu',true),('draft',false);
 INSERT INTO public.popularity_chapters(chapter_path,work_id,is_public)
   VALUES('/t/yu01/','yu',true),('/t/yu02/','yu',false);
@@ -77,23 +82,57 @@ BEGIN
   END;
   IF NOT denied THEN RAISE EXCEPTION 'unpublished chapter was counted'; END IF;
 END $$;
--- 只有經過 MFA 管理員身分檢查才能重設公開人氣。
-DO $$
+-- 使用正式 is_admin() 等效邏輯驗證：AAL1 管理員／AAL2 一般會員皆不可調整。
+DO $
 DECLARE
- denied boolean:=false;
+  denied boolean;
 BEGIN
-  PERFORM set_config('wb_test.admin','false',true);
+  PERFORM set_config('wb_test.uid','aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',false);
+  PERFORM set_config('wb_test.jwt','{"aal":"aal1"}',false);
+  IF public.is_admin() THEN RAISE EXCEPTION 'AAL1 admin was accepted'; END IF;
+  denied := false;
   BEGIN
     PERFORM public.admin_set_popularity('yu',200);
   EXCEPTION WHEN raise_exception THEN
     IF SQLERRM='WB_NOT_ADMIN' THEN denied:=true; ELSE RAISE; END IF;
   END;
-  IF NOT denied THEN RAISE EXCEPTION 'nonadmin could reset popularity'; END IF;
-  PERFORM set_config('wb_test.admin','true',true);
+  IF NOT denied THEN RAISE EXCEPTION 'AAL1 admin modified popularity'; END IF;
+
+  PERFORM set_config('wb_test.uid','bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',false);
+  PERFORM set_config('wb_test.jwt','{"aal":"aal2"}',false);
+  IF public.is_admin() THEN RAISE EXCEPTION 'AAL2 reader was accepted'; END IF;
+  denied := false;
+  BEGIN
+    PERFORM public.admin_set_popularity('yu',200);
+  EXCEPTION WHEN raise_exception THEN
+    IF SQLERRM='WB_NOT_ADMIN' THEN denied:=true; ELSE RAISE; END IF;
+  END;
+  IF NOT denied THEN RAISE EXCEPTION 'AAL2 reader modified popularity'; END IF;
+
+  PERFORM set_config('wb_test.uid','aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',false);
+  PERFORM set_config('wb_test.jwt','{"aal":"aal2"}',false);
+  IF NOT public.is_admin() THEN RAISE EXCEPTION 'AAL2 admin was rejected'; END IF;
   PERFORM public.admin_set_popularity('yu',200);
   IF (SELECT base_popularity FROM public.popularity_baselines WHERE work_id='yu') <> 200
   OR (SELECT baseline_views FROM public.popularity_baselines WHERE work_id='yu') <> 30
   OR (SELECT count(*) FROM public.popularity_adjustment_log) <> 1
   THEN RAISE EXCEPTION 'admin baseline or audit mismatch'; END IF;
-END $$;
+END $;
+
+-- 模擬已登入角色實際呼叫 RPC（不是只做 has_function_privilege 目錄檢查）。
+SET ROLE authenticated;
+SELECT set_config('wb_test.uid','bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',false);
+SELECT set_config('wb_test.jwt','{"aal":"aal2"}',false);
+DO $
+DECLARE denied boolean:=false;
+BEGIN
+  IF public.is_admin() THEN RAISE EXCEPTION 'reader elevated via role'; END IF;
+  BEGIN
+    PERFORM public.admin_set_popularity('yu',900);
+  EXCEPTION WHEN raise_exception THEN
+    IF SQLERRM='WB_NOT_ADMIN' THEN denied:=true; ELSE RAISE; END IF;
+  END;
+  IF NOT denied THEN RAISE EXCEPTION 'authenticated reader bypassed role guard'; END IF;
+END $;
+RESET ROLE;
 SELECT 'isolated draft PostgreSQL checks passed' AS result;
