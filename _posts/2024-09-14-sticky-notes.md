@@ -3,7 +3,7 @@ layout: thread
 title: 便條紙
 character: mo
 novel: yu
-chapter: 118
+chapter: 16
 teaser: |
   國光路的路易莎，我們都沒有開口。
 

@@ -1,3 +1,33 @@
+// 2026-11-23《上釉》拆書：舊閱讀紀錄（wb:last:yu、wb:last:yu:角色）換成新章號；原第 51–55 篇的紀錄改記在《來路》（lailu）。
+// 只換章號與所屬作品，不刪任何紀錄（下架章節的紀錄保留原樣）。雲端書櫃同步（cloud.js）也用同一份對照。
+window.wbRemap = (function () {
+  var L = {'shutter': 1, 'drumstick': 2, 'net': 3, 'bamboo-goal': 4, 'gutter': 5};
+  var Y = {'swipe-left': 1, 'good-morning': 2, 'grass': 3, 'cocktail': 4, 'heart': 5, 'cupcake': 6, 'mumu': 7, 'quilt': 8, 'thick-steak': 9, 'ill-keep-you': 10, 'fish-in-fish': 11, 'pot': 12, '95': 13, 'panda': 14, 'medicine': 15, 'sticky-notes': 16};
+  return function (k, r) {
+    if (!r || typeof r.url !== 'string' || !/^yu(:|$)/.test(k)) return [k, r];
+    var m = r.url.match(/\/t\/([^\/?#]+)\/?/); if (!m) return [k, r];
+    var s = m[1], o = {}; for (var x in r) o[x] = r[x];
+    if (L[s]) { o.no = String(L[s]); return ['lailu' + k.slice(2), o]; }
+    if (Y[s] && String(r.no) !== String(Y[s])) { o.no = String(Y[s]); return [k, o]; }
+    return [k, r];
+  };
+})();
+(function () {
+  try {
+    if (localStorage.getItem('wb:mig:yu-split-1')) return;
+    var ks = [];
+    for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (/^wb:last:yu(:|$)/.test(k)) ks.push(k); }
+    ks.forEach(function (k) {
+      var r = JSON.parse(localStorage.getItem(k) || 'null'); if (!r) return;
+      var n = window.wbRemap(k.slice(8), r), nk = 'wb:last:' + n[0];
+      if (n[1] === r) return;
+      if (nk === k) localStorage.setItem(k, JSON.stringify(n[1]));
+      else if (!localStorage.getItem(nk)) { localStorage.setItem(nk, JSON.stringify(n[1])); localStorage.removeItem(k); }
+    });
+    localStorage.setItem('wb:mig:yu-split-1', '1');
+  } catch (e) {}
+})();
+
 // 會員頭像：白底圓圈＋名字第一個字（管理員顯示 MU），字的顏色由會員在會員頁自己選
 window.WBAvatar = (function () {
   var COLORS = [
@@ -278,7 +308,7 @@ window.WBRenderShelf = function () {
     if (split.indexOf(id) >= 0 || novels[id].split) {
       // 兩個角色各自一條線：每個角色各記一行
       var rows = [];
-      Object.keys(chars).forEach(function (cid) { if (chars[cid].novel !== id) return; var r = rd('wb:last:' + id + ':' + cid); if (r) rows.push([cid, r]); });
+      Object.keys(chars).forEach(function (cid) { if (chars[cid].novel !== id && (chars[cid].also || []).indexOf(id) < 0) return; var r = rd('wb:last:' + id + ':' + cid); if (r) rows.push([cid, r]); });
       if (!rows.length) { var old = rd('wb:last:' + id); if (old) { if (old.char) rows.push([old.char, old]); else { list.push({ id: id, r: old, t: old.t || 0 }); return; } } }
       if (rows.length) list.push({ id: id, rows: rows, t: Math.max.apply(null, rows.map(function (x) { return x[1].t || 0; })) });
     } else {

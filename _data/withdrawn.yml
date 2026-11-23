@@ -1,4 +1,9 @@
 # 已撤回的網址（只記網址，不記內容）。整篇或某一版撤下時：刪檔＋把網址加在這裡。
 # 驗證會確認這些網址已不存在；/withdrawn.json 讓 service worker 清掉讀者裝置上的離線副本。
 # 格式：- { url: /literature/xxx/, date: 2026-01-01, level: L3 }
-urls: []
+urls:
+  - { url: /t/threads/, date: 2026-11-23, level: L3 }
+  - { url: /t/four-point-one/, date: 2026-11-23, level: L3 }
+  - { url: /t/sea-smell/, date: 2026-11-23, level: L3 }
+  - { url: /t/2029/, date: 2026-11-23, level: L3 }
+  - { url: /t/key-person/, date: 2026-11-23, level: L3 }

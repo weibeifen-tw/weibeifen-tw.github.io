@@ -117,6 +117,11 @@
     (res.data || []).forEach(function (r) {
       if (KEY_RE.test(r.k)) cloud[r.k] = { url: r.url, no: r.no, title: r.title, char: r.chr, t: +r.t || 0 };
     });
+    // 2026-11-23 拆書：雲端舊紀錄換成新章號／新作品（只在記憶體裡換，資料庫的列不刪）
+    if (window.wbRemap) Object.keys(cloud).forEach(function (k) {
+      var n = window.wbRemap(k, cloud[k]); if (n[1] === cloud[k]) return;
+      if (n[0] === k) cloud[k] = n[1]; else { delete cloud[k]; if (!cloud[n[0]] || further(n[1], cloud[n[0]])) cloud[n[0]] = n[1]; }
+    });
     var local = localRecords(), up = [], changed = false;
 
     Object.keys(cloud).forEach(function (k) {
@@ -141,8 +146,10 @@
 
   /* ---------- 收藏 ---------- */
   async function isFav(A, novel, path) {
-    var res = await A.getClient().from('favorites').select('path').eq('novel', novel).eq('path', path).maybeSingle();
-    return !res.error && !!res.data;
+    // 章節書籤用網址判斷（2026-11-23 拆書後，舊書籤的 novel 可能還是原作品）；整本收藏（path 空白）照舊用 novel
+    var q = A.getClient().from('favorites').select('path');
+    var res = path ? await q.eq('path', path).limit(1) : await q.eq('novel', novel).eq('path', path).maybeSingle();
+    return !res.error && (path ? !!(res.data && res.data.length) : !!res.data);
   }
 
   async function setFav(A, on, row) {
@@ -157,7 +164,8 @@
       });
       if (res.error && res.error.code === '23505') return null; // 已經收藏過了
     } else {
-      res = await c.from('favorites').delete().eq('novel', row.novel).eq('path', row.path);
+      res = row.path ? await c.from('favorites').delete().eq('path', row.path)
+        : await c.from('favorites').delete().eq('novel', row.novel).eq('path', '');
     }
     return res.error ? errText('收藏沒有成功，請稍後再試。', res.error) : null;
   }
@@ -602,7 +610,7 @@
       var asSel = null;
       if (admin) {
         // 管理員：選擇用畝 MU 或這部小說的角色身分回覆
-        var cs = Object.keys(CHARS).filter(function (k) { return CHARS[k].novel === novelId; });
+        var cs = Object.keys(CHARS).filter(function (k) { return CHARS[k].novel === novelId || (CHARS[k].also || []).indexOf(novelId) >= 0; });
         if (cs.length) {
           asSel = el('select', 'cm-as'); asSel.setAttribute('aria-label', '用誰的身分留言');
           var o0 = el('option', null, '畝 MU（作者）'); o0.value = ''; asSel.appendChild(o0);
