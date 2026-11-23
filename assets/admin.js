@@ -466,7 +466,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (res.error) { p.appendChild(el('p', 'mb-form-msg err', errMsg(res.error))); return; }
     var rows = res.data || [];
     p.appendChild(el('p', 'mb-sub', '共 ' + rows.length + ' 位會員。不顯示 email。'));
-    var tb = el('table', 'ad-table');
+    var tb = el('table', 'ad-table ad-members-desktop');
     var hr = el('tr');
     ['顯示名稱', '帳號名稱', '角色', '加入時間', '留言', '狀態'].forEach(function (h) { hr.appendChild(el('th', null, h)); });
     tb.appendChild(hr);
@@ -507,6 +507,147 @@ document.addEventListener('DOMContentLoaded', function () {
       tb.appendChild(tr);
     });
     p.appendChild(tb);
+    renderMemberCards(rows, p);
+  }
+
+
+  /* 手機專用會員卡片：共用 admin_member_list，不改動桌機表格及既有 RPC。 */
+  var closeMemberSheet = null;
+  function renderMemberCards(rows, panel) {
+    if (closeMemberSheet) closeMemberSheet(false);
+    var list = el('div','ad-member-cards');
+    list.setAttribute('aria-label','會員列表');
+    rows.forEach(function (r) {
+      var card=el('article','ad-member-card'), top=el('div','ad-member-card-head');
+      function avatar() { return window.WBAvatar && window.WBAvatar.make({
+        name:r.display_name||'新會員',color:r.avatar_color,id:r.id,author:r.role==='admin'
+      },'cm-av'); }
+      var av=avatar(); if(av)top.appendChild(av);
+      var who=el('div','ad-member-card-person');
+      who.appendChild(el('strong',null,r.display_name||'新會員'));
+      who.appendChild(el('span','ad-member-username',r.username?'@'+r.username:'—'));
+      top.appendChild(who);
+      top.appendChild(el('span','ad-member-role',r.role==='admin'?'管理員':'讀者'));
+      card.appendChild(top);
+      function detail(label,value,cls) {
+        var line=el('div','ad-member-detail');
+        line.appendChild(el('span','ad-member-detail-label',label));
+        line.appendChild(el('span',cls||'ad-member-detail-value',value));
+        card.appendChild(line);
+      }
+      detail('加入時間',fmtDate(r.created_at));
+      detail('留言數量',String(r.comments||0)+' 則');
+      detail('帳號狀態',r.banned?'已封鎖':'正常',
+        'ad-member-status '+(r.banned?'is-banned':'is-normal'));
+      if(r.role!=='admin'){
+        var btn=el('button','cm-btn ad-member-manage','管理會員');
+        btn.type='button';btn.onclick=function(){openMobileMemberSheet(r,btn);};
+        card.appendChild(btn);
+      }
+      list.appendChild(card);
+    });
+    panel.appendChild(list);
+  }
+  function openMobileMemberSheet(member,trigger) {
+    if(member.role==='admin')return;
+    if(closeMemberSheet)closeMemberSheet(false);
+    var layer=el('div','ad-member-sheet-layer');
+    var dialog=el('section','ad-member-sheet');
+    dialog.setAttribute('role','dialog');dialog.setAttribute('aria-modal','true');
+    dialog.setAttribute('aria-labelledby','ad-member-sheet-heading');
+    var grip=el('span','ad-member-sheet-grip');grip.setAttribute('aria-hidden','true');
+    dialog.appendChild(grip);
+    var hd=el('div','ad-member-sheet-header');
+    var heading=el('h2','mb-h','管理會員');heading.id='ad-member-sheet-heading';
+    var x=el('button','ad-member-sheet-close','關閉');
+    x.type='button';x.setAttribute('aria-label','關閉會員管理');
+    hd.appendChild(heading);hd.appendChild(x);dialog.appendChild(hd);
+    var person=el('div','ad-member-sheet-person');
+    if(window.WBAvatar)person.appendChild(window.WBAvatar.make({
+      name:member.display_name||'新會員',color:member.avatar_color,id:member.id,author:false
+    },'cm-av'));
+    var labels=el('div','ad-member-card-person');
+    labels.appendChild(el('strong',null,member.display_name||'新會員'));
+    labels.appendChild(el('span','ad-member-username',member.username?'@'+member.username:'—'));
+    person.appendChild(labels);
+    person.appendChild(el('span','ad-member-status '+(member.banned?'is-banned':'is-normal'),
+      member.banned?'已封鎖':'正常'));
+    dialog.appendChild(person);
+    var form=el('form','ad-member-sheet-form');
+    var reason=null,remove=null;
+    if(member.banned){
+      form.appendChild(el('p','mb-sub','解除封鎖後可恢復留言、私訊、檢舉與修改個人資料；不會自動還原先前移除的留言。'));
+      if(member.ban_reason)form.appendChild(el('p','mb-sub','原封鎖原因：'+member.ban_reason));
+    }else{
+      var lbl=el('label','ad-member-reason-label','封鎖原因（選填）');
+      reason=el('textarea','ad-member-reason');reason.rows=3;reason.maxLength=500;
+      reason.placeholder='輸入封鎖原因（只有管理員可查看）';
+      lbl.appendChild(reason);form.appendChild(lbl);
+      var check=el('label','ad-member-remove-label');
+      remove=el('input');remove.type='checkbox';remove.checked=false;
+      check.appendChild(remove);
+      check.appendChild(el('span',null,'一併移除該會員的留言（預設不移除）'));
+      form.appendChild(check);
+      form.appendChild(el('p','mb-sub','封鎖後仍可閱讀小說，但無法留言、私訊、檢舉或修改個人資料。'));
+    }
+    var submit=el('button','cm-btn on ad-member-confirm',member.banned?'解除封鎖':'確認封鎖');
+    submit.type='submit';
+    var error=el('p','mb-form-msg ad-member-error','');error.setAttribute('role','alert');
+    form.appendChild(submit);form.appendChild(error);
+    dialog.appendChild(form);layer.appendChild(dialog);
+    var oldOverflow=document.documentElement.style.overflow;
+    var pending=false,active=true;
+    document.documentElement.style.overflow='hidden';
+    document.body.appendChild(layer);
+    function close(restore) {
+      if(!active||pending)return;
+      active=false;document.removeEventListener('keydown',keys,true);
+      layer.remove();document.documentElement.style.overflow=oldOverflow;
+      if(closeMemberSheet===close)closeMemberSheet=null;
+      if(restore!==false&&trigger.isConnected)trigger.focus();
+    }
+    closeMemberSheet=close;
+    x.onclick=function(){close(true);};
+    layer.onclick=function(e){if(e.target===layer)close(true);};
+    function keys(e){
+      if(e.key==='Escape'){e.preventDefault();if(!pending)close(true);return;}
+      if(e.key!=='Tab')return;
+      var items=Array.prototype.slice.call(dialog.querySelectorAll('button:not(:disabled),textarea:not(:disabled),input:not(:disabled)'));
+      if(!items.length){e.preventDefault();return;}
+      var first=items[0],last=items[items.length-1];
+      if(e.shiftKey&&(document.activeElement===first||!dialog.contains(document.activeElement))){
+        e.preventDefault();last.focus();
+      }else if(!e.shiftKey&&(document.activeElement===last||!dialog.contains(document.activeElement))){
+        e.preventDefault();first.focus();
+      }
+    }
+    document.addEventListener('keydown',keys,true);x.focus();
+    form.onsubmit=async function(e){
+      e.preventDefault();if(pending)return;
+      var name=member.display_name||'新會員';
+      var msg=member.banned
+        ?'確定解除封鎖「'+name+'」？先前移除的留言不會自動恢復。'
+        :'確定封鎖「'+name+'」？'+(remove.checked?'\\n將一併移除該會員留言。':'\\n不會移除該會員留言。');
+      if(!window.confirm(msg))return;
+      pending=true;submit.disabled=true;x.disabled=true;
+      if(reason)reason.disabled=true;if(remove)remove.disabled=true;
+      error.textContent='';
+      try{
+        var result=member.banned
+          ?await c().rpc('admin_unban',{p_user:member.id})
+          :await c().rpc('admin_ban',{
+            p_user:member.id,p_reason:reason.value.trim()||null,
+            p_remove_comments:remove.checked
+          });
+        if(result.error)throw result.error;
+        pending=false;close(true);loadMembers();
+      }catch(err){
+        error.textContent=errMsg(err);
+        pending=false;submit.disabled=false;x.disabled=false;
+        if(reason)reason.disabled=false;if(remove)remove.disabled=false;
+        submit.focus();
+      }
+    };
   }
 
   /* ---------- 人氣：當前設定與歷次修改（後端 MFA 權限） ---------- */
