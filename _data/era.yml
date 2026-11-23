@@ -13,6 +13,14 @@
 # research：史前年代／歷史研究，顯示在 1950 年代之前。
 #   period：年代說明（顯示用文字）。phase：歸屬的史前分期 id（選填；沒填＝跨時期研究）。hypothesis: true 表示是研究假說，頁面會標「研究假說」，不能寫成定論。
 
+# 小說故事年代：與可查證的歷史事件分開，不宣稱為真實歷史事件。
+story_settings:
+  - id: fendao-setting
+    year: 2026
+    novel: fendao
+    location: 宜蘭
+    description: 田徑校隊短跑選手芮與予的故事
+
 events:
   - id: matsu-military-administration
     start: 1956
