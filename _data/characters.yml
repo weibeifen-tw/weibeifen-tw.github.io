@@ -205,10 +205,20 @@ heng:
   name: 蘅
   handle: heng.sundayporridge
   novel: mizi
-  avatar: heng.svg
+  avatar: mizi-heng.svg
+  story: /assets/stories/mizi-heng.webp
   glyph: 蘅
   color: "#b38e72"
   bio: 三十三歲，中文系助理教授，出過兩本詩集。五個孩子的媽媽、一個人的妻。每天早上五點寫字，那一小時是她自己的。
+mizi_jin:
+  name: 錦
+  handle: mizi.jin
+  novel: mizi
+  avatar: mizi-jin.svg
+  story: /assets/stories/mizi-jin.webp
+  glyph: 錦
+  color: "#8c766f"
+  bio: 海運集團董事長。回到陽明山的家，是蘅的妻子，也是五個女兒的媽咪。
 yin:
   name: 茵
   handle: yin.firstyear

@@ -1,4 +1,73 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" role="img" aria-label="《米字旁》封面"><rect width="600" height="800" fill="#F1E3C7"/>
-<rect x="230" y="50" width="140" height="120" fill="#FFF8EA" stroke="#855E49" stroke-width="7"/><path d="M300 50V170M230 110H370" stroke="#855E49" stroke-width="5"/>
-<circle cx="90" cy="352.05" r="37.050000000000004" fill="#DB9C7C"/><path d="M43.9725 600 L51.3369 400.21500000000003 Q90 385.395 128.6631 400.21500000000003 L136.0275 600 Z" fill="#DB9C7C"/><path d="M56.654999999999994 398.3625 Q49.24499999999999 359.46 54.802499999999995 337.23" stroke="#DB9C7C" stroke-width="18.525000000000002" fill="none"/><circle cx="160" cy="369.45" r="34.45" fill="#8FA88A"/><path d="M117.2025 600 L124.0501 414.235 Q160 400.455 195.9499 414.235 L202.7975 600 Z" fill="#8FA88A"/><path d="M128.995 412.5125 Q122.10499999999999 376.34000000000003 127.27250000000001 355.67" stroke="#8FA88A" stroke-width="17.225" fill="none"/><circle cx="230" cy="404.25" r="29.25" fill="#C9806A"/><path d="M193.6625 600 L199.4765 442.275 Q230 430.575 260.5235 442.275 L266.3375 600 Z" fill="#C9806A"/><path d="M203.675 440.8125 Q197.825 410.1 202.2125 392.55" stroke="#C9806A" stroke-width="14.625" fill="none"/><circle cx="300" cy="417.3" r="27.3" fill="#E8C07D"/><path d="M266.085 600 L271.5114 452.79 Q300 441.87 328.4886 452.79 L333.915 600 Z" fill="#E8C07D"/><path d="M275.43 451.425 Q269.96999999999997 422.76 274.065 406.38" stroke="#E8C07D" stroke-width="13.65" fill="none"/><circle cx="370" cy="404.25" r="29.25" fill="#9A8FB8"/><path d="M333.6625 600 L339.4765 442.275 Q370 430.575 400.5235 442.275 L406.3375 600 Z" fill="#9A8FB8"/><path d="M343.675 440.8125 Q337.825 410.1 342.2125 392.55" stroke="#9A8FB8" stroke-width="14.625" fill="none"/><circle cx="440" cy="421.65" r="26.650000000000002" fill="#7FA3B5"/><path d="M406.8925 600 L412.1897 456.295 Q440 445.635 467.8103 456.295 L473.1075 600 Z" fill="#7FA3B5"/><path d="M416.015 454.9625 Q410.685 426.98 414.6825 410.99" stroke="#7FA3B5" stroke-width="13.325000000000001" fill="none"/><circle cx="510" cy="408.6" r="28.6" fill="#C58BA0"/><path d="M474.47 600 L480.1548 445.78 Q510 434.34000000000003 539.8452 445.78 L545.53 600 Z" fill="#C58BA0"/><path d="M484.26 444.35 Q478.54 414.32 482.83 397.16" stroke="#C58BA0" stroke-width="14.3" fill="none"/><rect x="40" y="500" width="520" height="44" rx="8" fill="#855E49"/><rect x="70" y="544" width="22" height="120" fill="#855E49"/><rect x="508" y="544" width="22" height="120" fill="#855E49"/>
-<path d="M262 470 h76 a38 38 0 0 1 -76 0z" fill="#FFFFFF" stroke="#D8C7A8" stroke-width="3"/><rect y="680" width="600" height="120" fill="#855E49"/><text x="300" y="762" text-anchor="middle" font-family="'Noto Serif TC','Noto Serif CJK TC','Songti TC','PMingLiU',serif" font-size="62" font-weight="700" letter-spacing="12" fill="#FFFFFF">米字旁</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="800" viewBox="0 0 600 800" role="img" aria-label="《米字旁》首頁封面候選：左側空白字紙、右側熱粥與毛筆">
+  <title>米字旁</title>
+  <desc>暖米白與奶茶棕色調的純向量手繪感封面；左側為完全空白的字紙，右側是一碗熱粥，毛筆置於紙外，底部深棕色帶顯示書名。</desc>
+  <defs>
+    <pattern id="paperDots" width="37" height="41" patternUnits="userSpaceOnUse">
+      <circle cx="4" cy="7" r="0.7" fill="#b7a48c" opacity="0.20"/>
+      <circle cx="23" cy="29" r="0.9" fill="#a99278" opacity="0.16"/>
+      <path d="M12 17l2 -0.7 M32 5l1.2 1" stroke="#b9a48a" stroke-width="0.7" opacity="0.13"/>
+    </pattern>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f7eddc"/>
+      <stop offset="0.56" stop-color="#f2e7d4"/>
+      <stop offset="1" stop-color="#ebdcc8"/>
+    </linearGradient>
+    <linearGradient id="bowl" x1="0" y1="0" x2="0.8" y2="1">
+      <stop offset="0" stop-color="#ebd3bb"/>
+      <stop offset="0.48" stop-color="#d7b59a"/>
+      <stop offset="1" stop-color="#bc9279"/>
+    </linearGradient>
+    <linearGradient id="paper" x1="0" y1="0" x2="0.2" y2="1">
+      <stop offset="0" stop-color="#fffaf0"/>
+      <stop offset="1" stop-color="#f9f0de"/>
+    </linearGradient>
+  </defs>
+  <!-- Warm, lightly irregular paper field -->
+  <rect width="600" height="680" fill="url(#background)"/>
+  <rect width="600" height="680" fill="url(#paperDots)"/>
+  <path d="M0 61C106 46 193 77 296 65S492 52 600 71" fill="none" stroke="#dcc9af" stroke-width="2" opacity=".31"/>
+  <path d="M0 621C117 614 224 630 323 618S516 608 600 624" fill="none" stroke="#d4bfa7" stroke-width="2" opacity=".25"/>
+  <!-- Letter paper at left, no lines, writing, characters, or ink marks -->
+  <g transform="rotate(-7 168 363)">
+    <path d="M42 193Q43 184 54 185L265 187Q277 187 279 198L280 548Q279 560 268 562L52 560Q40 560 40 547Z" fill="#b6a087" opacity=".18" transform="translate(9 12)"/>
+    <path d="M41 192Q42 181 54 183L265 184Q275 184 276 197L278 548Q277 556 266 559L53 557Q41 558 40 546Z" fill="url(#paper)" stroke="#c2ad91" stroke-width="2.5"/>
+    <path d="M51 195Q102 192 153 194T266 195" fill="none" stroke="#fffefa" stroke-width="3" opacity=".8"/>
+    <path d="M49 550Q125 545 200 551T268 548" fill="none" stroke="#d7c3a7" stroke-width="1.4" opacity=".38"/>
+  </g>
+  <!-- The brush is OUTSIDE the blank paper -->
+  <g transform="translate(300 150) rotate(29 0 0)">
+    <path d="M-6 0Q0 -4 6 0L7 178Q6 188 0 189Q-6 188 -7 178Z" fill="#7e5a44" stroke="#664635" stroke-width="2.3"/>
+    <path d="M-7 20Q-3 24 7 19L7 44Q0 49 -7 44Z" fill="#d7b58a" stroke="#a78763" stroke-width="1.5"/>
+    <path d="M-7 175Q0 181 7 175L4 193Q1 209 0 220Q-2 205 -4 193Z" fill="#4e463e"/>
+    <path d="M-3 187L0 211" fill="none" stroke="#756960" stroke-width="1" opacity=".55"/>
+  </g>
+  <!-- Steam: translucent pencil-like wandering lines -->
+  <g fill="none" stroke="#ab927b" stroke-linecap="round" opacity=".64">
+    <path d="M388 291Q376 274 390 256Q406 237 391 222Q382 210 391 199" stroke-width="4"/>
+    <path d="M436 277Q424 260 441 241Q453 224 441 208Q431 194 441 182" stroke-width="3.2"/>
+    <path d="M482 288Q470 272 486 253Q500 235 487 219" stroke-width="3.6"/>
+  </g>
+  <!-- Bowl on right; asymmetry adds hand-rendered warmth -->
+  <ellipse cx="433" cy="554" rx="148" ry="21" fill="#b59a7f" opacity=".18"/>
+  <path d="M286 395Q292 474 322 514Q354 557 428 570Q507 567 539 511Q570 467 573 394Q531 409 433 410Q335 412 286 395Z" fill="url(#bowl)" stroke="#8d6e55" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M306 438Q320 511 376 536Q432 562 492 531" fill="none" stroke="#f0ddc6" stroke-width="6" stroke-linecap="round" opacity=".45"/>
+  <path d="M550 449Q539 508 495 539" fill="none" stroke="#96745d" stroke-width="3" opacity=".32" stroke-linecap="round"/>
+  <ellipse cx="430" cy="394" rx="143" ry="51" fill="#fff8eb" stroke="#87684f" stroke-width="5"/>
+  <path d="M304 396Q312 360 431 359Q545 359 558 397Q540 432 430 433Q327 435 304 396Z" fill="#f0e4ce" stroke="#c7b095" stroke-width="2.7"/>
+  <!-- Low-key rice grains, not letters or text -->
+  <g fill="#d9c39f" opacity=".62">
+    <ellipse cx="372" cy="385" rx="8" ry="3.2" transform="rotate(-17 372 385)"/>
+    <ellipse cx="407" cy="401" rx="7" ry="3" transform="rotate(14 407 401)"/>
+    <ellipse cx="449" cy="381" rx="7" ry="3" transform="rotate(-8 449 381)"/>
+    <ellipse cx="490" cy="404" rx="9" ry="3" transform="rotate(12 490 404)"/>
+    <ellipse cx="461" cy="415" rx="6" ry="2.5" transform="rotate(-16 461 415)"/>
+    <ellipse cx="345" cy="403" rx="6" ry="2.5" transform="rotate(15 345 403)"/>
+  </g>
+  <!-- Ceramic hand-made contour lines -->
+  <path d="M359 481Q429 513 506 478" fill="none" stroke="#a78168" stroke-width="3" opacity=".52" stroke-linecap="round"/>
+  <path d="M388 533Q431 546 463 533" fill="none" stroke="#f6e7d7" stroke-width="2" opacity=".6" stroke-linecap="round"/>
+  <!-- Mandatory bottom title band, exactly 120 / 800 -->
+  <rect y="680" width="600" height="120" fill="#855e49"/>
+  <path d="M0 681Q144 679 298 682T600 681" fill="none" stroke="#a87d5e" stroke-width="2" opacity=".35"/>
+  <text x="300" y="744" font-family="Noto Serif CJK TC, Noto Serif TC, Songti TC, PMingLiU, serif" font-size="53" font-weight="500" fill="#fff7ea" text-anchor="middle" dominant-baseline="middle" letter-spacing="5">米字旁</text>
+</svg>
