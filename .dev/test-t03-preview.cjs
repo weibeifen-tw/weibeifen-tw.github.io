@@ -34,7 +34,11 @@ const handlers={};
 const document={
   getElementById:id=>elements[id]||(elements[id]={textContent:'',dataset:{}}),
   addEventListener:(name,fn)=>{handlers[name]=fn;},
-  querySelectorAll:()=>[{},{}]
+  querySelectorAll:()=>[
+    {getAttribute:()=> './reading-store.js'},
+    {getAttribute:()=> './preview.js'},
+    {getAttribute:()=> 'https://hosting.invalid/injected-extra.js'}
+  ]
 };
 const window={addEventListener(){}};
 const context=vm.createContext({window,document,localStorage,console,Date});
