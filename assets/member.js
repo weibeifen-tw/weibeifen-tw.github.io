@@ -297,7 +297,7 @@
       var savingEpoch = memberViewEpoch, savingVersion = window.WBReadingStore.identity().version;
       save.disabled = true; say('儲存中…');
       var r;
-      try { r = await A.updateMyProfile({ display_name: dn.value, username: u, bio: bio.value, avatar_color: picked }); }
+      try { r = await A.updateMyProfile({ display_name: dn.value, username: u, bio: bio.value, avatar_color: picked }, me.id); }
       catch (e) { r = { error: '連不上會員伺服器，請稍後再試。' }; }
       if (savingEpoch !== memberViewEpoch || !currentOwner(me.id, savingVersion)) return;
       save.disabled = false;
@@ -538,7 +538,7 @@
       try { role = await A.getRole(); } catch (e) {}
       if (epoch !== memberViewEpoch || !currentOwner(v.user.id, ownerVersion)) return;
       try {
-        var pr = await A.getMyProfile();
+        var pr = await A.getMyProfile(v.user.id);
         prof = pr.profile;
         if (pr.error) setNote(pr.error, true);
       } catch (e) { setNote('讀取個人資料失敗，請重新整理。', true); }

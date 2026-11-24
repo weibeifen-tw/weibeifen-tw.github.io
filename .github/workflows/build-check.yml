@@ -63,6 +63,20 @@ jobs:
           node .dev/test-t03-async-races.cjs
           node .dev/test-t03-release-guard.cjs
 
+      - name: G01 會員隱私隔離測試（假資料，不連正式 Supabase）
+        if: github.ref == 'refs/heads/feat/site-t03-release-hardening-20261124' || (github.event_name == 'pull_request' && github.head_ref == 'feat/site-t03-release-hardening-20261124')
+        run: |
+          set -eu
+          node .dev/test-g01-profile.cjs
+          node --check assets/auth.js
+          node --check assets/member.js
+          cid="$(docker run -d --network none -e POSTGRES_HOST_AUTH_METHOD=trust postgres:17)"
+          trap 'docker rm -f "$cid" >/dev/null' EXIT
+          for i in $(seq 1 60); do docker exec "$cid" pg_isready -U postgres && break; sleep 1; done
+          for f in .dev/g01-fixture.sql supabase/019_username_change_once.sql supabase/drafts/G01_01_profile_rpc_DRAFT.sql supabase/drafts/G01_02_profile_acl_DRAFT.sql .dev/g01-assertions.sql; do
+            docker exec -i "$cid" psql -X -U postgres -v ON_ERROR_STOP=1 < "$f"
+          done
+
       - name: 研究文章資料驗證（只讀檔案，不需要套件）
         run: ruby .github/scripts/validate_literature.rb .
 

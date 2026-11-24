@@ -233,7 +233,7 @@
   }
 
   /* ---------- 會員公開資料（public.profiles，RLS：只能改自己的） ---------- */
-  var PROFILE_COLS = 'id,username,display_name,avatar_url,avatar_color,bio,name_changed_at,color_changed_at,username_changed_at';
+  // G01: private fields only through the authenticated owner RPC; no direct-table fallback.
 
   function profileError(e) {
     if (!e) return null;
@@ -251,19 +251,23 @@
     return describeError(e);
   }
 
-  async function getMyProfile() {
+  async function getMyProfile(expectedUid) {
     if (configProblem()) return { profile: null, error: configProblem() };
     var uid = await myUid();
     if (!uid) return { profile: null, error: null };
-    var res = await getClient().from('profiles').select(PROFILE_COLS).eq('id', uid).maybeSingle();
-    return { profile: res.data || null, error: res.error ? profileError(res.error) : null };
+    if (!expectedUid || uid !== expectedUid) return { profile: null, error: '登入狀態已改變，請重新登入。' };
+    var res = await getClient().rpc('get_my_profile', { p_expected_uid: expectedUid });
+    if (res.error) return { profile: null, error: profileError(res.error) };
+    if (!res.data || res.data.id !== expectedUid || await myUid() !== expectedUid) return { profile: null, error: '無法確認會員資料，請重新登入。' };
+    return { profile: res.data, error: null };
   }
 
   // 只送出允許修改的四個欄位（名稱、帳號名稱、簡介、頭貼顏色）；空字串存成 null
-  async function updateMyProfile(input) {
+  async function updateMyProfile(input, expectedUid) {
     if (configProblem()) return { profile: null, error: configProblem() };
     var uid = await myUid();
     if (!uid) return { profile: null, error: '請先登入。' };
+    if (!expectedUid || uid !== expectedUid) return { profile: null, error: '登入狀態已改變，請重新登入。' };
     function clean(v) { v = (v == null ? '' : String(v)).trim(); return v === '' ? null : v; }
     var patch = {
       display_name: clean(input.display_name) || '新會員',
@@ -271,9 +275,12 @@
       bio: clean(input.bio),
       avatar_color: /^[a-z]{1,12}$/.test(input.avatar_color || '') ? input.avatar_color : null
     };
-    var res = await getClient().from('profiles').update(patch).eq('id', uid).select(PROFILE_COLS).maybeSingle();
+    var res = await getClient().rpc('update_my_profile', {
+      p_expected_uid: expectedUid, p_display_name: patch.display_name,
+      p_username: patch.username, p_bio: patch.bio, p_avatar_color: patch.avatar_color
+    });
     if (res.error) return { profile: null, error: profileError(res.error) };
-    if (!res.data) return { profile: null, error: '找不到你的會員資料，請重新登入後再試。' };
+    if (!res.data || res.data.id !== expectedUid || await myUid() !== expectedUid) return { profile: null, error: '無法確認會員資料，請重新登入。' };
     return { profile: res.data, error: null };
   }
 

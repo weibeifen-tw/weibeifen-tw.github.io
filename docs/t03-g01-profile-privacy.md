@@ -1,0 +1,8 @@
+# T03 V2.3 G01 — 方案 A 隔離草案
+- No production SQL, merge or deploy authorized. Both SQL files are drafts, not migrations.
+- Phase 1 adds RPCs; phase 2 restricts direct SELECT only after compatible client rollout, cache/old client assessment and separate authorization. Never restore broad read as routine rollback.
+- Public columns: id (existing UUID, still API-readable), username, display_name, avatar_url, avatar_color, bio. Five timestamps restricted. No change to comments or admin RPCs.
+- get_my_profile uses a narrowly scoped SECURITY DEFINER with explicit owner check, fixed empty search path and authenticated-only EXECUTE; review owner, inherited grants and advisor warnings before production. update_my_profile uses SECURITY INVOKER, existing RLS, column grants, constraints and triggers. Expected UID is an assertion against auth.uid(), never target selection; prevents stale forms writing another account.
+- No fallback to legacy broad profile query. If RPC missing, UI reports error and does not render edit form. Old cached clients may fail after phase 2; must plan transition.
+- CI uses real PostgreSQL in disposable network-disabled container, synthetic schema/roles/claims plus actual 019 trigger migration. It is not real Supabase Auth/JWT or PostgREST relation testing, nor a full production schema clone. JS mock checks client contract, existing T03 tests remain.
+- Pending: verify actual grants/inheritance, live schema/trigger/function definitions, indirect private access via other APIs, PostgREST embedding, admin MFA and account create/delete, real JWT tests in isolated project, complete rollback and deployment sequencing. G01 remains conditional; G02–G06 unchanged.
