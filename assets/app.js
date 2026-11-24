@@ -385,7 +385,7 @@ window.WBRenderShelf = function () {
   window.WBShelfRenderToken = renderToken;
   var novels = JSON.parse(document.getElementById('novels').textContent || '{}'), list = [];
   var chars = JSON.parse(document.getElementById('chars').textContent || '{}');
-  var split = window.SPLIT || [], links = [];
+  var split = window.SPLIT || [], links = [], currentIndex = null;
   function rd(k) { try { var r = JSON.parse(localStorage.getItem(k) || 'null'); return r && r.url ? r : null; } catch (e) { return null; } }
   function row(href, label, no, cls, novelId) {
     var a = document.createElement('a');
@@ -437,7 +437,7 @@ window.WBRenderShelf = function () {
       more.textContent = '再看 ' + Math.min(10, left) + ' 本（還有 ' + left + ' 本）';
       sub.appendChild(more);
       // 展開後新增的書櫃項目，同樣要套用已取得的索引。
-      if (window.WBShelfIndex && window.WBShelfRenderToken === renderToken) apply(window.WBShelfIndex);
+      if (currentIndex && window.WBShelfRenderToken === renderToken) apply(currentIndex);
     }
     more.onclick = function () { showMore(10); };
     showMore(5);
@@ -479,7 +479,7 @@ window.WBRenderShelf = function () {
     retry.hidden = true;
     window.WBChapterGuard.load(!!force).then(function (data) {
       if (window.WBShelfRenderToken !== seq) return;
-      window.WBShelfIndex = data;
+      currentIndex = data;
       apply(data);
     }).catch(function () {
       if (window.WBShelfRenderToken !== seq) return;
