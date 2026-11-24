@@ -137,6 +137,46 @@ async function run() {
   const ownedCount=[...tabStorage.keys()].filter(k=>k.startsWith('wb:v2:member:fakeuser-A:')).length;
   check(ownedCount>0,'sign-out preserves owned member records for later login');
 
+  // Recovery checks: guest and member data are retained independently; account deletion removes only the owner namespace.
+  const recoverMemory = new Map([['wb:last:yu', JSON.stringify({url:'/t/legacy/',no:'51'})]]);
+  const recoverEvents = {};
+  const recoverStorage = {
+    get length(){return recoverMemory.size;},
+    key:i=>[...recoverMemory.keys()][i],
+    getItem:k=>recoverMemory.get(k)||null,
+    setItem:(k,v)=>recoverMemory.set(k,v),
+    removeItem:k=>recoverMemory.delete(k)
+  };
+  const recoverWindow={addEventListener:(event,fn)=>{recoverEvents[event]=fn;}};
+  vm.runInNewContext(read('assets/js/reading-store.js'),{window:recoverWindow,localStorage:recoverStorage});
+  const recoverStore=recoverWindow.WBReadingStore;
+  recoverStore.write('last','yu',JSON.stringify({url:'/t/guest/',no:'2'}));
+  check(recoverStore.listLast().yu.url==='/t/guest/', 'guest can save independent reading');
+  recoverMemory.set(sessionKey,JSON.stringify({user:{id:'fakeuser-A'},refresh_token:'dummy'}));
+  recoverEvents.storage({key:sessionKey});
+  check(recoverStore.identity().state==='unknown' && !recoverStore.listLast().yu,
+    'guest history stays hidden while validating member');
+  recoverStore.setIdentity('member','fakeuser-A');
+  check(!recoverStore.listLast().yu, 'guest history is not silently imported to member');
+  recoverStore.write('last','yu',JSON.stringify({url:'/t/member/',no:'7'}));
+  recoverMemory.delete(sessionKey);
+  recoverEvents.storage({key:sessionKey});
+  check(recoverStore.listLast().yu.url==='/t/guest/',
+    'logout restores original guest records without member leakage');
+  recoverMemory.set(sessionKey,JSON.stringify({user:{id:'fakeuser-A'},refresh_token:'dummy'}));
+  recoverEvents.storage({key:sessionKey});
+  recoverStore.setIdentity('member','fakeuser-A');
+  check(recoverStore.listLast().yu.url==='/t/member/',
+    'relogin restores only the original owner history');
+  check(recoverStore.clearMember('fakeuser-A') &&
+    !recoverStore.listLast().yu &&
+    recoverMemory.has('wb:last:yu'),
+    'account deletion clears only scoped v2 owner and preserves quarantined legacy');
+  recoverMemory.delete(sessionKey);
+  recoverEvents.storage({key:sessionKey});
+  check(recoverStore.listLast().yu.url==='/t/guest/',
+    'guest history remains after deletion of distinct member account');
+
   const cloud = read('assets/cloud.js');
   const helpers = ['function cut(', 'function localRecords(', 'function num(', 'function further(', 'async function sync(']
     .map(heading => extract(cloud, heading)).join('\n');
