@@ -55,6 +55,14 @@ jobs:
           # V2.2：真正 app/member 閱讀頁、書櫃、會員頁，只使用本地假資料
           CHROME_PATH="$CHROME_PATH" node .dev/test-t03-page-integration.cjs
 
+      - name: T03 V2.3 發布前唯讀安全守衛（僅隔離修復分支）
+        if: github.ref == 'refs/heads/feat/site-t03-release-hardening-20261124' || (github.event_name == 'pull_request' && github.head_ref == 'feat/site-t03-release-hardening-20261124')
+        run: |
+          node .dev/test-t03-reading.cjs
+          node .dev/test-t03-rollback.cjs
+          node .dev/test-t03-async-races.cjs
+          node .dev/test-t03-release-guard.cjs
+
       - name: 研究文章資料驗證（只讀檔案，不需要套件）
         run: ruby .github/scripts/validate_literature.rb .
 
