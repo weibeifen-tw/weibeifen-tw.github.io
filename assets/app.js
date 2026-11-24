@@ -501,30 +501,117 @@ window.WBRenderShelf();
   var btn = document.querySelector('.chat-btn'), box = document.querySelector('.inbox');
   if (!btn || !box) return;
   var novels = JSON.parse(document.getElementById('novels').textContent || '{}');
-  var posts = null;
-  function esc(s) { var d = document.createElement('div'); d.textContent = s == null ? '' : s; return d.innerHTML; }
+  var posts = null, openSequence = 0;
+  function make(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
   function on() { return !!(window.WBDM && window.WBDM.on && window.WBDM.on()); }
-  function view() {
-    var h = '<div class="ib-head"><b>通知</b><button type="button" class="ib-x" aria-label="關閉">✕</button></div>';
+  function approvedNovel(path) {
+    if (typeof path !== 'string') return null;
+    try {
+      var url = new URL(path, location.origin);
+      if (url.origin !== location.origin) return null;
+      var match = url.pathname.match(/^\/novel\/([a-z0-9_-]+)\/$/);
+      return match && Object.prototype.hasOwnProperty.call(novels, match[1]) ? url.pathname : null;
+    } catch (e) { return null; }
+  }
+  function view(index, failed, retry) {
+    var panel = make('div', 'ib-panel');
+    var head = make('div', 'ib-head');
+    head.appendChild(make('b', null, '通知'));
+    var closeButton = make('button', 'ib-x', '✕');
+    closeButton.type = 'button';
+    closeButton.setAttribute('aria-label', '關閉');
+    head.appendChild(closeButton); panel.appendChild(head);
     var nt = (window.WBDM && window.WBDM.notices) || [];
     if (nt.length) {
-      var byUrl = {}; Object.keys(posts || {}).forEach(function (k) { byUrl[posts[k].u] = posts[k]; });
-      h += '<div class="ib-notices"><b>你留言的地方有新回應</b>' + nt.map(function (x) {
-        var pp = byUrl[x.path], nv = novels[x.novel] || {}, t = '《' + (nv.title || x.novel) + '》' +
-          (pp ? (pp.ch ? '第 ' + pp.ch + ' 篇・' : '') + pp.t : (x.path.indexOf('/novel/') === 0 ? '介紹頁' : ''));
-        return '<a href="' + esc(x.path) + '#comments">' + esc(t) + '<span>' + x.n + ' 則新留言</span></a>';
-      }).join('') + '</div>';
-    } else h += '<p class="ib-empty">' + (on() ? '目前沒有新通知。<br>有人在你留過言的地方留言，會顯示在這裡。' : '登入會員後，有人在你留過言的地方留言，會通知你。<br><a href="' + window.BASE + '/member/">前往登入</a>') + '</p>';
-    box.innerHTML = '<div class="ib-panel">' + h + '</div>';
+      var byUrl = Object.create(null);
+      Object.keys(posts || {}).forEach(function (k) { byUrl[posts[k].u] = posts[k]; });
+      var list = make('div', 'ib-notices');
+      list.appendChild(make('b', null, '你留言的地方有新回應'));
+      nt.forEach(function (x) {
+        var path = typeof x.path === 'string' ? x.path : '';
+        var safe = path.indexOf('/novel/') === 0 ? approvedNovel(path) : null;
+        var result = null;
+        if (!safe && path.indexOf('/novel/') !== 0 && index && window.WBChapterGuard) {
+          result = window.WBChapterGuard.resolve(index, path);
+          if (result.status === 'published') safe = result.url;
+        }
+        var pp = byUrl[path], actualNovel = result && result.status === 'published' ? result.chapter.novel : x.novel;
+        var nv = novels[actualNovel] || novels[x.novel] || {};
+        var title = '《' + (nv.title || x.novel || '未知作品') + '》' +
+          (pp ? (pp.ch ? '第 ' + pp.ch + ' 篇・' : '') + pp.t : (safe && path.indexOf('/novel/') === 0 ? '介紹頁' : ''));
+        var entry = make('a', null, title);
+        if (safe) entry.href = safe + '#comments';
+        else {
+          entry.setAttribute('aria-disabled', 'true');
+          entry.tabIndex = -1;
+          var notice = result && result.status === 'withdrawn' ? '原章節已撤回' :
+            failed && path.indexOf('/novel/') !== 0 ? '暫時無法確認原章節' : '原頁面無法使用';
+          entry.appendChild(make('small', null, '（' + notice + '）'));
+        }
+        entry.appendChild(make('span', null, String(x.n || 0) + ' 則新留言'));
+        list.appendChild(entry);
+      });
+      panel.appendChild(list);
+      if (failed && nt.some(function (x) { return typeof x.path !== 'string' || x.path.indexOf('/novel/') !== 0; })) {
+        panel.appendChild(make('p', 'ib-empty', '章節狀態暫時無法確認。'));
+        var retryButton = make('button', 'nv-link-retry', '重新確認');
+        retryButton.type = 'button';
+        retryButton.onclick = retry;
+        panel.appendChild(retryButton);
+      }
+    } else {
+      var message = make('p', 'ib-empty', on() ? '目前沒有新通知。有人在你留過言的地方留言，會顯示在這裡。' : '登入會員後，有人在你留過言的地方留言，會通知你。');
+      if (!on()) {
+        message.appendChild(document.createTextNode(' '));
+        var signIn = make('a', null, '前往登入'); signIn.href = (window.BASE || '') + '/member/';
+        message.appendChild(signIn);
+      }
+      panel.appendChild(message);
+    }
+    box.textContent = '';
+    box.appendChild(panel);
+  }
+  function verify(force, sequence) {
+    var nt = (window.WBDM && window.WBDM.notices) || [];
+    var needsIndex = nt.some(function (x) { return typeof x.path !== 'string' || x.path.indexOf('/novel/') !== 0; });
+    if (!needsIndex) { view(null, false, function () {}); return; }
+    var guard = window.WBChapterGuard;
+    if (!guard) { view(null, true, function () { verify(true, sequence); }); return; }
+    guard.load(!!force).then(function (data) {
+      if (sequence !== openSequence || box.hidden) return;
+      view(data, false, function () { verify(true, sequence); });
+    }).catch(function () {
+      if (sequence !== openSequence || box.hidden) return;
+      view(null, true, function () { verify(true, sequence); });
+    });
   }
   async function open() {
-    box.hidden = false; document.body.classList.add('ib-open');
-    box.innerHTML = '<div class="ib-panel"><p class="ib-empty">載入中…</p></div>';
-    if (!posts) { try { posts = await (await fetch(window.BASE + '/assets/posts.json?v=' + window.VER)).json(); } catch (e) { posts = {}; } }
+    var sequence = ++openSequence;
+    box.hidden = false;
+    document.body.classList.add('ib-open');
+    box.textContent = '';
+    box.appendChild(make('div', 'ib-panel', '載入中…'));
+    if (!posts) {
+      try {
+        var response = await fetch((window.BASE || '') + '/assets/posts.json?v=' + (window.VER || ''));
+        posts = response.ok ? await response.json() : {};
+      } catch (e) { posts = {}; }
+    }
+    if (sequence !== openSequence || box.hidden) return;
     if (on() && window.WBDM.refresh) { try { await window.WBDM.refresh(); } catch (e) {} }
-    if (!box.hidden) view();
+    if (sequence !== openSequence || box.hidden) return;
+    verify(false, sequence);
   }
-  function close() { box.hidden = true; document.body.classList.remove('ib-open'); }
+  function close() {
+    ++openSequence;
+    box.hidden = true;
+    document.body.classList.remove('ib-open');
+  }
   btn.onclick = function () { open(); };
   box.addEventListener('click', function (e) { if (e.target === box || e.target.closest('.ib-x')) close(); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !box.hidden) close(); });
