@@ -44,6 +44,8 @@ jobs:
 
       - name: 建置輸出檢查：已授權章節都在、未授權章節沒有出現
         run: ruby .github/scripts/validate_release.rb . --site _site
+      - name: P3-01-A 公開章節／撤回狀態索引驗證（部署前阻擋）
+        run: ruby .github/scripts/validate_chapter_status.rb . --site _site
       - uses: actions/upload-pages-artifact@v3
   deploy:
     needs: build
