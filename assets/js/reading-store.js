@@ -93,8 +93,12 @@
     } catch (e) { return false; }
   }
   window.addEventListener('storage', function (e) {
-    if (e.key === SESSION) setIdentity(hasSession() ? 'unknown' : 'guest');
-    else if (e.key && e.key.indexOf(PREFIX) === 0) notify();
+    // localStorage.clear() emits a storage event with a null key.
+    // Treat it as a session change so every tab hides stale member reading UI.
+    if (e.key === SESSION || e.key === null) {
+      setIdentity(hasSession() ? 'unknown' : 'guest');
+      if (e.key === null) notify();
+    } else if (e.key && e.key.indexOf(PREFIX) === 0) notify();
   });
   window.addEventListener('pageshow', function (e) {
     if (!e.persisted) return;
