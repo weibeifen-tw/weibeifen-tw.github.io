@@ -52,6 +52,8 @@ jobs:
           CHROME_PATH="$(command -v google-chrome || command -v chromium)"
           test -n "$CHROME_PATH"
           CHROME_PATH="$CHROME_PATH" node .dev/test-t03-browser.cjs
+          # V2.2：真正 app/member 閱讀頁、書櫃、會員頁，只使用本地假資料
+          CHROME_PATH="$CHROME_PATH" node .dev/test-t03-page-integration.cjs
 
       - name: 研究文章資料驗證（只讀檔案，不需要套件）
         run: ruby .github/scripts/validate_literature.rb .
