@@ -22,14 +22,17 @@ function html(type){
  const meta='<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'+
   '<script id="chars" type="application/json">{}</script><script id="novels" type="application/json">'+
   '{"demo":{"title":"假資料測試作品"}}</script>'+
-  '<script>window.BASE="";window.VER="fixture";window.SPLIT=[];</script>';
+  '<script>window.BASE="";window.VER="fixture";window.SPLIT=[];'+
+  (type==='novel'?'window.NOVEL="demo";':'')+'</script>';
  const chapter='<section class="chapter read" data-novel="demo" data-char="fake" data-no="1" data-title="假資料章節">'+
   '<div class="ch-text" style="height:2500px">測試用占位文字，非真實小說正文。</div></section>';
  const shelf='<div class="shelf-list"></div>';
+ const novel='<div class="feed"><div class="nv-list"><a class="chapter" href="/t/demo01/">第 1 篇</a></div>'+
+  '<div class="nv-btns"></div><div class="empty" hidden></div></div>';
  const member='<section class="member-page"><div class="mb-card"></div><div class="mb-note" hidden></div>'+
   '<div class="mb-future" hidden></div></section>';
  return '<!doctype html><html><head>'+meta+'</head><body>'+
-  (type==='chapter'?chapter:type==='shelf'?shelf:member)+fakeAuth+
+  (type==='chapter'?chapter:type==='shelf'?shelf:type==='novel'?novel:member)+fakeAuth+
   '<script src="/assets/js/reading-store.js"></script><script src="/assets/app.js"></script>'+
   '<script src="/assets/member.js"></script></body></html>';
 }
@@ -37,8 +40,8 @@ const server=http.createServer((req,res)=>{
  const p=new URL(req.url,'http://127.0.0.1').pathname;
  if(assets[p]){res.writeHead(200,{'Content-Type':'text/javascript'});return res.end(assets[p]);}
  if(p==='/assets/chapter-status.json'){res.writeHead(200,{'Content-Type':'application/json'});return res.end(JSON.stringify(status));}
- if(p==='/t/demo01/'||p==='/shelf/'||p==='/member/'){
-  res.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});return res.end(html(p==='/t/demo01/'?'chapter':p==='/shelf/'?'shelf':'member'));
+ if(p==='/t/demo01/'||p==='/shelf/'||p==='/member/'||p==='/novel/demo/'){
+  res.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});return res.end(html(p==='/t/demo01/'?'chapter':p==='/shelf/'?'shelf':p==='/novel/demo/'?'novel':'member'));
  }
  res.writeHead(404);res.end('fake-only, not found');
 });
@@ -68,6 +71,10 @@ async function main(){
   await page.waitForFunction(()=>document.querySelector('.shelf-list a[href="/t/demo01/"]'));
   await verify(()=>document.querySelector('.shelf-list').textContent.includes('假資料測試作品'),
     'real shelf renders fake chapter and validates local fake status index');
+  await go('/novel/demo/');
+  await page.waitForFunction(()=>document.querySelector('.nv-btns a[href="/t/demo01/"]'));
+  await verify(()=>document.querySelector('.nv-btns a').textContent.includes('繼續讀第 1 篇'),
+    'actual novel page continue-reading resolves guest progress from fake chapter index');
   await page.evaluate(v=>localStorage.setItem(v.k,v.v),{k:SESSION,v:session('fakeuser-A')});
   await page.reload();
   await verify(()=>window.WBReadingStore.identity().state==='unknown'&&
