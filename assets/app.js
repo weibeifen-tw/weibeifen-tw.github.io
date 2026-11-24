@@ -151,23 +151,47 @@ window.WBAvatar = (function () {
     var btns = document.querySelector('.nv-btns'), lr = rd('wb:last:' + window.NOVEL);
     var b0 = mk('a', 'nv-btn'), target = lr ? lr.url : (list[0] && list[0].href);
     if (btns && target) {
-      b0.textContent = '正在確認閱讀位置…';
-      b0.setAttribute('aria-disabled', 'true');
+      var note = mk('span', 'nv-link-note');
+      note.setAttribute('role', 'status');
+      note.setAttribute('aria-live', 'polite');
+      var retry = mk('button', 'nv-link-retry', '重新確認');
+      retry.type = 'button';
+      retry.hidden = true;
       btns.appendChild(b0);
-      window.WBChapterGuard.load().then(function (data) {
-        var result = window.WBChapterGuard.resolve(data, target);
-        if (result.status === 'published' && result.chapter.novel === window.NOVEL) {
-          b0.textContent = lr ? '繼續讀第 ' + result.chapter.chapter + ' 篇' : '從第一篇開始讀';
-          b0.href = result.url;
-          b0.removeAttribute('aria-disabled');
-        } else {
-          b0.textContent = '上次閱讀位置無法使用';
-          b0.removeAttribute('href');
-        }
-      }).catch(function () {
-        b0.textContent = '暫時無法確認閱讀位置';
+      btns.appendChild(note);
+      btns.appendChild(retry);
+      var requestNo = 0;
+      function checkContinue(force) {
+        var seq = ++requestNo;
         b0.removeAttribute('href');
-      });
+        b0.setAttribute('aria-disabled', 'true');
+        b0.textContent = '正在確認閱讀位置…';
+        note.textContent = '';
+        retry.hidden = true;
+        window.WBChapterGuard.load(!!force).then(function (data) {
+          if (seq !== requestNo) return;
+          var result = window.WBChapterGuard.resolve(data, target);
+          if (result.status === 'published' && result.chapter.novel === window.NOVEL) {
+            b0.textContent = lr ? '繼續讀第 ' + result.chapter.chapter + ' 篇' : '從第一篇開始讀';
+            b0.href = result.url;
+            b0.removeAttribute('aria-disabled');
+            return;
+          }
+          b0.textContent = '查看其他章節';
+          if (result.status === 'withdrawn') {
+            note.textContent = '上次閱讀的章節目前無法閱讀，閱讀紀錄會保留。請從下方目錄選擇其他章節。';
+          } else {
+            note.textContent = '找不到上次閱讀的章節，請從下方目錄選擇其他章節。';
+          }
+        }).catch(function () {
+          if (seq !== requestNo) return;
+          b0.textContent = '暫時無法確認閱讀位置';
+          note.textContent = '章節狀態暫時無法確認，閱讀紀錄已保留。';
+          retry.hidden = false;
+        });
+      }
+      retry.onclick = function () { checkContinue(true); };
+      checkContinue(false);
     }
   }
   document.querySelector('.empty').hidden = shown > 0;
