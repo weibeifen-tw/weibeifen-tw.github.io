@@ -177,7 +177,7 @@ window.WBAvatar = (function () {
             b0.removeAttribute('aria-disabled');
             return;
           }
-          b0.textContent = '查看其他章節';
+          b0.textContent = result.status === 'withdrawn' ? '上次閱讀章節已撤回' : '上次閱讀位置已失效';
           if (result.status === 'withdrawn') {
             note.textContent = '上次閱讀的章節目前無法閱讀，閱讀紀錄會保留。請從下方目錄選擇其他章節。';
           } else {
