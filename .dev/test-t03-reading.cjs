@@ -62,6 +62,21 @@ async function run() {
   Store.setIdentity('unknown');
   Store.setIdentity('member', 'fakeuser-B');
   check(!Store.listLast().yu, 'other account still isolated after a real session switch');
+  // Storage quota failures must be reported, never silently overwrite legacy records.
+  const previousWrite = localStorage.setItem;
+  const legacyBefore = memory.get('wb:last:yu');
+  localStorage.setItem = (k, v) => {
+    if (k.startsWith('wb:v2:')) throw new Error('QuotaExceededError');
+    previousWrite(k, v);
+  };
+  check(Store.write('last', 'yu', JSON.stringify({url:'/t/quota/',no:'99'})) === false &&
+    memory.get('wb:last:yu') === legacyBefore,
+    'storage quota failure retains unchanged legacy source');
+  localStorage.setItem = previousWrite;
+
+  const beforeReturn = Store.identity();
+  check(beforeReturn.state === 'member' && beforeReturn.uid === 'fakeuser-B',
+    'current fake member remains the only confirmed owner before sync tests');
   const sw = read('sw.js');
   check(sw.includes("'/assets/js/reading-store.js?v=' + VER"),
     'reading-store dependency included in offline pre-cache');
@@ -99,6 +114,10 @@ async function run() {
     };
   }
   Store.write('last', 'yu', JSON.stringify({ url: '/t/b/', no: '3', t: 90 }));
+  const offline = syncCase('read-fail');
+  const offlineResult = await offline.execute();
+  check(offlineResult.reason === 'read-failed' && offline.writes.length === 0 &&
+    offline.upserts.length === 0, 'failed cloud read prevents upload and success marking');
   const failed = syncCase('write-fail');
   const failResult = await failed.execute();
   check(failResult.reason === 'write-failed' && failed.writes.length === 0,
