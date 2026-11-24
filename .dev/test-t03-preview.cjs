@@ -1,6 +1,11 @@
 // Strictly offline T03 preview integration assertions. No network.
 'use strict';
-const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+const strictAssert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+let passed=0;
+const assert=new Proxy(strictAssert,{get(target,key){
+  const value=target[key];
+  return typeof value==='function'? (...args)=>{value(...args);passed++;}:value;
+}});
 const root=path.resolve(__dirname,'..');
 const read=p=>fs.readFileSync(path.join(root,p),'utf8');
 const html=read('.dev/t03-preview/index.html');
@@ -61,4 +66,4 @@ click('clear-demo');
 assert.equal(store.identity().state,'guest');
 assert.equal(store.listLast()['preview-demo'],undefined);
 assert.equal([...mem.keys()].filter(k=>k.includes('preview-demo')).length,0);
-console.log('T03 standalone preview safety and UI fake integration: 16/16 passed (local only).');
+console.log('T03 standalone preview safety and UI fake integration: '+passed+'/'+passed+' passed (local only).');
