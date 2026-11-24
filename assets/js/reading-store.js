@@ -21,7 +21,12 @@
     } catch (e) { return false; }
   }
   if (hasSession()) { state = 'unknown'; candidateUid = sessionUid(); }
-  function scope() { return state === 'member' ? 'member:' + uid + ':' : state === 'guest' ? 'guest:' : null; }
+  function scope() {
+    // The JS state may lag behind a same-tab auth update; never expose the previous owner.
+    if (state === 'member' && sessionUid() !== uid) return null;
+    if (state === 'guest' && hasSession()) return null;
+    return state === 'member' ? 'member:' + uid + ':' : state === 'guest' ? 'guest:' : null;
+  }
   function key(type, id) {
     if (!/^(last|pos|read)$/.test(type) || typeof id !== 'string' || !id || id.length > 350) return null;
     var s = scope(); return s ? PREFIX + s + type + ':' + id : null;
@@ -104,7 +109,11 @@
   window.WBReadingStore = {
     read: read, write: write, listLast: listLast,
     setIdentity: setIdentity, onChange: onChange, clearMember: clearMember,
-    identity: function () { return { state: state, uid: uid, version: version }; },
+    identity: function () {
+      if (state === 'member' && sessionUid() !== uid) return { state: 'unknown', uid: null, version: version };
+      if (state === 'guest' && hasSession()) return { state: 'unknown', uid: null, version: version };
+      return { state: state, uid: uid, version: version };
+    },
     syncKey: function () { var s = scope(); return state === 'member' ? PREFIX + s + 'sync-success' : null; },
     pendingCount: function () { return pending.length; }
   };
