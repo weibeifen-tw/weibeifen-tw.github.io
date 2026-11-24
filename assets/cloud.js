@@ -857,10 +857,29 @@
   if (!signedIn()) { document.querySelectorAll('.mb-guest').forEach(function (g) { g.hidden = false; }); return; }
 
   getAuth().then(async function (A) {
+    // Register before any network round-trip. Authentication events may arrive
+    // during is_banned/getUser/sync, so invalidate older verification results.
+    var authGeneration = 0;
+    A.onChange(function (event) {
+      var generation = ++authGeneration;
+      if (event === 'SIGNED_OUT') Store.setIdentity('guest');
+      else if (event === 'SIGNED_IN') {
+        Store.setIdentity('unknown');
+        var expectedVersion = Store.identity().version;
+        A.getVerifiedUser().then(function (v) {
+          var now = Store.identity();
+          if (generation !== authGeneration || now.version !== expectedVersion ||
+              now.state !== 'unknown') return;
+          if (v.user && v.user.id) Store.setIdentity('member', v.user.id);
+        }).catch(function () {});
+      }
+    });
+    var startingGeneration = authGeneration;
     // 被封鎖的帳號：自動登出（小說照樣可以看）
     try {
       var bn = await A.getClient().rpc('is_banned');
-      if (!bn.error && bn.data === true) {
+      if (!bn.error && bn.data === true && authGeneration === startingGeneration &&
+          signedIn()) {
         try { localStorage.removeItem('wb:me'); } catch (e) {}
         await A.signOut();
         window.alert('你的帳號已被停權，已自動登出。小說還是可以繼續看。');
@@ -870,25 +889,18 @@
     } catch (e) {}
     // Do not promote a local refresh token to a verified reading identity.
     var identityCheck = await A.getVerifiedUser();
+    // A newer sign-in/out invalidates this initial verification response.
+    if (authGeneration !== startingGeneration) return;
     if (!identityCheck.user || !identityCheck.user.id) {
       Store.setIdentity(identityCheck.error ? 'unknown' : 'guest');
       return;
     }
-    Store.setIdentity('member', identityCheck.user.id);
+    if (!Store.setIdentity('member', identityCheck.user.id)) return;
     var last = 0, successKey = Store.syncKey();
     try { if (successKey) last = +sessionStorage.getItem(successKey) || 0; } catch (e) {}
     if (sec || document.querySelector('.shelf-list') || Date.now() - last > SYNC_EVERY) {
       try { await sync(A); } catch (e) {}
     }
-    A.onChange(function (event) {
-      if (event === 'SIGNED_OUT') Store.setIdentity('guest');
-      else if (event === 'SIGNED_IN') {
-        Store.setIdentity('unknown');
-        A.getVerifiedUser().then(function (v) {
-          if (v.user && v.user.id) Store.setIdentity('member', v.user.id);
-        }).catch(function () {});
-      }
-    });
     dmDot(A).catch(function () {});
     buttons.forEach(function (x) {
       isFav(A, x[1].novel, x[1].path).then(function (v) { x[0].setOn(v); }).catch(function () {});
