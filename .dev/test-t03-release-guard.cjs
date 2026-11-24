@@ -24,7 +24,7 @@ ok(/identity\.state !== 'member' \|\| !identity\.uid/.test(cloud),'sync rejects 
 ok(/verified\.user\.id !== uid/.test(cloud),'sync checks verified owner before upsert');
 ok(/Store\.listLast\(\)/.test(cloud),'sync uses scoped reading records');
 ok(/不是安全回退/.test(runbook),'runbook forbids unsafe old-main rollback');
-ok(/wb:v2:member:/.test(store),'reading store retains member-scoped namespace');
+ok(/var PREFIX = 'wb:v2:';/.test(store) && /'member:' \+ uid \+ ':'/.test(store),'reading store retains member-scoped namespace');
 const result=cp.spawnSync(process.execPath,[path.join(root,'.dev/test-t03-rollback.cjs')],{
  cwd:root,encoding:'utf8',timeout:25000,env:{...process.env}
 });
