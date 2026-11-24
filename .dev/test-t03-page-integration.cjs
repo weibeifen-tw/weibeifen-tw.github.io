@@ -117,6 +117,34 @@ async function main(){
   await verify(()=>window.WBReadingStore.identity().state==='guest'&&
     document.querySelector('.mb-title').textContent.includes('登入你的帳號'),
     'signout hides member and restores guest');
+  // V2.3 round 2: real member.js must react to a different tab's auth changes.
+  await page.evaluate(v=>localStorage.setItem(v.k,v.v),
+    {k:SESSION,v:session('fakeuser-A')});
+  await page.reload();
+  await page.waitForFunction(()=>document.querySelector('.mb-title')?.textContent.includes('假會員甲'));
+  const other=await ctx.newPage();
+  other.on('pageerror',e=>errors.push('second tab: '+e.message));
+  other.on('request',r=>{if(!r.url().startsWith(origin+'/'))errors.push('second tab external: '+r.url())});
+  try{
+    await other.goto(origin+'/member/',{waitUntil:'load'});
+    await other.waitForFunction(()=>document.querySelector('.mb-title')?.textContent.includes('假會員甲'));
+    check(true,'two real member.js tabs initialized as fake owner A');
+    await other.evaluate(k=>localStorage.removeItem(k),SESSION);
+    await page.waitForFunction(()=>document.querySelector('.mb-title')?.textContent.includes('登入你的帳號'));
+    await verify(()=>window.WBReadingStore.identity().state==='guest'&&
+      !document.querySelector('.mb-title').textContent.includes('假會員甲'),
+      'other-tab logout immediately hides A member card and history');
+    await other.evaluate(v=>localStorage.setItem(v.k,v.v),
+      {k:SESSION,v:session('fakeuser-B')});
+    await page.waitForFunction(()=>document.querySelector('.mb-title')?.textContent.includes('假會員乙'));
+    await verify(()=>window.WBReadingStore.identity().uid==='fakeuser-B'&&
+      !document.querySelector('.mb-title').textContent.includes('假會員甲'),
+      'other-tab login changes page to verified B without retaining A');
+    await other.evaluate(()=>localStorage.clear());
+    await page.waitForFunction(()=>document.querySelector('.mb-title')?.textContent.includes('登入你的帳號'));
+    await verify(()=>window.WBReadingStore.identity().state==='guest',
+      'cross-tab localStorage.clear hides member and returns to guest');
+  }finally{await other.close()}
   check(!errors.length,'browser JavaScript and external network errors: '+errors.join('; '));
   console.log('T03 full app synthetic pages: '+total+'/'+total+' browser integration checks passed.');
  }finally{await ctx.close();await browser.close();await new Promise(resolve=>server.close(resolve));}
