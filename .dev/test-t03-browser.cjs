@@ -114,6 +114,15 @@ async function main() {
     await check(p, () => !window.WBReadingStore.listLast().yu ||
         window.WBReadingStore.listLast().yu.url === '/t/b/',
       'late result does not reveal A history to B');
+    // Cross-tab localStorage.clear() sends a storage event with key === null.
+    // This must reset identity and prevent stale member data from staying visible.
+    await p2.evaluate(() => localStorage.clear());
+    await p.waitForFunction(() => window.WBReadingStore.identity().state === 'guest');
+    await check(p, () => window.WBReadingStore.identity().state === 'guest' &&
+      Object.keys(window.WBReadingStore.listLast()).length === 0,
+      'cross-tab storage.clear revokes old member view');
+    await check(p, () => window.WBReadingStore.syncKey() === null,
+      'cross-tab storage.clear removes member-scoped sync marker access');
     assert.equal(errors.length,0,'no browser JavaScript exceptions: '+errors.join('; '));
     checked++;
     await p2.close();
