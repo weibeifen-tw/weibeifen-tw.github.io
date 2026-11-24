@@ -414,9 +414,16 @@
     if (t === null) return;
     if (t.trim() !== '刪除') { setNote('沒有刪除。要刪除帳號，請輸入「刪除」兩個字。', true); return; }
     busy = true;
-    // Capture only the currently verified owner before server account deletion.
-    var owner = window.WBReadingStore && window.WBReadingStore.identity();
     var b = card.querySelector('.mb-del'); if (b) b.disabled = true;
+    // Account removal requires a freshly verified owner; never guess from cached profile.
+    var identityCheck;
+    try { identityCheck = await A.getVerifiedUser(); } catch (e) { identityCheck = null; }
+    var ownerUid = identityCheck && identityCheck.user && identityCheck.user.id;
+    if (!ownerUid) {
+      busy = false; if (b) b.disabled = false;
+      setNote('目前無法確認帳號身分，為保護本機閱讀紀錄，請重新登入後再刪除。', true);
+      return;
+    }
     var res;
     try { res = await A.getClient().rpc('delete_my_account'); } catch (e) { res = { error: e }; }
     if (res && res.error) {
@@ -429,13 +436,14 @@
     }
     try { await A.signOut(); } catch (e) {}
     try { localStorage.removeItem(ME_KEY); } catch (e) {}
+    var cleared = false;
     if (window.WBReadingStore) {
-      if (owner && owner.state === 'member' && owner.uid) window.WBReadingStore.clearMember(owner.uid);
+      cleared = window.WBReadingStore.clearMember(ownerUid);
       window.WBReadingStore.setIdentity('guest');
     }
     busy = false;
     renderGuest();
-    setNote('帳號已刪除。本機屬於此帳號的新版閱讀紀錄已清除；未能確定歸屬的歷史紀錄仍隔離保存。');
+    setNote(cleared ? '帳號已刪除。本機屬於此帳號的新版閱讀紀錄已清除；未能確定歸屬的舊紀錄仍隔離保存。' : '帳號已刪除，但此裝置的新版閱讀紀錄可能未完全清除，請清除網站資料；舊紀錄歸屬仍無法確認。', !cleared);
   }
 
   async function logoutAll() {
