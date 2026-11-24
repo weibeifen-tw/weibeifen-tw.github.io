@@ -4,9 +4,8 @@
  * 只有這台瀏覽器「有登入資料」時，才載入 Supabase SDK 與 auth.js；
  * 沒登入的讀者不連會員伺服器、不多載任何檔案，閱讀速度不受影響。
  *
- * 1. 雲端書櫃：瀏覽器裡的 wb:last:*（書櫃、繼續讀）跟資料庫 reading_progress 互相同步，
- *    同一本（或同一個角色線）以「讀得比較後面」的為準；章數一樣時以比較新的為準。
- *    其他本機資料（字級、夜間模式、捲動位置、讀完標記、私訊）完全不動。
+ * 1. 雲端書櫃：僅已驗證會員的 wb:v2:member:<uid>:last:* 可同步到 reading_progress。
+ *    舊 wb:last:* 紀錄保持隔離，捲動位置及已讀標記也由 WBReadingStore 依身分管理。
  * 2. 收藏：小說介紹頁可收藏整本，章節頁可加書籤；會員頁列出「我的收藏」。
  * 3. 公開留言：章節頁最下面、小說介紹頁篇章列表下面（整本小說的留言）。訪客也看得到（直接用可公開金鑰讀，不載入 SDK），會員才能留言。
  * 4. （V1.0 S09 私訊已全面退役，前端不再讀寫私訊）原：私訊角色存到雲端（收件匣在 app.js，透過 window.WBDM）。
@@ -18,7 +17,11 @@
   'use strict';
 
   var SESSION_KEY = 'sb-tqicconarhpddejxdvmf-auth-token';
-  var SYNC_KEY = 'wb-sync-at';            // sessionStorage：這個分頁上次同步的時間
+  // T03-R01/R03: sync timestamps are scoped to a verified member, never global.
+  var Store = window.WBReadingStore;
+  // T03 safe rollback: change to false ONLY in a separately reviewed emergency build.
+  // This is a build-time switch, not a runtime setting or a live remote control.
+  var READING_SYNC_ENABLED = true;
   var SYNC_EVERY = 10 * 60 * 1000;        // 一般頁面最多 10 分鐘同步一次；章節頁、會員頁每次都同步
   var KEY_RE = /^[a-z0-9_-]{1,40}(:[a-z0-9_-]{1,40})?$/;
   var L = window.WB_AUTH_LAZY || {};
@@ -83,18 +86,13 @@
 
   /* ---------- 雲端書櫃 ---------- */
   function localRecords() {
-    var m = {};
-    try {
-      for (var i = 0; i < localStorage.length; i++) {
-        var k = localStorage.key(i);
-        if (k.indexOf('wb:last:') !== 0) continue;
-        var id = k.slice(8);
-        if (!KEY_RE.test(id)) continue;
-        var r = JSON.parse(localStorage.getItem(k) || 'null');
-        if (r && typeof r.url === 'string' && r.url.charAt(0) === '/' && r.url.charAt(1) !== '/') m[id] = r;
-      }
-    } catch (e) {}
-    return m;
+    var out = {}, scoped = Store.listLast();
+    Object.keys(scoped).forEach(function (id) {
+      var r = scoped[id];
+      if (KEY_RE.test(id) && r && typeof r.url === 'string' &&
+          r.url.charAt(0) === '/' && r.url.charAt(1) !== '/') out[id] = r;
+    });
+    return out;
   }
 
   function num(v) { var n = parseFloat(v); return isNaN(n) ? -1 : n; }
@@ -107,30 +105,44 @@
   }
 
   async function sync(A) {
-    var c = A.getClient();
-    var uid = await uidOf(c);
-    if (!uid) return;
-    var res = await c.from('reading_progress').select('k,url,no,title,chr,t');
-    if (res.error) return;
-
+    if (!READING_SYNC_ENABLED) return { ok: false, reason: 'paused' };
+    var identity = Store.identity();
+    if (identity.state !== 'member' || !identity.uid) return { ok: false, reason: 'unverified' };
+    var uid = identity.uid, version = identity.version, c = A.getClient();
+    function current() {
+      var n = Store.identity();
+      return READING_SYNC_ENABLED && n.state === 'member' && n.uid === uid && n.version === version;
+    }
+    if (!current()) return { ok: false, reason: 'changed' };
+    var res = await c.from('reading_progress').select('k,url,no,title,chr,t').eq('user_id', uid);
+    if (!current()) return { ok: false, reason: 'changed' };
+    if (res.error) return { ok: false, reason: 'read-failed', error: res.error };
     var cloud = {};
     (res.data || []).forEach(function (r) {
       if (KEY_RE.test(r.k)) cloud[r.k] = { url: r.url, no: r.no, title: r.title, char: r.chr, t: +r.t || 0 };
     });
-    // 2026-11-23 拆書：雲端舊紀錄換成新章號／新作品（只在記憶體裡換，資料庫的列不刪）
+    // Project legacy cloud records without changing stored rows; never overwrite a colliding destination.
     if (window.wbRemap) Object.keys(cloud).forEach(function (k) {
-      var n = window.wbRemap(k, cloud[k]); if (n[1] === cloud[k]) return;
-      if (n[0] === k) cloud[k] = n[1]; else { delete cloud[k]; if (!cloud[n[0]] || further(n[1], cloud[n[0]])) cloud[n[0]] = n[1]; }
+      var n = window.wbRemap(k, cloud[k]);
+      if (n[1] === cloud[k]) return;
+      if (n[0] === k) cloud[k] = n[1];
+      else if (!cloud[n[0]]) { cloud[n[0]] = n[1]; delete cloud[k]; }
+      // When destination already exists, both originals stay intact for later review.
     });
-    var local = localRecords(), up = [], changed = false;
-
+    var local = localRecords(), up = [], changed = false, localWriteFailed = false;
     Object.keys(cloud).forEach(function (k) {
+      if (!current()) return;
       if (further(cloud[k], local[k])) {
-        try { localStorage.setItem('wb:last:' + k, JSON.stringify(cloud[k])); changed = true; } catch (e) {}
+        if (Store.write('last', k, JSON.stringify(cloud[k]))) changed = true;
+        else localWriteFailed = true;
       }
     });
-    Object.keys(local).forEach(function (k) {
-      var r = local[k];
+    if (!current()) return { ok: false, reason: 'changed' };
+    if (localWriteFailed) return { ok: false, reason: 'local-write-failed' };
+    // A failed browser write must not mark the overall sync as successful.
+    var refreshed = localRecords();
+    Object.keys(refreshed).forEach(function (k) {
+      var r = refreshed[k];
       if (!further(r, cloud[k])) return;
       up.push({
         user_id: uid, k: k, url: r.url.slice(0, 300),
@@ -138,10 +150,20 @@
         t: Math.round(+r.t || 0)
       });
     });
-    if (up.length) await c.from('reading_progress').upsert(up, { onConflict: 'user_id,k' });
-
-    try { sessionStorage.setItem(SYNC_KEY, String(Date.now())); } catch (e) {}
+    if (up.length) {
+      // Validate the live user again before sending the write.
+      var verified = await A.getVerifiedUser();
+      if (!current() || !verified.user || verified.user.id !== uid)
+        return { ok: false, reason: 'changed-or-unverified' };
+      var upResult = await c.from('reading_progress').upsert(up, { onConflict: 'user_id,k' });
+      if (!current()) return { ok: false, reason: 'changed' };
+      if (upResult.error) return { ok: false, reason: 'write-failed', error: upResult.error };
+    }
+    if (!current()) return { ok: false, reason: 'changed' };
+    var successKey = Store.syncKey();
+    if (successKey) try { sessionStorage.setItem(successKey, String(Date.now())); } catch (e) {}
     if (changed && window.WBRenderShelf) window.WBRenderShelf();
+    return { ok: true };
   }
 
   /* ---------- 收藏 ---------- */
@@ -835,10 +857,29 @@
   if (!signedIn()) { document.querySelectorAll('.mb-guest').forEach(function (g) { g.hidden = false; }); return; }
 
   getAuth().then(async function (A) {
+    // Register before any network round-trip. Authentication events may arrive
+    // during is_banned/getUser/sync, so invalidate older verification results.
+    var authGeneration = 0;
+    A.onChange(function (event) {
+      var generation = ++authGeneration;
+      if (event === 'SIGNED_OUT') Store.setIdentity('guest');
+      else if (event === 'SIGNED_IN') {
+        Store.setIdentity('unknown');
+        var expectedVersion = Store.identity().version;
+        A.getVerifiedUser().then(function (v) {
+          var now = Store.identity();
+          if (generation !== authGeneration || now.version !== expectedVersion ||
+              now.state !== 'unknown') return;
+          if (v.user && v.user.id) Store.setIdentity('member', v.user.id);
+        }).catch(function () {});
+      }
+    });
+    var startingGeneration = authGeneration;
     // 被封鎖的帳號：自動登出（小說照樣可以看）
     try {
       var bn = await A.getClient().rpc('is_banned');
-      if (!bn.error && bn.data === true) {
+      if (!bn.error && bn.data === true && authGeneration === startingGeneration &&
+          signedIn()) {
         try { localStorage.removeItem('wb:me'); } catch (e) {}
         await A.signOut();
         window.alert('你的帳號已被停權，已自動登出。小說還是可以繼續看。');
@@ -846,8 +887,17 @@
         return;
       }
     } catch (e) {}
-    var last = 0;
-    try { last = +sessionStorage.getItem(SYNC_KEY) || 0; } catch (e) {}
+    // Do not promote a local refresh token to a verified reading identity.
+    var identityCheck = await A.getVerifiedUser();
+    // A newer sign-in/out invalidates this initial verification response.
+    if (authGeneration !== startingGeneration) return;
+    if (!identityCheck.user || !identityCheck.user.id) {
+      Store.setIdentity(identityCheck.error ? 'unknown' : 'guest');
+      return;
+    }
+    if (!Store.setIdentity('member', identityCheck.user.id)) return;
+    var last = 0, successKey = Store.syncKey();
+    try { if (successKey) last = +sessionStorage.getItem(successKey) || 0; } catch (e) {}
     if (sec || document.querySelector('.shelf-list') || Date.now() - last > SYNC_EVERY) {
       try { await sync(A); } catch (e) {}
     }

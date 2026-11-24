@@ -12,21 +12,7 @@ window.wbRemap = (function () {
     return [k, r];
   };
 })();
-(function () {
-  try {
-    if (localStorage.getItem('wb:mig:yu-split-1')) return;
-    var ks = [];
-    for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (/^wb:last:yu(:|$)/.test(k)) ks.push(k); }
-    ks.forEach(function (k) {
-      var r = JSON.parse(localStorage.getItem(k) || 'null'); if (!r) return;
-      var n = window.wbRemap(k.slice(8), r), nk = 'wb:last:' + n[0];
-      if (n[1] === r) return;
-      if (nk === k) localStorage.setItem(k, JSON.stringify(n[1]));
-      else if (!localStorage.getItem(nk)) { localStorage.setItem(nk, JSON.stringify(n[1])); localStorage.removeItem(k); }
-    });
-    localStorage.setItem('wb:mig:yu-split-1', '1');
-  } catch (e) {}
-})();
+// T03-R02: preserve legacy reading records and migration flag in quarantine.
 
 // P3-01-B：公開章節索引只控制閱讀連結顯示，不修改任何歷史紀錄或雲端資料。
 window.WBChapterGuard = (function () {
@@ -147,7 +133,7 @@ window.WBAvatar = (function () {
       return;
     }
     pick('all');
-    function rd(k) { try { var r = JSON.parse(localStorage.getItem(k) || 'null'); return r && r.url ? r : null; } catch (e) { return null; } }
+    function rd(k) { try { var r = JSON.parse(window.WBReadingStore.read('last', k.slice(8)) || 'null'); return r && r.url ? r : null; } catch (e) { return null; } }
     var btns = document.querySelector('.nv-btns'), lr = rd('wb:last:' + window.NOVEL);
     var b0 = mk('a', 'nv-btn'), target = lr ? lr.url : (list[0] && list[0].href);
     if (btns && target) {
@@ -162,6 +148,9 @@ window.WBAvatar = (function () {
       btns.appendChild(retry);
       var requestNo = 0;
       function checkContinue(force) {
+        lr = rd('wb:last:' + window.NOVEL);
+        target = lr ? lr.url : (list[0] && list[0].href);
+        if (!target) return;
         var seq = ++requestNo;
         b0.removeAttribute('href');
         b0.setAttribute('aria-disabled', 'true');
@@ -192,6 +181,7 @@ window.WBAvatar = (function () {
       }
       retry.onclick = function () { checkContinue(true); };
       checkContinue(false);
+      window.WBReadingStore.onChange(function () { checkContinue(false); });
     }
   }
   document.querySelector('.empty').hidden = shown > 0;
@@ -317,8 +307,8 @@ window.WBAvatar = (function () {
   if (tb) { tb.onclick = function () { d.dataset.theme = d.dataset.theme === 'night' ? 'day' : 'night'; save('wb:theme', d.dataset.theme); lab(); }; lab(); }
   if (sec && sec.dataset.novel) {
     var rec = JSON.stringify({ url: location.pathname, no: sec.dataset.no, title: sec.dataset.title, char: sec.dataset.char, t: Date.now() });
-    save('wb:last:' + sec.dataset.novel, rec);
-    save('wb:last:' + sec.dataset.novel + ':' + sec.dataset.char, rec);
+    window.WBReadingStore.write('last', sec.dataset.novel, rec);
+    window.WBReadingStore.write('last', sec.dataset.novel + ':' + sec.dataset.char, rec);
   }
   // 請瀏覽器把這個網站的紀錄當成要保留的資料（不是每個瀏覽器都會答應）
   try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {}
@@ -332,14 +322,14 @@ window.WBAvatar = (function () {
     }
     function keep() {
       var p = ratio();
-      save(pk, String(Math.round(p * 1000) / 1000));
-      if (p >= 0.9) save(rk, '1');
+      window.WBReadingStore.write('pos', pk.slice(7), String(Math.round(p * 1000) / 1000));
+      if (p >= 0.9) window.WBReadingStore.write('read', rk.slice(8), '1');
     }
     var tm = null;
     addEventListener('scroll', function () { clearTimeout(tm); tm = setTimeout(keep, 300); }, { passive: true });
     addEventListener('pagehide', keep);
     document.addEventListener('visibilitychange', function () { if (document.hidden) keep(); });
-    var old = 0; try { old = parseFloat(localStorage.getItem(pk)) || 0; } catch (e) {}
+    var old = 0; try { old = parseFloat(window.WBReadingStore.read('pos', pk.slice(7))) || 0; } catch (e) {}
     if (old > 0.03 && old < 0.97 && !location.hash) {
       var go = function () {
         var r = txt.getBoundingClientRect(), h = r.height - innerHeight * 0.5;
@@ -353,6 +343,26 @@ window.WBAvatar = (function () {
       };
       if (document.readyState === 'complete') go(); else addEventListener('load', go);
     }
+    // A saved member position may become available only after async identity verification.
+    // Never auto-jump after the reader has already started scrolling.
+    window.WBReadingStore.onChange(function () {
+      if (location.hash || scrollY > 20) return;
+      var p = parseFloat(window.WBReadingStore.read('pos', pk.slice(7))) || 0;
+      if (!(p > 0.03 && p < 0.97)) return;
+      var existing = document.querySelector('.resume');
+      if (existing) existing.remove();
+      var t = document.createElement('div'); t.className = 'resume';
+      t.textContent = '找到上次閱讀位置';
+      var button = document.createElement('button'); button.type = 'button';
+      button.textContent = '回到位置';
+      button.onclick = function () {
+        var rect = txt.getBoundingClientRect(), height = rect.height - innerHeight * 0.5;
+        scrollTo(0, scrollY + rect.top - innerHeight * 0.5 + p * height);
+        t.remove();
+      };
+      t.appendChild(button); document.body.appendChild(t);
+      setTimeout(function () { if (t.parentNode) t.remove(); }, 8000);
+    });
   }
 })();
 
@@ -360,19 +370,17 @@ window.WBAvatar = (function () {
 (function () {
   var tocs = document.querySelectorAll('.chapter.toc');
   if (!tocs.length) return;
-  var here = {};
-  try {
-    for (var i = 0; i < localStorage.length; i++) {
-      var k = localStorage.key(i);
-      if (k.indexOf('wb:last:') === 0) { var r = JSON.parse(localStorage.getItem(k) || 'null'); if (r && r.url) here[r.url] = 1; }
-    }
-  } catch (e) {}
-  tocs.forEach(function (a) {
-    var p = a.pathname, done = false;
-    try { done = localStorage.getItem('wb:read:' + p) === '1'; } catch (e) {}
-    if (here[p]) a.classList.add('here');
-    else if (done) a.classList.add('done');
-  });
+  function renderReadMarks() {
+    var here = {}, records = window.WBReadingStore.listLast();
+    Object.keys(records).forEach(function (key) { if (records[key].url) here[records[key].url] = 1; });
+    tocs.forEach(function (a) {
+      var p = a.pathname, done = window.WBReadingStore.read('read', p) === '1';
+      a.classList.toggle('here', !!here[p]);
+      a.classList.toggle('done', !here[p] && done);
+    });
+  }
+  renderReadMarks();
+  window.WBReadingStore.onChange(renderReadMarks);
 })();
 
 // 我的書櫃：看過的小說和讀到第幾篇
@@ -386,7 +394,7 @@ window.WBRenderShelf = function () {
   var novels = JSON.parse(document.getElementById('novels').textContent || '{}'), list = [];
   var chars = JSON.parse(document.getElementById('chars').textContent || '{}');
   var split = window.SPLIT || [], links = [], currentIndex = null;
-  function rd(k) { try { var r = JSON.parse(localStorage.getItem(k) || 'null'); return r && r.url ? r : null; } catch (e) { return null; } }
+  function rd(k) { try { var r = JSON.parse(window.WBReadingStore.read('last', k.slice(8)) || 'null'); return r && r.url ? r : null; } catch (e) { return null; } }
   function row(href, label, no, cls, novelId) {
     var a = document.createElement('a');
     a.textContent = label;
@@ -493,6 +501,7 @@ window.WBRenderShelf = function () {
   if (links.length) check(false);
 };
 window.WBRenderShelf();
+window.WBReadingStore.onChange(function () { window.WBRenderShelf(); });
 
 // （臺灣故事地圖已拆到 assets/js/taiwan.js）
 

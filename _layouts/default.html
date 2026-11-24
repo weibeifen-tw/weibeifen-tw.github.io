@@ -147,6 +147,7 @@
 {%- capture split -%}{%- for n in site.data.novels -%}{%- assign g = site.posts | where: "novel", n[0] | group_by: "chapter" -%}{%- for x in g -%}{%- if x.size > 1 -%}{{ n[0] }},{%- break -%}{%- endif -%}{%- endfor -%}{%- endfor -%}{%- endcapture -%}
 <script>window.SPLIT = "{{ split }}".split(",");</script>
 <script>window.BASE = "{{ site.baseurl }}"; window.VER = "{{ site.time | date: '%s' }}";</script>
+<script src="{{ '/assets/js/reading-store.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>
 <script src="{{ '/assets/app.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>
 {%- assign pjs = page.page_js | default: layout.page_js -%}
 {%- if pjs %}

@@ -73,6 +73,7 @@
   function saveMyAvatar(o) { try { if (o) localStorage.setItem(ME_KEY, JSON.stringify(o)); else localStorage.removeItem(ME_KEY); } catch (e) {} }
   function paintEntries(p) {
     var me = p && myAvatar();
+    if (me && p && me.id !== p.id) me = null; // never paint another account's cached avatar
     document.querySelectorAll('[data-member-avatar]').forEach(function (b) {
       if (me && window.WBAvatar) { window.WBAvatar.paint(b, me); b.classList.add('is-member'); }
       else { b.classList.remove('lt-av', 'lt-mu'); paintAvatar(b, p); }
@@ -89,7 +90,7 @@
   // 全站入口：一載入就依本機資料顯示
   paintEntries(localProfile());
   // 從別的分頁登入／登出時同步
-  window.addEventListener('storage', function (e) { if (e.key === SESSION_KEY) paintEntries(localProfile()); });
+  window.addEventListener('storage', function (e) { if (e.key === SESSION_KEY || e.key === null) paintEntries(localProfile()); });
   // 用「上一頁」回到頁面時，瀏覽器可能從快取（BFCache）還原、不重跑程式：重新讀取本機登入資料更新頭像
   window.addEventListener('pageshow', function (e) { if (e.persisted) paintEntries(localProfile()); });
 
@@ -102,6 +103,16 @@
   var future = page.querySelector('.mb-future');
   var A = window.WBAuth;
   var busy = false;
+  // Auth events invalidate older member-page responses.
+  var memberViewEpoch = 0;
+  function currentOwner(id, expectedVersion) {
+    var store = window.WBReadingStore;
+    var identity = store && store.identity();
+    var local = localProfile();
+    return !!(identity && local && identity.state === 'member' &&
+      identity.uid === id && local.id === id &&
+      (expectedVersion == null || identity.version === expectedVersion));
+  }
 
   function setNote(text, isErr) { note.textContent = text || ''; note.classList.toggle('err', !!isErr); note.hidden = !text; }
 
@@ -279,10 +290,16 @@
         var what = parts.join('、');
         if (!window.confirm(what + '只能改一次，存了之後就不能再改。確定要儲存嗎？')) return;
       }
+      if (!currentOwner(me.id)) {
+        say('登入狀態已改變，請重新登入後再儲存。', true);
+        return;
+      }
+      var savingEpoch = memberViewEpoch, savingVersion = window.WBReadingStore.identity().version;
       save.disabled = true; say('儲存中…');
       var r;
-      try { r = await A.updateMyProfile({ display_name: dn.value, username: u, bio: bio.value, avatar_color: picked }); }
+      try { r = await A.updateMyProfile({ display_name: dn.value, username: u, bio: bio.value, avatar_color: picked }, me.id); }
       catch (e) { r = { error: '連不上會員伺服器，請稍後再試。' }; }
+      if (savingEpoch !== memberViewEpoch || !currentOwner(me.id, savingVersion)) return;
       save.disabled = false;
       if (r.error) { say(r.error, true); return; }
       dn.value = r.profile.display_name || ''; un.value = r.profile.username || ''; bio.value = r.profile.bio || '';
@@ -331,14 +348,22 @@
   }
 
   async function paintAdmin(body) {
+    var startEpoch = memberViewEpoch;
+    var owner = window.WBReadingStore && window.WBReadingStore.identity();
+    if (!owner || owner.state !== 'member' || !currentOwner(owner.uid, owner.version)) return;
+    function stillOwner() {
+      return startEpoch === memberViewEpoch && currentOwner(owner.uid, owner.version);
+    }
     var st;
     try { st = await A.mfaStatus(); } catch (e) { st = { error: '連不上會員伺服器，請稍後再試。' }; }
+    if (!stillOwner()) return;
     body.textContent = '';
     if (st.error) { body.appendChild(el('p', 'mb-form-msg err', st.error)); return; }
 
     if (st.level === 'aal2') {
       var ok = false;
       try { ok = await A.isAdmin(); } catch (e) {}
+      if (!stillOwner()) return;
       body.appendChild(el('p', 'mb-sub', ok
         ? '✓ 這次登入已通過兩步驟驗證，管理員權限已啟用。'
         : '已通過兩步驟驗證，但資料庫沒有確認你的管理員權限。請確認 002 的 SQL 已執行。'));
@@ -369,6 +394,7 @@
       start.disabled = true;
       var r;
       try { r = await A.mfaEnroll(); } catch (e) { r = { error: '連不上會員伺服器，請稍後再試。' }; }
+      if (!stillOwner()) return;
       if (r.error) { start.disabled = false; body.appendChild(el('p', 'mb-form-msg err', r.error)); return; }
       body.textContent = '';
       body.appendChild(el('p', 'mb-sub', '1. 用驗證 App 掃描這個 QR code：'));
@@ -399,10 +425,14 @@
     if (busy || !A) return;
     busy = true;
     var b = card.querySelector('.mb-logout'); if (b) b.disabled = true;
+    var beforeLogout = localProfile();
     var r = await A.signOut();
     busy = false;
+    var afterLogout = localProfile();
+    if (beforeLogout && afterLogout && beforeLogout.id !== afterLogout.id) return;
     if (r.error) { setNote(r.error, true); if (b) b.disabled = false; return; }
-    setNote('已登出。書櫃留在這台裝置，不受影響。');
+    if (window.WBReadingStore) window.WBReadingStore.setIdentity('guest');
+    setNote('已登出。會員書櫃已隱藏並保留，現在顯示訪客書櫃。');
     renderGuest();
   }
 
@@ -413,8 +443,35 @@
     if (t.trim() !== '刪除') { setNote('沒有刪除。要刪除帳號，請輸入「刪除」兩個字。', true); return; }
     busy = true;
     var b = card.querySelector('.mb-del'); if (b) b.disabled = true;
+    // Capture the owner BEFORE awaits, not after a response can race with account switching.
+    var store = window.WBReadingStore;
+    var expectedOwner = store && store.identity();
+    var deleteEpoch = memberViewEpoch;
+    if (!expectedOwner || expectedOwner.state !== 'member' ||
+        !currentOwner(expectedOwner.uid, expectedOwner.version)) {
+      busy = false; if (b) b.disabled = false;
+      setNote('登入狀態已改變，請重新確認後再刪除。', true);
+      return;
+    }
+    // Account removal requires a freshly verified owner; never guess from cached profile.
+    var identityCheck;
+    try { identityCheck = await A.getVerifiedUser(); } catch (e) { identityCheck = null; }
+    var ownerUid = identityCheck && identityCheck.user && identityCheck.user.id;
+    if (!ownerUid || expectedOwner.uid !== ownerUid ||
+        deleteEpoch !== memberViewEpoch ||
+        !currentOwner(ownerUid, expectedOwner.version)) {
+      busy = false; if (b) b.disabled = false;
+      setNote('目前無法確認帳號身分，為保護本機閱讀紀錄，請重新登入後再刪除。', true);
+      return;
+    }
     var res;
     try { res = await A.getClient().rpc('delete_my_account'); } catch (e) { res = { error: e }; }
+    // A late RPC response must not sign out or alter a newer account.
+    if (deleteEpoch !== memberViewEpoch ||
+        !currentOwner(ownerUid, expectedOwner.version)) {
+      busy = false;
+      return;
+    }
     if (res && res.error) {
       busy = false; if (b) b.disabled = false;
       var m = String(res.error.message || '');
@@ -423,21 +480,33 @@
         : '刪除失敗，請稍後再試。', true);
       return;
     }
+    // If another account took over before the RPC returned, do not erase its local data.
     try { await A.signOut(); } catch (e) {}
+    // If a new user signed in while sign-out was pending, leave their state intact.
+    var newerProfile = localProfile();
+    if (newerProfile && newerProfile.id !== ownerUid) {
+      busy = false; return;
+    }
     try { localStorage.removeItem(ME_KEY); } catch (e) {}
+    var cleared = store.clearMember(ownerUid);
+    store.setIdentity('guest');
     busy = false;
     renderGuest();
-    setNote('帳號已刪除。謝謝你來讀過這些故事。書櫃（閱讀紀錄）是存在這台裝置上的，不受影響。');
+    setNote(cleared ? '帳號已刪除。本機屬於此帳號的新版閱讀紀錄已清除；未能確定歸屬的舊紀錄仍隔離保存。' : '帳號已刪除，但此裝置的新版閱讀紀錄可能未完全清除，請清除網站資料；舊紀錄歸屬仍無法確認。', !cleared);
   }
 
   async function logoutAll() {
     if (busy || !A) return;
     busy = true;
     var b = card.querySelector('.mb-logout'); if (b) b.disabled = true;
+    var beforeLogout = localProfile();
     var r = await A.signOutAll();
     busy = false;
+    var afterLogout = localProfile();
+    if (beforeLogout && afterLogout && beforeLogout.id !== afterLogout.id) return;
     if (r.error) { setNote(r.error, true); if (b) b.disabled = false; return; }
-    setNote('已登出所有裝置。書櫃留在這台裝置，不受影響。');
+    if (window.WBReadingStore) window.WBReadingStore.setIdentity('guest');
+    setNote('已登出所有裝置。會員書櫃已隱藏並保留，現在顯示訪客書櫃。');
     renderGuest();
   }
 
@@ -447,6 +516,7 @@
   });
 
   async function init() {
+    var epoch = ++memberViewEpoch;
     var lp = localProfile();
     if (lp) renderMember(lp, null, null); else renderGuest();
 
@@ -458,27 +528,59 @@
     // 有本機登入資料：向伺服器確認仍然有效
     var v;
     try { v = await A.getVerifiedUser(); } catch (e) { v = { user: null, error: '連不上會員伺服器，以下是這台裝置上次的登入資料。' }; }
+    if (epoch !== memberViewEpoch || !localProfile() ||
+        localProfile().id !== lp.id) return;
     if (v.user) {
+      if (v.user.id !== lp.id || !window.WBReadingStore ||
+          !window.WBReadingStore.setIdentity('member', v.user.id)) return;
+      var ownerVersion = window.WBReadingStore.identity().version;
       var role = null, prof = null;
       try { role = await A.getRole(); } catch (e) {}
+      if (epoch !== memberViewEpoch || !currentOwner(v.user.id, ownerVersion)) return;
       try {
-        var pr = await A.getMyProfile();
+        var pr = await A.getMyProfile(v.user.id);
         prof = pr.profile;
         if (pr.error) setNote(pr.error, true);
       } catch (e) { setNote('讀取個人資料失敗，請重新整理。', true); }
+      if (epoch !== memberViewEpoch || !currentOwner(v.user.id, ownerVersion)) return;
       renderMember(v.user, prof, role);
       return;
     }
-    if (v.error) { setNote(v.error, true); return; } // 網路問題：保留畫面，不強制登出
+    if (v.error) { if (window.WBReadingStore) window.WBReadingStore.setIdentity('unknown'); setNote(v.error, true); return; } // 網路問題：保留畫面，不強制登出
     // 伺服器確認登入已失效：清掉本機登入資料
     try { await A.signOut(); } catch (e) {}
+    if (epoch !== memberViewEpoch || localProfile()) return;
     setNote('登入已過期，請重新登入。');
+    if (window.WBReadingStore) window.WBReadingStore.setIdentity('guest');
     renderGuest();
   }
 
+  // A different tab may sign out, clear storage, or switch accounts. The top
+  // avatar refresh alone is insufficient: discard the entire stale member card.
+  window.addEventListener('storage', function (e) {
+    if (e.key !== SESSION_KEY && e.key !== null) return;
+    ++memberViewEpoch;
+    var store = window.WBReadingStore;
+    if (!localProfile()) {
+      if (store) store.setIdentity('guest');
+      renderGuest();
+    } else {
+      if (store) store.setIdentity('unknown');
+      init();
+    }
+  });
+
   if (A) {
     A.onChange(function (event, p) {
-      if (event === 'SIGNED_OUT') renderGuest();
+      if (event === 'SIGNED_OUT') {
+        memberViewEpoch++;
+        if (window.WBReadingStore) window.WBReadingStore.setIdentity('guest');
+        renderGuest();
+      } else if (event === 'SIGNED_IN' && window.WBReadingStore) {
+        memberViewEpoch++;
+        window.WBReadingStore.setIdentity('unknown');
+        init();
+      }
     });
   }
   init();

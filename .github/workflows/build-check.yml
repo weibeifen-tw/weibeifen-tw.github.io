@@ -37,6 +37,47 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
 
+      - name: T03 閱讀隔離假資料測試（僅 T03 分支，不部署）
+        if: github.ref == 'refs/heads/feat/site-t03-reading-isolation' || (github.event_name == 'pull_request' && github.head_ref == 'feat/site-t03-reading-isolation')
+        run: |
+          node .dev/test-t03-reading.cjs
+          node .dev/test-t03-rollback.cjs
+          node .dev/test-t03-async-races.cjs
+
+      - name: T03 Chromium 隔離瀏覽器整合（僅 T03 分支，不連正式後端）
+        if: github.ref == 'refs/heads/feat/site-t03-reading-isolation' || (github.event_name == 'pull_request' && github.head_ref == 'feat/site-t03-reading-isolation') || github.ref == 'refs/heads/feat/site-t03-release-hardening-20261124' || (github.event_name == 'pull_request' && github.head_ref == 'feat/site-t03-release-hardening-20261124')
+        run: |
+          set -eu
+          npm install --prefix .dev --ignore-scripts --no-audit --no-fund
+          CHROME_PATH="$(command -v google-chrome || command -v chromium)"
+          test -n "$CHROME_PATH"
+          CHROME_PATH="$CHROME_PATH" node .dev/test-t03-browser.cjs
+          # V2.2：真正 app/member 閱讀頁、書櫃、會員頁，只使用本地假資料
+          CHROME_PATH="$CHROME_PATH" node .dev/test-t03-page-integration.cjs
+
+      - name: T03 V2.3 發布前唯讀安全守衛（僅隔離修復分支）
+        if: github.ref == 'refs/heads/feat/site-t03-release-hardening-20261124' || (github.event_name == 'pull_request' && github.head_ref == 'feat/site-t03-release-hardening-20261124')
+        run: |
+          node .dev/test-t03-reading.cjs
+          node .dev/test-t03-rollback.cjs
+          node .dev/test-t03-async-races.cjs
+          node .dev/test-t03-release-guard.cjs
+
+      - name: G01 會員隱私隔離測試（假資料，不連正式 Supabase）
+        if: github.ref == 'refs/heads/feat/site-t03-release-hardening-20261124' || (github.event_name == 'pull_request' && github.head_ref == 'feat/site-t03-release-hardening-20261124')
+        run: |
+          set -eu
+          node .dev/test-g01-profile.cjs
+          node .dev/test-g03-emergency.cjs
+          node --check assets/auth.js
+          node --check assets/member.js
+          cid="$(docker run -d --network none -e POSTGRES_HOST_AUTH_METHOD=trust postgres:17)"
+          trap 'docker rm -f "$cid" >/dev/null' EXIT
+          for i in $(seq 1 60); do docker exec "$cid" pg_isready -U postgres && break; sleep 1; done
+          for f in .dev/g01-fixture.sql supabase/019_username_change_once.sql supabase/drafts/G01_01_profile_rpc_DRAFT.sql supabase/drafts/G01_02_profile_acl_DRAFT.sql .dev/g01-assertions.sql .dev/g02-reading-rls.sql; do
+            docker exec -i "$cid" psql -X -U postgres -v ON_ERROR_STOP=1 < "$f"
+          done
+
       - name: 研究文章資料驗證（只讀檔案，不需要套件）
         run: ruby .github/scripts/validate_literature.rb .
 
@@ -86,6 +127,22 @@ jobs:
           n=$(ls _site/t | grep -c '^shanhai[0-9][0-9]$'); echo "山海有痕章節：$n"; test "$n" = "32"
           if ls _site | grep -qiE '\.(docx|xlsx|zip)$' || find _site -iname '*.docx' -o -iname '*.xlsx' -o -iname '*.zip' | grep -q .; then echo "發現不應公開的原始檔"; exit 1; fi
           echo "OK  未發布原始文件"
+
+      - name: T03 閱讀隔離建置產物檢查（僅 T03 分支）
+        if: github.ref == 'refs/heads/feat/site-t03-reading-isolation' || (github.event_name == 'pull_request' && github.head_ref == 'feat/site-t03-reading-isolation') || github.ref == 'refs/heads/feat/site-t03-release-hardening-20261124' || (github.event_name == 'pull_request' && github.head_ref == 'feat/site-t03-release-hardening-20261124')
+        run: |
+          set -eu
+          test -f _site/assets/js/reading-store.js
+          grep -q 'assets/js/reading-store.js' _site/index.html
+          grep -q 'assets/js/reading-store.js' _site/shelf/index.html
+          grep -q 'assets/js/reading-store.js' _site/member/index.html
+          echo 'OK T03 reading-store published before dependent scripts (source layout)'
+          node --check _site/assets/js/reading-store.js
+          node --check _site/assets/app.js
+          node --check _site/assets/cloud.js
+          node --check _site/assets/member.js
+          node .dev/test-t03-rendered-pages.cjs
+          node .dev/test-g03-emergency.cjs _site/assets/cloud.js
 
       - name: 作品及章節 SEO 與 JPEG 分享圖驗收
         run: ruby .github/scripts/validate_novel_seo.rb . --site _site

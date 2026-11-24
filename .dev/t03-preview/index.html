@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'none'; img-src 'none'; font-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'none'">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>未備份｜T03 隔離假資料預覽</title>
+<link rel="stylesheet" href="./style.css">
+<script defer src="./reading-store.js"></script>
+<script defer src="./preview.js"></script>
+</head>
+<body>
+<main class="container">
+<header><p class="eyebrow">未備份 · T03 安全隔離預覽</p><h1>手機閱讀與書櫃測試</h1><p class="desc">完全獨立的假資料操作頁。沒有真實小說、會員登入或 Supabase 連線。</p></header>
+<div class="warning" role="status">僅限測試 · 此頁不代表正式網站，也不能以真實帳號登入。</div>
+<section class="panel" aria-labelledby="identity-title">
+<h2 id="identity-title">一、模擬登入狀態</h2>
+<p>目前身分：<strong id="identity">讀取中</strong></p>
+<div class="buttons">
+<button data-action="guest" type="button">訪客</button>
+<button data-action="a" type="button">假會員 A</button>
+<button data-action="b" type="button">假會員 B</button>
+<button data-action="unknown" type="button">離線／身分未驗證</button>
+</div>
+<p class="helper">每次切換身分僅修改此預覽網址的本機儲存資料，不會真的向 Google 或後端登入。</p>
+</section>
+<section class="panel" aria-labelledby="story-title">
+<h2 id="story-title">二、示範閱讀頁</h2>
+<p class="eyebrow">測試章節 · 完全虛構占位內容</p>
+<article class="sample" id="sample">這裡只用一段測試文字來表示閱讀畫面，不包含《未備份》的任何小說正文。<p>可以點選「記錄閱讀」來檢查不同假會員的進度是否互相隔離。</p></article>
+<div class="buttons"><button data-action="read" type="button">記錄閱讀進度</button><button data-action="mark" type="button">標記本章已讀</button><button data-action="reset" type="button">清除此身分的測試章節紀錄</button></div>
+</section>
+<section class="panel" aria-labelledby="shelf-title">
+<h2 id="shelf-title">三、測試書櫃</h2>
+<div class="book"><div class="cover" aria-hidden="true">測試<br>作品</div><div><strong>示範作品（非真實小說）</strong><p id="progress">尚無紀錄</p><p id="mark">未讀</p><p id="pos">位置：無</p></div></div>
+</section>
+<section class="panel" aria-labelledby="safety-title">
+<h2 id="safety-title">四、隔離檢查</h2>
+<div class="buttons"><button data-action="run-checks" type="button">執行本機隔離檢查</button><button data-action="clear-demo" type="button">清除所有預覽假資料</button></div>
+<pre id="report" aria-live="polite">尚未執行</pre>
+<p class="helper">預覽測試不會執行正式資料庫寫入、同步或真正帳號刪除。</p>
+</section>
+<footer>V2.1 / T03-R01～R03 · 獨立隔離預覽 · 不影響正式網站</footer>
+</main>
+</body>
+</html>
