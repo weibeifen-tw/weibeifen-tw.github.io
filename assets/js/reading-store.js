@@ -101,7 +101,11 @@
     if (!hasSession()) { setIdentity('guest'); return; }
     setIdentity('unknown');
     if (window.WBAuth && window.WBAuth.getVerifiedUser) {
+      var startedVersion = version, expectedCandidate = candidateUid;
       window.WBAuth.getVerifiedUser().then(function (v) {
+        // A late validation result must never restore an older identity generation.
+        if (version !== startedVersion || state !== 'unknown' ||
+            candidateUid !== expectedCandidate) return;
         if (v.user && v.user.id) setIdentity('member', v.user.id);
       }).catch(function () {});
     }
