@@ -103,6 +103,16 @@
   var future = page.querySelector('.mb-future');
   var A = window.WBAuth;
   var busy = false;
+  // Auth events invalidate older member-page responses.
+  var memberViewEpoch = 0;
+  function currentOwner(id, expectedVersion) {
+    var store = window.WBReadingStore;
+    var identity = store && store.identity();
+    var local = localProfile();
+    return !!(identity && local && identity.state === 'member' &&
+      identity.uid === id && local.id === id &&
+      (expectedVersion == null || identity.version === expectedVersion));
+  }
 
   function setNote(text, isErr) { note.textContent = text || ''; note.classList.toggle('err', !!isErr); note.hidden = !text; }
 
@@ -280,10 +290,16 @@
         var what = parts.join('、');
         if (!window.confirm(what + '只能改一次，存了之後就不能再改。確定要儲存嗎？')) return;
       }
+      if (!currentOwner(me.id)) {
+        say('登入狀態已改變，請重新登入後再儲存。', true);
+        return;
+      }
+      var savingEpoch = memberViewEpoch, savingVersion = window.WBReadingStore.identity().version;
       save.disabled = true; say('儲存中…');
       var r;
       try { r = await A.updateMyProfile({ display_name: dn.value, username: u, bio: bio.value, avatar_color: picked }); }
       catch (e) { r = { error: '連不上會員伺服器，請稍後再試。' }; }
+      if (savingEpoch !== memberViewEpoch || !currentOwner(me.id, savingVersion)) return;
       save.disabled = false;
       if (r.error) { say(r.error, true); return; }
       dn.value = r.profile.display_name || ''; un.value = r.profile.username || ''; bio.value = r.profile.bio || '';
@@ -471,6 +487,7 @@
   });
 
   async function init() {
+    var epoch = ++memberViewEpoch;
     var lp = localProfile();
     if (lp) renderMember(lp, null, null); else renderGuest();
 
@@ -482,21 +499,28 @@
     // 有本機登入資料：向伺服器確認仍然有效
     var v;
     try { v = await A.getVerifiedUser(); } catch (e) { v = { user: null, error: '連不上會員伺服器，以下是這台裝置上次的登入資料。' }; }
+    if (epoch !== memberViewEpoch || !localProfile() ||
+        localProfile().id !== lp.id) return;
     if (v.user) {
-      if (window.WBReadingStore) window.WBReadingStore.setIdentity('member', v.user.id);
+      if (v.user.id !== lp.id || !window.WBReadingStore ||
+          !window.WBReadingStore.setIdentity('member', v.user.id)) return;
+      var ownerVersion = window.WBReadingStore.identity().version;
       var role = null, prof = null;
       try { role = await A.getRole(); } catch (e) {}
+      if (epoch !== memberViewEpoch || !currentOwner(v.user.id, ownerVersion)) return;
       try {
         var pr = await A.getMyProfile();
         prof = pr.profile;
         if (pr.error) setNote(pr.error, true);
       } catch (e) { setNote('讀取個人資料失敗，請重新整理。', true); }
+      if (epoch !== memberViewEpoch || !currentOwner(v.user.id, ownerVersion)) return;
       renderMember(v.user, prof, role);
       return;
     }
     if (v.error) { if (window.WBReadingStore) window.WBReadingStore.setIdentity('unknown'); setNote(v.error, true); return; } // 網路問題：保留畫面，不強制登出
     // 伺服器確認登入已失效：清掉本機登入資料
     try { await A.signOut(); } catch (e) {}
+    if (epoch !== memberViewEpoch || localProfile()) return;
     setNote('登入已過期，請重新登入。');
     if (window.WBReadingStore) window.WBReadingStore.setIdentity('guest');
     renderGuest();
@@ -505,10 +529,13 @@
   if (A) {
     A.onChange(function (event, p) {
       if (event === 'SIGNED_OUT') {
+        memberViewEpoch++;
         if (window.WBReadingStore) window.WBReadingStore.setIdentity('guest');
         renderGuest();
       } else if (event === 'SIGNED_IN' && window.WBReadingStore) {
+        memberViewEpoch++;
         window.WBReadingStore.setIdentity('unknown');
+        init();
       }
     });
   }
