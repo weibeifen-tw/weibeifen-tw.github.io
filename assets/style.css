@@ -944,3 +944,15 @@ body.sheet-lock .cm-card{position:fixed;z-index:65}
 .nv-btn[aria-disabled="true"]{cursor:default;pointer-events:none}
 .shelf-list a[aria-disabled="true"]{cursor:default;pointer-events:none}
 .shelf-list a[aria-disabled="true"] small{overflow-wrap:anywhere;white-space:normal}
+
+/* P3-01-C FIX-01：收藏及留言的失效狀態，可在窄版手機自然換行。 */
+.fav-list .fav-item > span{flex:1 1 0;min-width:0;color:var(--sub);overflow-wrap:anywhere;word-break:break-word}
+.fav-list .fav-item > small{flex:1 1 100%;min-width:0;white-space:normal;overflow-wrap:anywhere;line-height:1.5}
+.fav-list .fav-item{flex-wrap:wrap}
+.fav-list .fav-item > a{min-width:0;overflow-wrap:anywhere}
+.fav-list .fav-del{flex:none;min-width:44px;min-height:44px}
+.mycm-list .mycm-head{align-items:flex-start;flex-wrap:wrap;min-width:0}
+.mycm-list .mycm-head > a,.mycm-list .mycm-head > span{flex:1 1 12rem;min-width:0;overflow-wrap:anywhere;word-break:break-word;line-height:1.5}
+.mycm-list .mycm-head > span{color:var(--sub)}
+.mycm-list .mycm-head > span small{display:block;white-space:normal;overflow-wrap:anywhere}
+.mycm-list .mycm-head > small{white-space:normal;overflow-wrap:anywhere}
