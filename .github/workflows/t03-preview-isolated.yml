@@ -1,0 +1,47 @@
+# T03 isolated preview package: NO Pages deployment, no production env or credentials.
+name: T03 獨立假資料預覽包（不部署）
+on:
+  push:
+    branches:
+      - feat/site-t03-reading-isolation
+    paths:
+      - '.dev/t03-preview/**'
+      - '.dev/test-t03-preview.cjs'
+      - 'assets/js/reading-store.js'
+      - '.github/workflows/t03-preview-isolated.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  isolated-preview:
+    if: github.ref == 'refs/heads/feat/site-t03-reading-isolation'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: 驗證預覽站不含正式 API、會員或小說
+        run: |
+          set -eu
+          node .dev/test-t03-preview.cjs
+          node --check .dev/t03-preview/preview.js
+          node --check assets/js/reading-store.js
+      - name: 建立僅四檔的隔離預覽包
+        run: |
+          set -eu
+          mkdir -p t03-preview-artifact
+          cp .dev/t03-preview/index.html t03-preview-artifact/index.html
+          cp .dev/t03-preview/style.css t03-preview-artifact/style.css
+          cp .dev/t03-preview/preview.js t03-preview-artifact/preview.js
+          cp assets/js/reading-store.js t03-preview-artifact/reading-store.js
+          test "$(find t03-preview-artifact -type f | wc -l | tr -d ' ')" = "4"
+          ! grep -rEi '(https?://|supabase[.]co|sb_publishable_|sb_secret_|service_role|weibeifen[.]com)' t03-preview-artifact
+          grep -q "connect-src 'none'" t03-preview-artifact/index.html
+          echo 'OK: four static fake-only files; no production endpoints'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: t03-isolated-preview-fake-only
+          path: t03-preview-artifact/
+          retention-days: 7
+          if-no-files-found: error
