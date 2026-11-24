@@ -43,6 +43,15 @@ jobs:
           node .dev/test-t03-reading.cjs
           node .dev/test-t03-rollback.cjs
 
+      - name: T03 Chromium 隔離瀏覽器整合（僅 T03 分支，不連正式後端）
+        if: github.ref == 'refs/heads/feat/site-t03-reading-isolation'
+        run: |
+          set -eu
+          npm install --prefix .dev --ignore-scripts --no-audit --no-fund
+          CHROME_PATH="$(command -v google-chrome || command -v chromium)"
+          test -n "$CHROME_PATH"
+          CHROME_PATH="$CHROME_PATH" node .dev/test-t03-browser.cjs
+
       - name: 研究文章資料驗證（只讀檔案，不需要套件）
         run: ruby .github/scripts/validate_literature.rb .
 
