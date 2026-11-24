@@ -12,7 +12,7 @@ const VER = '{{ site.time | date: "%s" }}';
 const C = { pages: 'wb-pages', static: 'wb-static-' + VER, img: 'wb-img', meta: 'wb-meta' };
 const LIMIT = { pages: 160, img: 300 };          // 頁面（含章節、研究文章）、圖片的筆數上限；待實測後核定
 const OFFLINE = '/offline/';
-const PRECACHE = [OFFLINE, '/assets/style.css?v=' + VER, '/assets/app.js?v=' + VER, '/assets/icons/icon-192.png'];
+const PRECACHE = [OFFLINE, '/assets/style.css?v=' + VER, '/assets/js/reading-store.js?v=' + VER, '/assets/app.js?v=' + VER, '/assets/icons/icon-192.png'];
 const NOCACHE = /^\/(admin|auth|member|favorites|my-comments|login-test|privacy\/delete)(\/|$)/;
 
 self.addEventListener('install', e => {
