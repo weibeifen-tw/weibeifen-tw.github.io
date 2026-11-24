@@ -118,7 +118,7 @@
       if (state === 'guest' && hasSession()) return { state: 'unknown', uid: null, version: version };
       return { state: state, uid: uid, version: version };
     },
-    syncKey: function () { var s = scope(); return state === 'member' ? PREFIX + s + 'sync-success' : null; },
+    syncKey: function () { var s = scope(); return state === 'member' && s ? PREFIX + s + 'sync-success' : null; },
     pendingCount: function () { return pending.length; }
   };
 })();
