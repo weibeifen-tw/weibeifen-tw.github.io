@@ -107,6 +107,36 @@ async function run() {
   check(tabStore.identity().state === 'unknown' && !tabStore.listLast().yu,
     'BFCache restoration remains unverified before network confirmation');
 
+  // Simulated BFCache validation in flight: switching account invalidates the old response.
+  const lateMemory = new Map([
+    [sessionKey, JSON.stringify({user:{id:'fakeuser-A'},refresh_token:'dummy'})]
+  ]);
+  const lateStorage = {
+    get length(){return lateMemory.size;}, key:i=>[...lateMemory.keys()][i],
+    getItem:k=>lateMemory.get(k)||null, setItem:(k,v)=>lateMemory.set(k,v),
+    removeItem:k=>lateMemory.delete(k)
+  };
+  const lateEvents = {};
+  let resolveOldVerification;
+  const lateWindow = {
+    addEventListener:(event,fn)=>{lateEvents[event]=fn;},
+    WBAuth:{getVerifiedUser:()=>new Promise(resolve=>{resolveOldVerification=resolve;})}
+  };
+  vm.runInNewContext(read('assets/js/reading-store.js'),{window:lateWindow,localStorage:lateStorage});
+  const lateStore=lateWindow.WBReadingStore;
+  lateEvents.pageshow({persisted:true});
+  check(lateStore.identity().state==='unknown','BFCache validation begins in unverified state');
+  lateMemory.set(sessionKey,JSON.stringify({user:{id:'fakeuser-B'},refresh_token:'dummy'}));
+  lateEvents.storage({key:sessionKey});
+  lateStore.setIdentity('member','fakeuser-B');
+  resolveOldVerification({user:{id:'fakeuser-A'}});
+  await Promise.resolve();
+  check(lateStore.identity().uid==='fakeuser-B',
+    'late BFCache verification cannot revive account A after B is validated');
+  // Different account's own reading history remains intact while visiting another account.
+  const ownedCount=[...tabStorage.keys()].filter(k=>k.startsWith('wb:v2:member:fakeuser-A:')).length;
+  check(ownedCount>0,'sign-out preserves owned member records for later login');
+
   const cloud = read('assets/cloud.js');
   const helpers = ['function cut(', 'function localRecords(', 'function num(', 'function further(', 'async function sync(']
     .map(heading => extract(cloud, heading)).join('\n');
