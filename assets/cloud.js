@@ -4,9 +4,8 @@
  * 只有這台瀏覽器「有登入資料」時，才載入 Supabase SDK 與 auth.js；
  * 沒登入的讀者不連會員伺服器、不多載任何檔案，閱讀速度不受影響。
  *
- * 1. 雲端書櫃：瀏覽器裡的 wb:last:*（書櫃、繼續讀）跟資料庫 reading_progress 互相同步，
- *    同一本（或同一個角色線）以「讀得比較後面」的為準；章數一樣時以比較新的為準。
- *    其他本機資料（字級、夜間模式、捲動位置、讀完標記、私訊）完全不動。
+ * 1. 雲端書櫃：僅已驗證會員的 wb:v2:member:<uid>:last:* 可同步到 reading_progress。
+ *    舊 wb:last:* 紀錄保持隔離，捲動位置及已讀標記也由 WBReadingStore 依身分管理。
  * 2. 收藏：小說介紹頁可收藏整本，章節頁可加書籤；會員頁列出「我的收藏」。
  * 3. 公開留言：章節頁最下面、小說介紹頁篇章列表下面（整本小說的留言）。訪客也看得到（直接用可公開金鑰讀，不載入 SDK），會員才能留言。
  * 4. （V1.0 S09 私訊已全面退役，前端不再讀寫私訊）原：私訊角色存到雲端（收件匣在 app.js，透過 window.WBDM）。
@@ -126,15 +125,16 @@
       else if (!cloud[n[0]]) { cloud[n[0]] = n[1]; delete cloud[k]; }
       // When destination already exists, both originals stay intact for later review.
     });
-    var local = localRecords(), up = [], changed = false;
+    var local = localRecords(), up = [], changed = false, localWriteFailed = false;
     Object.keys(cloud).forEach(function (k) {
       if (!current()) return;
       if (further(cloud[k], local[k])) {
         if (Store.write('last', k, JSON.stringify(cloud[k]))) changed = true;
-        else changed = false; // never treat a failed local write as a completed sync
+        else localWriteFailed = true;
       }
     });
     if (!current()) return { ok: false, reason: 'changed' };
+    if (localWriteFailed) return { ok: false, reason: 'local-write-failed' };
     // A failed browser write must not mark the overall sync as successful.
     var refreshed = localRecords();
     Object.keys(refreshed).forEach(function (k) {
