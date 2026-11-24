@@ -1,1 +1,73 @@
-The requested file reference is not currently visible. Use files.search or files.list to rediscover the file, then retry with a returned ref_id or file_id.
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="800" viewBox="0 0 600 800" role="img" aria-label="《米字旁》首頁封面候選：左側空白字紙、右側熱粥與毛筆">
+  <title>米字旁</title>
+  <desc>暖米白與奶茶棕色調的純向量手繪感封面；左側為完全空白的字紙，右側是一碗熱粥，毛筆置於紙外，底部深棕色帶顯示書名。</desc>
+  <defs>
+    <pattern id="paperDots" width="37" height="41" patternUnits="userSpaceOnUse">
+      <circle cx="4" cy="7" r="0.7" fill="#b7a48c" opacity="0.20"/>
+      <circle cx="23" cy="29" r="0.9" fill="#a99278" opacity="0.16"/>
+      <path d="M12 17l2 -0.7 M32 5l1.2 1" stroke="#b9a48a" stroke-width="0.7" opacity="0.13"/>
+    </pattern>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f7eddc"/>
+      <stop offset="0.56" stop-color="#f2e7d4"/>
+      <stop offset="1" stop-color="#ebdcc8"/>
+    </linearGradient>
+    <linearGradient id="bowl" x1="0" y1="0" x2="0.8" y2="1">
+      <stop offset="0" stop-color="#ebd3bb"/>
+      <stop offset="0.48" stop-color="#d7b59a"/>
+      <stop offset="1" stop-color="#bc9279"/>
+    </linearGradient>
+    <linearGradient id="paper" x1="0" y1="0" x2="0.2" y2="1">
+      <stop offset="0" stop-color="#fffaf0"/>
+      <stop offset="1" stop-color="#f9f0de"/>
+    </linearGradient>
+  </defs>
+  <!-- Warm, lightly irregular paper field -->
+  <rect width="600" height="680" fill="url(#background)"/>
+  <rect width="600" height="680" fill="url(#paperDots)"/>
+  <path d="M0 61C106 46 193 77 296 65S492 52 600 71" fill="none" stroke="#dcc9af" stroke-width="2" opacity=".31"/>
+  <path d="M0 621C117 614 224 630 323 618S516 608 600 624" fill="none" stroke="#d4bfa7" stroke-width="2" opacity=".25"/>
+  <!-- Letter paper at left, no lines, writing, characters, or ink marks -->
+  <g transform="rotate(-7 168 363)">
+    <path d="M42 193Q43 184 54 185L265 187Q277 187 279 198L280 548Q279 560 268 562L52 560Q40 560 40 547Z" fill="#b6a087" opacity=".18" transform="translate(9 12)"/>
+    <path d="M41 192Q42 181 54 183L265 184Q275 184 276 197L278 548Q277 556 266 559L53 557Q41 558 40 546Z" fill="url(#paper)" stroke="#c2ad91" stroke-width="2.5"/>
+    <path d="M51 195Q102 192 153 194T266 195" fill="none" stroke="#fffefa" stroke-width="3" opacity=".8"/>
+    <path d="M49 550Q125 545 200 551T268 548" fill="none" stroke="#d7c3a7" stroke-width="1.4" opacity=".38"/>
+  </g>
+  <!-- The brush is OUTSIDE the blank paper -->
+  <g transform="translate(300 150) rotate(29 0 0)">
+    <path d="M-6 0Q0 -4 6 0L7 178Q6 188 0 189Q-6 188 -7 178Z" fill="#7e5a44" stroke="#664635" stroke-width="2.3"/>
+    <path d="M-7 20Q-3 24 7 19L7 44Q0 49 -7 44Z" fill="#d7b58a" stroke="#a78763" stroke-width="1.5"/>
+    <path d="M-7 175Q0 181 7 175L4 193Q1 209 0 220Q-2 205 -4 193Z" fill="#4e463e"/>
+    <path d="M-3 187L0 211" fill="none" stroke="#756960" stroke-width="1" opacity=".55"/>
+  </g>
+  <!-- Steam: translucent pencil-like wandering lines -->
+  <g fill="none" stroke="#ab927b" stroke-linecap="round" opacity=".64">
+    <path d="M388 291Q376 274 390 256Q406 237 391 222Q382 210 391 199" stroke-width="4"/>
+    <path d="M436 277Q424 260 441 241Q453 224 441 208Q431 194 441 182" stroke-width="3.2"/>
+    <path d="M482 288Q470 272 486 253Q500 235 487 219" stroke-width="3.6"/>
+  </g>
+  <!-- Bowl on right; asymmetry adds hand-rendered warmth -->
+  <ellipse cx="433" cy="554" rx="148" ry="21" fill="#b59a7f" opacity=".18"/>
+  <path d="M286 395Q292 474 322 514Q354 557 428 570Q507 567 539 511Q570 467 573 394Q531 409 433 410Q335 412 286 395Z" fill="url(#bowl)" stroke="#8d6e55" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M306 438Q320 511 376 536Q432 562 492 531" fill="none" stroke="#f0ddc6" stroke-width="6" stroke-linecap="round" opacity=".45"/>
+  <path d="M550 449Q539 508 495 539" fill="none" stroke="#96745d" stroke-width="3" opacity=".32" stroke-linecap="round"/>
+  <ellipse cx="430" cy="394" rx="143" ry="51" fill="#fff8eb" stroke="#87684f" stroke-width="5"/>
+  <path d="M304 396Q312 360 431 359Q545 359 558 397Q540 432 430 433Q327 435 304 396Z" fill="#f0e4ce" stroke="#c7b095" stroke-width="2.7"/>
+  <!-- Low-key rice grains, not letters or text -->
+  <g fill="#d9c39f" opacity=".62">
+    <ellipse cx="372" cy="385" rx="8" ry="3.2" transform="rotate(-17 372 385)"/>
+    <ellipse cx="407" cy="401" rx="7" ry="3" transform="rotate(14 407 401)"/>
+    <ellipse cx="449" cy="381" rx="7" ry="3" transform="rotate(-8 449 381)"/>
+    <ellipse cx="490" cy="404" rx="9" ry="3" transform="rotate(12 490 404)"/>
+    <ellipse cx="461" cy="415" rx="6" ry="2.5" transform="rotate(-16 461 415)"/>
+    <ellipse cx="345" cy="403" rx="6" ry="2.5" transform="rotate(15 345 403)"/>
+  </g>
+  <!-- Ceramic hand-made contour lines -->
+  <path d="M359 481Q429 513 506 478" fill="none" stroke="#a78168" stroke-width="3" opacity=".52" stroke-linecap="round"/>
+  <path d="M388 533Q431 546 463 533" fill="none" stroke="#f6e7d7" stroke-width="2" opacity=".6" stroke-linecap="round"/>
+  <!-- Mandatory bottom title band, exactly 120 / 800 -->
+  <rect y="680" width="600" height="120" fill="#855e49"/>
+  <path d="M0 681Q144 679 298 682T600 681" fill="none" stroke="#a87d5e" stroke-width="2" opacity=".35"/>
+  <text x="300" y="744" font-family="Noto Serif CJK TC, Noto Serif TC, Songti TC, PMingLiU, serif" font-size="53" font-weight="500" fill="#fff7ea" text-anchor="middle" dominant-baseline="middle" letter-spacing="5">米字旁</text>
+</svg>
