@@ -108,6 +108,8 @@ async function run() {
     'BFCache restoration remains unverified before network confirmation');
   // localStorage.clear() in a different tab emits a null-key event (not the session key).
   tabStore.setIdentity('member', 'fakeuser-A');
+  check([...tabStorage.keys()].some(k => k.startsWith('wb:v2:member:fakeuser-A:')),
+    'normal sign-out preserves owned member records until explicit site-data clearing');
   let clearNotifications = 0;
   tabStore.onChange(() => { clearNotifications++; });
   tabStorage.clear();
@@ -145,10 +147,6 @@ async function run() {
   await Promise.resolve();
   check(lateStore.identity().uid==='fakeuser-B',
     'late BFCache verification cannot revive account A after B is validated');
-  // Different account's own reading history remains intact while visiting another account.
-  const ownedCount=[...tabStorage.keys()].filter(k=>k.startsWith('wb:v2:member:fakeuser-A:')).length;
-  check(ownedCount>0,'sign-out preserves owned member records for later login');
-
   // Recovery checks: guest and member data are retained independently; account deletion removes only the owner namespace.
   const recoverMemory = new Map([['wb:last:yu', JSON.stringify({url:'/t/legacy/',no:'51'})]]);
   const recoverEvents = {};
