@@ -106,6 +106,18 @@ async function run() {
   tabEvents.pageshow({ persisted: true });
   check(tabStore.identity().state === 'unknown' && !tabStore.listLast().yu,
     'BFCache restoration remains unverified before network confirmation');
+  // localStorage.clear() in a different tab emits a null-key event (not the session key).
+  tabStore.setIdentity('member', 'fakeuser-A');
+  let clearNotifications = 0;
+  tabStore.onChange(() => { clearNotifications++; });
+  tabStorage.clear();
+  tabEvents.storage({ key: null });
+  check(tabStore.identity().state === 'guest' &&
+    Object.keys(tabStore.listLast()).length === 0,
+    'cross-tab storage.clear resets member identity and hides member history');
+  check(clearNotifications >= 1,
+    'cross-tab storage.clear notifies subscribers to rerender stale reading UI');
+
 
   // Simulated BFCache validation in flight: switching account invalidates the old response.
   const lateMemory = new Map([
