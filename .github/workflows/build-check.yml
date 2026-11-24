@@ -42,6 +42,7 @@ jobs:
         run: |
           node .dev/test-t03-reading.cjs
           node .dev/test-t03-rollback.cjs
+          node .dev/test-t03-async-races.cjs
 
       - name: T03 Chromium 隔離瀏覽器整合（僅 T03 分支，不連正式後端）
         if: github.ref == 'refs/heads/feat/site-t03-reading-isolation' || (github.event_name == 'pull_request' && github.head_ref == 'feat/site-t03-reading-isolation')
