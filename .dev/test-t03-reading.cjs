@@ -96,6 +96,7 @@ async function run() {
             return {
               async eq() {
                 if (mode === 'read-fail') return { error: { message: 'offline' } };
+                if (mode === 'remote-local-write-fail') return { data: [{k:'yu',url:'/t/b/',no:'10',t:10000}] };
                 if (mode === 'switch-during-read') Store.setIdentity('unknown');
                 return { data: [] };
               }
@@ -110,7 +111,7 @@ async function run() {
     };
     return {
       writes, upserts,
-      execute: () => sync({ getClient: () => client, getVerifiedUser: async () => ({ user: { id: 'fakeuser-B' } }) })
+      execute: () => sync({ getClient: () => client, getVerifiedUser: async () => ({ user: { id: mode === 'wrong-server-user' ? 'fakeuser-A' : 'fakeuser-B' } }) })
     };
   }
   Store.write('last', 'yu', JSON.stringify({ url: '/t/b/', no: '3', t: 90 }));
@@ -122,6 +123,19 @@ async function run() {
   const failResult = await failed.execute();
   check(failResult.reason === 'write-failed' && failed.writes.length === 0,
     'failed upload does not record success');
+  const verifiedOther = syncCase('wrong-server-user');
+  const verifyOtherResult = await verifiedOther.execute();
+  check(verifyOtherResult.reason === 'changed-or-unverified' &&
+    verifiedOther.upserts.length === 0 && verifiedOther.writes.length === 0,
+    'server identity mismatch blocks all cloud uploads');
+  const originalStoreWrite = Store.write;
+  Store.write = (type, id, value) => type === 'last' ? false : originalStoreWrite(type, id, value);
+  const localBroken = syncCase('remote-local-write-fail');
+  const localBrokenResult = await localBroken.execute();
+  Store.write = originalStoreWrite;
+  check(localBrokenResult.reason === 'local-write-failed' &&
+    localBroken.upserts.length === 0 && localBroken.writes.length === 0,
+    'failure while importing cloud to local store never marks sync successful');
   const success = syncCase('success');
   const successResult = await success.execute();
   check(successResult.ok && success.writes.length === 1 && success.writes[0].k.includes('fakeuser-B'),
