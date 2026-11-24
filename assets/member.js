@@ -348,14 +348,22 @@
   }
 
   async function paintAdmin(body) {
+    var startEpoch = memberViewEpoch;
+    var owner = window.WBReadingStore && window.WBReadingStore.identity();
+    if (!owner || owner.state !== 'member' || !currentOwner(owner.uid, owner.version)) return;
+    function stillOwner() {
+      return startEpoch === memberViewEpoch && currentOwner(owner.uid, owner.version);
+    }
     var st;
     try { st = await A.mfaStatus(); } catch (e) { st = { error: '連不上會員伺服器，請稍後再試。' }; }
+    if (!stillOwner()) return;
     body.textContent = '';
     if (st.error) { body.appendChild(el('p', 'mb-form-msg err', st.error)); return; }
 
     if (st.level === 'aal2') {
       var ok = false;
       try { ok = await A.isAdmin(); } catch (e) {}
+      if (!stillOwner()) return;
       body.appendChild(el('p', 'mb-sub', ok
         ? '✓ 這次登入已通過兩步驟驗證，管理員權限已啟用。'
         : '已通過兩步驟驗證，但資料庫沒有確認你的管理員權限。請確認 002 的 SQL 已執行。'));
@@ -386,6 +394,7 @@
       start.disabled = true;
       var r;
       try { r = await A.mfaEnroll(); } catch (e) { r = { error: '連不上會員伺服器，請稍後再試。' }; }
+      if (!stillOwner()) return;
       if (r.error) { start.disabled = false; body.appendChild(el('p', 'mb-form-msg err', r.error)); return; }
       body.textContent = '';
       body.appendChild(el('p', 'mb-sub', '1. 用驗證 App 掃描這個 QR code：'));
@@ -416,8 +425,11 @@
     if (busy || !A) return;
     busy = true;
     var b = card.querySelector('.mb-logout'); if (b) b.disabled = true;
+    var beforeLogout = localProfile();
     var r = await A.signOut();
     busy = false;
+    var afterLogout = localProfile();
+    if (beforeLogout && afterLogout && beforeLogout.id !== afterLogout.id) return;
     if (r.error) { setNote(r.error, true); if (b) b.disabled = false; return; }
     if (window.WBReadingStore) window.WBReadingStore.setIdentity('guest');
     setNote('已登出。會員書櫃已隱藏並保留，現在顯示訪客書櫃。');
@@ -487,8 +499,11 @@
     if (busy || !A) return;
     busy = true;
     var b = card.querySelector('.mb-logout'); if (b) b.disabled = true;
+    var beforeLogout = localProfile();
     var r = await A.signOutAll();
     busy = false;
+    var afterLogout = localProfile();
+    if (beforeLogout && afterLogout && beforeLogout.id !== afterLogout.id) return;
     if (r.error) { setNote(r.error, true); if (b) b.disabled = false; return; }
     if (window.WBReadingStore) window.WBReadingStore.setIdentity('guest');
     setNote('已登出所有裝置。會員書櫃已隱藏並保留，現在顯示訪客書櫃。');
