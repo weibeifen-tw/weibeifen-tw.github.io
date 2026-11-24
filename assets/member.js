@@ -73,6 +73,7 @@
   function saveMyAvatar(o) { try { if (o) localStorage.setItem(ME_KEY, JSON.stringify(o)); else localStorage.removeItem(ME_KEY); } catch (e) {} }
   function paintEntries(p) {
     var me = p && myAvatar();
+    if (me && p && me.id !== p.id) me = null; // never paint another account's cached avatar
     document.querySelectorAll('[data-member-avatar]').forEach(function (b) {
       if (me && window.WBAvatar) { window.WBAvatar.paint(b, me); b.classList.add('is-member'); }
       else { b.classList.remove('lt-av', 'lt-mu'); paintAvatar(b, p); }
@@ -402,7 +403,8 @@
     var r = await A.signOut();
     busy = false;
     if (r.error) { setNote(r.error, true); if (b) b.disabled = false; return; }
-    setNote('已登出。書櫃留在這台裝置，不受影響。');
+    if (window.WBReadingStore) window.WBReadingStore.setIdentity('guest');
+    setNote('已登出。會員書櫃已隱藏並保留，現在顯示訪客書櫃。');
     renderGuest();
   }
 
@@ -412,6 +414,8 @@
     if (t === null) return;
     if (t.trim() !== '刪除') { setNote('沒有刪除。要刪除帳號，請輸入「刪除」兩個字。', true); return; }
     busy = true;
+    // Capture only the currently verified owner before server account deletion.
+    var owner = window.WBReadingStore && window.WBReadingStore.identity();
     var b = card.querySelector('.mb-del'); if (b) b.disabled = true;
     var res;
     try { res = await A.getClient().rpc('delete_my_account'); } catch (e) { res = { error: e }; }
@@ -425,9 +429,13 @@
     }
     try { await A.signOut(); } catch (e) {}
     try { localStorage.removeItem(ME_KEY); } catch (e) {}
+    if (window.WBReadingStore) {
+      if (owner && owner.state === 'member' && owner.uid) window.WBReadingStore.clearMember(owner.uid);
+      window.WBReadingStore.setIdentity('guest');
+    }
     busy = false;
     renderGuest();
-    setNote('帳號已刪除。謝謝你來讀過這些故事。書櫃（閱讀紀錄）是存在這台裝置上的，不受影響。');
+    setNote('帳號已刪除。本機屬於此帳號的新版閱讀紀錄已清除；未能確定歸屬的歷史紀錄仍隔離保存。');
   }
 
   async function logoutAll() {
@@ -437,7 +445,8 @@
     var r = await A.signOutAll();
     busy = false;
     if (r.error) { setNote(r.error, true); if (b) b.disabled = false; return; }
-    setNote('已登出所有裝置。書櫃留在這台裝置，不受影響。');
+    if (window.WBReadingStore) window.WBReadingStore.setIdentity('guest');
+    setNote('已登出所有裝置。會員書櫃已隱藏並保留，現在顯示訪客書櫃。');
     renderGuest();
   }
 
@@ -459,6 +468,7 @@
     var v;
     try { v = await A.getVerifiedUser(); } catch (e) { v = { user: null, error: '連不上會員伺服器，以下是這台裝置上次的登入資料。' }; }
     if (v.user) {
+      if (window.WBReadingStore) window.WBReadingStore.setIdentity('member', v.user.id);
       var role = null, prof = null;
       try { role = await A.getRole(); } catch (e) {}
       try {
@@ -469,16 +479,22 @@
       renderMember(v.user, prof, role);
       return;
     }
-    if (v.error) { setNote(v.error, true); return; } // 網路問題：保留畫面，不強制登出
+    if (v.error) { if (window.WBReadingStore) window.WBReadingStore.setIdentity('unknown'); setNote(v.error, true); return; } // 網路問題：保留畫面，不強制登出
     // 伺服器確認登入已失效：清掉本機登入資料
     try { await A.signOut(); } catch (e) {}
     setNote('登入已過期，請重新登入。');
+    if (window.WBReadingStore) window.WBReadingStore.setIdentity('guest');
     renderGuest();
   }
 
   if (A) {
     A.onChange(function (event, p) {
-      if (event === 'SIGNED_OUT') renderGuest();
+      if (event === 'SIGNED_OUT') {
+        if (window.WBReadingStore) window.WBReadingStore.setIdentity('guest');
+        renderGuest();
+      } else if (event === 'SIGNED_IN' && window.WBReadingStore) {
+        window.WBReadingStore.setIdentity('unknown');
+      }
     });
   }
   init();
