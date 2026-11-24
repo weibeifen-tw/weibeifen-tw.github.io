@@ -39,7 +39,9 @@ jobs:
 
       - name: T03 閱讀隔離假資料測試（僅 T03 分支，不部署）
         if: github.ref == 'refs/heads/feat/site-t03-reading-isolation'
-        run: node .dev/test-t03-reading.cjs
+        run: |
+          node .dev/test-t03-reading.cjs
+          node .dev/test-t03-rollback.cjs
 
       - name: 研究文章資料驗證（只讀檔案，不需要套件）
         run: ruby .github/scripts/validate_literature.rb .
