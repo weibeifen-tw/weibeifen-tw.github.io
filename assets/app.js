@@ -501,7 +501,7 @@ window.WBRenderShelf();
   var btn = document.querySelector('.chat-btn'), box = document.querySelector('.inbox');
   if (!btn || !box) return;
   var novels = JSON.parse(document.getElementById('novels').textContent || '{}');
-  var posts = null, openSequence = 0;
+  var posts = null, openSequence = 0, verifySequence = 0;
   function make(tag, cls, text) {
     var e = document.createElement(tag);
     if (cls) e.className = cls;
@@ -577,16 +577,17 @@ window.WBRenderShelf();
     box.appendChild(panel);
   }
   function verify(force, sequence) {
+    var request = ++verifySequence;
     var nt = (window.WBDM && window.WBDM.notices) || [];
     var needsIndex = nt.some(function (x) { return typeof x.path !== 'string' || x.path.indexOf('/novel/') !== 0; });
     if (!needsIndex) { view(null, false, function () {}); return; }
     var guard = window.WBChapterGuard;
     if (!guard) { view(null, true, function () { verify(true, sequence); }); return; }
     guard.load(!!force).then(function (data) {
-      if (sequence !== openSequence || box.hidden) return;
+      if (sequence !== openSequence || request !== verifySequence || box.hidden) return;
       view(data, false, function () { verify(true, sequence); });
     }).catch(function () {
-      if (sequence !== openSequence || box.hidden) return;
+      if (sequence !== openSequence || request !== verifySequence || box.hidden) return;
       view(null, true, function () { verify(true, sequence); });
     });
   }
