@@ -81,6 +81,32 @@ async function run() {
   check(sw.includes("'/assets/js/reading-store.js?v=' + VER"),
     'reading-store dependency included in offline pre-cache');
 
+  // Independent fake tab: storage and BFCache events must hide stale member data.
+  const tabStorage = new Map([
+    [sessionKey, JSON.stringify({ user: { id: 'fakeuser-A' }, refresh_token: 'dummy' })]
+  ]);
+  const tabLocalStorage = {
+    get length() { return tabStorage.size; },
+    key: i => [...tabStorage.keys()][i],
+    getItem: k => tabStorage.get(k) || null,
+    setItem: (k, v) => tabStorage.set(k, v),
+    removeItem: k => tabStorage.delete(k)
+  };
+  const tabEvents = {};
+  const tabWindow = { addEventListener: (name, cb) => { tabEvents[name] = cb; } };
+  vm.runInNewContext(read('assets/js/reading-store.js'), { window: tabWindow, localStorage: tabLocalStorage });
+  const tabStore = tabWindow.WBReadingStore;
+  tabStore.setIdentity('member', 'fakeuser-A');
+  tabStore.write('last', 'yu', JSON.stringify({ url: '/t/a/', no: '9' }));
+  tabStorage.delete(sessionKey);
+  tabEvents.storage({ key: sessionKey });
+  check(tabStore.identity().state === 'guest' && !tabStore.listLast().yu,
+    'cross-tab sign-out hides member history without deleting it');
+  tabStorage.set(sessionKey, JSON.stringify({ user: { id: 'fakeuser-A' }, refresh_token: 'dummy' }));
+  tabEvents.pageshow({ persisted: true });
+  check(tabStore.identity().state === 'unknown' && !tabStore.listLast().yu,
+    'BFCache restoration remains unverified before network confirmation');
+
   const cloud = read('assets/cloud.js');
   const helpers = ['function cut(', 'function localRecords(', 'function num(', 'function further(', 'async function sync(']
     .map(heading => extract(cloud, heading)).join('\n');
