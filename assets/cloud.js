@@ -273,7 +273,7 @@
       favList.textContent = '';
       function item(r, label, result, isWhole) {
         var it = el('div', 'fav-item'), a, note = '';
-        var path = isWhole ? validNovelPath(BASE + '/novel/' + r.novel + '/') : null;
+        var path = isWhole && Object.prototype.hasOwnProperty.call(novels, r.novel) ? validNovelPath(BASE + '/novel/' + r.novel + '/') : null;
         if (!isWhole && result && result.status === 'published') path = result.url;
         if (path) {
           a = el('a', null, label);
