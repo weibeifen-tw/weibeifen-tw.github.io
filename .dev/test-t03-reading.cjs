@@ -183,7 +183,7 @@ async function run() {
   function syncCase(mode) {
     const writes = [], upserts = [];
     const sessionStorage = { setItem: (k, v) => writes.push({ k, v }) };
-    const sync = new Function('Store', 'sessionStorage', 'KEY_RE', 'window', helpers + ';return sync;')(
+    const sync = new Function('Store', 'sessionStorage', 'KEY_RE', 'window', 'var READING_SYNC_ENABLED = true;\n' + helpers + ';return sync;')(
       Store, sessionStorage, /^[a-z0-9_-]{1,40}(:[a-z0-9_-]{1,40})?$/, {});
     const client = {
       from() {
