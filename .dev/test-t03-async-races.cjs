@@ -52,7 +52,7 @@ function makeInitHarness(options={}){
   const setNote=()=>{};
   const factory=new Function('A','localProfile','renderMember','renderGuest','setNote','window',
     memberGuard+'\n'+memberInit+'\nreturn {init};');
-  const h=factory(A,localProfile,renderMember,renderGuest,setNote,{WBReadingStore:owner.store});
+  const h=factory(A,localProfile,renderMember,renderGuest,setNote,{WBReadingStore:owner.store,addEventListener:()=>{}});
   return {...h,...owner,paints};
 }
 async function testMember(){
