@@ -431,20 +431,35 @@
     if (t.trim() !== '刪除') { setNote('沒有刪除。要刪除帳號，請輸入「刪除」兩個字。', true); return; }
     busy = true;
     var b = card.querySelector('.mb-del'); if (b) b.disabled = true;
+    // Capture the owner BEFORE awaits, not after a response can race with account switching.
+    var store = window.WBReadingStore;
+    var expectedOwner = store && store.identity();
+    var deleteEpoch = memberViewEpoch;
+    if (!expectedOwner || expectedOwner.state !== 'member' ||
+        !currentOwner(expectedOwner.uid, expectedOwner.version)) {
+      busy = false; if (b) b.disabled = false;
+      setNote('登入狀態已改變，請重新確認後再刪除。', true);
+      return;
+    }
     // Account removal requires a freshly verified owner; never guess from cached profile.
     var identityCheck;
     try { identityCheck = await A.getVerifiedUser(); } catch (e) { identityCheck = null; }
     var ownerUid = identityCheck && identityCheck.user && identityCheck.user.id;
-    var store = window.WBReadingStore;
-    var expectedOwner = store && store.identity();
-    if (!ownerUid || !expectedOwner || expectedOwner.state !== 'member' ||
-        expectedOwner.uid !== ownerUid) {
+    if (!ownerUid || expectedOwner.uid !== ownerUid ||
+        deleteEpoch !== memberViewEpoch ||
+        !currentOwner(ownerUid, expectedOwner.version)) {
       busy = false; if (b) b.disabled = false;
       setNote('目前無法確認帳號身分，為保護本機閱讀紀錄，請重新登入後再刪除。', true);
       return;
     }
     var res;
     try { res = await A.getClient().rpc('delete_my_account'); } catch (e) { res = { error: e }; }
+    // A late RPC response must not sign out or alter a newer account.
+    if (deleteEpoch !== memberViewEpoch ||
+        !currentOwner(ownerUid, expectedOwner.version)) {
+      busy = false;
+      return;
+    }
     if (res && res.error) {
       busy = false; if (b) b.disabled = false;
       var m = String(res.error.message || '');
@@ -454,16 +469,15 @@
       return;
     }
     // If another account took over before the RPC returned, do not erase its local data.
-    var beforeSignOut = store.identity();
-    var sameOwner = beforeSignOut.state === 'member' &&
-      beforeSignOut.uid === ownerUid && beforeSignOut.version === expectedOwner.version;
     try { await A.signOut(); } catch (e) {}
-    try { localStorage.removeItem(ME_KEY); } catch (e) {}
-    var cleared = false;
-    if (store) {
-      if (sameOwner) cleared = store.clearMember(ownerUid);
-      store.setIdentity('guest');
+    // If a new user signed in while sign-out was pending, leave their state intact.
+    var newerProfile = localProfile();
+    if (newerProfile && newerProfile.id !== ownerUid) {
+      busy = false; return;
     }
+    try { localStorage.removeItem(ME_KEY); } catch (e) {}
+    var cleared = store.clearMember(ownerUid);
+    store.setIdentity('guest');
     busy = false;
     renderGuest();
     setNote(cleared ? '帳號已刪除。本機屬於此帳號的新版閱讀紀錄已清除；未能確定歸屬的舊紀錄仍隔離保存。' : '帳號已刪除，但此裝置的新版閱讀紀錄可能未完全清除，請清除網站資料；舊紀錄歸屬仍無法確認。', !cleared);
