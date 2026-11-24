@@ -19,6 +19,9 @@
   var SESSION_KEY = 'sb-tqicconarhpddejxdvmf-auth-token';
   // T03-R01/R03: sync timestamps are scoped to a verified member, never global.
   var Store = window.WBReadingStore;
+  // T03 safe rollback: change to false ONLY in a separately reviewed emergency build.
+  // This is a build-time switch, not a runtime setting or a live remote control.
+  var READING_SYNC_ENABLED = true;
   var SYNC_EVERY = 10 * 60 * 1000;        // 一般頁面最多 10 分鐘同步一次；章節頁、會員頁每次都同步
   var KEY_RE = /^[a-z0-9_-]{1,40}(:[a-z0-9_-]{1,40})?$/;
   var L = window.WB_AUTH_LAZY || {};
@@ -102,12 +105,13 @@
   }
 
   async function sync(A) {
+    if (!READING_SYNC_ENABLED) return { ok: false, reason: 'paused' };
     var identity = Store.identity();
     if (identity.state !== 'member' || !identity.uid) return { ok: false, reason: 'unverified' };
     var uid = identity.uid, version = identity.version, c = A.getClient();
     function current() {
       var n = Store.identity();
-      return n.state === 'member' && n.uid === uid && n.version === version;
+      return READING_SYNC_ENABLED && n.state === 'member' && n.uid === uid && n.version === version;
     }
     if (!current()) return { ok: false, reason: 'changed' };
     var res = await c.from('reading_progress').select('k,url,no,title,chr,t').eq('user_id', uid);
