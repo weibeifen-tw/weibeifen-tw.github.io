@@ -935,3 +935,12 @@ body.sheet-lock .cm-card{position:fixed;z-index:65}
     margin:0;
   }
 }
+
+/* P3-01-B FIX-02：手機閱讀連結狀態與重試按鈕，保持 44px 可觸控範圍。 */
+.nv-link-note{display:block;flex-basis:100%;max-width:100%;min-width:0;font-size:14px;line-height:1.6;color:var(--sub);overflow-wrap:anywhere}
+.nv-link-retry{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;padding:8px 16px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--ink);font:inherit;font-size:14px;line-height:1.4;cursor:pointer}
+.nv-link-retry:hover{border-color:var(--ink)}
+.nv-link-retry:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+.nv-btn[aria-disabled="true"]{cursor:default;pointer-events:none}
+.shelf-list a[aria-disabled="true"]{cursor:default;pointer-events:none}
+.shelf-list a[aria-disabled="true"] small{overflow-wrap:anywhere;white-space:normal}
