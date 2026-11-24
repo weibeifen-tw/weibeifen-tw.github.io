@@ -343,6 +343,26 @@ window.WBAvatar = (function () {
       };
       if (document.readyState === 'complete') go(); else addEventListener('load', go);
     }
+    // A saved member position may become available only after async identity verification.
+    // Never auto-jump after the reader has already started scrolling.
+    window.WBReadingStore.onChange(function () {
+      if (location.hash || scrollY > 20) return;
+      var p = parseFloat(window.WBReadingStore.read('pos', pk.slice(7))) || 0;
+      if (!(p > 0.03 && p < 0.97)) return;
+      var existing = document.querySelector('.resume');
+      if (existing) existing.remove();
+      var t = document.createElement('div'); t.className = 'resume';
+      t.textContent = '找到上次閱讀位置';
+      var button = document.createElement('button'); button.type = 'button';
+      button.textContent = '回到位置';
+      button.onclick = function () {
+        var rect = txt.getBoundingClientRect(), height = rect.height - innerHeight * 0.5;
+        scrollTo(0, scrollY + rect.top - innerHeight * 0.5 + p * height);
+        t.remove();
+      };
+      t.appendChild(button); document.body.appendChild(t);
+      setTimeout(function () { if (t.parentNode) t.remove(); }, 8000);
+    });
   }
 })();
 
