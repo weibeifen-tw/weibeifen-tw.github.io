@@ -468,8 +468,9 @@ window.WBRenderShelf = function () {
     });
     status.textContent = ''; retry.hidden = true;
   }
+  var shelfRequestNo = 0;
   function check(force) {
-    var seq = renderToken;
+    var seq = ++shelfRequestNo;
     links.forEach(function (x) {
       x.a.removeAttribute('href');
       x.a.setAttribute('aria-disabled', 'true');
@@ -478,11 +479,11 @@ window.WBRenderShelf = function () {
     status.textContent = '正在確認閱讀位置…';
     retry.hidden = true;
     window.WBChapterGuard.load(!!force).then(function (data) {
-      if (window.WBShelfRenderToken !== seq) return;
+      if (window.WBShelfRenderToken !== renderToken || seq !== shelfRequestNo) return;
       currentIndex = data;
       apply(data);
     }).catch(function () {
-      if (window.WBShelfRenderToken !== seq) return;
+      if (window.WBShelfRenderToken !== renderToken || seq !== shelfRequestNo) return;
       links.forEach(function (x) { x.small.textContent = '（暫時無法確認，紀錄保留）'; });
       status.textContent = '暫時無法確認書櫃閱讀位置。';
       retry.hidden = false;
