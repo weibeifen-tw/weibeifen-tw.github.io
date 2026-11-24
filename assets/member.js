@@ -555,6 +555,21 @@
     renderGuest();
   }
 
+  // A different tab may sign out, clear storage, or switch accounts. The top
+  // avatar refresh alone is insufficient: discard the entire stale member card.
+  window.addEventListener('storage', function (e) {
+    if (e.key !== SESSION_KEY && e.key !== null) return;
+    ++memberViewEpoch;
+    var store = window.WBReadingStore;
+    if (!localProfile()) {
+      if (store) store.setIdentity('guest');
+      renderGuest();
+    } else {
+      if (store) store.setIdentity('unknown');
+      init();
+    }
+  });
+
   if (A) {
     A.onChange(function (event, p) {
       if (event === 'SIGNED_OUT') {
