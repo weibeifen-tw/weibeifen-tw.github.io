@@ -48,6 +48,24 @@ async function run() {
   check(!Store.listLast().yu && Store.read('read', '/t/a/') === null &&
     Store.read('pos', '/t/a/') === null, 'all three reading types isolated');
   check(memory.has('wb:last:yu'), 'legacy reading key intact');
+  // Same-tab auth changes can occur before a storage event reaches the reading store.
+  memory.set(sessionKey, JSON.stringify({ user: { id: 'fakeuser-A' }, refresh_token: 'dummy' }));
+  check(Store.identity().state === 'unknown' &&
+    Store.read('last', 'yu') === null &&
+    Object.keys(Store.listLast()).length === 0 &&
+    !Store.write('last', 'yu', JSON.stringify({url:'/t/unsafe/',no:'90'})),
+    'same-tab session change blocks stale member reads and writes');
+  Store.setIdentity('unknown');
+  Store.setIdentity('member', 'fakeuser-A');
+  check(Store.listLast().yu.no === '4', 'original verified account history remains intact');
+  memory.set(sessionKey, JSON.stringify({ user: { id: 'fakeuser-B' }, refresh_token: 'dummy' }));
+  Store.setIdentity('unknown');
+  Store.setIdentity('member', 'fakeuser-B');
+  check(!Store.listLast().yu, 'other account still isolated after a real session switch');
+  const sw = read('sw.js');
+  check(sw.includes("'/assets/js/reading-store.js?v=' + VER"),
+    'reading-store dependency included in offline pre-cache');
+
   const cloud = read('assets/cloud.js');
   const helpers = ['function cut(', 'function localRecords(', 'function num(', 'function further(', 'async function sync(']
     .map(heading => extract(cloud, heading)).join('\n');
@@ -102,6 +120,16 @@ async function run() {
   check(moved[0] === 'lailu' && moved[1].no === '1', 'original chapter remap intact');
   check(!app.includes("localStorage.setItem('wb:mig:yu-split-1'"),
     'global destructive migration no longer executes');
+  const withdrawn = remapWindow.wbRemap('yu', { url: '/t/threads/', no: '1' });
+  check(withdrawn[0] === 'yu' && withdrawn[1].url === '/t/threads/',
+    'withdrawn chapter history remains unchanged');
+  check(app.includes("window.WBReadingStore.write('read'") &&
+    app.includes("window.WBReadingStore.write('pos'"),
+    'chapter completion and scroll position use scoped store');
+  const layout = read('_layouts/default.html');
+  check(layout.indexOf("reading-store.js") < layout.indexOf("/assets/app.js"),
+    'reading-store is loaded ahead of app.js');
+
   console.log('T03 isolated mock tests: ' + passed + '/' + passed + ' passed.');
 }
 run().catch(e => { console.error(e); process.exitCode = 1; });
