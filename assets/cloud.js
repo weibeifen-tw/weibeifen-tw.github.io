@@ -241,50 +241,119 @@
   var favBox = document.querySelector('.mb-favs');
   var favList = favBox && favBox.querySelector('.fav-list');
 
+  // P3-01-C：只控制收藏／留言連結；不修改、遷移或刪除歷史會員資料。
+  function validNovelPath(path) {
+    if (typeof path !== 'string') return null;
+    try {
+      var url = new URL(path, location.origin);
+      if (url.origin !== location.origin) return null;
+      var m = url.pathname.match(/^\/novel\/([a-z0-9_-]+)\/$/);
+      return m && Object.prototype.hasOwnProperty.call(novels, m[1]) ? url.pathname : null;
+    } catch (e) { return null; }
+  }
+  function guardedChapter(index, path) {
+    if (!index || !window.WBChapterGuard) return { status: 'unavailable' };
+    return window.WBChapterGuard.resolve(index, path);
+  }
+  var favRenderSequence = 0;
   async function renderFavs(A) {
     if (!favList) return;
+    var seq = ++favRenderSequence;
     var res = await A.getClient().from('favorites').select('novel,path,title,no,created_at').order('created_at', { ascending: false });
+    if (seq !== favRenderSequence) return;
     favList.textContent = '';
     favBox.hidden = false;
     if (res.error) { favList.appendChild(el('p', 'mb-form-msg err', errText('讀取收藏失敗，請重新整理。', res.error))); return; }
     var rows = res.data || [];
     if (!rows.length) { favList.appendChild(el('p', null, '還沒有收藏。在小說介紹頁按「收藏這本」，或在章節最後按「加入書籤」。')); return; }
-    rows = rows.filter(function (r) { return novels[r.novel]; }); // 小說已下架的不列
-    function item(r, label) {
-      var it = el('div', 'fav-item');
-      var a = el('a', null, label);
-      a.href = r.path === '' ? BASE + '/novel/' + r.novel + '/' : r.path;
-      var del = el('button', 'fav-del', '移除'); del.type = 'button';
-      del.onclick = async function () {
-        del.disabled = true;
-        var err = await setFav(A, false, { novel: r.novel, path: r.path });
-        if (err) { del.disabled = false; window.alert(err); return; }
-        renderFavs(A);
-      };
-      it.appendChild(a); it.appendChild(del);
-      return it;
+
+    var attempt = 0;
+    function paint(index, failed) {
+      if (seq !== favRenderSequence) return;
+      favList.textContent = '';
+      function item(r, label, result, isWhole) {
+        var it = el('div', 'fav-item'), a, note = '';
+        var path = isWhole ? validNovelPath(BASE + '/novel/' + r.novel + '/') : null;
+        if (!isWhole && result && result.status === 'published') path = result.url;
+        if (path) {
+          a = el('a', null, label);
+          a.href = path;
+        } else {
+          a = el('span', null, label);
+          note = isWhole ? '（作品目前無法確認）' :
+            failed ? '（暫時無法確認章節狀態，收藏仍保留）' :
+            result && result.status === 'withdrawn' ? '（章節已撤回，收藏仍保留）' :
+            '（原章節無法使用，收藏仍保留）';
+        }
+        it.appendChild(a);
+        if (note) it.appendChild(el('small', null, note));
+        var del = el('button', 'fav-del', '移除'); del.type = 'button';
+        del.onclick = async function () {
+          del.disabled = true;
+          var err = await setFav(A, false, { novel: r.novel, path: r.path });
+          if (err) { del.disabled = false; window.alert(err); return; }
+          renderFavs(A);
+        };
+        it.appendChild(del);
+        return it;
+      }
+      var whole = rows.filter(function (r) { return r.path === ''; });
+      if (whole.length) {
+        favList.appendChild(el('h3', 'fav-h', '收藏的小說'));
+        whole.forEach(function (r) {
+          var title = novels[r.novel] ? novels[r.novel].title : r.novel;
+          favList.appendChild(item(r, '《' + title + '》', null, true));
+        });
+      }
+      var marks = rows.filter(function (r) { return r.path !== ''; }), groups = Object.create(null), order = [];
+      marks.forEach(function (r) {
+        var result = guardedChapter(index, r.path);
+        // 舊作品 ID 保留在資料庫；公開章節可依索引顯示目前正確的歸屬。
+        var nid = result.status === 'published' && novels[result.chapter.novel] ? result.chapter.novel : r.novel;
+        if (!Object.prototype.hasOwnProperty.call(groups, nid)) { groups[nid] = []; order.push(nid); }
+        groups[nid].push({ row: r, result: result });
+      });
+      if (order.length) {
+        favList.appendChild(el('h3', 'fav-h', '書籤'));
+        order.forEach(function (nid) {
+          var d = el('details', 'fav-group');
+          var title = novels[nid] ? novels[nid].title : nid;
+          var sm = el('summary', null, '《' + title + '》');
+          sm.appendChild(el('small', null, groups[nid].length + ' 個書籤'));
+          d.appendChild(sm);
+          groups[nid].sort(function (x, y) { return (parseFloat(x.row.no) || 0) - (parseFloat(y.row.no) || 0); });
+          groups[nid].forEach(function (entry) {
+            var r = entry.row, st = entry.result;
+            var no = st.status === 'published' ? st.chapter.chapter : r.no;
+            d.appendChild(item(r, (no ? '第 ' + no + ' 篇・' : '') + (r.title || ''), st, false));
+          });
+          favList.appendChild(d);
+        });
+      }
+      if (failed && marks.length) {
+        var info = el('p', 'mb-form-msg', '暫時無法確認章節書籤，請重新確認。');
+        var retry = el('button', 'mb-btn', '重新確認'); retry.type = 'button';
+        retry.onclick = function () { check(true); };
+        favList.appendChild(info); favList.appendChild(retry);
+      }
     }
-    // 收藏的小說：直接列出
-    var whole = rows.filter(function (r) { return r.path === ''; });
-    if (whole.length) {
-      favList.appendChild(el('h3', 'fav-h', '收藏的小說'));
-      whole.forEach(function (r) { favList.appendChild(item(r, '《' + novels[r.novel].title + '》')); });
-    }
-    // 書籤：照小說分組，點小說名才展開
-    var marks = rows.filter(function (r) { return r.path !== ''; }), groups = {}, order = [];
-    marks.forEach(function (r) { if (!groups[r.novel]) { groups[r.novel] = []; order.push(r.novel); } groups[r.novel].push(r); });
-    if (order.length) {
-      favList.appendChild(el('h3', 'fav-h', '書籤'));
-      order.forEach(function (nid) {
-        var d = el('details', 'fav-group');
-        var sm = el('summary', null, '《' + novels[nid].title + '》');
-        sm.appendChild(el('small', null, groups[nid].length + ' 個書籤'));
-        d.appendChild(sm);
-        groups[nid].sort(function (x, y) { return (parseFloat(x.no) || 0) - (parseFloat(y.no) || 0); });
-        groups[nid].forEach(function (r) { d.appendChild(item(r, (r.no ? '第 ' + r.no + ' 篇・' : '') + (r.title || ''))); });
-        favList.appendChild(d);
+    function check(force) {
+      var turn = ++attempt;
+      // 全部只有整本小說收藏時，不需要讀取章節索引。
+      if (!rows.some(function (r) { return r.path !== ''; })) { paint(null, false); return; }
+      favList.textContent = '';
+      favList.appendChild(el('p', 'mb-form-msg', '正在確認收藏連結…'));
+      var guard = window.WBChapterGuard;
+      if (!guard) { paint(null, true); return; }
+      guard.load(!!force).then(function (index) {
+        if (seq !== favRenderSequence || turn !== attempt) return;
+        paint(index, false);
+      }).catch(function () {
+        if (seq !== favRenderSequence || turn !== attempt) return;
+        paint(null, true);
       });
     }
+    check(false);
   }
 
   /* ---------- 公開留言（章節頁最下面） ---------- */
