@@ -28,6 +28,50 @@ window.wbRemap = (function () {
   } catch (e) {}
 })();
 
+// P3-01-B：公開章節索引只控制閱讀連結顯示，不修改任何歷史紀錄或雲端資料。
+window.WBChapterGuard = (function () {
+  var pending = null;
+  function canonical(value) {
+    if (typeof value !== 'string' || !value) return null;
+    try {
+      var u = new URL(value, location.origin);
+      if (u.origin !== location.origin || !/^\/t\/[A-Za-z0-9_-]+\/$/.test(u.pathname)) return null;
+      return u.pathname;
+    } catch (e) { return null; }
+  }
+  function load(force) {
+    if (pending && !force) return pending;
+    var req = fetch((window.BASE || '') + '/assets/chapter-status.json?v=' + encodeURIComponent(window.VER || ''), { cache: 'no-store' })
+      .then(function (res) { if (!res.ok) throw new Error('chapter index HTTP ' + res.status); return res.json(); })
+      .then(function (data) {
+        if (!data || data.version !== 1 || !data.chapters || !data.withdrawn || !data.remaps ||
+            Array.isArray(data.chapters) || Array.isArray(data.withdrawn) || Array.isArray(data.remaps) ||
+            typeof data.chapters !== 'object' || typeof data.withdrawn !== 'object' || typeof data.remaps !== 'object') {
+          throw new Error('invalid chapter index');
+        }
+        return data;
+      });
+    pending = req;
+    req.catch(function () { if (pending === req) pending = null; });
+    return req;
+  }
+  function resolve(data, value) {
+    var url = canonical(value), visited = {};
+    if (!url) return { status: 'unknown' };
+    for (var i = 0; i < 5; i++) {
+      if (Object.prototype.hasOwnProperty.call(data.withdrawn, url)) return { status: 'withdrawn' };
+      var row = Object.prototype.hasOwnProperty.call(data.chapters, url) ? data.chapters[url] : null;
+      if (row && row.status === 'published' && row.url === url) return { status: 'published', url: url, chapter: row };
+      if (visited[url] || !Object.prototype.hasOwnProperty.call(data.remaps, url)) return { status: 'unknown' };
+      visited[url] = true;
+      url = canonical(data.remaps[url]);
+      if (!url) return { status: 'unknown' };
+    }
+    return { status: 'unknown' };
+  }
+  return { load: load, resolve: resolve, canonical: canonical };
+})();
+
 // 會員頭像：白底圓圈＋名字第一個字（管理員顯示 MU），字的顏色由會員在會員頁自己選
 window.WBAvatar = (function () {
   var COLORS = [
@@ -105,10 +149,26 @@ window.WBAvatar = (function () {
     pick('all');
     function rd(k) { try { var r = JSON.parse(localStorage.getItem(k) || 'null'); return r && r.url ? r : null; } catch (e) { return null; } }
     var btns = document.querySelector('.nv-btns'), lr = rd('wb:last:' + window.NOVEL);
-    var b0 = mk('a', 'nv-btn');
-    if (lr) { b0.textContent = '繼續讀第 ' + lr.no + ' 篇'; b0.href = lr.url; }
-    else if (list[0]) { b0.textContent = '從第一篇開始讀'; b0.href = list[0].href; }
-    if (b0.href) btns.appendChild(b0);
+    var b0 = mk('a', 'nv-btn'), target = lr ? lr.url : (list[0] && list[0].href);
+    if (btns && target) {
+      b0.textContent = '正在確認閱讀位置…';
+      b0.setAttribute('aria-disabled', 'true');
+      btns.appendChild(b0);
+      window.WBChapterGuard.load().then(function (data) {
+        var result = window.WBChapterGuard.resolve(data, target);
+        if (result.status === 'published' && result.chapter.novel === window.NOVEL) {
+          b0.textContent = lr ? '繼續讀第 ' + result.chapter.chapter + ' 篇' : '從第一篇開始讀';
+          b0.href = result.url;
+          b0.removeAttribute('aria-disabled');
+        } else {
+          b0.textContent = '上次閱讀位置無法使用';
+          b0.removeAttribute('href');
+        }
+      }).catch(function () {
+        b0.textContent = '暫時無法確認閱讀位置';
+        b0.removeAttribute('href');
+      });
+    }
   }
   document.querySelector('.empty').hidden = shown > 0;
 })();
