@@ -68,12 +68,13 @@ jobs:
         run: |
           set -eu
           node .dev/test-g01-profile.cjs
+          node .dev/test-g03-emergency.cjs
           node --check assets/auth.js
           node --check assets/member.js
           cid="$(docker run -d --network none -e POSTGRES_HOST_AUTH_METHOD=trust postgres:17)"
           trap 'docker rm -f "$cid" >/dev/null' EXIT
           for i in $(seq 1 60); do docker exec "$cid" pg_isready -U postgres && break; sleep 1; done
-          for f in .dev/g01-fixture.sql supabase/019_username_change_once.sql supabase/drafts/G01_01_profile_rpc_DRAFT.sql supabase/drafts/G01_02_profile_acl_DRAFT.sql .dev/g01-assertions.sql; do
+          for f in .dev/g01-fixture.sql supabase/019_username_change_once.sql supabase/drafts/G01_01_profile_rpc_DRAFT.sql supabase/drafts/G01_02_profile_acl_DRAFT.sql .dev/g01-assertions.sql .dev/g02-reading-rls.sql; do
             docker exec -i "$cid" psql -X -U postgres -v ON_ERROR_STOP=1 < "$f"
           done
 
@@ -141,6 +142,7 @@ jobs:
           node --check _site/assets/cloud.js
           node --check _site/assets/member.js
           node .dev/test-t03-rendered-pages.cjs
+          node .dev/test-g03-emergency.cjs _site/assets/cloud.js
 
       - name: 作品及章節 SEO 與 JPEG 分享圖驗收
         run: ruby .github/scripts/validate_novel_seo.rb . --site _site
