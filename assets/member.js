@@ -419,7 +419,10 @@
     var identityCheck;
     try { identityCheck = await A.getVerifiedUser(); } catch (e) { identityCheck = null; }
     var ownerUid = identityCheck && identityCheck.user && identityCheck.user.id;
-    if (!ownerUid) {
+    var store = window.WBReadingStore;
+    var expectedOwner = store && store.identity();
+    if (!ownerUid || !expectedOwner || expectedOwner.state !== 'member' ||
+        expectedOwner.uid !== ownerUid) {
       busy = false; if (b) b.disabled = false;
       setNote('目前無法確認帳號身分，為保護本機閱讀紀錄，請重新登入後再刪除。', true);
       return;
@@ -434,12 +437,16 @@
         : '刪除失敗，請稍後再試。', true);
       return;
     }
+    // If another account took over before the RPC returned, do not erase its local data.
+    var beforeSignOut = store.identity();
+    var sameOwner = beforeSignOut.state === 'member' &&
+      beforeSignOut.uid === ownerUid && beforeSignOut.version === expectedOwner.version;
     try { await A.signOut(); } catch (e) {}
     try { localStorage.removeItem(ME_KEY); } catch (e) {}
     var cleared = false;
-    if (window.WBReadingStore) {
-      cleared = window.WBReadingStore.clearMember(ownerUid);
-      window.WBReadingStore.setIdentity('guest');
+    if (store) {
+      if (sameOwner) cleared = store.clearMember(ownerUid);
+      store.setIdentity('guest');
     }
     busy = false;
     renderGuest();
