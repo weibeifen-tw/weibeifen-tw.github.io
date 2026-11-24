@@ -37,6 +37,10 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
 
+      - name: T03 閱讀隔離假資料測試（僅 T03 分支，不部署）
+        if: github.ref == 'refs/heads/feat/site-t03-reading-isolation'
+        run: node .dev/test-t03-reading.cjs
+
       - name: 研究文章資料驗證（只讀檔案，不需要套件）
         run: ruby .github/scripts/validate_literature.rb .
 
@@ -86,6 +90,20 @@ jobs:
           n=$(ls _site/t | grep -c '^shanhai[0-9][0-9]$'); echo "山海有痕章節：$n"; test "$n" = "32"
           if ls _site | grep -qiE '\.(docx|xlsx|zip)$' || find _site -iname '*.docx' -o -iname '*.xlsx' -o -iname '*.zip' | grep -q .; then echo "發現不應公開的原始檔"; exit 1; fi
           echo "OK  未發布原始文件"
+
+      - name: T03 閱讀隔離建置產物檢查（僅 T03 分支）
+        if: github.ref == 'refs/heads/feat/site-t03-reading-isolation'
+        run: |
+          set -eu
+          test -f _site/assets/js/reading-store.js
+          grep -q 'assets/js/reading-store.js' _site/index.html
+          grep -q 'assets/js/reading-store.js' _site/shelf/index.html
+          grep -q 'assets/js/reading-store.js' _site/member/index.html
+          echo 'OK T03 reading-store published before dependent scripts (source layout)'
+          node --check _site/assets/js/reading-store.js
+          node --check _site/assets/app.js
+          node --check _site/assets/cloud.js
+          node --check _site/assets/member.js
 
       - name: 作品及章節 SEO 與 JPEG 分享圖驗收
         run: ruby .github/scripts/validate_novel_seo.rb . --site _site
