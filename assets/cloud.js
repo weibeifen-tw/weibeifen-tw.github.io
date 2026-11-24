@@ -724,11 +724,15 @@
   /* ---------- 會員頁：我的留言 ---------- */
   var myCmBox = document.querySelector('.mb-mycm');
   var myCmList = myCmBox && myCmBox.querySelector('.mycm-list');
+  var myCmRenderSequence = 0;
   async function renderMyComments(A) {
+    if (!myCmList) return;
+    var seq = ++myCmRenderSequence;
     var c = A.getClient(), uid = await uidOf(c);
-    if (!uid) return;
+    if (!uid || seq !== myCmRenderSequence) return;
     var res = await c.from('comments').select('id,novel,path,body,hidden,created_at')
       .eq('user_id', uid).order('created_at', { ascending: false }).limit(100);
+    if (seq !== myCmRenderSequence) return;
     myCmList.textContent = '';
     myCmBox.hidden = false;
     if (res.error) { myCmList.appendChild(el('p', 'mb-form-msg err', errText('讀取留言失敗，請重新整理。', res.error))); return; }
@@ -736,33 +740,76 @@
     if (!rows.length) { myCmList.appendChild(el('p', null, '還沒有留言。章節最下面和小說介紹頁都可以留言。')); return; }
     var byUrl = {};
     try {
-      var pj = await (await fetch(BASE + '/assets/posts.json?v=' + (window.VER || ''))).json();
-      Object.keys(pj).forEach(function (k) { byUrl[pj[k].u] = pj[k]; });
+      var response = await fetch(BASE + '/assets/posts.json?v=' + (window.VER || ''));
+      if (response.ok) {
+        var pj = await response.json();
+        Object.keys(pj).forEach(function (k) { byUrl[pj[k].u] = pj[k]; });
+      }
     } catch (e) {}
-    // 先顯示 20 則，「再看 20 則」一次多 20 則
-    var shownN = 0, more = el('button', 'mb-btn mycm-more'); more.type = 'button';
-    function showMore(n) {
-      rows.slice(shownN, shownN + n).forEach(addItem);
-      shownN = Math.min(rows.length, shownN + n);
-      var left = rows.length - shownN;
-      more.hidden = left <= 0;
-      more.textContent = '再看 ' + Math.min(20, left) + ' 則（還有 ' + left + ' 則）';
-      myCmList.appendChild(more);
+    if (seq !== myCmRenderSequence) return;
+    var attempt = 0;
+    function paint(index, failed) {
+      if (seq !== myCmRenderSequence) return;
+      myCmList.textContent = '';
+      var shownN = 0, more = el('button', 'mb-btn mycm-more'); more.type = 'button';
+      function addItem(r) {
+        var path = typeof r.path === 'string' ? r.path : '';
+        var pp = byUrl[path];
+        var st = path.indexOf('/novel/') === 0 ? null : guardedChapter(index, path);
+        var safePath = path.indexOf('/novel/') === 0 ? validNovelPath(path) :
+          st && st.status === 'published' ? st.url : null;
+        var actualNovel = st && st.status === 'published' ? st.chapter.novel : r.novel;
+        var nv = novels[actualNovel] || novels[r.novel] || {};
+        var title = '《' + (nv.title || r.novel || '未知作品') + '》' +
+          (pp ? (pp.ch ? '第 ' + pp.ch + ' 篇・' : '') + pp.t : (safePath && path.indexOf('/novel/') === 0 ? '介紹頁' : ''));
+        var item = el('div', 'fav-item mycm-item');
+        var a = el(safePath ? 'a' : 'span', null, title);
+        if (safePath) a.href = safePath + '#comments';
+        else {
+          var reason = st && st.status === 'withdrawn' ? '（原章節已撤回，留言紀錄保留）' :
+            failed && path.indexOf('/novel/') !== 0 ? '（暫時無法確認章節，留言紀錄保留）' :
+            '（原頁面無法使用，留言紀錄保留）';
+          a.appendChild(el('small', null, reason));
+        }
+        var meta = el('small', null, fmtDate(r.created_at) + (r.hidden ? '・因檢舉隱藏中' : ''));
+        var head = el('div', 'mycm-head'); head.appendChild(a); head.appendChild(meta);
+        item.appendChild(head);
+        item.appendChild(el('p', 'mycm-body', r.body));
+        myCmList.appendChild(item);
+      }
+      function showMore(n) {
+        rows.slice(shownN, shownN + n).forEach(addItem);
+        shownN = Math.min(rows.length, shownN + n);
+        var left = rows.length - shownN;
+        more.hidden = left <= 0;
+        more.textContent = '再看 ' + Math.min(20, left) + ' 則（還有 ' + left + ' 則）';
+        myCmList.appendChild(more);
+      }
+      more.onclick = function () { showMore(20); };
+      showMore(20);
+      if (failed && rows.some(function (r) { return typeof r.path === 'string' && r.path.indexOf('/novel/') !== 0; })) {
+        myCmList.appendChild(el('p', 'mb-form-msg', '暫時無法確認章節留言的位置，請重新確認。'));
+        var retry = el('button', 'mb-btn', '重新確認'); retry.type = 'button';
+        retry.onclick = function () { check(true); };
+        myCmList.appendChild(retry);
+      }
     }
-    more.onclick = function () { showMore(20); };
-    showMore(20);
-    function addItem(r) {
-      var nv = novels[r.novel] || {}, pp = byUrl[r.path];
-      var item = el('div', 'fav-item mycm-item');
-      var a = el('a', null, '《' + (nv.title || r.novel) + '》' +
-        (pp ? (pp.ch ? '第 ' + pp.ch + ' 篇・' : '') + pp.t : (r.path.indexOf('/novel/') === 0 ? '介紹頁' : '')));
-      a.href = r.path + '#comments';
-      var meta = el('small', null, fmtDate(r.created_at) + (r.hidden ? '・因檢舉隱藏中' : ''));
-      var head = el('div', 'mycm-head'); head.appendChild(a); head.appendChild(meta);
-      item.appendChild(head);
-      item.appendChild(el('p', 'mycm-body', r.body));
-      myCmList.appendChild(item);
+    function check(force) {
+      var turn = ++attempt;
+      if (!rows.some(function (r) { return typeof r.path !== 'string' || r.path.indexOf('/novel/') !== 0; })) { paint(null, false); return; }
+      myCmList.textContent = '';
+      myCmList.appendChild(el('p', 'mb-form-msg', '正在確認留言所在頁面…'));
+      var guard = window.WBChapterGuard;
+      if (!guard) { paint(null, true); return; }
+      guard.load(!!force).then(function (index) {
+        if (seq !== myCmRenderSequence || turn !== attempt) return;
+        paint(index, false);
+      }).catch(function () {
+        if (seq !== myCmRenderSequence || turn !== attempt) return;
+        paint(null, true);
+      });
     }
+    check(false);
   }
 
   /* ---------- 通知（V1.0 S09：私訊全面退役 DM-A） ----------
