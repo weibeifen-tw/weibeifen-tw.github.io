@@ -38,13 +38,13 @@ jobs:
           fetch-tags: true
 
       - name: T03 閱讀隔離假資料測試（僅 T03 分支，不部署）
-        if: github.ref == 'refs/heads/feat/site-t03-reading-isolation'
+        if: github.ref == 'refs/heads/feat/site-t03-reading-isolation' || (github.event_name == 'pull_request' && github.head_ref == 'feat/site-t03-reading-isolation')
         run: |
           node .dev/test-t03-reading.cjs
           node .dev/test-t03-rollback.cjs
 
       - name: T03 Chromium 隔離瀏覽器整合（僅 T03 分支，不連正式後端）
-        if: github.ref == 'refs/heads/feat/site-t03-reading-isolation'
+        if: github.ref == 'refs/heads/feat/site-t03-reading-isolation' || (github.event_name == 'pull_request' && github.head_ref == 'feat/site-t03-reading-isolation')
         run: |
           set -eu
           npm install --prefix .dev --ignore-scripts --no-audit --no-fund
@@ -103,7 +103,7 @@ jobs:
           echo "OK  未發布原始文件"
 
       - name: T03 閱讀隔離建置產物檢查（僅 T03 分支）
-        if: github.ref == 'refs/heads/feat/site-t03-reading-isolation'
+        if: github.ref == 'refs/heads/feat/site-t03-reading-isolation' || (github.event_name == 'pull_request' && github.head_ref == 'feat/site-t03-reading-isolation')
         run: |
           set -eu
           test -f _site/assets/js/reading-store.js
