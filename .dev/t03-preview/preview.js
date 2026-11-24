@@ -61,7 +61,10 @@ function verifyIsolation(){
     test(store.read('last','preview-test')===null,'訪客不能讀取會員記錄');
     changeIdentity('unknown');
     test(store.read('last','preview-test')===null && !store.syncKey(),'身分未驗證時無會員進度和同步鍵');
-    test(document.querySelectorAll('script[src]').length===2,'只載入兩個本地 JS 資源');
+    const scripts=Array.from(document.querySelectorAll('script[src]'),s=>s.getAttribute('src')||'');
+    test(scripts.some(src=>/^(?:\.\/|\/)reading-store\.js$/.test(src)) &&
+      scripts.some(src=>/^(?:\.\/|\/)preview\.js$/.test(src)),
+      '預覽所需的兩個本地 JS 均已載入（不計瀏覽器或託管服務額外程式）');
   }finally{
     for(const k of keys)localStorage.removeItem(k);
     if(previous===null){localStorage.removeItem(SESSION);store.setIdentity('guest')}
