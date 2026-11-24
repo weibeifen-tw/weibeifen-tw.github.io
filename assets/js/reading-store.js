@@ -4,15 +4,23 @@
   var SESSION = 'sb-tqicconarhpddejxdvmf-auth-token';
   var PREFIX = 'wb:v2:';
   var state = 'guest', uid = null, version = 0;
-  var pending = [], listeners = [];
+  var pending = [], listeners = [], candidateUid = null;
   var UID_RE = /^[a-zA-Z0-9_-]{8,100}$/;
+  function sessionUid() {
+    try {
+      var s = JSON.parse(localStorage.getItem(SESSION) || 'null');
+      if (!s || !(s.refresh_token || (s.currentSession && s.currentSession.refresh_token))) return null;
+      var id = (s.user || (s.currentSession && s.currentSession.user) || {}).id;
+      return UID_RE.test(String(id || '')) ? String(id) : null;
+    } catch (e) { return null; }
+  }
   function hasSession() {
     try {
       var s = JSON.parse(localStorage.getItem(SESSION) || 'null');
       return !!(s && (s.refresh_token || (s.currentSession && s.currentSession.refresh_token)));
     } catch (e) { return false; }
   }
-  if (hasSession()) state = 'unknown';
+  if (hasSession()) { state = 'unknown'; candidateUid = sessionUid(); }
   function scope() { return state === 'member' ? 'member:' + uid + ':' : state === 'guest' ? 'guest:' : null; }
   function key(type, id) {
     if (!/^(last|pos|read)$/.test(type) || typeof id !== 'string' || !id || id.length > 350) return null;
@@ -53,10 +61,14 @@
   }
   function setIdentity(next, id) {
     if (next !== 'guest' && next !== 'member' && next !== 'unknown') return false;
-    if (next === 'member' && (!UID_RE.test(String(id || '')))) return false;
+    if (next === 'member' && (!UID_RE.test(String(id || '')) || sessionUid() !== String(id))) return false;
     id = next === 'member' ? String(id) : null;
     if (state === next && uid === id) return true;
-    state = next; uid = id; version++; pending = [];
+    // Unknown-session reading belongs only to the candidate validated by the server.
+    var replay = next === 'member' && candidateUid === id ?
+      pending.filter(function (p) { return p.version === version; }) : [];
+    state = next; uid = id; version++; pending = []; candidateUid = next === 'unknown' ? sessionUid() : null;
+    replay.forEach(function (p) { write(p.type, p.id, p.value); });
     notify(); return true;
   }
   function onChange(fn) {
@@ -80,7 +92,14 @@
     else if (e.key && e.key.indexOf(PREFIX) === 0) notify();
   });
   window.addEventListener('pageshow', function (e) {
-    if (e.persisted) setIdentity(hasSession() ? 'unknown' : 'guest');
+    if (!e.persisted) return;
+    if (!hasSession()) { setIdentity('guest'); return; }
+    setIdentity('unknown');
+    if (window.WBAuth && window.WBAuth.getVerifiedUser) {
+      window.WBAuth.getVerifiedUser().then(function (v) {
+        if (v.user && v.user.id) setIdentity('member', v.user.id);
+      }).catch(function () {});
+    }
   });
   window.WBReadingStore = {
     read: read, write: write, listLast: listLast,
