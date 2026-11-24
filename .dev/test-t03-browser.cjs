@@ -16,7 +16,7 @@ const server = http.createServer((req, res) => {
     return res.end(file);
   }
   res.writeHead(200, {'Content-Type':'text/html; charset=utf-8', 'Cache-Control':'no-store'});
-  res.end('<!doctype html><title>T03 Mock Browser</title><main id="reading">Fake account tests only</main><script src="/reading-store.js"></script>');
+  res.end('<!doctype html><meta name="viewport" content="width=device-width, initial-scale=1"><title>T03 Mock Browser</title><main id="reading">Fake account tests only</main><script src="/reading-store.js"></script>');
 });
 const listen = () => new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
 const close = () => new Promise(resolve => server.close(resolve));
@@ -123,6 +123,44 @@ async function main() {
       'cross-tab storage.clear revokes old member view');
     await check(p, () => window.WBReadingStore.syncKey() === null,
       'cross-tab storage.clear removes member-scoped sync marker access');
+    // V2.0: Chromium device-profile simulations, NOT real Safari/Android devices.
+    for (const profile of [
+      {name:'iPhone-sized Chromium',width:390,height:844},
+      {name:'Android-sized Chromium',width:412,height:915}
+    ]) {
+      const mobileContext=await browser.newContext({
+        viewport:{width:profile.width,height:profile.height},
+        deviceScaleFactor:3,hasTouch:true,isMobile:true,serviceWorkers:'block'
+      });
+      try {
+        const mobile=await mobileContext.newPage();
+        mobile.on('pageerror',e=>errors.push(profile.name+': '+e.message));
+        await mobile.goto(url);
+        await check(mobile,() => window.WBReadingStore.identity().state === 'guest' &&
+          document.documentElement.scrollWidth <= document.documentElement.clientWidth,
+          profile.name+' guest isolated and fake page has no horizontal overflow');
+        await mobile.evaluate(v=>{
+          window.WBReadingStore.write('last','yu',JSON.stringify({url:'/t/mobile-guest/',no:'1'}));
+          localStorage.setItem(v.key,v.session);
+          window.WBReadingStore.setIdentity('unknown');
+        },{key:SESSION,session:session(A)});
+        await check(mobile,()=>window.WBReadingStore.identity().state==='unknown' &&
+          Object.keys(window.WBReadingStore.listLast()).length===0,
+          profile.name+' unverified member cannot inherit guest reading');
+        await mobile.evaluate(()=>window.WBReadingStore.setIdentity('member','fakeuser-A'));
+        await mobile.evaluate(()=>window.WBReadingStore.write('last','yu',JSON.stringify({url:'/t/mobile-a/',no:'3'})));
+        await check(mobile,()=>window.WBReadingStore.listLast().yu.url==='/t/mobile-a/',
+          profile.name+' verified A saves isolated reading');
+        await mobile.evaluate(key=>{
+          localStorage.removeItem(key);
+          window.WBReadingStore.setIdentity('guest');
+        },SESSION);
+        await check(mobile,()=>window.WBReadingStore.listLast().yu.url==='/t/mobile-guest/',
+          profile.name+' logout restores guest and hides A');
+      } finally {
+        await mobileContext.close();
+      }
+    }
     assert.equal(errors.length,0,'no browser JavaScript exceptions: '+errors.join('; '));
     checked++;
     await p2.close();
