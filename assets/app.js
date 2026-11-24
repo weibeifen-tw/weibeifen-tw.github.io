@@ -380,43 +380,116 @@ window.WBAvatar = (function () {
 window.WBRenderShelf = function () {
   var sub = document.querySelector('.shelf-list'); if (!sub) return;
   sub.textContent = '';
+  // 每次雲端同步重畫會使上一次索引回應失效，避免舊請求覆蓋新內容。
+  var renderToken = (window.WBShelfRenderToken || 0) + 1;
+  window.WBShelfRenderToken = renderToken;
   var novels = JSON.parse(document.getElementById('novels').textContent || '{}'), list = [];
   var chars = JSON.parse(document.getElementById('chars').textContent || '{}');
-  var split = window.SPLIT || [];
+  var split = window.SPLIT || [], links = [];
   function rd(k) { try { var r = JSON.parse(localStorage.getItem(k) || 'null'); return r && r.url ? r : null; } catch (e) { return null; } }
-  function row(href, label, no, cls) {
-    var a = document.createElement('a'); a.href = href; a.textContent = label; if (cls) a.className = cls;
-    var sm = document.createElement('small'); sm.textContent = '讀到第 ' + no + ' 篇'; a.appendChild(sm); return a;
+  function row(href, label, no, cls, novelId) {
+    var a = document.createElement('a');
+    a.textContent = label;
+    if (cls) a.className = cls;
+    a.setAttribute('aria-disabled', 'true');
+    var sm = document.createElement('small');
+    sm.textContent = '正在確認第 ' + no + ' 篇…';
+    a.appendChild(sm);
+    links.push({ a: a, small: sm, url: href, no: no, novel: novelId });
+    return a;
   }
   Object.keys(novels).forEach(function (id) {
     if (split.indexOf(id) >= 0 || novels[id].split) {
-      // 兩個角色各自一條線：每個角色各記一行
       var rows = [];
-      Object.keys(chars).forEach(function (cid) { if (chars[cid].novel !== id && (chars[cid].also || []).indexOf(id) < 0) return; var r = rd('wb:last:' + id + ':' + cid); if (r) rows.push([cid, r]); });
-      if (!rows.length) { var old = rd('wb:last:' + id); if (old) { if (old.char) rows.push([old.char, old]); else { list.push({ id: id, r: old, t: old.t || 0 }); return; } } }
+      Object.keys(chars).forEach(function (cid) {
+        if (chars[cid].novel !== id && (chars[cid].also || []).indexOf(id) < 0) return;
+        var r = rd('wb:last:' + id + ':' + cid); if (r) rows.push([cid, r]);
+      });
+      if (!rows.length) {
+        var old = rd('wb:last:' + id);
+        if (old) {
+          if (old.char) rows.push([old.char, old]);
+          else { list.push({ id: id, r: old, t: old.t || 0 }); return; }
+        }
+      }
       if (rows.length) list.push({ id: id, rows: rows, t: Math.max.apply(null, rows.map(function (x) { return x[1].t || 0; })) });
     } else {
-      var r = rd('wb:last:' + id); if (r) list.push({ id: id, r: r, t: r.t || 0 });
+      var rec = rd('wb:last:' + id);
+      if (rec) list.push({ id: id, r: rec, t: rec.t || 0 });
     }
   });
   list.sort(function (a, b) { return b.t - a.t; });
   if (!list.length) { var p = document.createElement('p'); p.textContent = '還沒有看過的小說。從首頁挑一部開始吧。'; sub.appendChild(p); }
   function add(x) {
-    if (x.r) { sub.appendChild(row(x.r.url, novels[x.id].title, x.r.no)); return; }
-    var h = document.createElement('a'); h.href = BASE + '/novel/' + x.id + '/'; h.className = 'd-nv'; h.textContent = novels[x.id].title; sub.appendChild(h);
-    x.rows.forEach(function (y) { sub.appendChild(row(y[1].url, (chars[y[0]] || {}).name || '', y[1].no, 'd-ch')); });
+    if (x.r) { sub.appendChild(row(x.r.url, novels[x.id].title, x.r.no, '', x.id)); return; }
+    var h = document.createElement('a'); h.href = BASE + '/novel/' + x.id + '/';
+    h.className = 'd-nv'; h.textContent = novels[x.id].title; sub.appendChild(h);
+    x.rows.forEach(function (y) {
+      sub.appendChild(row(y[1].url, (chars[y[0]] || {}).name || '', y[1].no, 'd-ch', x.id));
+    });
   }
-  // 會員頁：先顯示最近讀的 5 本，「再看 10 本」一次多 10 本；書櫃頁全部顯示
-  if (!sub.closest('.member-page')) { list.forEach(add); return; }
-  var n = 0, more = document.createElement('button'); more.type = 'button'; more.className = 'mb-btn mycm-more';
-  function showMore(k) {
-    list.slice(n, n + k).forEach(add); n = Math.min(list.length, n + k);
-    var left = list.length - n; more.hidden = left <= 0;
-    more.textContent = '再看 ' + Math.min(10, left) + ' 本（還有 ' + left + ' 本）';
-    sub.appendChild(more);
+  if (!sub.closest('.member-page')) list.forEach(add);
+  else {
+    var n = 0, more = document.createElement('button'); more.type = 'button'; more.className = 'mb-btn mycm-more';
+    function showMore(k) {
+      list.slice(n, n + k).forEach(add); n = Math.min(list.length, n + k);
+      var left = list.length - n; more.hidden = left <= 0;
+      more.textContent = '再看 ' + Math.min(10, left) + ' 本（還有 ' + left + ' 本）';
+      sub.appendChild(more);
+      // 展開後新增的書櫃項目，同樣要套用已取得的索引。
+      if (window.WBShelfIndex && window.WBShelfRenderToken === renderToken) apply(window.WBShelfIndex);
+    }
+    more.onclick = function () { showMore(10); };
+    showMore(5);
   }
-  more.onclick = function () { showMore(10); };
-  showMore(5);
+  var status = document.createElement('p');
+  status.className = 'nv-link-note';
+  status.setAttribute('role', 'status');
+  status.setAttribute('aria-live', 'polite');
+  var retry = document.createElement('button');
+  retry.type = 'button'; retry.className = 'nv-link-retry';
+  retry.textContent = '重新確認'; retry.hidden = true;
+  sub.appendChild(status); sub.appendChild(retry);
+  function apply(data) {
+    if (window.WBShelfRenderToken !== renderToken) return;
+    links.forEach(function (x) {
+      var result = window.WBChapterGuard.resolve(data, x.url);
+      x.a.removeAttribute('href');
+      x.a.setAttribute('aria-disabled', 'true');
+      if (result.status === 'published' && result.chapter.novel === x.novel) {
+        x.a.href = result.url;
+        x.a.removeAttribute('aria-disabled');
+        x.small.textContent = '讀到第 ' + result.chapter.chapter + ' 篇';
+      } else if (result.status === 'withdrawn') {
+        x.small.textContent = '（此章節已撤回，紀錄保留）';
+      } else {
+        x.small.textContent = '（原章節無法使用，紀錄保留）';
+      }
+    });
+    status.textContent = ''; retry.hidden = true;
+  }
+  function check(force) {
+    var seq = renderToken;
+    links.forEach(function (x) {
+      x.a.removeAttribute('href');
+      x.a.setAttribute('aria-disabled', 'true');
+      x.small.textContent = '正在確認第 ' + x.no + ' 篇…';
+    });
+    status.textContent = '正在確認閱讀位置…';
+    retry.hidden = true;
+    window.WBChapterGuard.load(!!force).then(function (data) {
+      if (window.WBShelfRenderToken !== seq) return;
+      window.WBShelfIndex = data;
+      apply(data);
+    }).catch(function () {
+      if (window.WBShelfRenderToken !== seq) return;
+      links.forEach(function (x) { x.small.textContent = '（暫時無法確認，紀錄保留）'; });
+      status.textContent = '暫時無法確認書櫃閱讀位置。';
+      retry.hidden = false;
+    });
+  }
+  retry.onclick = function () { check(true); };
+  if (links.length) check(false);
 };
 window.WBRenderShelf();
 
