@@ -847,3 +847,36 @@ gezikaojin:
       - 自主選擇
     writing_completed: true
     final_post_id: gezikaojin24
+
+eigenstate:
+  city: hsinchu-city
+  title: 本徵態
+  cover: /assets/covers/eigenstate.svg
+  caption: |-
+    2005年，新竹。
+  era: 2005–2011・新竹
+  tag: 校園
+  blurb: "弦與沁在清大相識，一部關於女性愛情、科學研究與共同成長的年代小說。"
+  tags: [GL, 校園, 學術, 物理, 化學, 初戀, 同居, 共同成長]
+  intro: |-
+    2005年，新竹。
+
+    弦在清大念物理，沁念化學。十九歲的她們在共同修習的課堂上認識，交換了手機號碼與MSN帳號。一個月後，她們成為彼此的初戀。
+
+    隔年夏天，她們在建功路附近租下一間公寓。兩張書桌、一塊白板、一本共同生活帳本，開始了長達五年的同居生活。
+
+    弦研究量子物理，沁研究分子光譜。她們有各自擅長的領域、朋友圈和想去的地方，也喜歡在忙完一天的課業後，回到同一個家。
+
+    從十九歲到二十五歲，從大學新生到碩士畢業，她們談戀愛、做研究、享受彼此的身體，也在逐漸長大的過程中，認識自己真正想要的生活。
+
+    《本徵態》是一部關於女性愛情、科學研究與共同成長的年代小說。
+  post_images:
+    - src: /assets/comics/eigenstate-1.webp
+      alt: 窗邊對視
+    - src: /assets/comics/eigenstate-2.webp
+      alt: 肩頸輕吻
+    - src: /assets/comics/eigenstate-3.webp
+      alt: 深夜親吻
+  reading_info:
+    writing_completed: false
+    final_post_id: ""
