@@ -15,6 +15,16 @@
 
 # 小說故事年代：與可查證的歷史事件分開，不宣稱為真實歷史事件。
 story_settings:
+  - id: eigenstate-setting-2005
+    year: 2005
+    novel: eigenstate
+    location: 新竹市
+    description: 2005–2011 年，弦與沁在清華大學相識、求學與共同成長的故事（2000 年代）
+  - id: eigenstate-setting-2010
+    year: 2010
+    novel: eigenstate
+    location: 新竹市
+    description: 2005–2011 年故事背景延續至 2010 年代，弦與沁的研究與共同生活
   - id: fendao-setting
     year: 2026
     novel: fendao
