@@ -98,7 +98,7 @@ market:
     psychology:
       - 安全感
       - 生活陪伴
-    writing_completed: false
+    writing_completed: true
     final_post_id: ""
 feichang:
   city: changhua
@@ -163,7 +163,7 @@ gongdi:
       - 自我價值
       - 個性差異
       - 情感溝通
-    writing_completed: false
+    writing_completed: true
     final_post_id: ""
 hongdian:
   city: taichung
@@ -195,7 +195,7 @@ hongdian:
       - 隱私界線
       - 社群壓力
       - 表演式親密
-    writing_completed: false
+    writing_completed: true
     final_post_id: ""
 hue:
   city: tainan
@@ -226,7 +226,7 @@ hue:
       - 社會規訓
       - 自我接納
       - 性別偏見
-    writing_completed: false
+    writing_completed: true
     final_post_id: ""
 exam:
   city: taipei
@@ -260,7 +260,7 @@ exam:
       - 成就焦慮
       - 自我要求
       - 失敗壓力
-    writing_completed: false
+    writing_completed: true
     final_post_id: ""
 yincang:
   city: chiayi
@@ -295,7 +295,7 @@ yincang:
       - 情感壓抑
       - 家庭衝突
       - 婚姻壓力
-    writing_completed: false
+    writing_completed: true
     final_post_id: ""
 shiyi:
   city: zhongxing
@@ -431,7 +431,7 @@ chuwang:
       - 焦慮型依附
       - 討好傾向
       - 家庭角色倒置
-    writing_completed: false
+    writing_completed: true
     final_post_id: ""
 mizi:
   city: taipei
@@ -466,7 +466,7 @@ mizi:
       - 家庭責任
       - 親密陪伴
       - 情感表達
-    writing_completed: false
+    writing_completed: true
     final_post_id: ""
 pendi:
   city: puli
@@ -536,7 +536,7 @@ shuangshuang:
       - 性別刻板印象
       - 家庭逼婚
       - 自我接納
-    writing_completed: false
+    writing_completed: true
     final_post_id: ""
 duanqiao:
   city: kinmen
@@ -643,7 +643,7 @@ xiwei:
       - 家庭權力
       - 政治壓力
       - 自主性
-    writing_completed: false
+    writing_completed: true
     final_post_id: ""
 chaosheng:
   city: matsu
@@ -676,7 +676,7 @@ chaosheng:
       - 記憶
       - 情感修復
       - 信任
-    writing_completed: false
+    writing_completed: true
     final_post_id: ""
 houdiao:
   city: taipei
