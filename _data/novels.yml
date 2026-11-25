@@ -1,7 +1,7 @@
 # caption＝首頁作品貼文的短文案（蔡確認過）。
 # 每部小說一段。tags＝介紹頁的標籤，intro＝介紹頁的簡介。era＝時代・地點，tag＝題材（會顯示在選單書名下面）。id 用英文，貼文裡的 novel: 要對得上。icon 是側邊選單上的小圖示，可以放一個表情符號。
 yu:
-  visuals:
+  post_images:
     - src: /assets/stories/yu-v01.webp
       alt: 長桌
     - src: /assets/stories/yu-v02.webp
