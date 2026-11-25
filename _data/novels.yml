@@ -857,7 +857,7 @@ eigenstate:
   era: 2005–2011・新竹
   tag: 校園
   blurb: "弦與沁在清大相識，一部關於女性愛情、科學研究與共同成長的年代小說。"
-  tags: [GL, 校園, 學術, 物理, 化學, 初戀, 同居, 共同成長]
+  tags: [校園, 學術, 年代寫實]
   intro: |-
     2005年，新竹。
 
@@ -878,5 +878,13 @@ eigenstate:
     - src: /assets/comics/eigenstate-3.webp
       alt: 深夜親吻
   reading_info:
+    relationship: 初戀、穩定交往
+    tone: 甜寵、日常寫實
+    rating: "18+"
+    psychology:
+      - 安全型依附
+      - 完美主義
+      - 學業與研究壓力
+      - 親密關係與個人界線
     writing_completed: false
     final_post_id: ""
