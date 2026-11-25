@@ -13,7 +13,12 @@
 {%- assign posters = ordered | map: "character" | uniq -%}
 <section id="novel" class="novel" data-static="1">
   <a class="nv-back" href="{{ '/' | relative_url }}">← 回首頁</a>
-  <h1>{{ nv.title }}</h1>
+  <div class="nv-title-row" style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+    <h1 style="min-width:0;overflow-wrap:anywhere;">{{ nv.title }}</h1>
+    {%- if nv.reading_info.writing_completed == true %}
+    <span class="ri-done" style="flex:none;white-space:nowrap;background:#1c1b18;color:#fff;border-radius:999px;padding:6px 12px;font-size:0.85rem;line-height:1.4;">完結</span>
+    {%- endif %}
+  </div>
   {%- if nv.era %}<p class="nv-era">{{ nv.era }}</p>{% endif %}
   {%- comment -%} V1.0 R02：原首頁作品介紹貼文的圖片與互動 {%- endcomment -%}
   {% include novel-post.html id=id %}
@@ -54,7 +59,6 @@
       {%- if ri.relationship %}<li><small>感情關係</small>{{ ri.relationship | escape }}</li>{% endif -%}
       {%- if ri.tone %}<li><small>故事調性</small>{{ ri.tone | escape }}</li>{% endif -%}
       {%- if ri.rating == '18+' %}<li><small>內容尺度</small>{{ ri.rating | escape }}</li>{% endif -%}
-      {%- if ri.writing_completed == true %}<li class="ri-done">完結</li>{% endif -%}
     </ul>
     {%- if ri.psychology and ri.psychology.size > 0 %}
     <details class="reading-details">
