@@ -482,3 +482,14 @@ yu-a004
 yu-a005
 yu-a006
 yu-a007
+# 2026-11-26：站長授權《本徵態》第一批01–10篇公開。
+eigenstate001
+eigenstate002
+eigenstate003
+eigenstate004
+eigenstate005
+eigenstate006
+eigenstate007
+eigenstate008
+eigenstate009
+eigenstate010
