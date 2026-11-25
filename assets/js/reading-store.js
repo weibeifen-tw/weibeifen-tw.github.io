@@ -114,7 +114,42 @@
       }).catch(function () {});
     }
   });
+  // Explicit opt-in only; never import another member's scoped data.
+  function recoverable() {
+    var keys = [];
+    try {
+      for (var i = 0; i < localStorage.length; i++) {
+        var k = localStorage.key(i);
+        if (/^(wb:|wb:v2:guest:)(last|pos|read):/.test(k || '')) keys.push(k);
+      }
+    } catch (e) {}
+    return keys;
+  }
+  function recover() {
+    var s = scope();
+    if (!s) return 0;
+    var count = 0;
+    recoverable().forEach(function (k) {
+      if (s === 'guest:' && k.indexOf(PREFIX) === 0) return;
+      var m = /^(wb:|wb:v2:guest:)(last|pos|read):(.+)$/.exec(k);
+      if (!m || !key(m[2], m[3]) || scope() !== s) return;
+      try {
+        var value = localStorage.getItem(k);
+        if (value === null || read(m[2], m[3]) !== null) return;
+        if (m[2] === 'last') {
+          var row = JSON.parse(value);
+          if (!row || typeof row.url !== 'string' || !/^\/t\/[a-zA-Z0-9_-]+\/$/.test(row.url)) return;
+        } else if (m[2] === 'read' && value !== '1') return;
+        else if (m[2] === 'pos' && (!isFinite(Number(value)) || Number(value) < 0)) return;
+        if (write(m[2], m[3], value)) count++;
+      } catch (e) {}
+    });
+    notify();
+    return count;
+  }
   window.WBReadingStore = {
+    recoverableCount: function () { return scope() ? recoverable().filter(function (k) { return scope() !== 'guest:' || k.indexOf(PREFIX) !== 0; }).length : 0; },
+    recover: recover,
     read: read, write: write, listLast: listLast,
     setIdentity: setIdentity, onChange: onChange, clearMember: clearMember,
     identity: function () {

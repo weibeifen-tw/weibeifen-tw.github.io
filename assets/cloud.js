@@ -172,15 +172,19 @@
   /* ---------- 收藏 ---------- */
   async function isFav(A, novel, path) {
     // 章節書籤用網址判斷（2026-11-23 拆書後，舊書籤的 novel 可能還是原作品）；整本收藏（path 空白）照舊用 novel
-    var q = A.getClient().from('favorites').select('path');
+    var v = await A.getVerifiedUser();
+    if (!v.user) throw new Error('請重新登入');
+    var q = A.getClient().from('favorites').select('path').eq('user_id', v.user.id);
     var res = path ? await q.eq('path', path).limit(1) : await q.eq('novel', novel).eq('path', path).maybeSingle();
-    return !res.error && (path ? !!(res.data && res.data.length) : !!res.data);
+    if (res.error) throw new Error(errText('讀取收藏失敗', res.error));
+    return path ? !!(res.data && res.data.length) : !!res.data;
   }
 
   async function setFav(A, on, row) {
     var c = A.getClient();
-    var uid = await uidOf(c);
-    if (!uid) return '請先登入。';
+    var verified = await A.getVerifiedUser();
+    var uid = verified.user && verified.user.id;
+    if (!uid) return '請重新登入。';
     var res;
     if (on) {
       res = await c.from('favorites').insert({
@@ -189,8 +193,8 @@
       });
       if (res.error && res.error.code === '23505') return null; // 已經收藏過了
     } else {
-      res = row.path ? await c.from('favorites').delete().eq('path', row.path)
-        : await c.from('favorites').delete().eq('novel', row.novel).eq('path', '');
+      res = row.path ? await c.from('favorites').delete().eq('user_id', uid).eq('path', row.path)
+        : await c.from('favorites').delete().eq('user_id', uid).eq('novel', row.novel).eq('path', '');
     }
     return res.error ? errText('收藏沒有成功，請稍後再試。', res.error) : null;
   }
@@ -210,7 +214,7 @@
       if (!signedIn()) { askLogin(); return; }
       b.disabled = true;
       var err = null;
-      try { var A = await getAuth(); err = await setFav(A, !on, row); }
+      try { var A = await getAuth(); on = await isFav(A, row.novel, row.path); err = await setFav(A, !on, row); }
       catch (e) { err = '連不上會員伺服器，請稍後再試。'; }
       b.disabled = false;
       if (err) { window.alert(err); return; }
@@ -284,8 +288,10 @@
   async function renderFavs(A) {
     if (!favList) return;
     var seq = ++favRenderSequence;
-    var res = await A.getClient().from('favorites').select('novel,path,title,no,created_at').order('created_at', { ascending: false });
-    if (seq !== favRenderSequence) return;
+    var identity = Store.identity();
+    if (identity.state !== 'member') return;
+    var res = await A.getClient().from('favorites').select('novel,path,title,no,created_at').eq('user_id', identity.uid).order('created_at', { ascending: false });
+    if (seq !== favRenderSequence || Store.identity().version !== identity.version) return;
     favList.textContent = '';
     favBox.hidden = false;
     if (res.error) { favList.appendChild(el('p', 'mb-form-msg err', errText('讀取收藏失敗，請重新整理。', res.error))); return; }
@@ -856,62 +862,73 @@
     refresh: function () { return getAuth().then(dmDot).catch(function () {}); }
   };
 
-  /* ---------- 啟動 ---------- */
-  if (!signedIn()) { document.querySelectorAll('.mb-guest').forEach(function (g) { g.hidden = false; }); return; }
-
-  getAuth().then(async function (A) {
-    // Register before any network round-trip. Authentication events may arrive
-    // during is_banned/getUser/sync, so invalidate older verification results.
-    var authGeneration = 0;
-    A.onChange(function (event) {
-      var generation = ++authGeneration;
-      if (event === 'SIGNED_OUT') Store.setIdentity('guest');
-      else if (event === 'SIGNED_IN') {
-        Store.setIdentity('unknown');
-        var expectedVersion = Store.identity().version;
-        A.getVerifiedUser().then(function (v) {
-          var now = Store.identity();
-          if (generation !== authGeneration || now.version !== expectedVersion ||
-              now.state !== 'unknown') return;
-          if (v.user && v.user.id) Store.setIdentity('member', v.user.id);
-        }).catch(function () {});
+  /* ---------- 啟動：收藏與閱讀同步獨立執行 ---------- */
+  function favStatus(message) {
+    if (!favList) return;
+    ++favRenderSequence;
+    favBox.hidden = false;
+    favList.textContent = '';
+    favList.appendChild(el('p', 'mb-form-msg', message));
+  }
+  function guest() {
+    Store.setIdentity('guest');
+    document.querySelectorAll('.mb-guest').forEach(function (g) { g.hidden = false; });
+    buttons.forEach(function (x) { x[0].setOn(false); });
+    favStatus('請登入會員以查看收藏。');
+  }
+  if (!signedIn()) { guest(); return; }
+  favStatus('正在載入收藏…');
+  getAuth().then(function (A) {
+    var generation = 0;
+    async function initialize() {
+      var ticket = ++generation;
+      try {
+        var v = await A.getVerifiedUser();
+        if (ticket !== generation) return;
+        if (!v.user || !v.user.id) {
+          if (v.error) { Store.setIdentity('unknown'); favStatus('會員驗證失敗，請重新整理。'); }
+          else guest();
+          return;
+        }
+        var bn = await A.getClient().rpc('is_banned');
+        if (ticket !== generation) return;
+        if (!bn.error && bn.data === true) {
+          await A.signOut(); guest(); location.reload(); return;
+        }
+        if (!Store.setIdentity('member', v.user.id)) { favStatus('登入狀態已變更，請重新整理。'); return; }
+        document.querySelectorAll('.mb-guest').forEach(function (g) { g.hidden = true; });
+        var version = Store.identity().version;
+        buttons.forEach(function (x) {
+          isFav(A, x[1].novel, x[1].path).then(function (on) {
+            if (ticket === generation && Store.identity().version === version && !x[0].disabled) x[0].setOn(on);
+          }).catch(function () {});
+        });
+        if (favList) renderFavs(A).catch(function () { if (ticket === generation) favStatus('讀取收藏失敗，請重新整理。'); });
+        if (myCmList) renderMyComments(A).catch(function () {});
+        dmDot(A).catch(function () {});
+        var last = 0, successKey = Store.syncKey();
+        try { if (successKey) last = +sessionStorage.getItem(successKey) || 0; } catch (e) {}
+        if (sec || document.querySelector('.shelf-list') || Date.now() - last > SYNC_EVERY) {
+          sync(A).then(function (result) {
+            if (ticket !== generation) return;
+            window.WBReadingSyncStatus = result.ok ? 'ok' : 'error';
+            if (window.WBRenderShelf) window.WBRenderShelf();
+          }).catch(function () {
+            if (ticket !== generation) return;
+            window.WBReadingSyncStatus = 'error';
+            if (window.WBRenderShelf) window.WBRenderShelf();
+          });
+        }
+      } catch (e) { if (ticket === generation) favStatus('會員服務暫時無法使用，請重新整理。'); }
+    }
+    A.onChange(function (event, user) {
+      if (event === 'SIGNED_OUT') { ++generation; guest(); return; }
+      if (event === 'SIGNED_IN') {
+        var identity = Store.identity();
+        if (identity.state === 'member' && user && identity.uid === user.id) return;
+        initialize();
       }
     });
-    var startingGeneration = authGeneration;
-    // 被封鎖的帳號：自動登出（小說照樣可以看）
-    try {
-      var bn = await A.getClient().rpc('is_banned');
-      if (!bn.error && bn.data === true && authGeneration === startingGeneration &&
-          signedIn()) {
-        try { localStorage.removeItem('wb:me'); } catch (e) {}
-        await A.signOut();
-        window.alert('你的帳號已被停權，已自動登出。小說還是可以繼續看。');
-        location.reload();
-        return;
-      }
-    } catch (e) {}
-    // Do not promote a local refresh token to a verified reading identity.
-    var identityCheck = await A.getVerifiedUser();
-    // A newer sign-in/out invalidates this initial verification response.
-    if (authGeneration !== startingGeneration) return;
-    if (!identityCheck.user || !identityCheck.user.id) {
-      Store.setIdentity(identityCheck.error ? 'unknown' : 'guest');
-      return;
-    }
-    if (!Store.setIdentity('member', identityCheck.user.id)) return;
-    var last = 0, successKey = Store.syncKey();
-    try { if (successKey) last = +sessionStorage.getItem(successKey) || 0; } catch (e) {}
-    if (sec || document.querySelector('.shelf-list') || Date.now() - last > SYNC_EVERY) {
-      try { await sync(A); } catch (e) {}
-    }
-    dmDot(A).catch(function () {});
-    buttons.forEach(function (x) {
-      isFav(A, x[1].novel, x[1].path).then(function (v) { x[0].setOn(v); }).catch(function () {});
-    });
-    if (myCmList) { try { await renderMyComments(A); } catch (e) {} }
-    if (favList) {
-      try { await renderFavs(A); } catch (e) {}
-      A.onChange(function (event) { if (event === 'SIGNED_OUT') favBox.hidden = true; });
-    }
-  }).catch(function () { /* 載入失敗：維持訪客畫面，不影響閱讀 */ });
+    initialize();
+  }).catch(function () { favStatus('會員服務載入失敗，請重新整理。'); });
 })();
