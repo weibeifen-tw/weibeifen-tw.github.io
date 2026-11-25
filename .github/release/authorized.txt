@@ -475,3 +475,10 @@ mizi05
 mizi06
 mizi07
 mizi08
+yu-a001
+yu-a002
+yu-a003
+yu-a004
+yu-a005
+yu-a006
+yu-a007

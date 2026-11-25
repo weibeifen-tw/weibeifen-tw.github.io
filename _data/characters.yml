@@ -7,6 +7,8 @@
 #   also：同一個角色也出現在其他小說（例如 mo 的主作品是 yu，也在 lailu）；novel 仍是主作品，角色連結照舊
 #   skip：自動點名時要跳過的詞（例如「秀禾」裡的「禾」不算點名）
 mo:
+  story_by_novel:
+    yu: /assets/stories/yu-mo.webp
   name: 模
   handle: mo.unbacked
   novel: yu
@@ -489,3 +491,12 @@ gezikaojin-he:
   color: "#628A99"
   story: /assets/stories/gezikaojin-he.webp
   bio: 在臺南擔任醫務社工。喜歡音樂與現場演出，會和朋友分享最近聽到的歌曲。正在探索自己的職涯方向，希望重要的選擇能由自己決定。
+
+yu-you:
+  name: 釉
+  handle: you.unbacked
+  novel: yu
+  glyph: 釉
+  color: "#788578"
+  bio: 模的伴侶。
+  story: /assets/stories/yu-you.webp

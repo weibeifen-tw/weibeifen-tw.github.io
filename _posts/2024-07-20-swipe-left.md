@@ -3,7 +3,7 @@ layout: thread
 title: 左滑
 character: mo
 novel: yu
-chapter: 1
+chapter: 8
 teaser: |
   我在 ZOE 上右滑了她。照片裡她蹲著摸一隻小狗，臉頰圓圓的，好想咬一口。
 

@@ -2,7 +2,7 @@
 // 只換章號與所屬作品，不刪任何紀錄（下架章節的紀錄保留原樣）。雲端書櫃同步（cloud.js）也用同一份對照。
 window.wbRemap = (function () {
   var L = {'shutter': 1, 'drumstick': 2, 'net': 3, 'bamboo-goal': 4, 'gutter': 5};
-  var Y = {'swipe-left': 1, 'good-morning': 2, 'grass': 3, 'cocktail': 4, 'heart': 5, 'cupcake': 6, 'mumu': 7, 'quilt': 8, 'thick-steak': 9, 'ill-keep-you': 10, 'fish-in-fish': 11, 'pot': 12, '95': 13, 'panda': 14, 'medicine': 15, 'sticky-notes': 16};
+  var Y = {'swipe-left': 8, 'good-morning': 9, 'grass': 10, 'cocktail': 11, 'heart': 12, 'cupcake': 13, 'mumu': 14, 'quilt': 15, 'thick-steak': 16, 'ill-keep-you': 17, 'fish-in-fish': 18, 'pot': 19, '95': 20, 'panda': 21, 'medicine': 22, 'sticky-notes': 23};
   return function (k, r) {
     if (!r || typeof r.url !== 'string' || !/^yu(:|$)/.test(k)) return [k, r];
     var m = r.url.match(/\/t\/([^\/?#]+)\/?/); if (!m) return [k, r];

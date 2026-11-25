@@ -8,8 +8,8 @@
 {%- for c in site.data.characters -%}{%- if c[1].novel == id or c[1].also contains id -%}{%- if c[1].support -%}{%- assign sups = sups | push: c[0] -%}{%- else -%}{%- assign leads = leads | push: c[0] -%}{%- endif -%}{%- endif -%}{%- endfor -%}
 {%- comment -%} 角色專屬限動（山海有痕起）：characters.yml 的 story，點頭像才載入大圖（assets/story.js） {%- endcomment -%}
 {%- assign has_story = false -%}
-{%- for cid in leads -%}{%- if site.data.characters[cid].story -%}{%- assign has_story = true -%}{%- endif -%}{%- endfor -%}
-{%- for cid in sups -%}{%- if site.data.characters[cid].story -%}{%- assign has_story = true -%}{%- endif -%}{%- endfor -%}
+{%- for cid in leads -%}{%- assign sc = site.data.characters[cid] -%}{%- assign story_src = sc.story_by_novel[id] | default: sc.story -%}{%- if story_src -%}{%- assign has_story = true -%}{%- endif -%}{%- endfor -%}
+{%- for cid in sups -%}{%- assign sc = site.data.characters[cid] -%}{%- assign story_src = sc.story_by_novel[id] | default: sc.story -%}{%- if story_src -%}{%- assign has_story = true -%}{%- endif -%}{%- endfor -%}
 {%- assign posters = ordered | map: "character" | uniq -%}
 <section id="novel" class="novel" data-static="1">
   <a class="nv-back" href="{{ '/' | relative_url }}">← 回首頁</a>
@@ -142,7 +142,7 @@
   <div class="role{% if c.support %} role-sup{% endif %}" data-char="{{ cid }}" style="--c:{{ c.color }}">
     <div class="role-head">
       {%- capture av -%}<span class="avatar" style="--c:{{ c.color }}">{% if c.avatar %}<img src="{{ '/assets/avatars/' | append: c.avatar | relative_url }}?v={{ site.time | date: '%s' }}" alt="">{% else %}{{ c.glyph }}{% endif %}</span>{%- endcapture -%}
-      {%- if c.story %}<button type="button" class="sv-open sv-av" data-sv="{{ c.story | relative_url }}|{{ c.name | escape }}的角色限動" aria-label="看{{ c.name }}的角色限動"><span class="sv-ring">{{ av }}</span></button>{% else %}{{ av }}{% endif %}
+      {%- assign story_src = c.story_by_novel[id] | default: c.story -%}{%- if story_src %}<button type="button" class="sv-open sv-av" data-sv="{{ story_src | relative_url }}|{{ c.name | escape }}的角色限動" aria-label="看{{ c.name }}的角色限動"><span class="sv-ring">{{ av }}</span></button>{% else %}{{ av }}{% endif %}
       <span class="role-t"><b>{{ c.name }}</b><small>@{{ c.handle }}</small></span>
     </div>
     <p class="role-bio">{{ c.bio }}</p>
