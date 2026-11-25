@@ -427,7 +427,29 @@ window.WBRenderShelf = function () {
     }
   });
   list.sort(function (a, b) { return b.t - a.t; });
-  if (!list.length) { var p = document.createElement('p'); p.textContent = '還沒有看過的小說。從首頁挑一部開始吧。'; sub.appendChild(p); }
+  var store = window.WBReadingStore, identity = store.identity();
+  if (!list.length) {
+    var p = document.createElement('p');
+    p.textContent = identity.state === 'unknown' ? '正在確認會員身分，請稍後或重新整理。' :
+      identity.state === 'member' && window.WBReadingSyncStatus !== 'ok' ? '正在確認雲端閱讀紀錄…' :
+      '還沒有看過的小說。從首頁挑一部開始吧。';
+    if (window.WBReadingSyncStatus === 'error' && identity.state === 'member') p.textContent = '雲端閱讀紀錄載入失敗，請重新整理。';
+    sub.appendChild(p);
+  }
+  if (list.length && identity.state === 'member' && window.WBReadingSyncStatus === 'error') {
+    var warning = document.createElement('p'); warning.textContent = '目前顯示裝置紀錄，雲端同步失敗。'; sub.appendChild(warning);
+  }
+  if (store.recoverableCount && store.recoverableCount()) {
+    var restore = document.createElement('button'); restore.type = 'button'; restore.className = 'mb-btn';
+    restore.textContent = '復原這台裝置的舊閱讀紀錄';
+    restore.onclick = function () {
+      if (!confirm('請確認這台裝置上的舊紀錄及訪客紀錄都是你本人的。復原會保留現有紀錄，不覆蓋或刪除原始資料。確定匯入目前書櫃？')) return;
+      var count = store.recover();
+      alert('已復原 ' + count + ' 筆閱讀資料。');
+      location.reload();
+    };
+    sub.appendChild(restore);
+  }
   function add(x) {
     if (x.r) { sub.appendChild(row(x.r.url, novels[x.id].title, x.r.no, '', x.id)); return; }
     var h = document.createElement('a'); h.href = BASE + '/novel/' + x.id + '/';
