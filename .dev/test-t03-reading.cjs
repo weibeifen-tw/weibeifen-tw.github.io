@@ -255,6 +255,12 @@ async function run() {
   assert.ok(remapSrc);
   const remapWindow = {};
   new Function('window', remapSrc[0])(remapWindow);
+  ['swipe-left','good-morning','grass','cocktail','heart','cupcake','mumu','quilt','thick-steak','ill-keep-you','fish-in-fish','pot','95','panda','medicine','sticky-notes'].forEach((slug,i) => {
+    const old = {url:'/t/'+slug+'/',no:String(i+1),t:42};
+    const mapped = remapWindow.wbRemap('yu',old);
+    check(mapped[0]==='yu' && mapped[1].no===String(i+8) && mapped[1].url===old.url && mapped[1].t===42 && old.no===String(i+1), 'yu chapter renumber '+slug);
+    check(remapWindow.wbRemap('yu',mapped[1])[1]===mapped[1], 'yu remap idempotent '+slug);
+  });
   const moved = remapWindow.wbRemap('yu', { url: '/t/shutter/', no: '51' });
   check(moved[0] === 'lailu' && moved[1].no === '1', 'original chapter remap intact');
   check(!app.includes("localStorage.setItem('wb:mig:yu-split-1'"),

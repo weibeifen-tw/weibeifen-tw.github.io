@@ -3,7 +3,7 @@ layout: thread
 title: 魚中魚
 character: mo
 novel: yu
-chapter: 11
+chapter: 18
 teaser: |
   在魚中魚，我看到一隻奶油色的小貓。
 

@@ -3,7 +3,7 @@ layout: thread
 title: 我養你
 character: mo
 novel: yu
-chapter: 10
+chapter: 17
 teaser: |
   「沒有公司想要我這種人。」
 

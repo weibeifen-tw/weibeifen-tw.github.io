@@ -90,7 +90,10 @@
     Object.keys(scoped).forEach(function (id) {
       var r = scoped[id];
       if (KEY_RE.test(id) && r && typeof r.url === 'string' &&
-          r.url.charAt(0) === '/' && r.url.charAt(1) !== '/') out[id] = r;
+          r.url.charAt(0) === '/' && r.url.charAt(1) !== '/') {
+        var projected = window.wbRemap ? window.wbRemap(id, r) : [id, r];
+        out[id] = projected[0] === id ? projected[1] : r;
+      }
     });
     return out;
   }
