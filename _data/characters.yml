@@ -500,3 +500,22 @@ yu-you:
   color: "#788578"
   bio: 模的伴侶。
   story: /assets/stories/yu-you.webp
+
+eigenstate-xian:
+  name: 弦
+  handle: eigenstate.xian
+  novel: eigenstate
+  avatar: eigenstate-xian.svg
+  story: /assets/stories/eigenstate-xian.webp
+  glyph: 弦
+  color: "#55545c"
+  bio: 高雄人，清華大學物理系。十九歲，152 公分，黑色及腰長髮。
+eigenstate-qin:
+  name: 沁
+  handle: eigenstate.qin
+  novel: eigenstate
+  avatar: eigenstate-qin.svg
+  story: /assets/stories/eigenstate-qin.webp
+  glyph: 沁
+  color: "#8b7889"
+  bio: 臺南人，清華大學化學系。十九歲，155 公分，黑色及胸長髮、齊瀏海。
