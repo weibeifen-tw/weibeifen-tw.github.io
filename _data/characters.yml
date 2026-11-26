@@ -112,9 +112,80 @@ shi:
   handle: shi.timeline
   novel: shiyi
   avatar: shi.svg
+  story: /assets/stories/shiyi-shi.webp
   glyph: 拾
   color: "#8a6a4f"
   bio: 十六歲，中興高中高一。住在中興新村的省府宿舍，筆記抄得比誰都完整。
+shiyi-jian:
+  name: 簡老師
+  handle: shiyi.jian
+  novel: shiyi
+  support: true
+  avatar: shiyi-jian.svg
+  story: /assets/stories/shiyi-jian.webp
+  glyph: 簡
+  color: '#526457'
+  bio: 中興高中的歷史老師。黑板左邊留著一條一整個學期都不擦的時間軸。
+shiyi-qiao:
+  name: 蕎
+  handle: shiyi.qiao
+  novel: shiyi
+  support: true
+  avatar: shiyi-qiao.svg
+  story: /assets/stories/shiyi-qiao.webp
+  glyph: 蕎
+  color: '#435D75'
+  bio: 住校，週五回清流。話不多，會編織。
+shiyi-cheng:
+  name: 澄
+  handle: shiyi.cheng
+  novel: shiyi
+  support: true
+  avatar: shiyi-cheng.svg
+  story: /assets/stories/shiyi-cheng.webp
+  glyph: 澄
+  color: '#A1B69A'
+  bio: 喜歡植物，常常最早到教室，把桌子擦乾淨。
+shiyi-xu:
+  name: 絮
+  handle: shiyi.xu
+  novel: shiyi
+  support: true
+  avatar: shiyi-xu.svg
+  story: /assets/stories/shiyi-xu.webp
+  glyph: 絮
+  color: '#B99B7C'
+  bio: 家裡種茶。她的保溫瓶裡常有自家泡的茶。
+shiyi-peng:
+  name: 芃
+  handle: shiyi.peng
+  novel: shiyi
+  support: true
+  avatar: shiyi-peng.svg
+  story: /assets/stories/shiyi-peng.webp
+  glyph: 芃
+  color: '#777E50'
+  bio: 竹山人，喜歡手作，連鉛筆盒都是竹製的。
+shiyi-leng:
+  name: 稜
+  handle: shiyi.leng
+  novel: shiyi
+  support: true
+  avatar: shiyi-leng.svg
+  story: /assets/stories/shiyi-leng.webp
+  glyph: 稜
+  color: '#545960'
+  bio: 喜歡地圖，擅長數學，吐槽時表情也很平靜。
+shiyi-jin:
+  name: 槿
+  handle: shiyi.jin
+  novel: shiyi
+  support: true
+  avatar: shiyi-jin.svg
+  story: /assets/stories/shiyi-jin.webp
+  glyph: 槿
+  color: '#C17D5F'
+  bio: 坐在拾旁邊，常幫她的筆記添上插畫。
 jian:
   name: 澗
   handle: jian.deadline
