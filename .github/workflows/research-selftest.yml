@@ -25,6 +25,18 @@ jobs:
           rm _posts/2030-01-01-leaktesta.md
           printf -- '---\nlayout: thread\ntitle: 測試保留章節\ncharacter: qin\nnovel: hongdian\nchapter: 99\npublished: false\nrelease_at: 2030-01-01T20:00:00+08:00\n---\nZZLEAKTESTB 這段文字不得出現在網站輸出\n' > _posts/2030-01-01-leaktestb.md
           ruby .github/scripts/validate_release.rb . && echo "通過 published: false 的保留章節驗證通過（不公開）"
+      - name: 正式正文與站長簽章嚴格驗證（原始 checkout）
+        run: |
+          set -eu
+          ruby .github/scripts/validate_literature.rb .
+          ruby .github/scripts/validate_research.rb .
+          ruby .github/scripts/verify_approvals.rb . --strict
+      - name: 隔離正式文章及核准標籤（僅唯讀 CI 的臨時 checkout）
+        run: |
+          set -eu
+          git ls-files '_literature/indigenous-*.md' | while IFS= read -r f; do rm -- "$f"; done
+          git tag --list 'ind/*' | while IFS= read -r t; do git tag -d "$t"; done
+          rm -f .github/approver/allowed_signers
       - name: 產生假資料並本機 commit（不推送）
         run: |
           ruby .github/scripts/research_fixture.rb .
