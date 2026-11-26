@@ -55,5 +55,6 @@ t.('研究文章參考資料收合與勘誤籌備入口', a.include?('research-r
 t.('其他研究分類不新增勘誤入口', !p.include?('research-errata'))
 t.('勘誤表單預設隱藏', a.include?('class="research-errata-form" hidden'))
 t.('勘誤功能預設關閉', File.read(File.join(S,'assets/js/research-errata.js')).include?('var ENABLED=false;'))
+t.('正式輸出不含勘誤功能啟用旗標', !File.read(File.join(S,'assets/js/research-errata.js')).include?('var ENABLED=true;'))
 ok.each { |n| puts "通過 #{n}" }; fails.each { |n| puts "失敗 #{n}" }
 puts "正式 Jekyll 輸出檢查：通過 #{ok.size}、失敗 #{fails.size}"; exit(fails.empty? ? 0 : 1)

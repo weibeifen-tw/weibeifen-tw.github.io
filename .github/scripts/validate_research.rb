@@ -91,6 +91,14 @@ catalog.each do |c|
   err.('_data/indigenous_catalog.json', "第#{c['no']}章欄位或篇號錯誤") unless c.keys.sort == %w[no pieces title volume] && c['pieces'].map { |p| p['piece'] } == (1..c['pieces'].size).to_a && c['pieces'].all? { |p| p.keys.sort == %w[piece title] && !p['title'].to_s.strip.empty? }
 end
 
+# BUILD06: freeze the exact Word catalog snapshot until owner approves a revision.
+# Source: 臺灣原住民族歷史_210篇目錄大綱.docx, reconstructed review edition.
+catalog_rows = catalog.map { |c| [c['no'], c['volume'], c['title'], c['pieces'].map { |p| [p['piece'], p['title']] }] }
+err.('_data/indigenous_catalog.json', '與原始Word目錄的核對基準不同，須人工確認目錄修訂') unless Digest::SHA256.hexdigest(JSON.generate(catalog_rows)) == '37c40ec006456dae7c14354f7c700cc59d0293bfe96940aa5f5ef9fcff18b1a4'
+book = YAML.safe_load(File.read(File.join(ROOT, '_data/indigenous_book.yml'), encoding: 'UTF-8'))
+volume_rows = book.fetch('volumes').map { |v| [v['no'], v['title'], v['planned_count']] }
+err.('_data/indigenous_book.yml', '卷名或規劃篇數與原始Word核對基準不同') unless Digest::SHA256.hexdigest(JSON.generate(volume_rows)) == 'ac4a131b05c15ab594c3a212ff2658562bd902f3f05432115db7e63778fef83b'
+
 # 專書文章
 ids = {}
 arts.each do |slug, (fm, body, rel)|
