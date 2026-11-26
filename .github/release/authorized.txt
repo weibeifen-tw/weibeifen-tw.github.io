@@ -561,3 +561,13 @@ eigenstate057
 eigenstate058
 eigenstate059
 eigenstate060
+
+# 2026-11-26：站長授權《拾遺》第06–13章公開。
+shiyi06
+shiyi07
+shiyi08
+shiyi09
+shiyi10
+shiyi11
+shiyi12
+shiyi13
