@@ -14,9 +14,9 @@ layout: default
 <div class="wb-catalog-entry"><button type="button" class="wb-catalog-open" aria-haspopup="dialog" aria-controls="wb-catalog-dialog"><span aria-hidden="true">☰</span> 目錄 <span aria-hidden="true">⌄</span></button></div>
 <dialog class="wb-catalog-dialog ind-volume-toc" id="wb-catalog-dialog" aria-labelledby="wb-catalog-title"><header><h2 id="wb-catalog-title">本卷目錄</h2><button type="button" class="wb-catalog-close" aria-label="關閉目錄">×</button></header><div class="wb-catalog-body">{% include research-volume-toc.html volume=page.volume_no %}</div></dialog>
 <noscript><p>請開啟 JavaScript 使用目錄。</p></noscript>
-<div class="ind-volume-head"><img src="{{ v.cover | relative_url }}" width="600" height="800" alt="{{ v.title | escape }}"><div><p class="ind-zone">臺灣原住民族歷史・第 {{ v.no }} 卷</p><h1 class="ov-h"><a class="wb-reader-back ind-title-back" href="{{ '/literature/indigenous/' | relative_url }}" aria-label="返回研究典藏">‹</a> {{ v.title | escape }}</h1><p class="ind-note">{{ chapter_count }}章・{{ arts.size }} / {{ v.planned_count }} 篇已公開</p></div></div>
+<p class="ind-volume-crumb"><a class="wb-reader-back ind-title-back" href="{{ '/literature/indigenous/' | relative_url }}" aria-label="返回研究典藏">‹</a>《{{ book.title | escape }}》・第{{ '一二三四五六七' | slice: volume_index }}卷・{{ v.title | escape }}</p>
+<div class="ind-volume-head"><img src="{{ v.cover | relative_url }}" width="600" height="800" alt="{{ v.title | escape }}"></div>
 <div class="research-actions r-acts">{% capture research_url %}{{ page.url | relative_url }}{% endcapture %}{% include actions.html key=page.url url=research_url notalk=true cmt=true norepost=true %}</div>
-<div class="ind-volume-share"><button type="button" class="mb-btn" data-wb-volume-share>分享卷冊</button><span aria-live="polite"></span></div>
 <h2 class="ind-section-title">卷冊簡介</h2>
 {% if v.summary %}<p>{{ v.summary | escape }}</p>{% else %}<p class="ind-note">本卷收錄以下研究章節：</p><ul class="ind-chapter-summary">{% for c in site.data.indigenous_catalog offset:chapter_start limit:chapter_count %}<li>{{ c.title | escape }}</li>{% endfor %}</ul>{% endif %}
 {% assign first_article = arts | first %}

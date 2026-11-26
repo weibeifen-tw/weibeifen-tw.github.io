@@ -26,6 +26,16 @@ const server=http.createServer((req,res)=>{
  assert.equal(await page.locator('[data-ind-piece] > a').count(),2);
  assert.equal(await page.locator('.ind-pending a').count(),0);
  assert.equal(await page.locator('.wb-page-nav').count(),0);
+ assert.equal(await page.locator('.ind-volume-crumb .wb-reader-back').count(),1);
+ assert.equal(await page.locator('.ind-volume-head .ind-note').count(),0);
+ assert.equal(await page.locator('.ind-volume-share').count(),0);
+ assert.equal(await page.locator('.research-actions .act.share').count(),1);
+ assert.equal(await page.locator('.research-actions .act.cmt').count(),1);
+ assert.ok(await page.locator('.ind-volume-crumb').evaluate(e=>e.getBoundingClientRect().top>document.querySelector('.wb-catalog-open').getBoundingClientRect().top && e.getBoundingClientRect().bottom<=document.querySelector('.ind-volume-head').getBoundingClientRect().top));
+ await page.evaluate(()=>{Object.defineProperty(navigator,'share',{configurable:true,value:async x=>{window.__shared=x.url;}});});
+ await page.locator('.research-actions .act.share').click();
+ assert.equal(await page.evaluate(()=>window.__shared),origin+'/literature/indigenous/v01/');
+ assert.equal(await page.locator('.ind-volume-page > #comments').count(),0);
  assert.equal(await page.locator('header.top .search-btn').isVisible(),true);
  assert.equal(await page.locator('.ind-volume-toc').evaluate(e=>e.open),false);
  assert.equal(await page.locator('.wb-catalog-open').evaluate(e=>e.getBoundingClientRect().top<document.querySelector('.ind-volume-head').getBoundingClientRect().top),true);

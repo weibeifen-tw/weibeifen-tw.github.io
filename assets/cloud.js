@@ -474,7 +474,8 @@
     var list = el('div', 'cm-list'); list.appendChild(el('p', 'cm-empty', '載入留言中…'));
     box.appendChild(formWrap); box.appendChild(list);
     var cmtBtn = null, sheetMode = false, sheetN = null;
-    if (mount) {
+    var volumePopup = !!(researchMount && research && research.kind === 'volume');
+    if (mount && !volumePopup) {
       mount.appendChild(box);
       // V1.1：手機（≤767px）章節頁不展開大留言區，按留言按鈕從底部滑出視窗；桌機維持原本章末留言區
       cmtBtn = mount.querySelector('.r-acts .act.cmt');
@@ -484,10 +485,10 @@
       // R02-R1：作品頁不再另外顯示整本留言區，改成點留言按鈕跳出視窗
       box.classList.add('cm-intro', 'cm-pop');
       var layer = el('div', 'cm-layer'); layer.hidden = true;
-      var dlg = el('div', 'cm-dlg'); dlg.setAttribute('role', 'dialog'); dlg.setAttribute('aria-modal', 'true'); dlg.setAttribute('aria-label', '整本小說的留言');
+      var dlg = el('div', 'cm-dlg'); dlg.setAttribute('role', 'dialog'); dlg.setAttribute('aria-modal', 'true'); dlg.setAttribute('aria-label', volumePopup ? '整卷留言' : '整本小說的留言');
       var x = el('button', 'cm-x', '✕'); x.type = 'button'; x.setAttribute('aria-label', '關閉留言');
       dlg.appendChild(x); dlg.appendChild(box); layer.appendChild(dlg); document.body.appendChild(layer);
-      cmtBtn = document.querySelector('.nv-post .act.cmt');
+      cmtBtn = volumePopup ? researchMount.querySelector('.research-actions .act.cmt') : document.querySelector('.nv-post .act.cmt');
       var lastFocus = null;
       var openCm = function () { lastFocus = document.activeElement; layer.hidden = false; document.body.classList.add('lock'); x.focus(); };
       var closeCm = function () { if (layer.hidden) return; layer.hidden = true; document.body.classList.remove('lock'); if (location.hash === '#comments') { try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {} } if (lastFocus && lastFocus.focus) lastFocus.focus(); };
