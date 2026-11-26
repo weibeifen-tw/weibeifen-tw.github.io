@@ -22,9 +22,20 @@
     var isDetails = toc.tagName === 'DETAILS';
     if (isDetails) {
       toc.open = false;
+      // Keep the top navigation as the sole chapter directory trigger.
+      var chapterToc = toc.matches('details.r-toc');
+      if (chapterToc) {
+        var summary = toc.querySelector('summary');
+        if (summary) summary.style.display = 'none';
+      }
+      function showChapterToc() {
+        if (chapterToc) toc.style.display = toc.open ? '' : 'none';
+      }
+      showChapterToc();
+      toc.addEventListener('toggle', showChapterToc);
       var sync = function () { btn.setAttribute('aria-expanded', String(toc.open)); if(toc.open) bar.classList.remove('wb-nav-away'); };
       toc.addEventListener('toggle', sync); sync();
-      btn.addEventListener('click', function () { toc.open = !toc.open; if (toc.open) toc.scrollIntoView({block:'start',behavior:'auto'}); });
+      btn.addEventListener('click', function () { toc.open = !toc.open; showChapterToc(); if (toc.open) toc.scrollIntoView({block:'start',behavior:'auto'}); });
     } else {
       btn.removeAttribute('aria-expanded');
       btn.addEventListener('click', function () { toc.scrollIntoView({block:'start',behavior:'auto'}); });
