@@ -9,6 +9,13 @@
   if (toc && window.matchMedia && matchMedia('(max-width:767px)').matches) toc.open = false;
   if (toc) toc.addEventListener('click', function (e) { if (e.target.closest('a') && window.matchMedia && matchMedia('(max-width:767px)').matches) toc.open = false; });
 
+  var refs=document.querySelector('.research-refs');
+  if(refs){
+    function reveal(){var id=location.hash.slice(1);try{id=decodeURIComponent(id);}catch(e){}var target=document.getElementById(id);if(target&&refs.contains(target)){refs.open=true;requestAnimationFrame(function(){target.scrollIntoView({block:'start'});});}}
+    if(!location.hash)refs.open=false;else reveal();
+    addEventListener('hashchange',reveal);
+    document.addEventListener('click',function(e){var a=e.target.closest('a[href^="#ref-"]');if(a){refs.open=true;var t=document.getElementById(a.hash.slice(1));if(t)requestAnimationFrame(function(){t.scrollIntoView({block:'start'});});}});
+  }
   // 3. 註腳、證據清單：跳轉後標示
   function flash(el) { if (!el) return; el.classList.remove('lit-flash'); void el.offsetWidth; el.classList.add('lit-flash'); }
   document.addEventListener('click', function (e) {

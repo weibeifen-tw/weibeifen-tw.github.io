@@ -75,14 +75,22 @@ page_js: lit-research
   </div>
   {%- if page.references and page.references.size > 0 %}
   <section class="lit-sec lit-refs">
-    <h2 class="lit-h">參考資料</h2>
+    {% if page.series_key == 'indigenous-history' %}<details class="research-refs" open><summary>參考資料（{{ page.references.size }}）</summary>{% else %}<h2 class="lit-h">參考資料</h2>{% endif %}
     <ol>
     {%- for r in page.references -%}
       <li id="ref-{{ forloop.index }}">{% if r.url %}<a href="{{ r.url }}" target="_blank" rel="noopener">{{ r.title | escape }}</a>{% else %}{{ r.title | escape }}{% endif %}{% if r.publisher %}<span class="lit-pub">，{{ r.publisher | escape }}</span>{% endif %}</li>
     {%- endfor -%}
     </ol>
+    {% if page.series_key == 'indigenous-history' %}</details>{% endif %}
   </section>
   {%- endif %}
+  {% if page.series_key == 'indigenous-history' %}
+  <section class="lit-sec research-limits"><h2 class="lit-h">研究限制</h2>
+  <p>本文依目前可核讀的資料整理；考古文化、族群認同與法律身分不可直接等同。請以各篇正文所列證據、年代及研究限制為準。</p>
+  {% if page.research_limits %}<p>{{ page.research_limits | escape }}</p>{% endif %}
+  </section>
+  {% include research-errata.html %}
+  {% endif %}
   {%- comment -%} 原住民族專區 DEV-03：研究證據（現行卡片；L3 撤回不顯示）。無 JS 也能讀；有 JS 時點正文的證據標記開面板（手機底部、電腦側邊） {%- endcomment -%}
   {%- assign evcards = site.data.evidence[page.article_id] -%}
   {%- if page.article_id and evcards.size > 0 %}

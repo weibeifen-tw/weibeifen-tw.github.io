@@ -50,5 +50,8 @@ puts "研究會員索引實際網址：#{registry.keys.sort.join(', ')}"
 t.('研究會員索引只含七卷及兩篇測試文章', registry.keys.sort == ((1..7).map { |i| "/literature/indigenous/v0#{i}/" } + ['/literature/ind-test-a/', '/literature/ind-test-b/']).sort)
 t.('研究文章與卷冊有收藏留言入口', a.include?('research-actions') && all_vols.scan(/class="research-actions r-acts"/).size == 7)
 t.('其他研究領域不加入研究會員互動', !p.include?('research-actions'))
+t.('搜尋包含七卷公開目錄', (1..7).all? { |i| s['arts'].any? { |x| x['u'] == "/literature/indigenous/v0#{i}/" } })
+t.('研究文章參考資料收合與勘誤籌備入口', a.include?('research-refs') && a.include?('research-errata'))
+t.('其他研究分類不新增勘誤入口', !p.include?('research-errata'))
 ok.each { |n| puts "通過 #{n}" }; fails.each { |n| puts "失敗 #{n}" }
 puts "正式 Jekyll 輸出檢查：通過 #{ok.size}、失敗 #{fails.size}"; exit(fails.empty? ? 0 : 1)

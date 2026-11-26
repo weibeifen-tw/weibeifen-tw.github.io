@@ -32,4 +32,9 @@ sitemap: false
 {%- assign arts = site.literature | sort: "date" | reverse -%}
 {%- for a in arts -%}
 {"t":{{ a.title | jsonify }},"s":{{ a.description | default: '' | jsonify }},"u":{{ a.url | prepend: B | jsonify }},"k":{{ a.title | append: ' ' | append: a.description | append: ' ' | append: a.category | jsonify }}}{% unless forloop.last %},{% endunless %}
+{%- endfor -%}
+{%- for research_volume in site.data.indigenous_book.volumes -%}
+{%- if arts.size > 0 or forloop.first == false -%},{%- endif -%}
+{"t":{{ research_volume.title | jsonify }},"s":"臺灣原住民族歷史・卷冊目錄","u":{{ '/literature/indigenous/v0' | append: forloop.index | append: '/' | prepend: B | jsonify }},"k":{{ research_volume.title | append: ' 臺灣原住民族歷史 研究典藏 第' | append: forloop.index | append: '卷' | jsonify }}}
 {%- endfor -%}]}
+
