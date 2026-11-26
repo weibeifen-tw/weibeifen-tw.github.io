@@ -7,3 +7,27 @@ urls:
   - { url: /t/sea-smell/, date: 2026-11-23, level: L3 }
   - { url: /t/2029/, date: 2026-11-23, level: L3 }
   - { url: /t/key-person/, date: 2026-11-23, level: L3 }
+  - { url: /novel/duanqiao/, date: 2026-11-26, level: L3 }
+  - { url: /t/duanqiao01/, date: 2026-11-26, level: L3 }
+  - { url: /t/duanqiao02/, date: 2026-11-26, level: L3 }
+  - { url: /t/duanqiao03/, date: 2026-11-26, level: L3 }
+  - { url: /novel/huaji/, date: 2026-11-26, level: L3 }
+  - { url: /t/huaji01/, date: 2026-11-26, level: L3 }
+  - { url: /novel/pendi/, date: 2026-11-26, level: L3 }
+  - { url: /t/pendi01/, date: 2026-11-26, level: L3 }
+  - { url: /t/pendi02/, date: 2026-11-26, level: L3 }
+  - { url: /t/pendi03/, date: 2026-11-26, level: L3 }
+  - { url: /t/pendi04/, date: 2026-11-26, level: L3 }
+  - { url: /t/pendi05/, date: 2026-11-26, level: L3 }
+  - { url: /t/pendi06/, date: 2026-11-26, level: L3 }
+  - { url: /novel/weigongkai/, date: 2026-11-26, level: L3 }
+  - { url: /t/weigongkai01/, date: 2026-11-26, level: L3 }
+  - { url: /t/weigongkai02/, date: 2026-11-26, level: L3 }
+  - { url: /t/weigongkai03/, date: 2026-11-26, level: L3 }
+  - { url: /t/weigongkai04/, date: 2026-11-26, level: L3 }
+  - { url: /t/weigongkai05/, date: 2026-11-26, level: L3 }
+  - { url: /t/weigongkai06/, date: 2026-11-26, level: L3 }
+  - { url: /t/weigongkai07/, date: 2026-11-26, level: L3 }
+  - { url: /t/weigongkai08/, date: 2026-11-26, level: L3 }
+  - { url: /t/weigongkai09/, date: 2026-11-26, level: L3 }
+  - { url: /t/weigongkai10/, date: 2026-11-26, level: L3 }
