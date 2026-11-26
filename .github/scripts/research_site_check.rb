@@ -53,5 +53,7 @@ t.('其他研究領域不加入研究會員互動', !p.include?('research-action
 t.('搜尋包含七卷公開目錄', (1..7).all? { |i| s['arts'].any? { |x| x['u'] == "/literature/indigenous/v0#{i}/" } })
 t.('研究文章參考資料收合與勘誤籌備入口', a.include?('research-refs') && a.include?('research-errata'))
 t.('其他研究分類不新增勘誤入口', !p.include?('research-errata'))
+t.('勘誤表單預設隱藏', a.include?('class="research-errata-form" hidden'))
+t.('勘誤功能預設關閉', File.read(File.join(S,'assets/js/research-errata.js')).include?('var ENABLED=false;'))
 ok.each { |n| puts "通過 #{n}" }; fails.each { |n| puts "失敗 #{n}" }
 puts "正式 Jekyll 輸出檢查：通過 #{ok.size}、失敗 #{fails.size}"; exit(fails.empty? ? 0 : 1)
