@@ -36,6 +36,12 @@ story_settings:
     location: 臺南
     description: 澄與禾從多年好友逐漸走向交往的日常故事
 
+  - id: chaojian-setting-2020
+    year: 2020
+    novel: chaojian
+    location: 基隆市、臺北市
+    description: 2020–2026 年，澗與嶼由交友軟體相識，經歷同居、疫情、關係磨合、結婚及共同購屋的虛構故事。
+
 events:
   - id: matsu-military-administration
     start: 1956
@@ -102,6 +108,15 @@ events:
     novel: chaojian
     source: https://www.cdc.gov.tw/Category/Page/vleOMKqwuEbIMgqaTeXG8A
 
+  - id: chaojian-europe-quarantine-2020
+    start: 2020
+    date: 2020-03-14
+    title: 歐洲返臺旅客十四天檢疫措施
+    category: experience
+    novel: chaojian
+    source: https://www.cdc.gov.tw/Bulletin/Detail/U9iEE2EiiP-mW76INcJOyA?typeid=9
+    source_title: 衛生福利部疾病管制署
+
   - id: level3-alert-2021
     start: 2021
     date: 2021-05-19
@@ -109,6 +124,24 @@ events:
     category: experience
     novel: chaojian
     source: https://www.cdc.gov.tw/Bulletin/Detail/abDtRS-xzztQeAchjX9fqw?typeId=9
+
+  - id: chaojian-level2-2021
+    start: 2021
+    date: 2021-07-27
+    title: 全國疫情警戒降為第二級
+    category: experience
+    novel: chaojian
+    source: https://www.cdc.gov.tw/Bulletin/Detail/e0v8zImE3rGJ0072A86NHA?typeid=9
+    source_title: 衛生福利部疾病管制署
+
+  - id: chaojian-typhoon-chanthu-2021
+    start: 2021
+    date: 2021-09-12
+    title: 璨樹颱風近臺
+    category: experience
+    novel: chaojian
+    source: https://rdc28.cwa.gov.tw/TDB/public/typhoon_detail?typhoon_id=202114
+    source_title: 中央氣象署颱風資料庫
 
   - id: covid-2022-chuwang
     start: 2022
@@ -125,6 +158,15 @@ events:
     category: experience
     novel: chuwang
     source: https://den.ncdr.nat.gov.tw/1330/1342/20538/20588/
+
+  - id: chaojian-qing-an-2026
+    start: 2026
+    date: 2026-08-01
+    title: 青年安心成家購屋優惠貸款3.0實施
+    category: experience
+    novel: chaojian
+    source: https://www.mof.gov.tw/singlehtml/384fb3077bb349ea973e7fc6f13b6974?cntId=482aa9c142b34abc83750cb64c15cb11
+    source_title: 財政部國庫署
 
 research:
   - id: changbin-culture
