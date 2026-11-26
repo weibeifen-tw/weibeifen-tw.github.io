@@ -119,9 +119,6 @@ day28
 day29
 day30
 drumstick
-duanqiao01
-duanqiao02
-duanqiao03
 exam01
 exam02
 exam03
@@ -247,7 +244,6 @@ houdiao17
 houdiao18
 houdiao19
 houdiao20
-huaji01
 hue01
 hue02
 hue03
@@ -290,12 +286,6 @@ mizi02
 mumu
 net
 panda
-pendi01
-pendi02
-pendi03
-pendi04
-pendi05
-pendi06
 pot
 quilt
 roots
@@ -351,16 +341,6 @@ sticky-notes
 swipe-left
 thick-steak
 vote
-weigongkai01
-weigongkai02
-weigongkai03
-weigongkai04
-weigongkai05
-weigongkai06
-weigongkai07
-weigongkai08
-weigongkai09
-weigongkai10
 xiwei01
 xiwei02
 xiwei03
