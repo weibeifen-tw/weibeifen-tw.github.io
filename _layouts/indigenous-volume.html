@@ -2,19 +2,24 @@
 layout: default
 ---
 {% assign book = site.data.indigenous_book %}
-{% assign v = book.volumes | where: "no", page.volume_no | first %}
-{% assign chapters = site.data.indigenous_catalog | where: "volume", v.no %}
+{% assign volume_number = page.volume_no | plus: 0 %}
+{% assign volume_index = volume_number | minus: 1 %}
+{% assign v = book.volumes[volume_index] %}
+{% assign chapter_counts = '2,2,3,2,2,3,16' | split: ',' %}
+{% assign chapter_starts = '0,2,4,7,9,11,14' | split: ',' %}
+{% assign chapter_count = chapter_counts[volume_index] | plus: 0 %}
+{% assign chapter_start = chapter_starts[volume_index] | plus: 0 %}
 {% assign arts = site.literature | where: "series_key", book.series_key | where: "volume_no", v.no | sort: "article_id" %}
 <section class="lit-list page-box ind-book ind-volume-page">
 <a class="nv-back" href="{{ '/literature/indigenous/' | relative_url }}">← 原住民族研究典藏</a>
-<div class="ind-volume-head"><img src="{{ v.cover | relative_url }}" width="600" height="800" alt="{{ v.title | escape }}"><div><p class="ind-zone">第 {{ v.no }} 卷</p><h1 class="ov-h">{{ v.title | escape }}</h1><p class="ind-note">{{ chapters.size }}章・{{ arts.size }} / {{ v.planned_count }} 篇已公開</p>{% if v.summary %}<p>{{ v.summary | escape }}</p>{% endif %}</div></div>
+<div class="ind-volume-head"><img src="{{ v.cover | relative_url }}" width="600" height="800" alt="{{ v.title | escape }}"><div><p class="ind-zone">第 {{ v.no }} 卷</p><h1 class="ov-h">{{ v.title | escape }}</h1><p class="ind-note">{{ chapter_count }}章・{{ arts.size }} / {{ v.planned_count }} 篇已公開</p>{% if v.summary %}<p>{{ v.summary | escape }}</p>{% endif %}</div></div>
 <p class="ind-note">以下為規劃目錄；籌備中篇目尚未公開。族群分類不代表法律認定。</p>
 <details class="ind-volume-toc" data-page-toc open><summary>卷冊目錄</summary>
-{% for c in chapters %}
+{% for c in site.data.indigenous_catalog offset:chapter_start limit:chapter_count %}
 <section class="ind-catalog-ch"><h2>第 {{ c.no }} 章　{{ c.title | escape }}</h2><ol class="ind-arts">
 {% assign cas = arts | where: "chapter_no", c.no %}
 {% for p in c.pieces %}{% assign a = cas | where: "piece", p.piece | first %}
-<li>{% if a %}<a href="{{ a.url | relative_url }}"><span class="ind-pn">{{ c.no }}.{{ p.piece }}</span><span class="ind-at">{{ a.title | escape }}</span><small>已公開</small></a>{% else %}<div class="ind-pending"><span class="ind-pn">{{ c.no }}.{{ p.piece }}</span><span class="ind-at">{{ p.title | escape }}</span><small>籌備中</small></div>{% endif %}</li>
+<li data-ind-piece="{{ c.no }}.{{ p.piece }}">{% if a %}<a href="{{ a.url | relative_url }}"><span class="ind-pn">{{ c.no }}.{{ p.piece }}</span><span class="ind-at">{{ a.title | escape }}</span><small>已公開</small></a>{% else %}<div class="ind-pending"><span class="ind-pn">{{ c.no }}.{{ p.piece }}</span><span class="ind-at">{{ p.title | escape }}</span><small>籌備中</small></div>{% endif %}</li>
 {% endfor %}</ol></section>
 {% endfor %}</details>
 <p class="ind-fine">研究證據、核讀狀態與使用授權見各篇正式文章。</p>

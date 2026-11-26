@@ -32,8 +32,17 @@ t.('其他分類文章沒有專書介面', !p.include?('ev-panel') && !p.include
   page = File.read(File.join(S, 'literature/indigenous', "v0#{i}", 'index.html'))
   t.("卷冊 #{i} 目錄存在", page.include?('ind-volume-toc'))
 end
+catalog = JSON.parse(File.read('_data/indigenous_catalog.json'))
+(1..7).each do |i|
+  page = File.read(File.join(S, 'literature/indigenous', "v0#{i}", 'index.html'))
+  expected = catalog.select { |c| c['volume'] == i }.flat_map { |c| c['pieces'].map { |p| "#{c['no']}.#{p['piece']}" } }
+  actual = page.scan(/data-ind-piece="([^"]+)"/).flatten
+  puts "卷冊 #{i}：實際 #{actual.size} / 預期 #{expected.size}，缺少 #{(expected-actual).join(',')}，多出 #{(actual-expected).join(',')}"
+  t.("卷冊 #{i} 逐篇篇號完整且依序", actual == expected)
+  t.("卷冊 #{i} 籌備中篇目無連結", page.scan(/<li data-ind-piece="[^"]+"><div class="ind-pending">.*?<\/li>/m).none? { |row| row.match?(/<a\b/) })
+end
 all_vols = (1..7).map { |i| File.read(File.join(S, 'literature/indigenous', "v0#{i}", 'index.html')) }.join
- t.('210篇目錄全部顯示', all_vols.scan(/class="ind-pn"/).size == 210)
- t.('籌備中篇目沒有文章連結', !all_vols.match?(/<a[^>]*class="ind-pending"/))
+t.('210篇目錄全部顯示', all_vols.scan(/data-ind-piece="/).size == 210)
+t.('籌備中篇目沒有文章連結', !all_vols.match?(/<a[^>]*class="ind-pending"/))
 ok.each { |n| puts "通過 #{n}" }; fails.each { |n| puts "失敗 #{n}" }
 puts "正式 Jekyll 輸出檢查：通過 #{ok.size}、失敗 #{fails.size}"; exit(fails.empty? ? 0 : 1)
