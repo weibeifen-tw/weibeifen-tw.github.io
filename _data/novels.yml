@@ -302,6 +302,10 @@ shiyi:
   region: taichung-basin
   title: 拾遺
   cover: /assets/covers/shiyi.svg
+  comic_alts:
+    - 簡老師在黑板左側的時間軸添上一筆
+    - 七位同學圍著課桌繪製南投考古地圖
+    - 拾背著深藍書包騎過中興新村的樟樹街
   caption: |-
     2019 年，中興新村。簡老師在第一堂歷史課畫了一條時間軸，說那條線一整個學期都不會擦掉。
 

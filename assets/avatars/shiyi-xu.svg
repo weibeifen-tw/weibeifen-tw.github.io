@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="絮">
+  <rect width="100" height="100" fill="#B99B7C"/>
+  <path d="M4 100Q7 79 39 73L44 65H61L66 74Q92 80 98 100Z" fill="#b5c6d4"/>
+  <path d="M44 64H61L62 75L53 83L43 75Z" fill="#efd0b6"/>
+  <path d="M42 73L53 83L45 88L36 76M63 73L53 83L62 88L70 77" fill="none" stroke="#606b74" stroke-width="1.2"/>
+  <path d="M31 34Q55 24 73 36L72 53Q68 72 53 75Q39 71 33 57Z" fill="#efd0b6"/>
+  <path d="M24 77Q20 59 25 35Q24 13 49 10Q73 8 81 30L84 83L72 86L72 36Q53 35 45 23Q43 36 31 42L34 83Z" fill="#25242b" fill-rule="evenodd"/>
+  <path d="M37 43Q42 40 47 42M57 43Q62 39 67 41 M37 49Q42 46 47 49M57 49Q62 46 67 49M52 48L50 55L54 56 M49 63Q53 61 57 62" fill="none" stroke="#563f3f" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M42 49h.01M63 49h.01" stroke="#29232a" stroke-width="3" stroke-linecap="round"/>
+  
+</svg>

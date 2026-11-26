@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="簡老師">
+  <rect width="100" height="100" fill="#526457"/>
+  <path d="M4 100Q7 79 39 73L44 65H61L66 74Q92 80 98 100Z" fill="#e8e0d3"/>
+  <path d="M44 64H61L62 75L53 83L43 75Z" fill="#e5b79e"/>
+  <path d="M42 73L53 83L45 88L36 76M63 73L53 83L62 88L70 77" fill="none" stroke="#606b74" stroke-width="1.2"/>
+  <path d="M31 36Q55 22 73 36L73 51Q69 69 52 72Q36 69 31 52Z" fill="#e5b79e"/>
+  <path d="M29 45Q18 31 30 20Q39 8 57 13Q76 9 81 31L77 52L69 39Q55 38 48 25Q39 39 29 45ZM71 29Q91 25 88 45Q84 58 73 51Z" fill="#25242b" fill-rule="evenodd"/>
+  <path d="M37 43Q42 40 47 42M57 41Q62 38 68 41 M37 49Q42 46 47 49M57 49Q62 46 67 49M52 48L50 55L54 56 M48 61Q54 59 59 61" fill="none" stroke="#563f3f" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M42 49h.01M63 49h.01" stroke="#29232a" stroke-width="3" stroke-linecap="round"/>
+  <path d="M73 25L88 18" stroke="#b58a5e" stroke-width="3" stroke-linecap="round"/>
+</svg>
