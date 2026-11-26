@@ -56,7 +56,7 @@ page_js: lit-research
   {%- assign vi = page.volume_no | minus: 1 %}
   <p class="ind-pos"><a class="wb-reader-back" aria-label="返回卷冊" href="{{ '/literature/indigenous/v0' | append: page.volume_no | append: '/' | relative_url }}">‹</a> 第{{ "一二三四五六七" | slice: vi }}卷・第 {{ page.chapter_no }} 章・第 {{ page.piece }} 篇{% if page.version %}・{{ page.version | escape }}{% endif %}</p>
   {%- else %}
-  <p class="ind-pos"><a class="wb-reader-back" aria-label="返回研究所" href="{{ '/literature/' | relative_url }}">‹</a> 未備份研究所</p>
+  <p class="wb-literature-position"><a class="wb-reader-back" aria-label="返回研究所" href="{{ '/literature/' | relative_url }}">‹</a> 未備份研究所</p>
   {%- endif %}
   <h1 class="lit-title">{{ page.title | escape }}</h1>
   <p class="lit-meta">

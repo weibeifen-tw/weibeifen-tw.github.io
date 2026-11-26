@@ -25,3 +25,5 @@
 .ind-zone .wb-reader-back{font-size:24px;min-width:30px;justify-content:center;vertical-align:middle}
 .ind-resume[hidden]{display:none!important}.ind-resume-link{display:block;border:1px solid var(--line);border-radius:10px;padding:12px;color:inherit;text-decoration:none}
 @media(max-width:767px){.wb-catalog-dialog{width:100vw;max-width:100vw;border:0}.wb-catalog-dialog>header{padding-top:max(12px,env(safe-area-inset-top))}}
+
+.wb-literature-position{margin:6px 0 0;font-size:13px;color:var(--sub)}.wb-literature-position .wb-reader-back{min-width:36px;font-size:24px;justify-content:center}
