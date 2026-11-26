@@ -14,9 +14,9 @@ page_js: reader
   {%- if p.url == page.url -%}{%- assign hit = true -%}{%- else -%}{%- assign pv = p -%}{%- endif -%}
 {%- endfor -%}
 <article class="chapter read" data-char="{{ page.character }}" data-novel="{{ page.novel }}" data-no="{{ page.chapter }}" data-title="{{ page.title | escape }}" style="--c:{{ me.color }}">
-  <p class="r-crumb"><a href="{{ '/novel/' | append: page.novel | append: '/' | relative_url }}">《{{ nv.title }}》</a>{% if page.volume %}・{{ page.volume }}{% endif %}・{{ me.name }}{% if page.chapter %}・第 {{ page.chapter }} 篇{% endif %}</p>
   {%- comment -%} V1.0 S07（Q30）：章節目錄可收合；展開時才載入 posts.json（Q36 按需載入） {%- endcomment %}
   <details class="r-toc" data-novel="{{ page.novel }}" data-split="{% if nv.split %}1{% endif %}"><summary>目錄</summary><ol class="r-toc-list"></ol></details>
+  <p class="r-crumb"><a class="wb-reader-back" aria-label="返回作品" href="{{ '/novel/' | append: page.novel | append: '/' | relative_url }}"><span aria-hidden="true">‹ </span>《{{ nv.title }}》</a>{% if page.volume %}・{{ page.volume }}{% endif %}・{{ me.name }}{% if page.chapter %}・第 {{ page.chapter }} 篇{% endif %}</p>
   <a class="r-who" href="{{ '/novel/' | append: page.novel | append: '/' | relative_url }}?c={{ page.character }}">
     <span class="avatar" style="--c:{{ me.color }}">{%- if me.avatar -%}<img src="{{ '/assets/avatars/' | append: me.avatar | relative_url }}?v={{ site.time | date: '%s' }}" alt="">{%- else -%}{{ me.glyph }}{%- endif -%}</span>
     <span class="r-who-t"><b>{{ me.handle }}</b><small>{{ page.date | date: "%Y 年 %-m 月 %-d 日" }}</small></span>

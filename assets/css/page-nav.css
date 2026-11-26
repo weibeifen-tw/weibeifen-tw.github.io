@@ -4,3 +4,8 @@
 .wb-page-nav.wb-nav-away{opacity:0;transform:translateY(-8px);pointer-events:none}
 .wb-page-nav:focus-within{opacity:1;transform:none;pointer-events:auto}
 @media(prefers-reduced-motion:reduce){.wb-page-nav{transition:none}}
+
+/* V1.5 reader order: one native TOC, then contextual back link. */
+.chapter.read>.r-toc,.lit-article>.lit-toc{margin-top:0;margin-bottom:12px}
+.wb-reader-back{display:inline-flex;align-items:center;min-height:36px;text-decoration:none;color:inherit}
+.ind-pos .wb-reader-back{min-width:36px;font-size:24px;justify-content:center}

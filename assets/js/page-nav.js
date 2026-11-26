@@ -2,7 +2,19 @@
 (function () {
   'use strict';
   var bar = document.querySelector('.wb-page-nav'), main = document.querySelector('main.wrap'), top = document.querySelector('header.top');
-  if (!bar || !main || !top) return;
+  if (!main || !top) return;
+  var readerBack = main.querySelector('.wb-reader-back');
+  if (readerBack) {
+    try {
+      var from = new URL(document.referrer);
+      if (from.origin === location.origin && from.pathname !== location.pathname && !/^\\/(auth|login-test)\\//.test(from.pathname)) {
+        readerBack.href = from.href;
+        readerBack.addEventListener('click',function(e){if(!e.ctrlKey&&!e.metaKey&&!e.shiftKey&&!e.altKey&&e.button===0&&history.length>1){e.preventDefault();history.back();}});
+      }
+    } catch(e) {}
+    return;
+  }
+  if (!bar) return;
   var back = bar.querySelector('.wb-page-back'), btn = bar.querySelector('.wb-page-toc');
   var original = main.querySelector('.nv-back, .r-crumb a');
   var toc = main.querySelector('details.r-toc, details.lit-toc, [data-page-toc], .nv-list');

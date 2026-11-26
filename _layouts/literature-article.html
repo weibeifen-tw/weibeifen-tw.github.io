@@ -33,12 +33,26 @@ page_js: lit-research
 {%- assign mins = words | divided_by: 400 | plus: 1 -%}
 {%- assign h2parts = content | split: '<h2 id="' -%}
 <article class="lit-article page-box">
+  {%- if h2parts.size > 3 %}
+  <details class="lit-toc">
+    <summary class="lit-toc-h">目錄</summary>
+    <nav aria-label="目錄">
+    <ol>
+    {%- for part in h2parts offset: 1 -%}
+      {%- assign hid = part | split: '"' | first -%}
+      {%- assign htxt = part | split: '</h2>' | first | split: '>' | shift | join: '>' | strip_html -%}
+      <li><a href="#{{ hid }}">{{ htxt }}</a></li>
+    {%- endfor -%}
+    </ol>
+    </nav>
+  </details>
+  {%- endif %}
+
   {%- if page.series_key == site.data.indigenous_book.series_key %}
-  <a class="nv-back" href="{{ '/literature/indigenous/v0' | append: page.volume_no | append: '/' | relative_url }}">← 返回卷冊</a>
   {%- assign vi = page.volume_no | minus: 1 %}
-  <p class="ind-pos">第{{ "一二三四五六七" | slice: vi }}卷・第 {{ page.chapter_no }} 章・第 {{ page.piece }} 篇{% if page.version %}・{{ page.version | escape }}{% endif %}</p>
+  <p class="ind-pos"><a class="wb-reader-back" aria-label="返回卷冊" href="{{ '/literature/indigenous/v0' | append: page.volume_no | append: '/' | relative_url }}">‹</a> 第{{ "一二三四五六七" | slice: vi }}卷・第 {{ page.chapter_no }} 章・第 {{ page.piece }} 篇{% if page.version %}・{{ page.version | escape }}{% endif %}</p>
   {%- else %}
-  <a class="nv-back" href="{{ '/literature/' | relative_url }}">← 未備份研究所</a>
+  <p class="ind-pos"><a class="wb-reader-back" aria-label="返回研究所" href="{{ '/literature/' | relative_url }}">‹</a> 未備份研究所</p>
   {%- endif %}
   <h1 class="lit-title">{{ page.title | escape }}</h1>
   <p class="lit-meta">
@@ -56,20 +70,6 @@ page_js: lit-research
   <img class="lit-cover" src="{{ page.cover | relative_url }}" alt="{{ page.cover_alt | default: page.title | escape }}" decoding="async">
   {%- endif %}
   {%- if page.description and page.description != '' %}<p class="lit-summary">{{ page.description | escape }}</p>{% endif %}
-  {%- if h2parts.size > 3 %}
-  <details class="lit-toc" open>
-    <summary class="lit-toc-h">目錄</summary>
-    <nav aria-label="目錄">
-    <ol>
-    {%- for part in h2parts offset: 1 -%}
-      {%- assign hid = part | split: '"' | first -%}
-      {%- assign htxt = part | split: '</h2>' | first | split: '>' | shift | join: '>' | strip_html -%}
-      <li><a href="#{{ hid }}">{{ htxt }}</a></li>
-    {%- endfor -%}
-    </ol>
-    </nav>
-  </details>
-  {%- endif %}
   <div class="lit-body">
 {{ content }}
   </div>
