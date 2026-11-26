@@ -62,6 +62,13 @@ jobs:
           expect FAIL "7 改舊版正文並重算指紋 → 簽章基準擋下"
           git checkout -q -- $V
           expect pass "8 還原舊版 → 通過"
+      - name: BUILD07 閱讀隔離與研究前端語法回歸（不連正式後端）
+        run: |
+          set -eu
+          node .dev/test-t03-reading.cjs
+          node .dev/test-t03-rollback.cjs
+          node .dev/test-t03-async-races.cjs
+          for f in assets/js/research-member.js assets/js/research-errata.js assets/js/lit-research.js assets/js/reading-store.js assets/app.js assets/cloud.js; do node --check "$f"; done
       - name: GitHub Pages 官方 Jekyll 建置（含假資料）
         uses: actions/jekyll-build-pages@v1
         with: { source: ./, destination: ./_site }

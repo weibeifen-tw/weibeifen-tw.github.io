@@ -3,10 +3,10 @@ series_key: indigenous-history
 title: 臺灣原住民族歷史
 intro:
 volumes:
-  - { no: 1, title: "島嶼與人群的起源", summary: null, planned_count: 8, cover: "/assets/covers/indigenous-v01.svg" }
-  - { no: 2, title: "原住民族的社會與文化", summary: null, planned_count: 10, cover: "/assets/covers/indigenous-v02.svg" }
-  - { no: 3, title: "十七世紀的臺灣", summary: null, planned_count: 8, cover: "/assets/covers/indigenous-v03.svg" }
-  - { no: 4, title: "清代原住民族歷史", summary: null, planned_count: 8, cover: "/assets/covers/indigenous-v04.svg" }
-  - { no: 5, title: "日治時期的原住民族", summary: null, planned_count: 9, cover: "/assets/covers/indigenous-v05.svg" }
-  - { no: 6, title: "戰後至當代", summary: null, planned_count: 12, cover: "/assets/covers/indigenous-v06.svg" }
-  - { no: 7, title: "各族群歷史專篇", summary: null, planned_count: 155, cover: "/assets/covers/indigenous-v07.svg" }
+  - { "no": 1, title: "島嶼與人群的起源", summary: null, planned_count: 8, cover: "/assets/covers/indigenous-v01.svg" }
+  - { "no": 2, title: "原住民族的社會與文化", summary: null, planned_count: 10, cover: "/assets/covers/indigenous-v02.svg" }
+  - { "no": 3, title: "十七世紀的臺灣", summary: null, planned_count: 8, cover: "/assets/covers/indigenous-v03.svg" }
+  - { "no": 4, title: "清代原住民族歷史", summary: null, planned_count: 8, cover: "/assets/covers/indigenous-v04.svg" }
+  - { "no": 5, title: "日治時期的原住民族", summary: null, planned_count: 9, cover: "/assets/covers/indigenous-v05.svg" }
+  - { "no": 6, title: "戰後至當代", summary: null, planned_count: 12, cover: "/assets/covers/indigenous-v06.svg" }
+  - { "no": 7, title: "各族群歷史專篇", summary: null, planned_count: 155, cover: "/assets/covers/indigenous-v07.svg" }
