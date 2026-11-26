@@ -15,10 +15,10 @@ layout: default
 <dialog class="wb-catalog-dialog ind-volume-toc" id="wb-catalog-dialog" aria-labelledby="wb-catalog-title"><header><h2 id="wb-catalog-title">本卷目錄</h2><button type="button" class="wb-catalog-close" aria-label="關閉目錄">×</button></header><div class="wb-catalog-body">{% include research-volume-toc.html volume=page.volume_no %}</div></dialog>
 <noscript><p>請開啟 JavaScript 使用目錄。</p></noscript>
 <p class="ind-volume-crumb"><a class="wb-reader-back ind-title-back" href="{{ '/literature/indigenous/' | relative_url }}" aria-label="返回研究典藏">‹</a>《{{ book.title | escape }}》・第{{ '一二三四五六七' | slice: volume_index }}卷・{{ v.title | escape }}</p>
-<div class="ind-volume-head"><img src="{{ v.cover | relative_url }}" width="600" height="800" alt="{{ v.title | escape }}"></div>
+<div class="ind-volume-head"><img src="{{ v.cover | relative_url }}" width="600" height="800" alt="{{ v.title | escape }}">
+<div class="ind-volume-intro"><h2 class="ind-section-title">卷冊簡介</h2>
+{% if v.summary %}<p>{{ v.summary | escape }}</p>{% else %}<p class="ind-note">本卷收錄以下研究章節：</p><ul class="ind-chapter-summary">{% for c in site.data.indigenous_catalog offset:chapter_start limit:chapter_count %}<li>{{ c.title | escape }}</li>{% endfor %}</ul>{% endif %}</div></div>
 <div class="research-actions r-acts">{% capture research_url %}{{ page.url | relative_url }}{% endcapture %}{% include actions.html key=page.url url=research_url notalk=true cmt=true norepost=true %}</div>
-<h2 class="ind-section-title">卷冊簡介</h2>
-{% if v.summary %}<p>{{ v.summary | escape }}</p>{% else %}<p class="ind-note">本卷收錄以下研究章節：</p><ul class="ind-chapter-summary">{% for c in site.data.indigenous_catalog offset:chapter_start limit:chapter_count %}<li>{{ c.title | escape }}</li>{% endfor %}</ul>{% endif %}
 {% assign first_article = arts | first %}
 {% if first_article %}<a class="mb-btn ind-start" href="{{ first_article.url | relative_url }}">開始閱讀</a>{% else %}<button class="mb-btn ind-start" disabled>籌備中</button>{% endif %}
 <h2 class="ind-section-title">個人閱讀進度</h2><p class="ind-reading-progress" aria-live="polite"></p>

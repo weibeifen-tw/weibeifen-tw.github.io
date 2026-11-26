@@ -27,7 +27,9 @@ const server=http.createServer((req,res)=>{
  assert.equal(await page.locator('.ind-pending a').count(),0);
  assert.equal(await page.locator('.wb-page-nav').count(),0);
  assert.equal(await page.locator('.ind-volume-crumb .wb-reader-back').count(),1);
- assert.equal(await page.locator('.ind-volume-head .ind-note').count(),0);
+ assert.equal(await page.locator('.ind-volume-head .ind-volume-intro').count(),1);
+ const cover=await page.locator('.ind-volume-head img').boundingBox(),intro=await page.locator('.ind-volume-intro').boundingBox();
+ assert.ok(width>=768?intro.x>=cover.x+cover.width:intro.y>=cover.y+cover.height);
  assert.equal(await page.locator('.ind-volume-share').count(),0);
  assert.equal(await page.locator('.research-actions .act.share').count(),1);
  assert.equal(await page.locator('.research-actions .act.cmt').count(),1);
@@ -50,7 +52,7 @@ const server=http.createServer((req,res)=>{
  await page.locator('.wb-toc-chapter').first().locator('summary').click();
  await page.locator('[data-ind-piece="1.1"] > a').click();
  await page.waitForURL('**/literature/ind-test-a/');
- assert.equal(await page.locator('.lit-time,.lit-share,.lit-share-btn').count(),0);
+ assert.equal(await page.locator('.lit-time,.lit-share,.lit-share-btn,.lit-kind').count(),0);
  assert.deepEqual(await page.locator('.research-actions .actions > button').evaluateAll(es=>es.map(e=>e.classList[1])),['like','cmt','share']);
  assert.equal(await page.locator('.research-actions .act.cmt').isVisible(),true);
  await page.evaluate(()=>{Object.defineProperty(navigator,'share',{configurable:true,value:async x=>{window.__shared=x.url;}});});

@@ -62,7 +62,7 @@ page_js: lit-research
     <span>・</span><time datetime="{{ page.date | date: '%Y-%m-%d' }}">{{ page.date | date: '%Y-%m-%d' }}</time>
     {%- if page.updated %}<span>・</span><span class="lit-upd">最後更新 <time datetime="{{ page.updated | date: '%Y-%m-%d' }}">{{ page.updated | date: '%Y-%m-%d' }}</time></span>{% endif %}
     {%- if page.category %}<span>・</span><a class="lit-cat" href="{{ '/literature/' | relative_url }}?cat={{ page.category | url_encode }}">{{ page.category | escape }}</a>{% endif %}
-    {%- if page.article_type == 'knowledge' %}<span class="lit-kind">知識文章</span>{% elsif page.article_type == 'opinion' %}<span class="lit-kind">個人觀點</span>{% endif %}
+    {%- if page.article_type == 'knowledge' and page.series_key != 'indigenous-history' %}<span class="lit-kind">知識文章</span>{% elsif page.article_type == 'opinion' %}<span class="lit-kind">個人觀點</span>{% endif %}
   </p>
   <ul class="nv-tags lit-tags">
     {%- for t in page.tags %}<li><a href="{{ '/literature/' | relative_url }}?tag={{ t | url_encode }}">#{{ t | escape }}</a></li>{% endfor -%}
