@@ -17,7 +17,7 @@ function deferred(){let resolve;const promise=new Promise(r=>resolve=r);return {
 const memberGuard=section(member,'  var memberViewEpoch = 0;','\n  function setNote');
 const memberInit=section(member,'  async function init() {','\n  if (A) {');
 const memberDelete=section(member,'  async function deleteAccount() {','\n  async function logoutAll() {');
-const cloudEvents=section(cloud,'    var authGeneration = 0;','    var startingGeneration = authGeneration;');
+const cloudEvents=section(cloud,'    var generation = 0;','  }).catch(function () { favStatus(\'會員服務載入失敗，請重新整理。\'); });');
 
 function mockOwner(){
   let uid='fakeuser-A',state='unknown',version=0;
@@ -85,11 +85,12 @@ async function testMember(){
 }
 
 async function testCloud(){
-  let callback,requests=[];
-  const A={onChange:fn=>{callback=fn},getVerifiedUser:()=>{const d=deferred();requests.push(d);return d.promise;}};
-  const owner=mockOwner();
-  const h=new Function('A','Store',cloudEvents+'\nreturn {getGeneration:()=>authGeneration};')(A,owner.store);
-  callback('SIGNED_IN');const first=requests[0];
+  let callback,requests=[],favorites=[],syncs=[],paints=[];
+  const A={onChange:fn=>{callback=fn},getVerifiedUser:()=>{const d=deferred();requests.push(d);return d.promise;},getClient:()=>({rpc:async()=>({data:false,error:null})})};
+  const owner=mockOwner(),win={};
+  const buttons=[[{disabled:false,setOn:on=>paints.push(on)},{novel:'fake',path:'/fake/'}]];
+  const h=new Function('A','Store','guest','favStatus','document','buttons','isFav','favList','myCmList','dmDot','sessionStorage','sec','research','SYNC_EVERY','sync','window',cloudEvents+'\nreturn {getGeneration:()=>generation};')(A,owner.store,()=>owner.store.setIdentity('guest'),()=>{}, {querySelectorAll:()=>[],querySelector:()=>null},buttons,()=>{const d=deferred();favorites.push(d);return d.promise;},null,null,async()=>{}, {getItem:()=>null},true,false,0,()=>{const d=deferred();syncs.push(d);return d.promise;},win);
+  const first=requests[0];
   callback('SIGNED_IN');const second=requests[1];
   second.resolve({user:{id:'fakeuser-A'}});
   await flush();
@@ -97,13 +98,23 @@ async function testCloud(){
   first.resolve({user:{id:'fakeuser-A'}});
   await flush();
   check(owner.store.identity().state==='member'&&h.getGeneration()===2,'first late verification does not rewind identity');
-
   owner.setUid('fakeuser-B');
-  callback('SIGNED_IN');const stale=requests[2];
+  callback('SIGNED_IN',{id:'fakeuser-B'});const stale=requests[2];
+  favorites[0].resolve(true);syncs[0].resolve({ok:true});
+  await flush();
+  check(paints.length===0,'old A favorite response cannot paint after B switch');
+  check(win.WBReadingSyncStatus===undefined,'old A sync completion cannot paint after B switch');
   callback('SIGNED_OUT');
   stale.resolve({user:{id:'fakeuser-B'}});
   await flush();
   check(owner.store.identity().state==='guest','late verification after SIGNED_OUT cannot resurrect a member');
+  owner.setUid('fakeuser-B');
+  callback('SIGNED_IN',{id:'fakeuser-B'});requests[3].resolve({user:{id:'fakeuser-B'}});
+  await flush();
+  favorites[1].resolve(true);syncs[1].resolve({ok:true});
+  await flush();
+  check(owner.store.identity().uid==='fakeuser-B'&&paints.length===1&&paints[0]===true,'current B favorite can render');
+  check(win.WBReadingSyncStatus==='ok','current B sync status can render');
 }
 
 function makeDeleteHarness(options={}){
