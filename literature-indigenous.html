@@ -16,7 +16,7 @@ permalink: /literature/indigenous/
   <h2 class="ind-section-title">探索卷冊</h2>
   <ul class="ind-shelf" aria-label="七卷書架">
     {% for v in book.volumes %}{% assign vas = arts | where: "volume_no", v.no %}
-    <li><a href="#vol-{{ v.no }}"><img src="{{ v.cover | relative_url }}" width="600" height="800" alt="第{{ '一二三四五六七' | slice: forloop.index0 }}卷：{{ v.title | escape }}" {% unless forloop.first %}loading="lazy"{% endunless %}><span>{{ vas.size }} / {{ v.planned_count }} 篇已公開</span></a></li>
+    <li><a href="{{ '/literature/indigenous/v0' | append: v.no | append: '/' | relative_url }}"><img src="{{ v.cover | relative_url }}" width="600" height="800" alt="第{{ '一二三四五六七' | slice: forloop.index0 }}卷：{{ v.title | escape }}" {% unless forloop.first %}loading="lazy"{% endunless %}><span>{{ vas.size }} / {{ v.planned_count }} 篇已公開</span></a></li>
     {% endfor %}
   </ul>
   <h2 class="ind-section-title">研究工具</h2>
@@ -35,6 +35,7 @@ permalink: /literature/indigenous/
           <b class="ind-vt">{% if v.title and v.title != '' %}{{ v.title | escape }}{% else %}籌備中{% endif %}</b>
           <small class="ind-vn">{% if vas.size > 0 %}{{ vas.size }} 篇已發布{% else %}尚無已發布文章{% endif %}</small>
         </summary>
+        <p class="ind-vs"><a href="{{ '/literature/indigenous/v0' | append: v.no | append: '/' | relative_url }}">查看完整卷冊目錄 →</a></p>
         {%- if v.summary and v.summary != '' %}<p class="ind-vs">{{ v.summary | escape }}</p>{% endif %}
         {%- if vas.size > 0 %}
         {%- assign chs = vas | group_by: "chapter_no" -%}

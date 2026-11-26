@@ -28,5 +28,12 @@ s = JSON.parse(File.read(File.join(S, 'assets/search.json')))
 t.('搜尋有文章、沒有歷史版本', s['arts'].any? { |x| x['u'].include?('ind-test-a') } && s['arts'].none? { |x| x['u'].include?('/v1.0') })
 p = File.read(File.join(S, 'literature/phil-test/index.html'))
 t.('其他分類文章沒有專書介面', !p.include?('ev-panel') && !p.include?('ind-pos'))
+(1..7).each do |i|
+  page = File.read(File.join(S, 'literature/indigenous', "v0#{i}", 'index.html'))
+  t.("卷冊 #{i} 目錄存在", page.include?('ind-volume-toc'))
+end
+all_vols = (1..7).map { |i| File.read(File.join(S, 'literature/indigenous', "v0#{i}", 'index.html')) }.join
+ t.('210篇目錄全部顯示', all_vols.scan(/class="ind-pn"/).size == 210)
+ t.('籌備中篇目沒有文章連結', !all_vols.match?(/<a[^>]*class="ind-pending"/))
 ok.each { |n| puts "通過 #{n}" }; fails.each { |n| puts "失敗 #{n}" }
 puts "正式 Jekyll 輸出檢查：通過 #{ok.size}、失敗 #{fails.size}"; exit(fails.empty? ? 0 : 1)

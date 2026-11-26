@@ -79,6 +79,18 @@ Dir.glob(File.join(ROOT, '_data/evidence/*.{yml,yaml}')).sort.each do |f|
   end
 end
 
+# BUILD03: catalog contains public planning metadata only, never article content.
+require 'json'
+catalog = JSON.parse(File.read(File.join(ROOT, '_data/indigenous_catalog.json'), encoding: 'UTF-8'))
+expected_counts = [8,10,8,8,9,12,155]
+err.('_data/indigenous_catalog.json', '章號必須為1至30') unless catalog.map { |c| c['no'] } == (1..30).to_a
+expected_counts.each_with_index do |count, i|
+  err.('_data/indigenous_catalog.json', "第#{i+1}卷篇數不符") unless catalog.select { |c| c['volume'] == i+1 }.sum { |c| c['pieces'].size } == count
+end
+catalog.each do |c|
+  err.('_data/indigenous_catalog.json', "第#{c['no']}章欄位或篇號錯誤") unless c.keys.sort == %w[no pieces title volume] && c['pieces'].map { |p| p['piece'] } == (1..c['pieces'].size).to_a && c['pieces'].all? { |p| p.keys.sort == %w[piece title] && !p['title'].to_s.strip.empty? }
+end
+
 # 專書文章
 ids = {}
 arts.each do |slug, (fm, body, rel)|

@@ -34,7 +34,7 @@ page_js: lit-research
 {%- assign h2parts = content | split: '<h2 id="' -%}
 <article class="lit-article page-box">
   {%- if page.series_key == site.data.indigenous_book.series_key %}
-  <a class="nv-back" href="{{ '/literature/indigenous/' | relative_url }}">← {{ site.data.indigenous_book.title }}</a>
+  <a class="nv-back" href="{{ '/literature/indigenous/v0' | append: page.volume_no | append: '/' | relative_url }}">← 返回卷冊</a>
   {%- assign vi = page.volume_no | minus: 1 %}
   <p class="ind-pos">第{{ "一二三四五六七" | slice: vi }}卷・第 {{ page.chapter_no }} 章・第 {{ page.piece }} 篇{% if page.version %}・{{ page.version | escape }}{% endif %}</p>
   {%- else %}
