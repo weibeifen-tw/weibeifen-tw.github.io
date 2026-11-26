@@ -867,7 +867,7 @@ button.d-item{width:100%;font:inherit;font-size:17px;font-weight:500;color:inher
 .drawer .d-account{margin-top:0}
 
 /* ===== V1.1 手機閱讀頁（≤767px）：拿掉固定換章列、轉發；留言改成從底部滑出的視窗 ===== */
-.r-acts .act.cmt{display:none}
+.r-acts .act.cmt{display:inline-flex}
 .cm-sheet-layer{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.4);opacity:0;transition:opacity .2s}
 .cm-sheet-layer.on{opacity:1}
 .cm-sheet-layer[hidden]{display:none}

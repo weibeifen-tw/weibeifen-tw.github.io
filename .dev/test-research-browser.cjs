@@ -50,6 +50,12 @@ const server=http.createServer((req,res)=>{
  await page.locator('.wb-toc-chapter').first().locator('summary').click();
  await page.locator('[data-ind-piece="1.1"] > a').click();
  await page.waitForURL('**/literature/ind-test-a/');
+ assert.equal(await page.locator('.lit-time,.lit-share,.lit-share-btn').count(),0);
+ assert.deepEqual(await page.locator('.research-actions .actions > button').evaluateAll(es=>es.map(e=>e.classList[1])),['like','cmt','share']);
+ assert.equal(await page.locator('.research-actions .act.cmt').isVisible(),true);
+ await page.evaluate(()=>{Object.defineProperty(navigator,'share',{configurable:true,value:async x=>{window.__shared=x.url;}});});
+ await page.locator('.research-actions .act.share').click();
+ assert.equal(await page.evaluate(()=>window.__shared),origin+'/literature/ind-test-a/');
  assert.equal(await page.locator('.lit-toc').evaluate(e=>e.open),false);
  assert.equal(await page.locator('.wb-page-nav').count(),0);
  await page.locator('.lit-toc > summary').click();

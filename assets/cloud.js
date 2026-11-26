@@ -543,6 +543,7 @@
       }
       function place() {
         sheetMode = mq.matches;
+        if(sheetMode)cmtBtn.setAttribute("aria-haspopup","dialog");else cmtBtn.removeAttribute("aria-haspopup");
         if (sheetMode) { if (box.parentNode !== sh) sh.appendChild(box); }
         else { close(); if (box.parentNode !== mount) mount.appendChild(box); }
       }
@@ -573,7 +574,7 @@
       x2.onclick = close;
       veil.onclick = close;
       document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && isOpen && !cardEl) close(); });
-      cmtBtn.onclick = function () { if (sheetMode) open(); else box.scrollIntoView({ behavior: 'smooth' }); };
+      cmtBtn.onclick = function () { if (sheetMode) open(); else box.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
       if (mq.addEventListener) mq.addEventListener('change', place); else if (mq.addListener) mq.addListener(place);
       place();
       document.body.classList.add('cm-ready');

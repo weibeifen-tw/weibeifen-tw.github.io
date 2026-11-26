@@ -29,8 +29,6 @@ page_js: lit-research
   劇透段落：<details class="spoiler" markdown="1"><summary>劇透提醒：……</summary> …… </details>，預設收合。
   個人觀點段落：<div class="opinion" markdown="1"> …… </div>，頁面會標示「個人觀點」。
 {%- endcomment -%}
-{%- assign words = content | strip_html | strip_newlines | replace: ' ', '' | size -%}
-{%- assign mins = words | divided_by: 400 | plus: 1 -%}
 {%- assign h2parts = content | split: '<h2 id="' -%}
 <article class="lit-article page-box">
   {% if h2parts.size > 1 or page.series_key == 'indigenous-history' %}
@@ -68,7 +66,6 @@ page_js: lit-research
   </p>
   <ul class="nv-tags lit-tags">
     {%- for t in page.tags %}<li><a href="{{ '/literature/' | relative_url }}?tag={{ t | url_encode }}">#{{ t | escape }}</a></li>{% endfor -%}
-    <li class="lit-time">約 {{ mins }} 分鐘</li>
   </ul>
   {%- if page.cover %}
   <img class="lit-cover" src="{{ page.cover | relative_url }}" alt="{{ page.cover_alt | default: page.title | escape }}" decoding="async">
@@ -179,11 +176,7 @@ page_js: lit-research
   <section class="lit-sec"><h2 class="lit-h">相關文章</h2><ul class="lit-rel">{{ rel_arts }}</ul></section>
   {%- endif %}
   {% if page.series_key == site.data.indigenous_book.series_key %}<div class="research-actions r-acts">{% capture research_url %}{{ page.url | relative_url }}{% endcapture %}{% include actions.html key=page.url url=research_url notalk=true cmt=true norepost=true %}</div>{% endif %}
-  <div class="lit-share">
-    <button type="button" class="lit-share-btn" data-act="share">分享</button>
-    <button type="button" class="lit-share-btn" data-act="copy">複製網址</button>
-    <span class="lit-share-msg" aria-live="polite"></span>
-  </div>
+  {% unless page.series_key == site.data.indigenous_book.series_key %}<div class="r-acts">{% capture research_url %}{{ page.url | relative_url }}{% endcapture %}{% include actions.html key=page.url url=research_url notalk=true norepost=true %}</div>{% endunless %}
 </article>
 <script>
 (function () {
@@ -196,26 +189,5 @@ page_js: lit-research
     b.setAttribute('aria-pressed', d.dataset.lfs === b.dataset.lfs);
     b.onclick = function () { d.dataset.lfs = b.dataset.lfs; save('wb:lfs', b.dataset.lfs); fb.forEach(function (x) { x.setAttribute('aria-pressed', x === b); }); };
   });
-  // 分享：只帶公開標題、公開摘要、canonical 網址
-  var box = document.querySelector('.lit-share'); if (!box) return;
-  var data = { title: {{ page.title | jsonify }}, text: {{ page.description | append: '' | strip | jsonify }}, url: {{ page.url | absolute_url | jsonify }} };
-  if (!data.text) delete data.text;
-  var msg = box.querySelector('.lit-share-msg'), shareBtn = box.querySelector('[data-act="share"]'), timer;
-  function say(t) { msg.textContent = t; clearTimeout(timer); timer = setTimeout(function () { msg.textContent = ''; }, 2500); }
-  function copy() {
-    function fallback() {
-      var t = document.createElement('textarea'); t.value = data.url; t.setAttribute('readonly', ''); t.style.position = 'fixed'; t.style.opacity = '0'; document.body.appendChild(t); t.select();
-      var ok = false; try { ok = document.execCommand('copy'); } catch (e) {}
-      t.remove(); say(ok ? '已複製網址' : '請手動複製：' + data.url);
-    }
-    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(data.url).then(function () { say('已複製網址'); }, fallback); } else { fallback(); }
-  }
-  if (!navigator.share) shareBtn.hidden = true;
-  shareBtn.onclick = function () {
-    try {
-      navigator.share(data).catch(function (e) { if (e && e.name === 'AbortError') return; copy(); });
-    } catch (e) { copy(); }
-  };
-  box.querySelector('[data-act="copy"]').onclick = copy;
 })();
 </script>
