@@ -6,6 +6,16 @@ function resolve(path){if(typeof path!=='string')return null;try{var u=new URL(p
 function completion(id,store){var all=Object.keys(rows).filter(function(p){return rows[p]&&rows[p].kind==='article'&&rows[p].id===id;});var done=all.filter(function(p){return store.read('read',p)==='1';}).length;return {total:all.length,done:done};}
 window.WBResearch={resolve:resolve,rows:rows,completion:completion};
 var r=resolve(location.pathname), store=window.WBReadingStore, body=document.querySelector('.lit-body');
+if(store){
+  function paintCatalog(){
+    var records=store.listLast(), current={}, latest=null;
+    Object.keys(records).forEach(function(k){var rec=records[k], row=resolve(rec.url);if(!row||row.kind!=='article'||row.id!==k)return;current[row.path]=true;if(!latest||Number(rec.t)>Number(latest.t))latest={path:row.path,title:row.title,t:rec.t};});
+    document.querySelectorAll('[data-wb-read]').forEach(function(a){var m=a.querySelector('.wb-read-mark'), row=resolve(a.pathname);if(!m||!row||row.kind!=='article')return;m.textContent=a.pathname===location.pathname||current[a.pathname]?'目前閱讀':store.read('read',a.pathname)==='1'?'已讀':'已公開';});
+    var resume=document.querySelector('.ind-resume'), link=resume&&resume.querySelector('.ind-resume-link');
+    if(link){resume.hidden=!latest;if(latest){link.href=latest.path;link.textContent=latest.title+' →';}else{link.removeAttribute('href');link.textContent='';}}
+  }
+  paintCatalog();store.onChange(paintCatalog);addEventListener('pageshow',paintCatalog);
+}
 if(r&&r.kind==='volume'&&store){
 var progress=document.querySelector('.ind-reading-progress');
 function paint(){if(!progress)return;var n=store.identity(),c=completion(r.id,store);progress.textContent=n.state==='unknown'?'正在確認閱讀紀錄…':c.total?'本機已讀 '+c.done+' / '+c.total+' 篇（'+Math.round(c.done/c.total*100)+'%）':'尚無公開文章';}

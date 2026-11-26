@@ -5,6 +5,6 @@
 <details class="wb-toc-chapter"><summary>第 {{ c.no }} 章　{{ c.title | escape }}</summary><ol class="ind-arts">
 {% for p in c.pieces %}
 {% assign ca = toc_articles | where: 'chapter_no', c.no | where: 'piece', p.piece | first %}
-<li>{% if ca %}<a data-wb-read href="{{ ca.url | relative_url }}"{% if ca.url == page.url %} aria-current="page"{% endif %}>{{ c.no }}.{{ p.piece }}　{{ ca.title | escape }}<small class="wb-read-mark"></small></a>{% else %}<span class="wb-pending">{{ c.no }}.{{ p.piece }}　{{ p.title | escape }} <small>籌備中</small></span>{% endif %}</li>
+<li data-ind-piece="{{ c.no }}.{{ p.piece }}">{% if ca %}<a data-wb-read href="{{ ca.url | relative_url }}"{% if ca.url == page.url %} aria-current="page"{% endif %}><span class="ind-pn">{{ c.no }}.{{ p.piece }}</span><span class="ind-at">{{ ca.title | escape }}</span><small class="wb-read-mark">已公開</small></a>{% else %}<div class="ind-pending"><span class="ind-pn">{{ c.no }}.{{ p.piece }}</span><span class="ind-at">{{ p.title | escape }}</span><small>籌備中</small></div>{% endif %}</li>
 {% endfor %}</ol></details>
 {% endfor %}

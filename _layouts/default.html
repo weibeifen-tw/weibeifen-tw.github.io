@@ -138,7 +138,7 @@
 {%- comment -%} V1.0 S06（Q22–Q25）：≥768px 選單固定在左側（平板窄欄、電腦完整），閱讀頁維持專注模式。手機底部導覽已於 2026-11-22 依站長決策移除（統一用左上角選單） {%- endcomment %}
 <script>(function(){try{var b=document.body,d=document.getElementById('drawer');if(matchMedia('(min-width:768px)').matches&&!b.classList.contains('reading')){b.classList.add('docked');d.inert=false;d.removeAttribute('aria-hidden');}}catch(e){}})();</script>
 <main class="wrap">
-{% unless page.url == "/" or page.layout == "thread" or page.collection == "literature" %}{% include page-nav.html %}{% endunless %}
+{% unless page.url == "/" or page.layout == "thread" or page.collection == "literature" or page.url == "/literature/indigenous/" or page.layout == "indigenous-volume" %}{% include page-nav.html %}{% endunless %}
 {{ content }}
 </main>
 <footer class="foot"><p>© 畝 MU 版權所有，禁止轉載　·　<a href="{{ '/privacy/' | relative_url }}">隱私權政策</a></p><p>所有故事皆為虛構，若有雷同，可能是記憶出了錯。</p><p>有錯就說，姐姐聽得進去。私訊 → <a href="https://www.threads.com/@weibe.ifen" target="_blank" rel="noopener">@weibe.ifen</a></p>{% unless page.url == "/support/" %}<p class="candy"><a href="https://portaly.cc/weibeifen/support" target="_blank" rel="noopener">🍬 請畝 MU 吃糖果</a>　·　<a href="{{ '/support/' | relative_url }}">贊助說明</a></p>{% endunless %}</footer>

@@ -8,8 +8,15 @@ permalink: /literature/indigenous/
 {%- assign book = site.data.indigenous_book -%}
 {%- assign arts = site.literature | where: "series_key", book.series_key -%}
 <section class="lit-list page-box ind-book">
-  <a class="nv-back" href="{{ '/literature/' | relative_url }}">← 未備份研究所</a>
-  <p class="ind-zone">原住民族專區</p>
+<div class="wb-catalog-entry"><button type="button" class="wb-catalog-open" aria-haspopup="dialog" aria-controls="wb-catalog-dialog"><span aria-hidden="true">☰</span> 目錄 <span aria-hidden="true">⌄</span></button></div>
+<dialog class="wb-catalog-dialog ind-home-toc" id="wb-catalog-dialog" aria-labelledby="wb-catalog-title"><header><h2 id="wb-catalog-title">全書目錄</h2><button type="button" class="wb-catalog-close" aria-label="關閉目錄">×</button></header><div class="wb-catalog-body">    {% for v in book.volumes %}
+    <details class="wb-toc-volume"><summary>第 {{ v.no }} 卷　{{ v.title | escape }}</summary>
+      {% include research-volume-toc.html volume=v.no %}
+    </details>
+    {% endfor %}
+  </div></dialog>
+<noscript><p>請開啟 JavaScript 使用目錄。</p></noscript>
+  <p class="ind-zone"><a class="wb-reader-back" aria-label="返回研究所" href="{{ '/literature/' | relative_url }}">‹</a> 原住民族專區</p>
   <h1 class="ov-h">未備份原住民族研究典藏</h1>
   <p class="ind-note">{{ book.title | escape }}・7卷30章210篇</p>
   {%- if book.intro and book.intro != '' %}<div class="ind-intro">{% assign ps = book.intro | split: '|' %}{% for p in ps %}<p>{{ p | strip | escape }}</p>{% endfor %}</div>{%- endif %}
@@ -24,12 +31,5 @@ permalink: /literature/indigenous/
   <ul class="ind-tools" aria-label="籌備中的研究工具">
     {% assign tools = '歷史年表|族群索引|文獻典藏|研究地圖' | split: '|' %}{% for item in tools %}<li><strong>{{ item }}</strong><small>籌備中</small></li>{% endfor %}
   </ul>
-  <details class="ind-home-toc" data-page-toc><summary>全書目錄</summary>
-    {% for v in book.volumes %}
-    <details class="wb-toc-volume"><summary>第 {{ v.no }} 卷　{{ v.title | escape }}</summary>
-      {% include research-volume-toc.html volume=v.no %}
-    </details>
-    {% endfor %}
-  </details>
   <p class="ind-fine">文章中的研究證據會標示來源、核讀狀態與使用授權。</p>
 </section>

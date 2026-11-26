@@ -6,6 +6,14 @@
   var share = main.querySelector('[data-wb-volume-share]');
   if(share) share.addEventListener('click',async function(){var msg=share.nextElementSibling;try{if(navigator.share){await navigator.share({title:document.title,url:location.origin+location.pathname});}else{await navigator.clipboard.writeText(location.origin+location.pathname);msg.textContent='已複製網址';}}catch(e){if(e.name!=='AbortError')msg.textContent='分享未完成，請複製網址列。';}});
 
+  var dialog = main.querySelector('.wb-catalog-dialog'), opener = main.querySelector('.wb-catalog-open');
+  if(dialog && opener){
+    var close=dialog.querySelector('.wb-catalog-close');
+    opener.addEventListener('click',function(){if(!dialog.open){dialog.showModal();document.documentElement.classList.add('wb-catalog-lock');close.focus();}});
+    close.addEventListener('click',function(){dialog.close();});
+    dialog.addEventListener('click',function(e){if(e.target===dialog){var r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.close();}});
+    dialog.addEventListener('close',function(){document.documentElement.classList.remove('wb-catalog-lock');opener.focus();});
+  }
   var readerBack = main.querySelector('.wb-reader-back');
   if (readerBack) {
     try {
@@ -47,19 +55,6 @@
     }
   }
   bar.hidden = false;
-  if (toc) {
-    var search = top.querySelector('.search-btn');
-    var sbox = top.querySelector('.sbox');
-    if (search && sbox) {
-      var proxy = search.cloneNode(true);
-      proxy.className = 'wb-nav-search';
-      proxy.removeAttribute('id');
-      proxy.addEventListener('click',function(){search.click();});
-      btn.before(proxy);
-      search.classList.add('wb-search-relocated');
-      new MutationObserver(function(){proxy.setAttribute('aria-expanded',String(!sbox.hidden));}).observe(sbox,{attributes:true,attributeFilter:['hidden']});
-    }
-  }
   function size(){ bar.style.setProperty('--wb-header-height',top.getBoundingClientRect().height+'px'); if(toc) toc.style.scrollMarginTop=(top.getBoundingClientRect().height+bar.offsetHeight+12)+'px'; }
   size(); if(window.ResizeObserver) new ResizeObserver(size).observe(top); else addEventListener('resize',size);
   var last = Math.max(0,scrollY), pending = false;
