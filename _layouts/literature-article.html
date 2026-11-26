@@ -166,6 +166,7 @@ page_js: lit-research
   {%- if rel_arts != '' %}
   <section class="lit-sec"><h2 class="lit-h">相關文章</h2><ul class="lit-rel">{{ rel_arts }}</ul></section>
   {%- endif %}
+  {% if page.series_key == site.data.indigenous_book.series_key %}<div class="research-actions r-acts">{% capture research_url %}{{ page.url | relative_url }}{% endcapture %}{% include actions.html key=page.url url=research_url notalk=true cmt=true norepost=true %}</div>{% endif %}
   <div class="lit-share">
     <button type="button" class="lit-share-btn" data-act="share">分享</button>
     <button type="button" class="lit-share-btn" data-act="copy">複製網址</button>

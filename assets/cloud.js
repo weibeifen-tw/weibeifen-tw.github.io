@@ -266,6 +266,10 @@
       { novel: sec.dataset.novel, path: location.pathname, title: sec.dataset.title || '', no: sec.dataset.no || '' });
   }
 
+  var research = window.WBResearch && window.WBResearch.resolve(location.pathname);
+  var researchMount = research && document.querySelector('.ind-volume-page, .lit-article');
+  if(researchMount) favHeart(researchMount.querySelector('.research-actions .act.like'), ['收藏','取消收藏'], {novel:research.id,path:research.path,title:research.title,no:research.no||''});
+  function researchRow(path){return window.WBResearch && window.WBResearch.resolve(path);}
   /* ---------- 會員頁：我的收藏 ---------- */
   var favBox = document.querySelector('.mb-favs');
   var favList = favBox && favBox.querySelector('.fav-list');
@@ -306,6 +310,7 @@
         var it = el('div', 'fav-item'), a, note = '';
         var path = isWhole && Object.prototype.hasOwnProperty.call(novels, r.novel) ? validNovelPath(BASE + '/novel/' + r.novel + '/') : null;
         if (!isWhole && result && result.status === 'published') path = result.url;
+        var rr = researchRow(r.path); if(rr && rr.id===r.novel) path=rr.path;
         if (path) {
           a = el('a', null, label);
           a.href = path;
@@ -336,7 +341,9 @@
           favList.appendChild(item(r, '《' + title + '》', null, true));
         });
       }
-      var marks = rows.filter(function (r) { return r.path !== ''; }), groups = Object.create(null), order = [];
+      var researchMarks=rows.filter(function(r){return /^indigenous-v0[1-7]$/.test(r.novel);});
+      if(researchMarks.length){favList.appendChild(el('h3','fav-h','研究典藏'));researchMarks.forEach(function(r){var rr=researchRow(r.path);favList.appendChild(item(r,rr?rr.title:(r.title||'研究典藏'),null,false));});}
+      var marks = rows.filter(function (r) { return r.path !== '' && !/^indigenous-v0[1-7]$/.test(r.novel); }), groups = Object.create(null), order = [];
       marks.forEach(function (r) {
         var result = guardedChapter(index, r.path);
         // 舊作品 ID 保留在資料庫；公開章節可依索引顯示目前正確的歸屬。
@@ -456,6 +463,7 @@
     // 章節頁：放在章節最下面；小說介紹頁：放在篇章列表下面（對整本小說留言）
     var novelId, mount, introList = document.querySelector('.chapters.nv-list');
     if (sec && sec.dataset.novel) { novelId = sec.dataset.novel; mount = sec; }
+    else if (researchMount) { novelId = research.id; mount = researchMount; }
     else if (window.NOVEL && introList) { novelId = window.NOVEL; }
     else return;
     var path = location.pathname;
@@ -789,10 +797,12 @@
         var st = path.indexOf('/novel/') === 0 ? null : guardedChapter(index, path);
         var safePath = path.indexOf('/novel/') === 0 ? validNovelPath(path) :
           st && st.status === 'published' ? st.url : null;
+        var rr=researchRow(path); if(rr && rr.id===r.novel) safePath=rr.path;
         var actualNovel = st && st.status === 'published' ? st.chapter.novel : r.novel;
         var nv = novels[actualNovel] || novels[r.novel] || {};
         var title = '《' + (nv.title || r.novel || '未知作品') + '》' +
           (pp ? (pp.ch ? '第 ' + pp.ch + ' 篇・' : '') + pp.t : (safePath && path.indexOf('/novel/') === 0 ? '介紹頁' : ''));
+        if(rr && rr.id===r.novel) title=rr.title;
         var item = el('div', 'fav-item mycm-item');
         var a = el(safePath ? 'a' : 'span', null, title);
         if (safePath) a.href = safePath + '#comments';
@@ -908,7 +918,7 @@
         dmDot(A).catch(function () {});
         var last = 0, successKey = Store.syncKey();
         try { if (successKey) last = +sessionStorage.getItem(successKey) || 0; } catch (e) {}
-        if (sec || document.querySelector('.shelf-list') || Date.now() - last > SYNC_EVERY) {
+        if (sec || research || document.querySelector('.shelf-list') || Date.now() - last > SYNC_EVERY) {
           sync(A).then(function (result) {
             if (ticket !== generation) return;
             window.WBReadingSyncStatus = result.ok ? 'ok' : 'error';

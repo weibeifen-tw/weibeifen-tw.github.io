@@ -1,0 +1,4 @@
+<script id="wb-research-index" type="application/json">{
+{% for v in site.data.indigenous_book.volumes %}{{ '/literature/indigenous/v0' | append: v.no | append: '/' | jsonify }}:{"id":{{ 'indigenous-v0' | append: v.no | jsonify }},"title":{{ v.title | jsonify }},"kind":"volume"},
+{% endfor %}{% assign ra = site.literature | where: "series_key", site.data.indigenous_book.series_key %}{% for a in ra %}{{ a.url | jsonify }}:{"id":{{ 'indigenous-v0' | append: a.volume_no | jsonify }},"title":{{ a.title | jsonify }},"kind":"article","no":{{ a.chapter_no | append: '.' | append: a.piece | jsonify }},"rank":{{ a.chapter_no | times: 100 | plus: a.piece }}}{% unless forloop.last %},{% endunless %}{% endfor %}{% if ra.size == 0 %}"_empty":null{% endif %}
+}</script>

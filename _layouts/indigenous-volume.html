@@ -22,5 +22,6 @@ layout: default
 <li data-ind-piece="{{ c.no }}.{{ p.piece }}">{% if a %}<a href="{{ a.url | relative_url }}"><span class="ind-pn">{{ c.no }}.{{ p.piece }}</span><span class="ind-at">{{ a.title | escape }}</span><small>已公開</small></a>{% else %}<div class="ind-pending"><span class="ind-pn">{{ c.no }}.{{ p.piece }}</span><span class="ind-at">{{ p.title | escape }}</span><small>籌備中</small></div>{% endif %}</li>
 {% endfor %}</ol></section>
 {% endfor %}</details>
+<div class="research-actions r-acts">{% capture research_url %}{{ page.url | relative_url }}{% endcapture %}{% include actions.html key=page.url url=research_url notalk=true cmt=true norepost=true %}</div>
 <p class="ind-fine">研究證據、核讀狀態與使用授權見各篇正式文章。</p>
 </section>

@@ -480,6 +480,13 @@ window.WBRenderShelf = function () {
   retry.type = 'button'; retry.className = 'nv-link-retry';
   retry.textContent = '重新確認'; retry.hidden = true;
   sub.appendChild(status); sub.appendChild(retry);
+  var researchHeading=document.createElement('h3');researchHeading.textContent='研究典藏';sub.appendChild(researchHeading);
+  var researchRecords=store.listLast(), researchCount=0;
+  Object.keys(researchRecords).filter(function(k){return /^indigenous-v0[1-7]$/.test(k);}).sort(function(a,b){return (+researchRecords[b].t||0)-(+researchRecords[a].t||0);}).forEach(function(k){
+    var rec=researchRecords[k], rr=window.WBResearch&&window.WBResearch.resolve(rec.url), a=document.createElement(rr&&rr.id===k&&rr.kind==='article'?'a':'span');a.textContent=rr&&rr.id===k?rr.title:(rec.title||'研究文章（目前無法確認）');if(a.tagName==='A')a.href=rr.path;sub.appendChild(a);researchCount++;
+  });
+  if(!researchCount){var empty=document.createElement('p');empty.textContent='尚無研究文章閱讀紀錄。';sub.appendChild(empty);}
+
   function apply(data) {
     if (window.WBShelfRenderToken !== renderToken) return;
     links.forEach(function (x) {
