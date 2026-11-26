@@ -44,5 +44,10 @@ end
 all_vols = (1..7).map { |i| File.read(File.join(S, 'literature/indigenous', "v0#{i}", 'index.html')) }.join
 t.('210篇目錄全部顯示', all_vols.scan(/data-ind-piece="/).size == 210)
 t.('籌備中篇目沒有文章連結', !all_vols.match?(/<a[^>]*class="ind-pending"/))
+idx = a[/<script id="wb-research-index" type="application\/json">\s*(.*?)<\/script>/m, 1]
+registry = JSON.parse(idx)
+t.('研究會員索引只含七卷及兩篇測試文章', registry.keys.sort == ((1..7).map { |i| "/literature/indigenous/v0#{i}/" } + ['/literature/ind-test-a/', '/literature/ind-test-b/']).sort)
+t.('研究文章與卷冊有收藏留言入口', a.include?('research-actions') && all_vols.scan(/class="research-actions r-acts"/).size == 7)
+t.('其他研究領域不加入研究會員互動', !p.include?('research-actions'))
 ok.each { |n| puts "通過 #{n}" }; fails.each { |n| puts "失敗 #{n}" }
 puts "正式 Jekyll 輸出檢查：通過 #{ok.size}、失敗 #{fails.size}"; exit(fails.empty? ? 0 : 1)

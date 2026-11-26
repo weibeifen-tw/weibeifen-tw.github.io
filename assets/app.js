@@ -388,6 +388,10 @@ window.WBAvatar = (function () {
 window.WBRenderShelf = function () {
   var sub = document.querySelector('.shelf-list'); if (!sub) return;
   sub.textContent = '';
+  var root=sub, mode=window.WBShelfMode==='research'?'research':'novel';
+  var tabs=document.createElement('div');tabs.className='shelf-tabs';tabs.setAttribute('role','group');tabs.setAttribute('aria-label','書櫃分類');
+  [['novel','小說'],['research','研究典藏']].forEach(function(x){var b=document.createElement('button');b.type='button';b.className='mb-btn';b.textContent=x[1];b.setAttribute('aria-pressed',String(mode===x[0]));b.onclick=function(){window.WBShelfMode=x[0];window.WBRenderShelf();var next=root.querySelector('.shelf-tabs button[aria-pressed="true"]');if(next)next.focus();};tabs.appendChild(b);});root.appendChild(tabs);
+  sub=document.createElement('div');sub.className='shelf-novel-pane';sub.hidden=mode!=='novel';root.appendChild(sub);
   // 每次雲端同步重畫會使上一次索引回應失效，避免舊請求覆蓋新內容。
   var renderToken = (window.WBShelfRenderToken || 0) + 1;
   window.WBShelfRenderToken = renderToken;
@@ -480,12 +484,13 @@ window.WBRenderShelf = function () {
   retry.type = 'button'; retry.className = 'nv-link-retry';
   retry.textContent = '重新確認'; retry.hidden = true;
   sub.appendChild(status); sub.appendChild(retry);
-  var researchHeading=document.createElement('h3');researchHeading.textContent='研究典藏';sub.appendChild(researchHeading);
+  var researchPane=document.createElement('div');researchPane.className='shelf-research-pane';researchPane.hidden=mode!=='research';root.appendChild(researchPane);
+  var researchHeading=document.createElement('h3');researchHeading.textContent='研究典藏';researchPane.appendChild(researchHeading);
   var researchRecords=store.listLast(), researchCount=0;
   Object.keys(researchRecords).filter(function(k){return /^indigenous-v0[1-7]$/.test(k);}).sort(function(a,b){return (+researchRecords[b].t||0)-(+researchRecords[a].t||0);}).forEach(function(k){
-    var rec=researchRecords[k], rr=window.WBResearch&&window.WBResearch.resolve(rec.url), a=document.createElement(rr&&rr.id===k&&rr.kind==='article'?'a':'span');a.textContent=rr&&rr.id===k?rr.title:(rec.title||'研究文章（目前無法確認）');if(a.tagName==='A')a.href=rr.path;sub.appendChild(a);researchCount++;
+    var rec=researchRecords[k], rr=window.WBResearch&&window.WBResearch.resolve(rec.url), a=document.createElement(rr&&rr.id===k&&rr.kind==='article'?'a':'span');a.textContent=rr&&rr.id===k?rr.title:(rec.title||'研究文章（目前無法確認）');if(a.tagName==='A')a.href=rr.path;var item=document.createElement('div');item.className='research-shelf-item';item.appendChild(a);var v=window.WBResearch.resolve('/literature/indigenous/v0'+k.slice(-1)+'/');if(v){var vl=document.createElement('a');vl.href=v.path;vl.textContent=v.title;item.appendChild(vl);var pr=window.WBResearch.completion(k,store),small=document.createElement('small');small.textContent=pr.total?'本機已讀 '+pr.done+' / '+pr.total+' 篇':'尚無公開文章';item.appendChild(small);}researchPane.appendChild(item);researchCount++;
   });
-  if(!researchCount){var empty=document.createElement('p');empty.textContent='尚無研究文章閱讀紀錄。';sub.appendChild(empty);}
+  if(!researchCount){var empty=document.createElement('p');empty.textContent=identity.state==='unknown'?'正在確認會員身分…':'尚無研究文章閱讀紀錄。';researchPane.appendChild(empty);}
 
   function apply(data) {
     if (window.WBShelfRenderToken !== renderToken) return;
@@ -582,6 +587,7 @@ window.WBReadingStore.onChange(function () { window.WBRenderShelf(); });
         var nv = novels[actualNovel] || novels[x.novel] || {};
         var title = '《' + (nv.title || x.novel || '未知作品') + '》' +
           (pp ? (pp.ch ? '第 ' + pp.ch + ' 篇・' : '') + pp.t : (safe && path.indexOf('/novel/') === 0 ? '介紹頁' : ''));
+        var rr=window.WBResearch&&window.WBResearch.resolve(path);if(rr&&rr.id===x.novel){safe=rr.path;title=rr.title;}
         var entry = make('a', null, title);
         if (safe) entry.href = safe + '#comments';
         else {

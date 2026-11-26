@@ -304,7 +304,7 @@
 
     var attempt = 0;
     function paint(index, failed) {
-      if (seq !== favRenderSequence) return;
+      if (seq !== favRenderSequence || Store.identity().version !== identity.version || Store.identity().uid !== identity.uid) return;
       favList.textContent = '';
       function item(r, label, result, isWhole) {
         var it = el('div', 'fav-item'), a, note = '';
@@ -767,11 +767,13 @@
   async function renderMyComments(A) {
     if (!myCmList) return;
     var seq = ++myCmRenderSequence;
-    var c = A.getClient(), uid = await uidOf(c);
-    if (!uid || seq !== myCmRenderSequence) return;
+    var identity=Store.identity(); if(identity.state!=='member')return;
+    var c=A.getClient(),uid=identity.uid;
+    function current(){var n=Store.identity();return seq===myCmRenderSequence&&n.state==='member'&&n.uid===uid&&n.version===identity.version;}
+    if(!current())return;
     var res = await c.from('comments').select('id,novel,path,body,hidden,created_at')
       .eq('user_id', uid).order('created_at', { ascending: false }).limit(100);
-    if (seq !== myCmRenderSequence) return;
+    if (!current()) return;
     myCmList.textContent = '';
     myCmBox.hidden = false;
     if (res.error) { myCmList.appendChild(el('p', 'mb-form-msg err', errText('讀取留言失敗，請重新整理。', res.error))); return; }
@@ -785,10 +787,10 @@
         Object.keys(pj).forEach(function (k) { byUrl[pj[k].u] = pj[k]; });
       }
     } catch (e) {}
-    if (seq !== myCmRenderSequence) return;
+    if (!current()) return;
     var attempt = 0;
     function paint(index, failed) {
-      if (seq !== myCmRenderSequence) return;
+      if (!current()) return;
       myCmList.textContent = '';
       var shownN = 0, more = el('button', 'mb-btn mycm-more'); more.type = 'button';
       function addItem(r) {
@@ -818,7 +820,7 @@
         item.appendChild(el('p', 'mycm-body', r.body));
         myCmList.appendChild(item);
       }
-      function showMore(n) {
+      function showMore(n) { if(!current())return;
         rows.slice(shownN, shownN + n).forEach(addItem);
         shownN = Math.min(rows.length, shownN + n);
         var left = rows.length - shownN;
@@ -843,10 +845,10 @@
       var guard = window.WBChapterGuard;
       if (!guard) { paint(null, true); return; }
       guard.load(!!force).then(function (index) {
-        if (seq !== myCmRenderSequence || turn !== attempt) return;
+        if (!current() || turn !== attempt) return;
         paint(index, false);
       }).catch(function () {
-        if (seq !== myCmRenderSequence || turn !== attempt) return;
+        if (!current() || turn !== attempt) return;
         paint(null, true);
       });
     }
@@ -886,6 +888,7 @@
     buttons.forEach(function (x) { x[0].setOn(false); });
     favStatus('請登入會員以查看收藏。');
   }
+  Store.onChange(function(){++favRenderSequence;++myCmRenderSequence;buttons.forEach(function(x){x[0].setOn(false);});if(favList)favList.textContent='';if(myCmList)myCmList.textContent='';if(window.WBDM)window.WBDM.notices=[];});
   if (!signedIn()) { guest(); return; }
   favStatus('正在載入收藏…');
   getAuth().then(function (A) {
