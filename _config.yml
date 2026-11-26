@@ -11,6 +11,10 @@ permalink: /t/:title/
 # 是否公開只看兩件事：front matter 沒有 published: false，且列在 .github/release/authorized.txt（部署前驗證）。
 future: true
 exclude:
+  - novel/duanqiao.html
+  - novel/huaji.html
+  - novel/pendi.html
+  - novel/weigongkai.html
   - README.md
   - supabase
   - tests

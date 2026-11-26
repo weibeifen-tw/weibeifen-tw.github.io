@@ -367,38 +367,6 @@ chaojian:
       - 不安全感
     writing_completed: false
     final_post_id: ""
-weigongkai:
-  city: qingjing
-  region: mountains
-  title: 未公開
-  cover: /assets/covers/weigongkai.svg
-  caption: |-
-    清境山上的戀愛實境秀。八個女生、二十八天，心動不限性別。
-
-    天花板角落的紅燈一直亮著，攝影機卻未必拍得到每一次心動。
-  era: 2025–2026・清境
-  tag: 實境秀・群像
-  icon: 🎥
-  blurb: "真正發生的事，都在鏡頭拍不到的地方。"
-  tags: [實境秀, 群像, 甜]
-  intro: |-
-    2025 年夏天，清境山上一棟像歐洲的民宿。
-
-    八個女生將在這裡一起生活二十八天。她們有自己的過去、喜好，以及對愛情不同的想像。
-
-    節目沒有規定誰該喜歡誰。天花板角落的紅燈一直亮著，記錄著她們的生活。
-
-    至於那些沒有被鏡頭拍下來的事，只有當事人知道。
-  reading_info:
-    relationship: 多線感情、群像
-    tone: 慢熱曖昧
-    rating: "一般"
-    psychology:
-      - 自我呈現
-      - 社交壓力
-      - 親密界線
-    writing_completed: false
-    final_post_id: ""
 chuwang:
   city: hualien
   region: huadong-valley
@@ -468,42 +436,6 @@ mizi:
       - 情感表達
     writing_completed: true
     final_post_id: ""
-pendi:
-  city: puli
-  region: puli-basin
-  title: 盆底
-  cover: /assets/covers/pendi.svg
-  caption: |-
-    埔里，高一的茵在脆上找到鎮上的女同群。第一次見面，她遇見了燼。
-
-    燼什麼都願意講，好像只要聽她說話，就能知道她是怎樣的人。
-  era: 2025–2026・埔里
-  tag: 女同圈・群像
-  icon: 🌫️
-  blurb: "她什麼都講，就是不講最糟的那件。"
-  tags: [群像, 女同圈, 成長]
-  intro: |-
-    2025 年秋天，南投埔里。
-
-    高一的茵在脆上找到一個鎮上的女同群。群組裡的人談喜歡的女生、生活裡的煩惱，也談起彼此認識的人。
-
-    第一次見面，她遇見了燼。
-
-    燼說話直接，似乎沒有什麼不能說的事。
-
-    所以大家都以為自己認識她。
-  reading_info:
-    relationship: 女同社群、群像
-    tone: 寫實心理向
-    rating: "一般"
-    psychology:
-      - 自殺經歷
-      - 家庭暴力
-      - 創傷
-      - 人際界線
-      - 群體歸屬
-    writing_completed: false
-    final_post_id: ""
 shuangshuang:
   city: gukeng
   region: south-hills
@@ -537,75 +469,6 @@ shuangshuang:
       - 家庭逼婚
       - 自我接納
     writing_completed: true
-    final_post_id: ""
-duanqiao:
-  city: kinmen
-  region: continental-isles
-  title: 斷橋
-  cover: /assets/covers/duanqiao.svg
-  caption: |-
-    架空末日，金門。首領的女兒霙，被當作十二桶柴油的交換條件送往烈嶼。
-
-    碼頭上站著敵方的守備隊長硝。一座斷掉的橋，兩個各有所求的人。
-  era: 2026・金門
-  tag: 末日・敵對
-  icon: 🌉
-  blurb: "兩截斷掉的橋，在海上互相指著，中間什麼都沒有。"
-  tags: [末日, 敵對]
-  intro: |-
-    災變第三年，金門分成兩座島。
-
-    大金門用首領的女兒霙，換烈嶼的十二桶柴油。
-
-    碼頭上等她的，是半張臉燒傷的守備隊長硝。
-
-    一個想要水，一個想知道那天橋上發生了什麼。
-
-    她們各自握著對方需要的東西。
-  world_note: 跟現實不同：末日之後的金門。
-  reading_info:
-    relationship: 敵對關係
-    tone: 緊張慢熱
-    rating: "一般"
-    psychology:
-      - 權力不對等
-      - 生存壓力
-      - 人質交換
-      - 信任與防備
-    writing_completed: false
-    final_post_id: ""
-huaji:
-  city: lanyu
-  region: volcanic-isles
-  title: 劃記
-  cover: /assets/covers/huaji.svg
-  caption: |-
-    2010 年，蘭嶼。國一開學第一天，老師把礁當成了男生。
-
-    礁沒有解釋，拿著書包往男生那排走。漪坐在窗邊，看著這個短頭髮的女孩。
-  era: 2010–2021・蘭嶼
-  tag: 成長・父權
-  icon: 🖍️
-  blurb: "國一開學那天，坐在窗邊的女孩。"
-  tags: [成長, 父權, 離島]
-  intro: |-
-    2010 年，蘭嶼。
-
-    短頭髮的礁，是工程包商家「當過兒子」的女兒。長頭髮的漪，在自家民宿裡從來沒人理。
-
-    國一開學那天，新來的老師把礁當成男生。礁沒有解釋，拿起書包往男生那排走。
-
-    坐在窗邊的漪看著她。
-  reading_info:
-    relationship: 共同成長
-    tone: 寫實成長
-    rating: "一般"
-    psychology:
-      - 父權
-      - 重男輕女
-      - 情感忽視
-      - 性別刻板印象
-    writing_completed: false
     final_post_id: ""
 xiwei:
   city: chiayi

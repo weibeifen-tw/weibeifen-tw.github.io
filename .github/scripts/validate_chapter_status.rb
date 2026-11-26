@@ -101,7 +101,11 @@ begin
   fail_if(withdrawn.keys.to_set != source_urls.to_set, 'withdrawn index does not match withdrawn.yml', errors)
   source_rows.each do |row|
     url = row['url']
-    fail_if(!valid_url?(url), "invalid withdrawn URL: #{url}", errors)
+    novel_url = url.is_a?(String) && url.match?(%r{\A/novel/[a-zA-Z0-9_-]+/\z})
+    fail_if(!valid_url?(url) && !novel_url, "invalid withdrawn URL: #{url}", errors)
+    if novel_url
+      fail_if(novels.key?(url.split("/")[2]), "withdrawn novel still in public index: #{url}", errors)
+    end
     fail_if(chapters.key?(url), "WITHDRAWN chapter is also public: #{url}", errors)
     fail_if(File.exist?(File.join(site, url.to_s.sub(%r{\A/}, ''), 'index.html')), "withdrawn chapter still built: #{url}", errors)
     actual = withdrawn[url]

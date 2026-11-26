@@ -131,70 +131,6 @@ isle:
   glyph: 嶼
   color: "#a35a6a"
   bio: 二十二歲，剛從倫敦回來被疫情困住，在仁愛區開了一間沒什麼人的公仔店。看心情回訊息。
-shan:
-  name: 杉
-  handle: shan.beats
-  novel: weigongkai
-  avatar: shan.svg
-  glyph: 杉
-  color: "#a0613a"
-  bio: 二十五歲，送外送，也在樂團打鼓。不會說謊，來上節目是因為通告費很好。
-ji:
-  name: 霽
-  handle: ji.afterrain
-  novel: weigongkai
-  avatar: ji.svg
-  glyph: 霽
-  color: "#5d6474"
-  bio: 二十七歲，室內設計助理。話很少，想很多。睡不著的時候會去洗碗。
-tai:
-  name: 苔
-  handle: tai.process
-  novel: weigongkai
-  avatar: tai.svg
-  glyph: 苔
-  color: "#76698a"
-  bio: 二十九歲，中科半導體製程工程師。話不多，社交電量很低。來上節目是想談戀愛，認真的。
-feng:
-  name: 楓
-  handle: feng.onstage
-  novel: weigongkai
-  avatar: feng.svg
-  glyph: 楓
-  color: "#b5473c"
-  bio: 二十三歲，剛從舞蹈系畢業。看狗狗影片也會哭。來上節目是想交朋友。
-jue:
-  name: 蕨
-  handle: jue.napping
-  novel: weigongkai
-  avatar: jue.svg
-  glyph: 蕨
-  color: "#9a7658"
-  bio: 三十四歲，國中老師，放暑假。什麼都慢，總是在打哈欠。來上節目是因為暑假沒事。
-xiu:
-  name: 岫
-  handle: xiu.mountainside
-  novel: weigongkai
-  avatar: xiu.svg
-  glyph: 岫
-  color: "#46557e"
-  bio: 二十二歲，仁愛鄉人，在臺中讀中興大學。對誰都很有禮貌，問她是哪裡人，她會說在臺中讀書。
-linrain:
-  name: 霖
-  handle: lin.shipper
-  novel: weigongkai
-  avatar: linrain.svg
-  glyph: 霖
-  color: "#bf862f"
-  bio: 二十六歲，護理師，輪班輪到崩潰。來上節目是為了好好睡覺跟看戲。房間白板上的 CP 圖每天更新。
-ai:
-  name: 靄
-  handle: ai.slowmorning
-  novel: weigongkai
-  avatar: ai.svg
-  glyph: 靄
-  color: "#b07c74"
-  bio: 三十一歲，以前拍生活影片，煮咖啡、買花、在陽台看書。來上節目是想認識新朋友，也想讓自己慢下來。
 yuan:
   name: 垣
   handle: yuan.spike
@@ -221,46 +157,6 @@ mizi_jin:
   glyph: 錦
   color: "#8c766f"
   bio: 海運集團董事長。回到陽明山的家，是蘅的妻子，也是五個女兒的媽咪。
-yin:
-  name: 茵
-  handle: yin.firstyear
-  novel: pendi
-  avatar: yin.svg
-  glyph: 茵
-  color: "#c08497"
-  bio: 十六歲，高一。這個夏天才發現自己喜歡女生，在脆上找到鎮上的群，第一次見面緊張到提早半小時到。
-jin:
-  name: 燼
-  handle: jin.ashes
-  novel: pendi
-  avatar: jin.svg
-  glyph: 燼
-  color: "#9a4f3c"
-  bio: 二十歲。話很多，認識的人也很多。鎮上誰跟誰在一起，她都知道。
-ting:
-  name: 汀
-  handle: ting.notbufen
-  novel: pendi
-  avatar: ting.svg
-  glyph: 汀
-  color: "#56698c"
-  bio: 十七歲，高二。T，很在意這件事。嘴很硬，騎腳踏車載過半個群的人回家。
-kui:
-  name: 葵
-  handle: kui.halfsugar
-  novel: pendi
-  avatar: kui.svg
-  glyph: 葵
-  color: "#c98a3e"
-  bio: 十九歲，在家裡的筊白筍田跟鎮上飲料店之間打工。燼的 cos 搭檔，負責縫衣服，也負責叫她吃飯。
-jing:
-  name: 菁
-  handle: jing.taichung
-  novel: pendi
-  avatar: jing.svg
-  glyph: 菁
-  color: "#8a6f9e"
-  bio: 十八歲，剛去臺中讀大學，週末才回埔里。淡棕色頭髮，寬褲。群裡最冷靜的人。
 yan:
   name: 焰
   handle: huoyan.zhanshen
@@ -269,38 +165,6 @@ yan:
   glyph: 焰
   color: "#d0622b"
   bio: 二十六歲，古坑瓦斯行的女兒，一次搬兩桶二十公斤。我爸說他沒生到兒子，但他有我。
-xiao:
-  name: 硝
-  handle: xiao.lieyu
-  novel: duanqiao
-  avatar: xiao.svg
-  glyph: 硝
-  color: "#8b3a2a"
-  bio: 三十二歲，烈嶼守備隊長。退伍軍人，左臉到脖子有燒傷。住上林古厝，不太講話。
-ying:
-  name: 霙
-  handle: ying.shuitou
-  novel: duanqiao
-  avatar: ying.svg
-  glyph: 霙
-  color: "#6f84a8"
-  bio: 二十四歲，大金首領的女兒，災變第三年被送到烈嶼當人質。什麼都說好。
-jiao:
-  name: 礁
-  handle: jiao.kaiyuan
-  novel: huaji
-  avatar: jiao.svg
-  glyph: 礁
-  color: "#4a5a70"
-  bio: 蘭嶼長大。短頭髮是我爸要我剪的。話不多，但我都有在聽。
-yi:
-  name: 漪
-  handle: yi.minsu
-  novel: huaji
-  avatar: yi.svg
-  glyph: 漪
-  color: "#b07a8f"
-  bio: 蘭嶼長大，家裡開民宿。讀書很慢，會畫很多重點。
 xiwei-jin:
   name: 矜
   handle: jin.seat

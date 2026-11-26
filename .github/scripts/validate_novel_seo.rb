@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 # Check the rendered site, not only Jekyll input.
 require 'pathname'
+require 'date'
 
 root = File.expand_path(ARGV[0] || '.')
 i = ARGV.index('--site')
@@ -11,7 +12,15 @@ check = ->(condition, message) { errors << message unless condition }
 
 pages = Dir.glob(File.join(root, 'novel', '*.html')).sort
 check.call(!pages.empty?, 'No novel landing pages found')
-ids = pages.map { |f| File.basename(f, '.html') }
+require 'yaml'
+all_ids = pages.map { |f| File.basename(f, '.html') }
+withdrawn = YAML.safe_load(File.read(File.join(root, '_data', 'withdrawn.yml')), permitted_classes: [Date])['urls'] || []
+withdrawn_ids = withdrawn.filter_map { |entry| entry['url'][%r{\A/novel/([^/]+)/\z}, 1] }
+withdrawn_ids.each do |id|
+  check.call(!File.exist?(File.join(site, 'novel', id, 'index.html')), "#{id}: withdrawn novel page is still public")
+end
+ids = all_ids - withdrawn_ids
+check.call(!ids.empty?, 'No public novel landing pages found')
 
 ids.each do |id|
   jpg = File.join(site, 'assets', 'og', "#{id}.jpg")
