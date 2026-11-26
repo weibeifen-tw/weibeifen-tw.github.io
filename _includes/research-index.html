@@ -1,4 +1,12 @@
 <script id="wb-research-index" type="application/json">{
-{% for v in site.data.indigenous_book.volumes %}{{ '/literature/indigenous/v0' | append: v.no | append: '/' | jsonify }}:{"id":{{ 'indigenous-v0' | append: v.no | jsonify }},"title":{{ v.title | jsonify }},"kind":"volume"},
-{% endfor %}{% assign ra = site.literature | where: "series_key", site.data.indigenous_book.series_key %}{% for a in ra %}{{ a.url | jsonify }}:{"id":{{ 'indigenous-v0' | append: a.volume_no | jsonify }},"title":{{ a.title | jsonify }},"kind":"article","no":{{ a.chapter_no | append: '.' | append: a.piece | jsonify }},"rank":{{ a.chapter_no | times: 100 | plus: a.piece }}}{% unless forloop.last %},{% endunless %}{% endfor %}{% if ra.size == 0 %}"_empty":null{% endif %}
+{%- for research_volume in site.data.indigenous_book.volumes -%}
+{%- assign research_number = forloop.index -%}
+{%- unless forloop.first -%},{%- endunless -%}
+{{ '/literature/indigenous/v0' | append: research_number | append: '/' | jsonify }}:{"id":{{ 'indigenous-v0' | append: research_number | jsonify }},"title":{{ research_volume.title | jsonify }},"kind":"volume"}
+{%- endfor -%}
+{%- for research_article in site.literature -%}
+{%- if research_article.series_key == 'indigenous-history' -%}
+,{{ research_article.url | jsonify }}:{"id":{{ 'indigenous-v0' | append: research_article.volume_no | jsonify }},"title":{{ research_article.title | jsonify }},"kind":"article","no":{{ research_article.chapter_no | append: '.' | append: research_article.piece | jsonify }},"rank":{{ research_article.chapter_no | times: 100 | plus: research_article.piece }}}
+{%- endif -%}
+{%- endfor -%}
 }</script>
