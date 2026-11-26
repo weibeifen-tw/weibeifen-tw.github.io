@@ -1,13 +1,12 @@
-# 未備份研究所｜原住民族數位歷史專書（DEV-03）。只能放「已核准公開」的文字；沒填的一律顯示「籌備中」。
-# 不得放：未發布篇目名稱、規劃篇目清單、研究進度、審查資料、未核准正文。
+# 公開卷冊中繼資料；未核准正文、證據卡及內部審查紀錄不得放入。
 series_key: indigenous-history
 title: 臺灣原住民族歷史
-intro:        # 已核准公開的專書介紹（多段用 | 換行）；空白＝不顯示
-volumes:      # 卷號固定 1–7；title／summary 為已核准公開的卷名與介紹，空白＝籌備中
-  - { no: 1, title: , summary: }
-  - { no: 2, title: , summary: }
-  - { no: 3, title: , summary: }
-  - { no: 4, title: , summary: }
-  - { no: 5, title: , summary: }
-  - { no: 6, title: , summary: }
-  - { no: 7, title: , summary: }
+intro:
+volumes:
+  - { no: 1, title: "島嶼與人群的起源", summary: null, planned_count: 8, cover: "/assets/covers/indigenous-v01.svg" }
+  - { no: 2, title: "原住民族的社會與文化", summary: null, planned_count: 10, cover: "/assets/covers/indigenous-v02.svg" }
+  - { no: 3, title: "十七世紀的臺灣", summary: null, planned_count: 8, cover: "/assets/covers/indigenous-v03.svg" }
+  - { no: 4, title: "清代原住民族歷史", summary: null, planned_count: 8, cover: "/assets/covers/indigenous-v04.svg" }
+  - { no: 5, title: "日治時期的原住民族", summary: null, planned_count: 9, cover: "/assets/covers/indigenous-v05.svg" }
+  - { no: 6, title: "戰後至當代", summary: null, planned_count: 12, cover: "/assets/covers/indigenous-v06.svg" }
+  - { no: 7, title: "各族群歷史專篇", summary: null, planned_count: 155, cover: "/assets/covers/indigenous-v07.svg" }

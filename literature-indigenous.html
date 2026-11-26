@@ -1,27 +1,31 @@
 ---
 page_css: literature
 layout: default
-title: 臺灣原住民族歷史｜未備份研究所
-description: 未備份研究所原住民族專區：臺灣原住民族歷史數位專書，七卷架構與已公開文章目錄。
+title: 未備份原住民族研究典藏
+description: 臺灣原住民族歷史數位專書，七卷架構與已公開文章目錄。
 permalink: /literature/indigenous/
 ---
-{%- comment -%}
-  原住民族數位歷史專書首頁（DEV-03）。
-  卷名、卷介紹、專書介紹只取 _data/indigenous_book.yml 裡「已核准公開」的文字，沒填就顯示「籌備中」。
-  目錄只列 repo 裡 series_key＝indigenous-history 的文章（repo 只放已核准公開的文章）。依卷→章→篇排序。
-  不顯示：規劃篇目清單、未發布篇目、研究進度、審查資料。
-{%- endcomment -%}
 {%- assign book = site.data.indigenous_book -%}
 {%- assign arts = site.literature | where: "series_key", book.series_key -%}
 <section class="lit-list page-box ind-book">
   <a class="nv-back" href="{{ '/literature/' | relative_url }}">← 未備份研究所</a>
   <p class="ind-zone">原住民族專區</p>
-  <h1 class="ov-h">{{ book.title }}</h1>
-  {%- if book.intro and book.intro != '' %}
-  <div class="ind-intro">{% assign ps = book.intro | split: '|' %}{% for p in ps %}<p>{{ p | strip | escape }}</p>{% endfor %}</div>
-  {%- endif %}
-  <p class="ind-note">數位歷史專書，共七卷。只列出已正式發布的文章；其餘篇章仍在研究與審查中。</p>
-  <ol class="ind-vols">
+  <h1 class="ov-h">未備份原住民族研究典藏</h1>
+  <p class="ind-note">{{ book.title | escape }}・7卷30章210篇</p>
+  {%- if book.intro and book.intro != '' %}<div class="ind-intro">{% assign ps = book.intro | split: '|' %}{% for p in ps %}<p>{{ p | strip | escape }}</p>{% endfor %}</div>{%- endif %}
+  <h2 class="ind-section-title">探索卷冊</h2>
+  <ul class="ind-shelf" aria-label="七卷書架">
+    {% for v in book.volumes %}{% assign vas = arts | where: "volume_no", v.no %}
+    <li><a href="#vol-{{ v.no }}"><img src="{{ v.cover | relative_url }}" width="600" height="800" alt="第{{ '一二三四五六七' | slice: forloop.index0 }}卷：{{ v.title | escape }}" {% unless forloop.first %}loading="lazy"{% endunless %}><span>{{ vas.size }} / {{ v.planned_count }} 篇已公開</span></a></li>
+    {% endfor %}
+  </ul>
+  <h2 class="ind-section-title">研究工具</h2>
+  <ul class="ind-tools" aria-label="籌備中的研究工具">
+    {% assign tools = '歷史年表|族群索引|文獻典藏|研究地圖' | split: '|' %}{% for item in tools %}<li><strong>{{ item }}</strong><small>籌備中</small></li>{% endfor %}
+  </ul>
+  <h2 class="ind-section-title">已公開文章</h2>
+  <p class="ind-note">目前已公開 {{ arts.size }} 篇。其餘篇章籌備中。</p>
+  <ol class="ind-vols" data-page-toc>
     {%- for v in book.volumes %}
     {%- assign vas = arts | where: "volume_no", v.no | sort: "article_id" -%}
     <li class="ind-vol{% if vas.size == 0 %} ind-wait{% endif %}" id="vol-{{ v.no }}">
@@ -39,7 +43,7 @@ permalink: /literature/indigenous/
           <p class="ind-cht">第 {{ c.name }} 章</p>
           <ol class="ind-arts">
             {%- for a in c.items -%}
-            <li><a href="{{ a.url | relative_url }}"><span class="ind-pn">{{ v.no }}.{{ c.name }}.{{ a.piece }}</span><span class="ind-at">{{ a.title | escape }}</span>{% if a.version %}<small>{{ a.version | escape }}</small>{% endif %}</a></li>
+            <li><a href="{{ a.url | relative_url }}"><span class="ind-pn">{{ c.name }}.{{ a.piece }}</span><span class="ind-at">{{ a.title | escape }}</span>{% if a.version %}<small>{{ a.version | escape }}</small>{% endif %}</a></li>
             {%- endfor -%}
           </ol>
         </div>
