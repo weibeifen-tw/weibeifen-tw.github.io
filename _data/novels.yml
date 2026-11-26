@@ -365,8 +365,8 @@ chaojian:
       - 焦慮型依附
       - 迴避型依附
       - 不安全感
-    writing_completed: false
-    final_post_id: ""
+    writing_completed: true
+    final_post_id: chaojian55
 chuwang:
   city: hualien
   region: huadong-valley
