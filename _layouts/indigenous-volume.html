@@ -11,18 +11,21 @@ layout: default
 {% assign chapter_start = chapter_starts[volume_index] | plus: 0 %}
 {% assign arts = site.literature | where: "series_key", book.series_key | where: "volume_no", v.no | sort: "article_id" %}
 <section class="lit-list page-box ind-book ind-volume-page">
-<a class="nv-back" href="{{ '/literature/indigenous/' | relative_url }}">← 原住民族研究典藏</a>
-<div class="ind-volume-head"><img src="{{ v.cover | relative_url }}" width="600" height="800" alt="{{ v.title | escape }}"><div><p class="ind-zone">第 {{ v.no }} 卷</p><h1 class="ov-h">{{ v.title | escape }}</h1><p class="ind-note">{{ chapter_count }}章・{{ arts.size }} / {{ v.planned_count }} 篇已公開</p>{% if v.summary %}<p>{{ v.summary | escape }}</p>{% endif %}</div></div>
-<p class="ind-reading-progress" aria-live="polite"></p>
-<p class="ind-note">以下為規劃目錄；籌備中篇目尚未公開。族群分類不代表法律認定。</p>
-<details class="ind-volume-toc" data-page-toc open><summary>卷冊目錄</summary>
+<div class="ind-volume-head"><img src="{{ v.cover | relative_url }}" width="600" height="800" alt="{{ v.title | escape }}"><div><p class="ind-zone">臺灣原住民族歷史・第 {{ v.no }} 卷</p><h1 class="ov-h"><a class="nv-back ind-title-back" href="{{ '/literature/indigenous/' | relative_url }}" aria-label="返回研究典藏">‹</a> {{ v.title | escape }}</h1><p class="ind-note">{{ chapter_count }}章・{{ arts.size }} / {{ v.planned_count }} 篇已公開</p></div></div>
+<div class="research-actions r-acts">{% capture research_url %}{{ page.url | relative_url }}{% endcapture %}{% include actions.html key=page.url url=research_url notalk=true cmt=true norepost=true %}</div>
+<div class="ind-volume-share"><button type="button" class="mb-btn" data-wb-volume-share>分享卷冊</button><span aria-live="polite"></span></div>
+<h2 class="ind-section-title">卷冊簡介</h2>
+{% if v.summary %}<p>{{ v.summary | escape }}</p>{% else %}<p class="ind-note">本卷收錄以下研究章節：</p><ul class="ind-chapter-summary">{% for c in site.data.indigenous_catalog offset:chapter_start limit:chapter_count %}<li>{{ c.title | escape }}</li>{% endfor %}</ul>{% endif %}
+{% assign first_article = arts | first %}
+{% if first_article %}<a class="mb-btn ind-start" href="{{ first_article.url | relative_url }}">開始閱讀</a>{% else %}<button class="mb-btn ind-start" disabled>籌備中</button>{% endif %}
+<h2 class="ind-section-title">個人閱讀進度</h2><p class="ind-reading-progress" aria-live="polite"></p>
+<details class="ind-volume-toc" data-page-toc><summary>卷冊目錄</summary>
 {% for c in site.data.indigenous_catalog offset:chapter_start limit:chapter_count %}
 <section class="ind-catalog-ch"><h2>第 {{ c.no }} 章　{{ c.title | escape }}</h2><ol class="ind-arts">
 {% assign cas = arts | where: "chapter_no", c.no %}
 {% for p in c.pieces %}{% assign a = cas | where: "piece", p.piece | first %}
-<li data-ind-piece="{{ c.no }}.{{ p.piece }}">{% if a %}<a href="{{ a.url | relative_url }}"><span class="ind-pn">{{ c.no }}.{{ p.piece }}</span><span class="ind-at">{{ a.title | escape }}</span><small>已公開</small></a>{% else %}<div class="ind-pending"><span class="ind-pn">{{ c.no }}.{{ p.piece }}</span><span class="ind-at">{{ p.title | escape }}</span><small>籌備中</small></div>{% endif %}</li>
+<li data-ind-piece="{{ c.no }}.{{ p.piece }}">{% if a %}<a data-wb-read href="{{ a.url | relative_url }}"><span class="ind-pn">{{ c.no }}.{{ p.piece }}</span><span class="ind-at">{{ a.title | escape }}</span><small class="wb-read-mark">已公開</small></a>{% else %}<div class="ind-pending"><span class="ind-pn">{{ c.no }}.{{ p.piece }}</span><span class="ind-at">{{ p.title | escape }}</span><small>籌備中</small></div>{% endif %}</li>
 {% endfor %}</ol></section>
 {% endfor %}</details>
-<div class="research-actions r-acts">{% capture research_url %}{{ page.url | relative_url }}{% endcapture %}{% include actions.html key=page.url url=research_url notalk=true cmt=true norepost=true %}</div>
 <p class="ind-fine">研究證據、核讀狀態與使用授權見各篇正式文章。</p>
 </section>

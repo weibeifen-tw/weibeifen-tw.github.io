@@ -3,6 +3,9 @@
   'use strict';
   var bar = document.querySelector('.wb-page-nav'), main = document.querySelector('main.wrap'), top = document.querySelector('header.top');
   if (!main || !top) return;
+  var share = main.querySelector('[data-wb-volume-share]');
+  if(share) share.addEventListener('click',async function(){var msg=share.nextElementSibling;try{if(navigator.share){await navigator.share({title:document.title,url:location.origin+location.pathname});}else{await navigator.clipboard.writeText(location.origin+location.pathname);msg.textContent='已複製網址';}}catch(e){if(e.name!=='AbortError')msg.textContent='分享未完成，請複製網址列。';}});
+
   var readerBack = main.querySelector('.wb-reader-back');
   if (readerBack) {
     try {
@@ -27,7 +30,8 @@
     if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey || e.button !== 0) return;
     if (source && source.pathname !== location.pathname && history.length > 1) { e.preventDefault(); history.back(); }
   });
-  if (original && original.matches('.nv-back')) original.hidden = true;
+  if (original && original.matches('.nv-back') && !original.classList.contains('ind-title-back')) original.hidden = true;
+  if (original && original.classList.contains('ind-title-back')) { back.hidden=true; original.href=back.href; original.addEventListener('click',function(e){if(!e.ctrlKey&&!e.metaKey&&!e.shiftKey&&!e.altKey&&e.button===0&&source&&history.length>1){e.preventDefault();history.back();}}); }
   if (toc) {
     if (!toc.id) toc.id = 'wb-page-toc-target';
     btn.hidden = false; btn.setAttribute('aria-controls', toc.id);

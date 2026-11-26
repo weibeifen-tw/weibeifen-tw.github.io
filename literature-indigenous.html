@@ -13,6 +13,7 @@ permalink: /literature/indigenous/
   <h1 class="ov-h">未備份原住民族研究典藏</h1>
   <p class="ind-note">{{ book.title | escape }}・7卷30章210篇</p>
   {%- if book.intro and book.intro != '' %}<div class="ind-intro">{% assign ps = book.intro | split: '|' %}{% for p in ps %}<p>{{ p | strip | escape }}</p>{% endfor %}</div>{%- endif %}
+  <section class="ind-resume" hidden aria-label="繼續閱讀"><h2 class="ind-section-title">繼續閱讀</h2><a class="ind-resume-link"></a></section>
   <h2 class="ind-section-title">探索卷冊</h2>
   <ul class="ind-shelf" aria-label="七卷書架">
     {% for v in book.volumes %}{% assign vas = arts | where: "volume_no", v.no %}
@@ -23,36 +24,12 @@ permalink: /literature/indigenous/
   <ul class="ind-tools" aria-label="籌備中的研究工具">
     {% assign tools = '歷史年表|族群索引|文獻典藏|研究地圖' | split: '|' %}{% for item in tools %}<li><strong>{{ item }}</strong><small>籌備中</small></li>{% endfor %}
   </ul>
-  <h2 class="ind-section-title">已公開文章</h2>
-  <p class="ind-note">目前已公開 {{ arts.size }} 篇。其餘篇章籌備中。</p>
-  <ol class="ind-vols" data-page-toc>
-    {%- for v in book.volumes %}
-    {%- assign vas = arts | where: "volume_no", v.no | sort: "article_id" -%}
-    <li class="ind-vol{% if vas.size == 0 %} ind-wait{% endif %}" id="vol-{{ v.no }}">
-      <details{% if vas.size > 0 %} open{% endif %}>
-        <summary>
-          <span class="ind-vno">第{{ "一二三四五六七" | slice: forloop.index0 }}卷</span>
-          <b class="ind-vt">{% if v.title and v.title != '' %}{{ v.title | escape }}{% else %}籌備中{% endif %}</b>
-          <small class="ind-vn">{% if vas.size > 0 %}{{ vas.size }} 篇已發布{% else %}尚無已發布文章{% endif %}</small>
-        </summary>
-        <p class="ind-vs"><a href="{{ '/literature/indigenous/v0' | append: v.no | append: '/' | relative_url }}">查看完整卷冊目錄 →</a></p>
-        {%- if v.summary and v.summary != '' %}<p class="ind-vs">{{ v.summary | escape }}</p>{% endif %}
-        {%- if vas.size > 0 %}
-        {%- assign chs = vas | group_by: "chapter_no" -%}
-        {%- for c in chs %}
-        <div class="ind-ch">
-          <p class="ind-cht">第 {{ c.name }} 章</p>
-          <ol class="ind-arts">
-            {%- for a in c.items -%}
-            <li><a href="{{ a.url | relative_url }}"><span class="ind-pn">{{ c.name }}.{{ a.piece }}</span><span class="ind-at">{{ a.title | escape }}</span>{% if a.version %}<small>{{ a.version | escape }}</small>{% endif %}</a></li>
-            {%- endfor -%}
-          </ol>
-        </div>
-        {%- endfor %}
-        {%- endif %}
-      </details>
-    </li>
-    {%- endfor %}
-  </ol>
+  <details class="ind-home-toc" data-page-toc><summary>全書目錄</summary>
+    {% for v in book.volumes %}
+    <details class="wb-toc-volume"><summary>第 {{ v.no }} 卷　{{ v.title | escape }}</summary>
+      {% include research-volume-toc.html volume=v.no %}
+    </details>
+    {% endfor %}
+  </details>
   <p class="ind-fine">文章中的研究證據會標示來源、核讀狀態與使用授權。</p>
 </section>
