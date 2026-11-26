@@ -75,6 +75,17 @@ jobs:
       - name: 檢查正式輸出：網站地圖、註腳、證據卡、歷史版本、撤回、搜尋
         run: ruby .github/scripts/research_site_check.rb _site
 
+      - name: BUILD07 桌機手機研究頁瀏覽器回歸（僅本機假資料）
+        run: |
+          set -eu
+          npm install --prefix "$RUNNER_TEMP/research-browser" --ignore-scripts --no-audit --no-fund playwright-core@1.51.1
+          export NODE_PATH="$RUNNER_TEMP/research-browser/node_modules"
+          export CHROME_PATH="$(command -v google-chrome || command -v chromium)"
+          test -n "$CHROME_PATH"
+          node .dev/test-t03-browser.cjs
+          node .dev/test-t03-page-integration.cjs
+          node .dev/test-research-browser.cjs _site
+
       - name: 小說發布制度：保留章節沒有出現在任何網站輸出（頁面、搜尋、sitemap、posts.json、作品目錄）
         run: |
           ruby .github/scripts/validate_release.rb . --site _site

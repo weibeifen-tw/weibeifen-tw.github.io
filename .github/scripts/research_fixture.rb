@@ -12,7 +12,7 @@ body_a = <<~MD
 
   ## 第一節
 
-  第一段測試文字{% include ev.html id="EV-001" %}，第二句[^1]。
+  第一段測試文字{% include ev.html id="EV-001" %}，第二句[^1]。[〔1〕](#ref-1)
 
   ## 第二節
 
