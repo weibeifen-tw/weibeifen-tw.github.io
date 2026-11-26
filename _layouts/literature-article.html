@@ -33,20 +33,24 @@ page_js: lit-research
 {%- assign mins = words | divided_by: 400 | plus: 1 -%}
 {%- assign h2parts = content | split: '<h2 id="' -%}
 <article class="lit-article page-box">
-  {%- if h2parts.size > 3 %}
+  {% if h2parts.size > 1 or page.series_key == 'indigenous-history' %}
   <details class="lit-toc">
     <summary class="lit-toc-h">目錄</summary>
-    <nav aria-label="目錄">
-    <ol>
-    {%- for part in h2parts offset: 1 -%}
-      {%- assign hid = part | split: '"' | first -%}
-      {%- assign htxt = part | split: '</h2>' | first | split: '>' | shift | join: '>' | strip_html -%}
-      <li><a href="#{{ hid }}">{{ htxt }}</a></li>
-    {%- endfor -%}
-    </ol>
+    {% if page.series_key == 'indigenous-history' %}
+    <div class="wb-toc-switch" role="group" aria-label="目錄範圍"><button type="button" data-toc-mode="article" aria-pressed="true">本篇段落</button><button type="button" data-toc-mode="volume" aria-pressed="false">本卷目錄</button></div>
+    {% endif %}
+    <nav aria-label="本篇段落" data-toc-panel="article">
+    {% if h2parts.size > 1 %}<ol>
+    {% for part in h2parts offset: 1 %}
+      {% assign hid = part | split: '"' | first %}
+      {% assign htxt = part | split: '</h2>' | first | split: '>' | shift | join: '>' | strip_html %}
+      <li><a href="#{{ hid | escape }}">{{ htxt | escape }}</a></li>
+    {% endfor %}
+    </ol>{% else %}<p>本篇無分節標題。</p>{% endif %}
     </nav>
+    {% if page.series_key == 'indigenous-history' %}<nav aria-label="本卷目錄" data-toc-panel="volume" hidden>{% include research-volume-toc.html volume=page.volume_no %}</nav>{% endif %}
   </details>
-  {%- endif %}
+  {% endif %}
 
   {%- if page.series_key == site.data.indigenous_book.series_key %}
   {%- assign vi = page.volume_no | minus: 1 %}

@@ -1,0 +1,10 @@
+{% assign toc_volume = include.volume | plus: 0 %}
+{% assign toc_chapters = site.data.indigenous_catalog | where: 'volume', toc_volume %}
+{% assign toc_articles = site.literature | where: 'series_key', 'indigenous-history' | where: 'volume_no', toc_volume %}
+{% for c in toc_chapters %}
+<details class="wb-toc-chapter"><summary>第 {{ c.no }} 章　{{ c.title | escape }}</summary><ol class="ind-arts">
+{% for p in c.pieces %}
+{% assign ca = toc_articles | where: 'chapter_no', c.no | where: 'piece', p.piece | first %}
+<li>{% if ca %}<a data-wb-read href="{{ ca.url | relative_url }}"{% if ca.url == page.url %} aria-current="page"{% endif %}>{{ c.no }}.{{ p.piece }}　{{ ca.title | escape }}<small class="wb-read-mark"></small></a>{% else %}<span class="wb-pending">{{ c.no }}.{{ p.piece }}　{{ p.title | escape }} <small>籌備中</small></span>{% endif %}</li>
+{% endfor %}</ol></details>
+{% endfor %}

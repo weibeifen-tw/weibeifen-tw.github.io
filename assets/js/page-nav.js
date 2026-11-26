@@ -7,7 +7,7 @@
   if (readerBack) {
     try {
       var from = new URL(document.referrer);
-      if (from.origin === location.origin && from.pathname !== location.pathname && !/^\\/(auth|login-test)\\//.test(from.pathname)) {
+      if (from.origin === location.origin && from.pathname !== location.pathname && !from.pathname.startsWith('/auth/') && !from.pathname.startsWith('/login-test/')) {
         readerBack.href = from.href;
         readerBack.addEventListener('click',function(e){if(!e.ctrlKey&&!e.metaKey&&!e.shiftKey&&!e.altKey&&e.button===0&&history.length>1){e.preventDefault();history.back();}});
       }
@@ -43,6 +43,19 @@
     }
   }
   bar.hidden = false;
+  if (toc) {
+    var search = top.querySelector('.search-btn');
+    var sbox = top.querySelector('.sbox');
+    if (search && sbox) {
+      var proxy = search.cloneNode(true);
+      proxy.className = 'wb-nav-search';
+      proxy.removeAttribute('id');
+      proxy.addEventListener('click',function(){search.click();});
+      btn.before(proxy);
+      search.classList.add('wb-search-relocated');
+      new MutationObserver(function(){proxy.setAttribute('aria-expanded',String(!sbox.hidden));}).observe(sbox,{attributes:true,attributeFilter:['hidden']});
+    }
+  }
   function size(){ bar.style.setProperty('--wb-header-height',top.getBoundingClientRect().height+'px'); if(toc) toc.style.scrollMarginTop=(top.getBoundingClientRect().height+bar.offsetHeight+12)+'px'; }
   size(); if(window.ResizeObserver) new ResizeObserver(size).observe(top); else addEventListener('resize',size);
   var last = Math.max(0,scrollY), pending = false;
