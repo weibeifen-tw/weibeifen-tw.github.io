@@ -122,7 +122,14 @@ page_js: lit-research
   {%- if page.revisions and page.revisions.size > 0 %}
   <section class="lit-sec lit-revs">
     <h2 class="lit-h">修訂紀錄{% if page.version %}<small>目前版本 {{ page.version | escape }}</small>{% endif %}</h2>
-    <ol>{%- for r in page.revisions -%}<li><time datetime="{{ r.date | date: '%Y-%m-%d' }}">{{ r.date | date: '%Y-%m-%d' }}</time>{% if r.version %}<b>{{ r.version | escape }}</b>{% endif %}{{ r.note | escape }}</li>{%- endfor -%}</ol>
+    {%- capture visible_revisions -%}
+    {%- for r in page.revisions -%}
+      {%- unless r.version == 'v1.0' and r.note contains '首次公開' -%}
+      <li><time datetime="{{ r.date | date: '%Y-%m-%d' }}">{{ r.date | date: '%Y-%m-%d' }}</time>{% if r.version %}<b>{{ r.version | escape }}</b>{% endif %}{{ r.note | escape }}</li>
+      {%- endunless -%}
+    {%- endfor -%}
+    {%- endcapture -%}
+    {%- if visible_revisions != '' %}<ol>{{ visible_revisions }}</ol>{% endif %}
   </section>
   {%- endif %}
   {%- if page.series %}
@@ -176,7 +183,7 @@ page_js: lit-research
   <section class="lit-sec"><h2 class="lit-h">相關文章</h2><ul class="lit-rel">{{ rel_arts }}</ul></section>
   {%- endif %}
   {% if page.series_key == site.data.indigenous_book.series_key %}<div class="research-actions r-acts">{% capture research_url %}{{ page.url | relative_url }}{% endcapture %}{% include actions.html key=page.url url=research_url notalk=true cmt=true norepost=true %}</div>{% endif %}
-  {% unless page.series_key == site.data.indigenous_book.series_key %}<div class="r-acts">{% capture research_url %}{{ page.url | relative_url }}{% endcapture %}{% include actions.html key=page.url url=research_url notalk=true norepost=true %}</div>{% endunless %}
+  {% unless page.series_key == site.data.indigenous_book.series_key %}<div class="lit-share"><button type="button" class="lit-share-btn" data-act="share" aria-label="分享"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 3 10 14M21 3l-7 18-4-7-7-4 18-7z"/></svg></button><span class="lit-share-msg" aria-live="polite"></span></div>{% endunless %}
 </article>
 <script>
 (function () {
@@ -189,5 +196,14 @@ page_js: lit-research
     b.setAttribute('aria-pressed', d.dataset.lfs === b.dataset.lfs);
     b.onclick = function () { d.dataset.lfs = b.dataset.lfs; save('wb:lfs', b.dataset.lfs); fb.forEach(function (x) { x.setAttribute('aria-pressed', x === b); }); };
   });
+  var share = document.querySelector('.lit-share-btn');
+  if (share) share.onclick = async function () {
+    var url = {{ page.url | absolute_url | jsonify }};
+    var msg = document.querySelector('.lit-share-msg');
+    try {
+      if (navigator.share) { await navigator.share({title:document.title,url:url}); return; }
+      await navigator.clipboard.writeText(url); msg.textContent='已複製連結';
+    } catch(e) { if(e.name!=='AbortError') prompt('複製這個連結：',url); }
+  };
 })();
 </script>
