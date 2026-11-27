@@ -49,10 +49,10 @@
 .lit-share{display:flex;align-items:center;gap:8px;margin-top:22px;padding-top:14px;border-top:1px solid var(--line)}
 .lit-share-btn{padding:7px 16px;border:1px solid var(--line);border-radius:999px;background:none;color:var(--ink);font:inherit;font-size:14px;cursor:pointer}
 .lit-share-msg{font-size:13px;color:var(--sub)}
-html[data-lfs="s"] .lit-body{font-size:15px}
-html[data-lfs="m"] .lit-body{font-size:16px}
-html[data-lfs="l"] .lit-body{font-size:18px}
-html[data-lfs="xl"] .lit-body{font-size:21px}
+html[data-lfs="s"] .lit-body:not(.wb-reader-text){font-size:15px}
+html[data-lfs="m"] .lit-body:not(.wb-reader-text){font-size:16px}
+html[data-lfs="l"] .lit-body:not(.wb-reader-text){font-size:18px}
+html[data-lfs="xl"] .lit-body:not(.wb-reader-text){font-size:21px}
 html[data-lfs="l"] .lit-summary{font-size:16px}
 html[data-lfs="xl"] .lit-summary{font-size:18px}
 body.lit-reading .lit-article{background:var(--card)}
@@ -198,4 +198,4 @@ details.lit-toc:not([open]) summary::after{content:" ▸"}
 
 /* V1.7: research adapters use the same chapter rows and reading controls as novels. */
 .ind-book .shelf.ind-shelf{display:flex;grid-auto-columns:unset}.ind-book .shelf.ind-shelf .bk{flex:0 0 calc((100% - 24px)/2.5)}@media(min-width:700px){.ind-book .shelf.ind-shelf .bk{flex-basis:calc((100% - 48px)/5)}}@media(min-width:1024px){.ind-book .shelf.ind-shelf .bk{flex-basis:calc((100% - 60px)/6)}}
-.ind-volume-page .ind-volume-head .ind-cover{width: min(45%,420px);flex:none}.ind-volume-page .ind-volume-head .ind-cover img{width:100%;aspect-ratio:auto;object-fit:contain}.ind-volume-page .ind-volume-toc{padding:0}.ind-volume-toc .chapter.toc,.r-toc[data-static-toc] .chapter.toc{border-radius:0;border-bottom:1px solid var(--line)}.ind-volume-toc .ind-pending,.r-toc[data-static-toc] .ind-pending{opacity:.55;cursor:default}.ind-pending small{flex:none;white-space:nowrap}.r-toc[data-static-toc] .r-toc-list{padding:0}.r-toc[data-static-toc] .r-toc-list a{border-radius:0}.wb-volume-progress{width:100%;height:8px;accent-color:var(--accent)}.lit-body.wb-reader-text{max-width:none;font-family:"Noto Serif TC",serif;font-size:18px;line-height:1.95;letter-spacing:.03em;text-align:justify}html[data-lfs="s"] .lit-body.wb-reader-text{font-size:16px}html[data-lfs="l"] .lit-body.wb-reader-text{font-size:20px}html[data-lfs="xl"] .lit-body.wb-reader-text{font-size:21px}.lit-article:has(.wb-reader-text) .r-nav{--c:var(--ink)}@media(max-width:767px){.ind-volume-page .ind-volume-head .ind-cover{width:100%}.lit-body.wb-reader-text{font-size:17px}}
+.ind-volume-page .ind-volume-head .ind-cover{width: min(45%,420px);flex:none}.ind-volume-page .ind-volume-head .ind-cover img{width:100%;aspect-ratio:auto;object-fit:contain}.ind-volume-page .ind-volume-toc{padding:0}.ind-volume-toc .chapter.toc,.r-toc[data-static-toc] .chapter.toc{border-radius:0;border-bottom:1px solid var(--line)}.ind-volume-toc .ind-pending,.r-toc[data-static-toc] .ind-pending{opacity:.55;cursor:default}.ind-pending small{flex:none;white-space:nowrap}.r-toc[data-static-toc] .r-toc-list{padding:0}.r-toc[data-static-toc] .r-toc-list a{border-radius:0}.wb-volume-progress{width:100%;height:8px;accent-color:var(--accent)}.lit-body.wb-reader-text{max-width:none}.lit-article:has(.wb-reader-text) .r-nav{--c:var(--ink)}@media(max-width:767px){.ind-volume-page .ind-volume-head .ind-cover{width:100%}}

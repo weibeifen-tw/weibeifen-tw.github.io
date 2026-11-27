@@ -16,7 +16,7 @@ permalink: /literature/indigenous/
   <h2 class="ind-section-title">探索卷冊</h2>
   <ul class="shelf ind-shelf" aria-label="七卷書架">
     {% for v in book.volumes %}{% assign vas = arts | where: "volume_no", v.no %}
-    <li class="bk"><a href="{{ '/literature/indigenous/v0' | append: v.no | append: '/' | relative_url }}"><img src="{{ v.cover | relative_url }}" width="600" height="800" alt="第{{ '一二三四五六七' | slice: forloop.index0 }}卷：{{ v.title | escape }}" {% unless forloop.first %}loading="lazy"{% endunless %}><span>{{ vas.size }} 篇已公開</span></a></li>
+    <li class="bk"><a href="{{ '/literature/indigenous/v0' | append: v.no | append: '/' | relative_url }}"><span class="bk-cover"><img src="{{ v.cover | relative_url }}" width="600" height="800" alt="第{{ '一二三四五六七' | slice: forloop.index0 }}卷：{{ v.title | escape }}" {% unless forloop.first %}loading="lazy"{% endunless %}></span><span>{{ vas.size }} 篇已公開</span></a></li>
     {% endfor %}
   </ul>
   <h2 class="ind-section-title">研究工具</h2>
