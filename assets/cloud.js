@@ -230,10 +230,12 @@
   // 沿用 favorites 原本的資料（整本 path=''，章節 path=網址），再按一次取消。空心＝未收藏，紅心＝已收藏。
   function favHeart(b, labels, row) {
     if (!b) return;
-    var on = false;
+    var nEl = b.querySelector('.n'), base = parseInt(nEl && nEl.textContent, 10) || 0, on = false;
+    function no4(n) { while (String(n).indexOf('4') >= 0) n++; return n; }
     function paint() {
       b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on));
       b.setAttribute('aria-label', labels[on ? 1 : 0]);
+      if (nEl && base) nEl.textContent = String(on ? no4(base + 1) : base);
     }
     b.onclick = async function () {
       if (!signedIn()) { askLogin(); return; }
