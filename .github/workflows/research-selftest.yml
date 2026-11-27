@@ -81,6 +81,30 @@ jobs:
           node .dev/test-t03-rollback.cjs
           node .dev/test-t03-async-races.cjs
           for f in assets/js/page-nav.js assets/js/research-member.js assets/js/research-errata.js assets/js/lit-research.js assets/js/reading-store.js assets/app.js assets/cloud.js; do node --check "$f"; done
+      - name: V2.11 image compression comparison (temporary files only)
+        run: |
+          python3 -m venv /tmp/wb-image-qa
+          /tmp/wb-image-qa/bin/pip install --disable-pip-version-check Pillow==12.0.0
+          /tmp/wb-image-qa/bin/python - <<'PY'
+          from PIL import Image, ImageChops, ImageStat
+          from pathlib import Path
+          import io, math
+          paths = sorted(Path('assets').glob('*/gezikaojin-*.webp'))
+          assert len(paths) == 5, paths
+          for p in paths:
+              im = Image.open(p).convert('RGB')
+              old = p.stat().st_size
+              for q in (90, 85, 80):
+                  b = io.BytesIO()
+                  im.save(b, 'WEBP', quality=q, method=6)
+                  b.seek(0)
+                  out = Image.open(b).convert('RGB')
+                  assert out.size == im.size
+                  mse = sum(x*x for x in ImageStat.Stat(ImageChops.difference(im,out)).rms)/3
+                  psnr = 10*math.log10(255**2/mse) if mse else float('inf')
+                  new = len(b.getvalue())
+                  print(f'{p.name} {im.size} Q={q} {old}->{new} bytes saving={(1-new/old)*100:.1f}% PSNR={psnr:.2f}dB', flush=True)
+          PY
       - name: V2.11 PWA isolated cache regression
         run: node .dev/test-v2-pwa.cjs
       - name: GitHub Pages 官方 Jekyll 建置（含假資料）
