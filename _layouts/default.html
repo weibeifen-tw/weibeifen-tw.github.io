@@ -164,7 +164,8 @@
 {%- endif %}
 {% include member-avatar.html %}
 <script src="{{ '/assets/member.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>
-{% include auth-config.html lazy=true %}
+{%- comment -%} Member/admin already include the full auth setup before their dependent scripts. {%- endcomment -%}
+{% unless page.url == '/member/' or page.url == '/admin/' %}{% include auth-config.html lazy=true %}{% endunless %}
 <script src="{{ '/assets/cloud.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>
 {% if page.series_key == 'indigenous-history' or page.url == '/admin/' %}<script src="{{ '/assets/js/research-errata.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>{% endif %}
 <script>(function(){var ok=function(e){if(document.documentElement.classList.contains('can-copy'))return true;var t=e.target;return t&&t.closest&&t.closest('input,textarea');};['contextmenu','selectstart','copy','cut','dragstart'].forEach(function(n){document.addEventListener(n,function(e){if(!ok(e))e.preventDefault();});});})();</script>
