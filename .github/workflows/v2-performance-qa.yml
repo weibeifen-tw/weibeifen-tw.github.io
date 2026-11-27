@@ -1,0 +1,52 @@
+name: V2.11 public website performance QA (no deployment)
+on:
+  push:
+    branches: [feat/site-v2-performance-qa]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  performance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser audit tool
+        run: npm install --no-save lighthouse@12.8.2
+      - name: Audit public website, mobile and desktop
+        run: |
+          mkdir -p reports
+          export CHROME_PATH="$(command -v google-chrome || command -v chromium)"
+          test -n "$CHROME_PATH"
+          for mode in mobile desktop; do
+            for page in home novel reading taiwan; do
+              case "$page" in
+                home) url=https://weibeifen.com/ ;;
+                novel) url=https://weibeifen.com/novel/shanhai/ ;;
+                reading) url=https://weibeifen.com/t/shanhai01/ ;;
+                taiwan) url=https://weibeifen.com/novels/ ;;
+              esac
+              args=()
+              if [ "$mode" = desktop ]; then args+=(--preset=desktop); fi
+              npx --no-install lighthouse "$url" "${args[@]}" --only-categories=performance --chrome-flags="--headless --no-sandbox" --output=json --output-path="reports/$mode-$page.json" --quiet || echo "Audit failed: $mode $page"
+            done
+          done
+      - name: Print measured results
+        if: always()
+        run: |
+          node - <<'JS'
+          const fs=require('fs');
+          for(const f of fs.readdirSync('reports').filter(f=>f.endsWith('.json'))){
+            const r=JSON.parse(fs.readFileSync('reports/'+f));
+            const a=r.audits||{};
+            console.log(JSON.stringify({file:f,url:r.finalDisplayedUrl,error:r.runtimeError||null,http:a['http-status-code']?.score??null,score:r.categories?.performance?.score??null,LCP_ms:a['largest-contentful-paint']?.numericValue??null,FCP_ms:a['first-contentful-paint']?.numericValue??null,TBT_ms:a['total-blocking-time']?.numericValue??null,CLS:a['cumulative-layout-shift']?.numericValue??null,bytes:a['total-byte-weight']?.numericValue??null}));
+          }
+          JS
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v2-performance-reports
+          path: reports/
+          retention-days: 7
