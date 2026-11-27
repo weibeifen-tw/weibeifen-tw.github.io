@@ -1,0 +1,78 @@
+name: Home browser and three-run Lighthouse QA
+on:
+  push:
+    branches: [feat/site-home-init-qa]
+permissions:
+  contents: read
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Prepare baseline source
+        run: git worktree add --detach /tmp/wb-baseline 96acdafc37f418501ea00789bfe053d3072b9593
+      - name: Build baseline
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: /tmp/wb-baseline
+          destination: ./_baseline
+      - name: Build candidate
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./
+          destination: ./_site
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install tools
+        run: npm install --prefix /tmp/wb-qa --no-save lighthouse@12.8.2 playwright-core@1.51.1
+      - name: Start isolated servers
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 --directory _baseline > /tmp/baseline.log 2>&1 &
+          python3 -m http.server 8766 --bind 127.0.0.1 --directory _site > /tmp/candidate.log 2>&1 &
+          curl --retry 10 --retry-connrefused -fsS http://127.0.0.1:8765/ >/dev/null
+          curl --retry 10 --retry-connrefused -fsS http://127.0.0.1:8766/ >/dev/null
+      - name: Browser regression (isolated public pages)
+        run: |
+          export NODE_PATH=/tmp/wb-qa/node_modules
+          export CHROME_PATH="$(command -v google-chrome || command -v chromium)"
+          node .dev/test-home-performance-qa.cjs
+      - name: Three measurements per version and viewport
+        if: always()
+        run: |
+          mkdir -p reports
+          export CHROME_PATH="$(command -v google-chrome || command -v chromium)"
+          for mode in mobile desktop; do
+            args=()
+            if [ "$mode" = desktop ]; then args+=(--preset=desktop); fi
+            for n in 1 2 3; do
+              for version in baseline candidate; do
+                port=8765
+                if [ "$version" = candidate ]; then port=8766; fi
+                /tmp/wb-qa/node_modules/.bin/lighthouse "http://127.0.0.1:$port/" "${args[@]}" --only-categories=performance --chrome-flags="--headless --no-sandbox" --output=json --output-path="reports/$mode-$version-$n.json" --quiet
+              done
+            done
+          done
+      - name: Report medians
+        if: always()
+        run: |
+          node - <<'JS'
+          const fs=require('fs');
+          const median=a=>a.sort((a,b)=>a-b)[Math.floor(a.length/2)];
+          for(const mode of ['mobile','desktop'])for(const version of ['baseline','candidate']){
+            const rows=[1,2,3].map(n=>JSON.parse(fs.readFileSync('reports/'+mode+'-'+version+'-'+n+'.json')));
+            if(rows.some(r=>r.runtimeError||r.categories?.performance?.score==null))throw Error('invalid audit');
+            const vals=rows.map(r=>({score:r.categories.performance.score*100,LCP:r.audits['largest-contentful-paint'].numericValue,CLS:r.audits['cumulative-layout-shift'].numericValue,bytes:r.audits['total-byte-weight'].numericValue}));
+            console.log(JSON.stringify({mode,version,runs:vals,median:Object.fromEntries(Object.keys(vals[0]).map(k=>[k,median(vals.map(v=>v[k]))]))}));
+          }
+          JS
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: home-performance-qa
+          path: reports/
+          retention-days: 7
