@@ -105,6 +105,33 @@ jobs:
                   new = len(b.getvalue())
                   print(f'{p.name} {im.size} Q={q} {old}->{new} bytes saving={(1-new/old)*100:.1f}% PSNR={psnr:.2f}dB', flush=True)
           PY
+      - name: V2.11 Q90 visual comparison artifacts
+        run: |
+          /tmp/wb-image-qa/bin/python - <<'PY'
+          from PIL import Image, ImageDraw
+          from pathlib import Path
+          out = Path('/tmp/wb-q90-review')
+          out.mkdir(exist_ok=True)
+          for p in sorted(Path('assets').glob('*/gezikaojin-*.webp')):
+              original = Image.open(p).convert('RGB')
+              target = out / p.name
+              original.save(target, 'WEBP', quality=90, method=6)
+              compressed = Image.open(target).convert('RGB')
+              w,h = original.size
+              panel = Image.new('RGB',(2*w,h+40),'white')
+              panel.paste(original,(0,40))
+              panel.paste(compressed,(w,40))
+              draw = ImageDraw.Draw(panel)
+              draw.text((12,12),'Original',fill='black')
+              draw.text((w+12,12),'Q90',fill='black')
+              panel.save(out / (p.stem+'-comparison.png'))
+          PY
+      - name: Upload Q90 visual comparison (temporary QA artifact)
+        uses: actions/upload-artifact@v4
+        with:
+          name: v2-q90-visual-review
+          path: /tmp/wb-q90-review/
+          retention-days: 7
       - name: V2.11 PWA isolated cache regression
         run: node .dev/test-v2-pwa.cjs
       - name: GitHub Pages 官方 Jekyll 建置（含假資料）
