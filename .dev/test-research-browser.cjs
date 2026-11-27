@@ -110,6 +110,46 @@ const server=http.createServer((req,res)=>{
  assert.equal(await page.evaluate(()=>document.documentElement.dataset.theme),'night');
  await page.locator('.theme-btn').click();
  assert.deepEqual(errors,[],'novel regression '+width);
+
+ // Isolated member backend: exercise actual cloud.js with a fake verified user and in-memory tables.
+ const member=await browser.newContext({viewport:{width,height:844},serviceWorkers:'block'});
+ await member.route('**/*',r=>r.request().url().startsWith(origin+'/')?r.continue():r.abort());
+ await member.addInitScript(()=>{
+   const uid='fixture-member-v17', key='sb-tqicconarhpddejxdvmf-auth-token';
+   localStorage.setItem(key,JSON.stringify({user:{id:uid},refresh_token:'fake-only'}));
+   const read=k=>JSON.parse(sessionStorage.getItem(k)||'[]'), save=(k,v)=>sessionStorage.setItem(k,JSON.stringify(v));
+   const client={auth:{getSession:async()=>({data:{session:{user:{id:uid}}}})},rpc:async n=>({data:n==='is_banned'?false:[],error:null}),from(table){
+     let mode='select',filters=[],payload;
+     const q={select(){return q},eq(k,v){filters.push([k,v]);return q},limit(){return q},order(){return q},maybeSingle(){return q},insert(v){mode='insert';payload=v;return q},delete(){mode='delete';return q},upsert(v){mode='upsert';payload=v;return q},then(ok,fail){
+       let rows=read('fixture:'+table), match=r=>filters.every(([k,v])=>r[k]===v), data=[];
+       if(mode==='insert'){let v={...payload,user_id:uid,id:String(Date.now()),created_at:new Date().toISOString(),profiles:{display_name:'測試會員'}};rows.push(v);save('fixture:'+table,rows);}
+       else if(mode==='delete'){save('fixture:'+table,rows.filter(r=>!match(r)));}
+       else if(mode==='upsert'){save('fixture:'+table,payload);}
+       else data=rows.filter(match);
+       return Promise.resolve({data,error:null}).then(ok,fail);
+     }};return q;
+   }};
+   window.WBAuth={configProblem:()=>null,getVerifiedUser:async()=>({user:{id:uid}}),getClient:()=>client,isAdmin:async()=>false,getRole:async()=> 'reader',onChange:()=>()=>{}};
+ });
+ // Ensure the local comment UI is enabled without contacting any real provider.
+ await member.route('**/*',async r=>{
+   if(!r.request().url().startsWith(origin+'/'))return r.abort();
+   if(r.request().resourceType()!=='document')return r.continue();
+   const response=await r.fetch();let html=await response.text();
+   html=html.replace('<script src="/assets/cloud.js','<script>window.WB_AUTH_CONFIG=Object.assign({},window.WB_AUTH_CONFIG,{supabaseUrl:"https://fixture.invalid",publishableKey:"fake"});</script><script src="/assets/cloud.js');
+   return r.fulfill({response,body:html});
+ });
+ const mp=await member.newPage();
+ await mp.goto(origin+'/literature/indigenous/v01/');
+ const heart=mp.locator('.research-actions .act.like');
+ await mp.waitForFunction(()=>window.WBReadingStore.identity().state==='member');
+ await heart.click();
+ await mp.waitForFunction(()=>JSON.parse(sessionStorage.getItem('fixture:favorites')||'[]').some(r=>r.path==='/literature/indigenous/v01/'));
+ await mp.goto(origin+'/literature/ind-test-a/');
+ await mp.waitForFunction(()=>document.querySelector('.research-actions .act.like')?.getAttribute('aria-pressed')==='true');
+ await mp.locator('.research-actions .act.like').click();
+ await mp.waitForFunction(()=>JSON.parse(sessionStorage.getItem('fixture:favorites')||'[]').length===0);
+ await member.close();
  await ctx.close();console.log('BUILD07 research rendered browser '+width+'px passed');
  }
  }finally{if(browser)await browser.close();server.close();}
