@@ -200,7 +200,6 @@ html[data-theme="night"] .r-nav a.r-next{background:var(--chip);border-color:var
 html[data-theme="night"] .r-nav a.r-next small{color:var(--ink);opacity:.8}
 .r-nav .off{opacity:.45}
 .r-nav a:hover{border-color:var(--ink)}
-.r-bar{display:none}
 html[data-theme="night"] .r-crumb a,html[data-theme="night"] .reading a.mention,html[data-theme="night"] .reading .era a{filter:brightness(1.7)}
 html[data-theme="night"] .reading .era{background:var(--chip)}
 @media (max-width:700px){
@@ -210,11 +209,6 @@ html[data-theme="night"] .reading .era{background:var(--chip)}
   html[data-fs="s"] :is(.chapter.read .ch-text,.wb-reader-text){font-size:15px}
   html[data-fs="l"] :is(.chapter.read .ch-text,.wb-reader-text){font-size:19px}
   body.reading{padding-bottom:64px}
-  .r-bar{display:grid;grid-template-columns:1fr 1fr;position:fixed;left:0;right:0;bottom:0;z-index:6;height:56px;background:var(--bg);border-top:1px solid var(--line)}
-  .r-bar a,.r-bar span{display:flex;align-items:center;justify-content:center;font-size:15px}
-  .r-bar > :first-child{border-right:1px solid var(--line)}
-  .r-bar .go{color:var(--ink);font-weight:500}
-  .r-bar .off{color:var(--sub);opacity:.5}
   .fs button{min-width:36px}
 }
 
@@ -886,7 +880,6 @@ button.d-item{width:100%;font:inherit;font-size:17px;font-weight:500;color:inher
 body.sheet-lock{position:fixed;left:0;right:0;overflow:hidden}
 body.sheet-lock .cm-card{position:fixed;z-index:65}
 @media (max-width:767px){
-  body.reading .r-bar{display:none}
   body.reading{padding-bottom:0}
   body.reading .chat-btn{bottom:calc(18px + env(safe-area-inset-bottom))}
   body.reading .r-acts .act.repost{display:none}
