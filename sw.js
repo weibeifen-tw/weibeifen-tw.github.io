@@ -14,6 +14,8 @@ const LIMIT = { pages: 160, img: 300 };          // 頁面（含章節、研究�
 const OFFLINE = '/offline/';
 const PRECACHE = [OFFLINE, '/assets/style.css?v=' + VER, '/assets/js/reading-store.js?v=' + VER, '/assets/app.js?v=' + VER, '/assets/icons/icon-192.png'];
 const NOCACHE = /^\/(admin|auth|member|favorites|my-comments|login-test|privacy\/delete)(\/|$)/;
+// 相同敏感頁面的 .html 別名也不得快取。
+function sensitive(path) { return NOCACHE.test(path.replace(/\.html$/, '')); }
 
 self.addEventListener('install', e => {
   // 不 skipWaiting：等讀者在頁面上按「更新」
@@ -36,6 +38,12 @@ async function purgeWithdrawn() {
 
 self.addEventListener('activate', e => {
   e.waitUntil(purgeWithdrawn());
+  e.waitUntil((async () => {
+    const c = await caches.open(C.pages), m = await caches.open(C.meta);
+    for (const key of await c.keys()) if (sensitive(new URL(key.url).pathname)) {
+      await c.delete(key); await m.delete(key.url);
+    }
+  })());
   e.waitUntil(caches.keys().then(keys => Promise.all(keys
     // 舊版本的 CSS／JS 快取、舊架構的 wb-<時間> 快取：刪掉；頁面、圖片快取跨版本保留（網路優先，會自己更新）
     .filter(k => (k.startsWith('wb-static-') && k !== C.static) || /^wb-\d+$/.test(k))
@@ -61,8 +69,12 @@ async function trim(name, max) {
   } catch (e) {}
 }
 async function forget(req) {
-  const c = await caches.open(C.pages); await c.delete(req, { ignoreSearch: true });
-  const m = await caches.open(C.meta); await m.delete(req.url);
+  const c = await caches.open(C.pages), m = await caches.open(C.meta);
+  for (const key of await c.keys()) {
+    if (new URL(key.url).pathname === new URL(req.url).pathname) {
+      await c.delete(key); await m.delete(key.url);
+    }
+  }
 }
 
 let lastPurge = 0;
@@ -71,7 +83,7 @@ self.addEventListener('fetch', e => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.origin !== location.origin) return;           // Supabase、字型、統計：不碰
-  if (NOCACHE.test(url.pathname)) {                     // 會員、管理、登入：不快取；離線時只給離線頁
+  if (sensitive(url.pathname)) {                     // 會員、管理、登入：不快取；離線時只給離線頁
     if (req.mode === 'navigate') e.respondWith(fetch(req).catch(async () => (await caches.match(OFFLINE)) || Response.error()));
     return;
   }

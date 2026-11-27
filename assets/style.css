@@ -200,7 +200,6 @@ html[data-theme="night"] .r-nav a.r-next{background:var(--chip);border-color:var
 html[data-theme="night"] .r-nav a.r-next small{color:var(--ink);opacity:.8}
 .r-nav .off{opacity:.45}
 .r-nav a:hover{border-color:var(--ink)}
-.r-bar{display:none}
 html[data-theme="night"] .r-crumb a,html[data-theme="night"] .reading a.mention,html[data-theme="night"] .reading .era a{filter:brightness(1.7)}
 html[data-theme="night"] .reading .era{background:var(--chip)}
 @media (max-width:700px){
@@ -210,11 +209,6 @@ html[data-theme="night"] .reading .era{background:var(--chip)}
   html[data-fs="s"] :is(.chapter.read .ch-text,.wb-reader-text){font-size:15px}
   html[data-fs="l"] :is(.chapter.read .ch-text,.wb-reader-text){font-size:19px}
   body.reading{padding-bottom:64px}
-  .r-bar{display:grid;grid-template-columns:1fr 1fr;position:fixed;left:0;right:0;bottom:0;z-index:6;height:56px;background:var(--bg);border-top:1px solid var(--line)}
-  .r-bar a,.r-bar span{display:flex;align-items:center;justify-content:center;font-size:15px}
-  .r-bar > :first-child{border-right:1px solid var(--line)}
-  .r-bar .go{color:var(--ink);font-weight:500}
-  .r-bar .off{color:var(--sub);opacity:.5}
   .fs button{min-width:36px}
 }
 
@@ -298,7 +292,7 @@ body.wide .bar,body.wide .wrap,body.wide .foot{max-width:960px}
 
 .drawer{display:flex;flex-direction:column}
 
-/* 私訊 */
+/* 通知面板及歷史訊息共用樣式 */
 .chat-btn{display:grid;place-items:center;width:40px;height:40px;margin:0 -8px 0 auto;border:0;border-radius:50%;background:none;color:var(--ink);cursor:pointer}
 .r-tools ~ .chat-btn{margin-left:4px}
 .chat-btn:hover{background:var(--chip)}
@@ -330,9 +324,6 @@ a.ib-ref:hover{text-decoration:underline}
 .ib-me{align-self:flex-end;max-width:78%;display:flex;flex-direction:column;align-items:flex-end}
 .ib-me span{padding:8px 14px;border-radius:18px 18px 4px 18px;background:var(--accent);color:#fff;line-height:1.6;word-break:break-word}
 .ib-me small{color:var(--sub);font-size:11px;margin-top:2px}
-.ib-form{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--line);background:var(--card)}
-.ib-form input{flex:1;min-width:0;padding:8px 14px;border:1px solid var(--line);border-radius:999px;background:var(--bg);color:var(--ink);font:inherit;font-size:16px}
-.ib-form button{border:0;border-radius:999px;padding:0 16px;background:var(--ink);color:var(--bg);font:inherit;font-size:14px;cursor:pointer}
 
 /* 獨立小說介紹頁 */
 .nv-leads{display:flex;flex-direction:column;gap:10px;margin:0 0 18px}
@@ -423,7 +414,7 @@ a.ig-av{text-decoration:none}
 
 /* 年代誌 */
 
-/* 頂端：全部作品＋搜尋；私訊改浮動 */
+/* 頂端：全部作品＋搜尋；通知採浮動入口 */
 .nav-all{margin-left:14px;font-size:15px;color:var(--ink);text-decoration:none;padding:4px 2px;white-space:nowrap}
 .nav-all:hover{text-decoration:underline}
 .search-btn{display:grid;place-items:center;width:40px;height:40px;margin:0 -8px 0 auto;border-radius:50%;color:var(--ink)}
@@ -575,8 +566,6 @@ button.search-btn{border:0;background:none;cursor:pointer}
 .ib-admin:hover{text-decoration:underline}
 html[data-theme="night"] .ib-admin{background:#3a2226;color:#f2a7b1}
 
-.ib-del{border:0;background:none;color:var(--sub);font:inherit;font-size:13px;cursor:pointer;padding:4px 6px;white-space:nowrap}
-.ib-del:hover{color:#d93a4a}
 .cm-author{display:inline-block;margin-left:6px;padding:0 7px;border-radius:999px;background:var(--accent);color:#fff;font-size:11px;font-weight:600;line-height:18px;vertical-align:1px}
 .ib-notices{display:flex;flex-direction:column;border-bottom:1px solid var(--line);background:var(--card)}
 .ib-notices>b{padding:10px 16px 4px;font-size:13px;color:var(--sub);font-weight:600}
@@ -886,7 +875,6 @@ button.d-item{width:100%;font:inherit;font-size:17px;font-weight:500;color:inher
 body.sheet-lock{position:fixed;left:0;right:0;overflow:hidden}
 body.sheet-lock .cm-card{position:fixed;z-index:65}
 @media (max-width:767px){
-  body.reading .r-bar{display:none}
   body.reading{padding-bottom:0}
   body.reading .chat-btn{bottom:calc(18px + env(safe-area-inset-bottom))}
   body.reading .r-acts .act.repost{display:none}

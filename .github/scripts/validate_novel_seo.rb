@@ -32,6 +32,28 @@ ids.each do |id|
   check.call(File.file?(path), "#{id}: novel page is missing")
   next unless File.file?(path)
   html = File.read(path)
+  # Check rendered local image URLs, including deferred images and story images.
+  require 'cgi'
+  require 'uri'
+  html.scan(/<img\b[^>]*>/i).each do |tag|
+    tag.scan(/\s(?:src|data-src)="([^"]+)"/i).flatten.each do |raw|
+      url = CGI.unescapeHTML(raw)
+      next unless url.start_with?('/assets/')
+      local = URI::DEFAULT_PARSER.unescape(url.split(/[?#]/, 2).first)
+      check.call(File.file?(File.join(site, local.delete_prefix('/'))), "#{id}: missing image #{local}")
+    end
+  end
+  html.scan(/\sdata-sv="([^"]+)"/i).flatten.each do |raw|
+    url = CGI.unescapeHTML(raw).split('|', 2).first
+    next unless url.start_with?('/assets/')
+    local = URI::DEFAULT_PARSER.unescape(url.split(/[?#]/, 2).first)
+    check.call(File.file?(File.join(site, local.delete_prefix('/'))), "#{id}: missing story image #{local}")
+  end
+  chapter_links = html.scan(/<a\b[^>]*class="chapter toc"[^>]*href="(\/t\/[^"]+)"[^>]*>/).flatten
+  check.call(chapter_links.uniq.size == chapter_links.size, "#{id}: duplicate chapter links")
+  chapter_links.each do |url|
+    check.call(File.file?(File.join(site, url.delete_prefix('/'), 'index.html')), "#{id}: missing chapter link #{url}")
+  end
   check.call(html.scan(/<meta name="description"/).size == 1, "#{id}: wrong meta description count")
   check.call(html.scan(/<link rel="canonical"/).size == 1, "#{id}: wrong canonical count")
   check.call(html.scan(/<meta property="og:image"/).size == 1, "#{id}: wrong og:image count")

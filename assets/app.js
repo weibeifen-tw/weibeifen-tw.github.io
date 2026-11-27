@@ -187,7 +187,7 @@ window.WBAvatar = (function () {
   document.querySelector('.empty').hidden = shown > 0;
 })();
 
-// 互動按鈕：讚只有動畫、轉發到脆、留言進角色私訊、分享連結
+// 互動按鈕：讚、轉發到脆、公開留言、分享連結
 (function () {
   function get(k, d) { try { var v = localStorage.getItem('wb:' + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
   function set(k, v) { try { localStorage.setItem('wb:' + k, JSON.stringify(v)); } catch (e) {} }
