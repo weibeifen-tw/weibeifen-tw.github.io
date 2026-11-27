@@ -386,12 +386,12 @@ window.WBAvatar = (function () {
 
 // 我的書櫃：看過的小說和讀到第幾篇
 // （雲端書櫃同步後，cloud.js 會呼叫 window.WBRenderShelf() 重畫一次）
+window.WBCollectionTabs=function(label,mode,onChange){var tabs=document.createElement('div');tabs.className='shelf-tabs';tabs.setAttribute('role','group');tabs.setAttribute('aria-label',label);[['novel','小說'],['research','研究室']].forEach(function(x){var b=document.createElement('button');b.type='button';b.className='mb-btn';b.textContent=x[1];b.dataset.collectionMode=x[0];b.setAttribute('aria-pressed',String(mode===x[0]));b.onclick=function(){onChange(x[0]);};tabs.appendChild(b);});return tabs;};
 window.WBRenderShelf = function () {
   var sub = document.querySelector('.shelf-list'); if (!sub) return;
   sub.textContent = '';
   var root=sub, mode=window.WBShelfMode==='research'?'research':'novel';
-  var tabs=document.createElement('div');tabs.className='shelf-tabs';tabs.setAttribute('role','group');tabs.setAttribute('aria-label','書櫃分類');
-  [['novel','小說'],['research','研究室']].forEach(function(x){var b=document.createElement('button');b.type='button';b.className='mb-btn';b.textContent=x[1];b.setAttribute('aria-pressed',String(mode===x[0]));b.onclick=function(){window.WBShelfMode=x[0];window.WBRenderShelf();var next=root.querySelector('.shelf-tabs button[aria-pressed="true"]');if(next)next.focus();};tabs.appendChild(b);});root.appendChild(tabs);
+  root.appendChild(window.WBCollectionTabs('書櫃分類',mode,function(next){window.WBShelfMode=next;window.WBRenderShelf();var b=root.querySelector('.shelf-tabs button[aria-pressed="true"]');if(b)b.focus();}));
   sub=document.createElement('div');sub.className='shelf-novel-pane';sub.hidden=mode!=='novel';root.appendChild(sub);
   // 每次雲端同步重畫會使上一次索引回應失效，避免舊請求覆蓋新內容。
   var renderToken = (window.WBShelfRenderToken || 0) + 1;

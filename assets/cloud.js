@@ -268,7 +268,7 @@
 
   var research = window.WBResearch && window.WBResearch.resolve(location.pathname);
   var researchMount = research && document.querySelector('.ind-volume-page, .lit-article');
-  if(researchMount){var volumePath='/literature/indigenous/v0'+research.id.slice(-1)+'/', volume=window.WBResearch.resolve(volumePath);if(volume) favHeart(researchMount.querySelector('.research-actions .act.like'), ['收藏本卷','取消收藏本卷'], {novel:volume.id,path:volume.path,title:volume.title,no:''});}
+  if(researchMount){var what=research.kind==='volume'?'本卷':'本篇';favHeart(researchMount.querySelector('.research-actions .act.like'), ['收藏'+what,'取消收藏'+what], {novel:research.id,path:research.path,title:research.title,no:research.no||''});}
   function researchRow(path){return window.WBResearch && window.WBResearch.resolve(path);}
   /* ---------- 會員頁：我的收藏 ---------- */
   var favBox = document.querySelector('.mb-favs');
@@ -300,12 +300,15 @@
     favBox.hidden = false;
     if (res.error) { favList.appendChild(el('p', 'mb-form-msg err', errText('讀取收藏失敗，請重新整理。', res.error))); return; }
     var rows = res.data || [];
-    if (!rows.length) { favList.appendChild(el('p', null, '還沒有收藏。在小說介紹頁按「收藏這本」，或在章節最後按「加入書籤」。')); return; }
+    
 
     var attempt = 0;
     function paint(index, failed) {
       if (seq !== favRenderSequence || Store.identity().version !== identity.version || Store.identity().uid !== identity.uid) return;
       favList.textContent = '';
+      var mode=window.WBFavMode==='research'?'research':'novel';
+      favList.appendChild(window.WBCollectionTabs('收藏分類',mode,function(next){window.WBFavMode=next;paint(index,failed);var b=favList.querySelector('.shelf-tabs button[aria-pressed="true"]');if(b)b.focus();}));
+      var pane=el('div','fav-collection-pane');favList.appendChild(pane);
       function item(r, label, result, isWhole) {
         var it = el('div', 'fav-item'), a, note = '';
         var path = isWhole && Object.prototype.hasOwnProperty.call(novels, r.novel) ? validNovelPath(BASE + '/novel/' + r.novel + '/') : null;
@@ -333,16 +336,28 @@
         it.appendChild(del);
         return it;
       }
-      var whole = rows.filter(function (r) { return r.path === ''; });
+      var researchMarks=rows.filter(function(r){return /^indigenous-v0[1-7]$/.test(r.novel);});
+      if(mode==='research'){
+        var volumes=researchMarks.filter(function(r){var rr=researchRow(r.path);return rr&&rr.id===r.novel&&rr.kind==='volume';});
+        var articles=researchMarks.filter(function(r){return volumes.indexOf(r)<0;});
+        pane.appendChild(el('h3','fav-h','卷冊收藏'));
+        if(!volumes.length)pane.appendChild(el('p',null,'尚無卷冊收藏。'));
+        volumes.forEach(function(r){var rr=researchRow(r.path);pane.appendChild(item(r,rr.title,null,false));});
+        pane.appendChild(el('h3','fav-h','文章收藏'));
+        if(!articles.length)pane.appendChild(el('p',null,'尚無文章收藏。'));
+        var rg=Object.create(null);articles.forEach(function(r){(rg[r.novel]||(rg[r.novel]=[])).push(r);});
+        Object.keys(rg).forEach(function(id){var v=researchRow('/literature/indigenous/v0'+id.slice(-1)+'/'),d=el('details','fav-group'),sm=el('summary',null,v?v.title:id);sm.appendChild(el('small',null,rg[id].length+' 篇'));d.appendChild(sm);rg[id].sort(function(a,b){var x=researchRow(a.path),y=researchRow(b.path);return (x&&x.rank||0)-(y&&y.rank||0);});rg[id].forEach(function(r){var rr=researchRow(r.path);d.appendChild(item(r,rr&&rr.id===id?'第 '+rr.no+' 篇・'+rr.title:(r.title||'原文章'),null,false));});pane.appendChild(d);});
+        return;
+      }
+      var whole = rows.filter(function (r) { return r.path === '' && !/^indigenous-v0[1-7]$/.test(r.novel); });
       if (whole.length) {
-        favList.appendChild(el('h3', 'fav-h', '收藏的小說'));
+        pane.appendChild(el('h3', 'fav-h', '作品收藏'));
         whole.forEach(function (r) {
           var title = novels[r.novel] ? novels[r.novel].title : r.novel;
-          favList.appendChild(item(r, '《' + title + '》', null, true));
+          pane.appendChild(item(r, '《' + title + '》', null, true));
         });
       }
-      var researchMarks=rows.filter(function(r){return /^indigenous-v0[1-7]$/.test(r.novel);});
-      if(researchMarks.length){favList.appendChild(el('h3','fav-h','研究典藏'));researchMarks.forEach(function(r){var rr=researchRow(r.path);favList.appendChild(item(r,rr?rr.title:(r.title||'研究典藏'),null,false));});}
+      if(!whole.length){pane.appendChild(el('h3','fav-h','作品收藏'));pane.appendChild(el('p',null,'尚無作品收藏。'));}
       var marks = rows.filter(function (r) { return r.path !== '' && !/^indigenous-v0[1-7]$/.test(r.novel); }), groups = Object.create(null), order = [];
       marks.forEach(function (r) {
         var result = guardedChapter(index, r.path);
@@ -352,12 +367,12 @@
         groups[nid].push({ row: r, result: result });
       });
       if (order.length) {
-        favList.appendChild(el('h3', 'fav-h', '書籤'));
+        pane.appendChild(el('h3', 'fav-h', '篇章收藏'));
         order.forEach(function (nid) {
           var d = el('details', 'fav-group');
           var title = novels[nid] ? novels[nid].title : nid;
           var sm = el('summary', null, '《' + title + '》');
-          sm.appendChild(el('small', null, groups[nid].length + ' 個書籤'));
+          sm.appendChild(el('small', null, groups[nid].length + ' 篇'));
           d.appendChild(sm);
           groups[nid].sort(function (x, y) { return (parseFloat(x.row.no) || 0) - (parseFloat(y.row.no) || 0); });
           groups[nid].forEach(function (entry) {
@@ -365,14 +380,15 @@
             var no = st.status === 'published' ? st.chapter.chapter : r.no;
             d.appendChild(item(r, (no ? '第 ' + no + ' 篇・' : '') + (r.title || ''), st, false));
           });
-          favList.appendChild(d);
+          pane.appendChild(d);
         });
       }
+      if(!order.length){pane.appendChild(el('h3','fav-h','篇章收藏'));pane.appendChild(el('p',null,'尚無篇章收藏。'));}
       if (failed && marks.length) {
         var info = el('p', 'mb-form-msg', '暫時無法確認章節書籤，請重新確認。');
         var retry = el('button', 'mb-btn', '重新確認'); retry.type = 'button';
         retry.onclick = function () { check(true); };
-        favList.appendChild(info); favList.appendChild(retry);
+        pane.appendChild(info); pane.appendChild(retry);
       }
     }
     function check(force) {

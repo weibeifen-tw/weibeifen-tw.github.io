@@ -1,6 +1,8 @@
 /* Published research registry: no planned or historical article URLs. */
 (function(){
 'use strict';
+document.querySelectorAll('[data-research-dialog]').forEach(function(b){b.addEventListener('click',function(){var d=document.getElementById(b.dataset.researchDialog);if(d&&typeof d.showModal==='function')d.showModal();});});
+var versionToggle=document.querySelector('.research-version-toggle'),versionLog=document.getElementById('research-version-log');if(versionToggle&&versionLog)versionToggle.addEventListener('click',function(){versionLog.hidden=!versionLog.hidden;versionToggle.setAttribute('aria-expanded',String(!versionLog.hidden));});
 var rows={};try{rows=JSON.parse(document.getElementById('wb-research-index').textContent);}catch(e){}
 function resolve(path){if(typeof path!=='string')return null;try{var u=new URL(path,location.origin);if(u.origin!==location.origin||!Object.prototype.hasOwnProperty.call(rows,u.pathname)||!rows[u.pathname])return null;return Object.assign({path:u.pathname},rows[u.pathname]);}catch(e){return null;}}
 function completion(id,store){var all=Object.keys(rows).filter(function(p){return rows[p]&&rows[p].kind==='article'&&rows[p].id===id;});var done=all.filter(function(p){return store.read('read',p)==='1';}).length;return {total:all.length,done:done};}

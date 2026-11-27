@@ -14,7 +14,11 @@ layout: default
 <p class="ind-volume-crumb"><a class="wb-reader-back ind-title-back" data-fixed-back href="{{ '/literature/indigenous/' | relative_url }}" aria-label="返回研究典藏"><span aria-hidden="true">〈</span> 返回研究典藏</a></p>
 <div class="ind-volume-head"><div class="nv-post ind-cover"><div class="ip-one"><img src="{{ v.cover | relative_url }}" width="600" height="800" alt="{{ v.title | escape }}"></div></div>
 <div class="ind-volume-intro"><h2 class="ind-section-title">卷冊簡介</h2><p class="ind-note">{{ arts.size }} 篇已公開</p>
-{% if v.summary %}<p>{{ v.summary | escape }}</p>{% else %}<p class="ind-note">本卷收錄以下研究章節：</p><ul class="ind-chapter-summary">{% for c in site.data.indigenous_catalog offset:chapter_start limit:chapter_count %}<li>{{ c.title | escape }}</li>{% endfor %}</ul>{% endif %}</div></div>
+{% if v.summary %}<p>{{ v.summary | escape }}</p>{% else %}<p class="ind-note">本卷收錄以下研究章節：</p><ul class="ind-chapter-summary">{% for c in site.data.indigenous_catalog offset:chapter_start limit:chapter_count %}<li>{{ c.title | escape }}</li>{% endfor %}</ul>{% endif %}
+<div class="research-info-links"><button type="button" data-research-dialog="volume-limits">研究限制 →</button><button type="button" data-research-dialog="volume-errata">文章勘誤 →</button></div>
+<dialog id="volume-limits" class="research-info-dialog" aria-labelledby="volume-limits-title"><h2 id="volume-limits-title">研究限制</h2><p>本文依目前可核讀的資料整理；考古文化、族群認同與法律身分不可直接等同。請以各篇正文所列證據、年代及研究限制為準。</p><form method="dialog"><button class="mb-btn">關閉</button></form></dialog>
+<dialog id="volume-errata" class="research-info-dialog" aria-labelledby="volume-errata-title"><h2 id="volume-errata-title">文章勘誤</h2><p>已確認勘誤只公開站長審核後的摘要，不公開回報者身分。回報不等同正文修訂。</p><p>勘誤回報功能籌備中，待資料庫安全驗收後開放。</p>{% for a in arts %}{% assign corrections = site.data.research_errata[a.article_id] %}{% if corrections %}<h3>{{ a.chapter_no }}.{{ a.piece }} {{ a.title | escape }}</h3><ul>{% for e in corrections %}<li>{{ e.date | escape }}・{{ e.summary | escape }}</li>{% endfor %}</ul>{% endif %}{% endfor %}<form method="dialog"><button class="mb-btn">關閉</button></form></dialog>
+</div></div>
 <div class="research-actions r-acts">{% capture research_url %}{{ page.url | relative_url }}{% endcapture %}{% include actions.html key=page.url url=research_url notalk=true cmt=true norepost=true %}</div>
 {% assign first_article = arts | first %}
 {% if first_article %}<a class="nv-btn ind-start" href="{{ first_article.url | relative_url }}">開始閱讀</a>{% else %}<button class="nv-btn ind-start" disabled>籌備中</button>{% endif %}

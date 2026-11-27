@@ -50,7 +50,7 @@ page_js: lit-research
 
   {%- if page.series_key == site.data.indigenous_book.series_key %}
   {%- assign vi = page.volume_no | minus: 1 %}
-  <p class="ind-pos"><a class="wb-reader-back" data-fixed-back aria-label="返回卷冊" href="{{ '/literature/indigenous/v0' | append: page.volume_no | append: '/' | relative_url }}">‹</a> 第{{ "一二三四五六七" | slice: vi }}卷・第 {{ page.chapter_no }} 章・第 {{ page.piece }} 篇{% if page.version %}・{{ page.version | escape }}{% endif %}</p>
+  <p class="ind-pos"><a class="wb-reader-back" data-fixed-back aria-label="返回卷冊" href="{{ '/literature/indigenous/v0' | append: page.volume_no | append: '/' | relative_url }}">‹</a> 第{{ "一二三四五六七" | slice: vi }}卷・{{ page.chapter_no }}.{{ page.piece }}</p>
   {%- else %}
   <p class="wb-literature-position"><a class="wb-reader-back" aria-label="返回研究所" href="{{ '/literature/' | relative_url }}">‹</a> 未備份研究所</p>
   {%- endif %}
@@ -59,9 +59,10 @@ page_js: lit-research
     <a class="lit-author" href="{{ '/about/' | relative_url }}">{{ page.author | default: site.author }}</a>
     <span>・</span><time datetime="{{ page.date | date: '%Y-%m-%d' }}">{{ page.date | date: '%Y-%m-%d' }}</time>
     {%- if page.updated %}<span>・</span><span class="lit-upd">最後更新 <time datetime="{{ page.updated | date: '%Y-%m-%d' }}">{{ page.updated | date: '%Y-%m-%d' }}</time></span>{% endif %}
-    {%- if page.category %}<span>・</span><a class="lit-cat" href="{{ '/literature/' | relative_url }}?cat={{ page.category | url_encode }}">{{ page.category | escape }}</a>{% endif %}
+    {%- if page.series_key == 'indigenous-history' and page.version %}<span>・</span><button type="button" class="research-version-toggle" aria-expanded="false" aria-controls="research-version-log">{{ page.version | escape }} ▾</button>{% elsif page.category %}<span>・</span><a class="lit-cat" href="{{ '/literature/' | relative_url }}?cat={{ page.category | url_encode }}">{{ page.category | escape }}</a>{% endif %}
     {%- if page.article_type == 'knowledge' and page.series_key != 'indigenous-history' %}<span class="lit-kind">知識文章</span>{% elsif page.article_type == 'opinion' %}<span class="lit-kind">個人觀點</span>{% endif %}
   </p>
+  {% if page.series_key == 'indigenous-history' and page.version %}<section class="research-version-log lit-revs" id="research-version-log" hidden><h2 class="lit-h">修訂紀錄</h2><ol>{% for r in page.revisions %}<li><time datetime="{{ r.date | date: '%Y-%m-%d' }}">{{ r.date | date: '%Y-%m-%d' }}</time><b>{{ r.version | escape }}</b>{{ r.note | escape }}</li>{% endfor %}</ol>{% assign top_versions = site.lit_versions | where: 'article', page.slug | sort: 'date' | reverse %}{% if top_versions.size > 0 %}<h3>歷史版本</h3><ul>{% for v in top_versions %}<li><a href="{{ v.url | relative_url }}">{{ v.version | escape }}</a> <a href="{{ v.url | relative_url }}#compare">與現行版比較</a></li>{% endfor %}</ul>{% endif %}</section>{% endif %}
   <ul class="nv-tags lit-tags">
     {%- for t in page.tags %}<li><a href="{{ '/literature/' | relative_url }}?tag={{ t | url_encode }}">#{{ t | escape }}</a></li>{% endfor -%}
   </ul>
@@ -74,7 +75,7 @@ page_js: lit-research
   </div>
   {%- if page.references and page.references.size > 0 %}
   <section class="lit-sec lit-refs">
-    {% if page.series_key == 'indigenous-history' %}<details class="research-refs" open><summary>參考資料（{{ page.references.size }}）</summary>{% else %}<h2 class="lit-h">參考資料</h2>{% endif %}
+    {% if page.series_key == 'indigenous-history' %}<details class="research-refs"><summary>參考資料（{{ page.references.size }}）</summary>{% else %}<h2 class="lit-h">參考資料</h2>{% endif %}
     <ol>
     {%- for r in page.references -%}
       <li id="ref-{{ forloop.index }}">{% if r.url %}<a href="{{ r.url }}" target="_blank" rel="noopener">{{ r.title | escape }}</a>{% else %}{{ r.title | escape }}{% endif %}{% if r.publisher %}<span class="lit-pub">，{{ r.publisher | escape }}</span>{% endif %}</li>
@@ -84,11 +85,8 @@ page_js: lit-research
   </section>
   {%- endif %}
   {% if page.series_key == 'indigenous-history' %}
-  <section class="lit-sec research-limits"><h2 class="lit-h">研究限制</h2>
-  <p>本文依目前可核讀的資料整理；考古文化、族群認同與法律身分不可直接等同。請以各篇正文所列證據、年代及研究限制為準。</p>
-  {% if page.research_limits %}<p>{{ page.research_limits | escape }}</p>{% endif %}
-  </section>
-  {% include research-errata.html %}
+  {% if page.research_limits %}<section class="lit-sec research-limits"><h2 class="lit-h">本篇研究限制</h2><p>{{ page.research_limits | escape }}</p></section>{% endif %}
+
   {% endif %}
   {%- comment -%} 原住民族專區 DEV-03：研究證據（現行卡片；L3 撤回不顯示）。無 JS 也能讀；有 JS 時點正文的證據標記開面板（手機底部、電腦側邊） {%- endcomment -%}
   {%- assign evcards = site.data.evidence[page.article_id] -%}
@@ -110,14 +108,14 @@ page_js: lit-research
   {%- endif %}
   {%- comment -%} 歷史版本（Q05 B：公開；只存完整正文） {%- endcomment -%}
   {%- assign vers = site.lit_versions | where: "article", page.slug | sort: "date" | reverse -%}
-  {%- if vers.size > 0 %}
+  {%- if vers.size > 0 and page.series_key != 'indigenous-history' %}
   <section class="lit-sec lit-vers">
     <h2 class="lit-h">歷史版本</h2>
     <ul>{%- for v in vers -%}<li><a href="{{ v.url | relative_url }}">{{ v.version | escape }}</a><time datetime="{{ v.date | date: '%Y-%m-%d' }}">{{ v.date | date: '%Y-%m-%d' }}</time><a class="lit-diff-link" href="{{ v.url | relative_url }}#compare">與現行版比較</a></li>{%- endfor -%}</ul>
   </section>
   {%- endif %}
   {%- comment -%} V1.0 S08（Q61、Q64、Q65）：修訂紀錄、大型系列卷／章摺疊目錄、上一篇／下一篇。欄位都選填；沒有就不顯示 {%- endcomment -%}
-  {%- if page.revisions and page.revisions.size > 0 %}
+  {%- if page.revisions and page.revisions.size > 0 and page.series_key != 'indigenous-history' %}
   <section class="lit-sec lit-revs">
     <h2 class="lit-h">修訂紀錄{% if page.version %}<small>目前版本 {{ page.version | escape }}</small>{% endif %}</h2>
     {%- capture visible_revisions -%}
