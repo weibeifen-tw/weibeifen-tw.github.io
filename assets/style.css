@@ -804,9 +804,9 @@ button.d-item{width:100%;font:inherit;font-size:17px;font-weight:500;color:inher
 .ex-sec small{margin-left:8px;font-family:"Noto Sans TC",sans-serif;font-size:12px;font-weight:400;letter-spacing:.02em;color:var(--sub)}
 .explore:not(.multi) .shelf-hot{display:none}
 @media (min-width:768px){
-  .explore.multi .ex-tabs,.explore.multi .ex-note{display:none}
-  .explore.multi .ex-sec{display:block;margin:22px 0 0;font-family:"Noto Serif TC",serif;font-size:19px;font-weight:600;letter-spacing:.06em}
-  .explore.multi .ex-sec:first-of-type{margin-top:6px}
+  .explore .ex-tabs,.explore .ex-note{display:none}
+  .explore .ex-sec{display:block;margin:22px 0 0;font-family:"Noto Serif TC",serif;font-size:19px;font-weight:600;letter-spacing:.06em}
+  .explore .ex-sec:first-of-type{margin-top:6px}
 }
 @media (min-width:1024px){
   body.home .bar,body.home .wrap,body.home .foot{max-width:1120px}
@@ -952,3 +952,7 @@ body.sheet-lock .cm-card{position:fixed;z-index:65}
 
 /* BUILD04 research shelf */
 .shelf-tabs{display:flex;gap:8px;margin:12px 0}.shelf-tabs button[aria-pressed=true]{background:var(--ink);color:var(--bg)}.shelf-novel-pane[hidden],.shelf-research-pane[hidden]{display:none!important}.research-shelf-item+.research-shelf-item{border-top:1px solid var(--line)}.research-shelf-item>a>span{min-width:0;overflow-wrap:anywhere}.research-shelf-item>a>small{flex:none;max-width:48%;text-align:right}.research-shelf-item .research-shelf-volume{display:block;margin:3px 0 0}.ind-reading-progress{color:var(--sub);font-size:13px}
+
+/* Home-only deferred image placeholders and stable desktop headings. */
+body.home .bk-cover > img[data-home-src]:not([src]),body.home .avatar > img[data-home-src]:not([src]){display:none}
+body.home .bk-cover > noscript img{width:100%;height:100%;object-fit:cover}
