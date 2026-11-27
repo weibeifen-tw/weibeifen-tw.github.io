@@ -15,6 +15,7 @@ body_class: wide home
     <button type="button" role="tab" id="ex-t-hot" aria-selected="false" aria-controls="ex-shelf" data-sort="hot" tabindex="-1">熱門作品</button>
   </div>
   <p class="ex-note" hidden>暫依最新上架排序</p>
+  <h2 class="ex-sec" id="ex-sec-all">全部作品</h2>
   <div class="shelf" id="ex-shelf" role="tabpanel" aria-labelledby="ex-t-all" tabindex="0">
   {%- for nv in site.data.novels -%}
     {%- assign lead = nil -%}{%- for ch in site.data.characters -%}{%- if ch[1].novel == nv[0] or ch[1].also contains nv[0] -%}{%- assign lead = ch[1] -%}{%- break -%}{%- endif -%}{%- endfor -%}
@@ -30,6 +31,8 @@ body_class: wide home
     </a>
   {%- endfor -%}
   </div>
+  <h2 class="ex-sec" id="ex-sec-hot">熱門作品<small>暫依最新上架</small></h2>
+  <div class="shelf shelf-hot" tabindex="0" aria-labelledby="ex-sec-hot"></div>
 </section>
 <script>
 (function(){
