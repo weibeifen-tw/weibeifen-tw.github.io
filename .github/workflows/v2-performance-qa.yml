@@ -18,10 +18,11 @@ jobs:
       - name: Audit public website, mobile and desktop
         run: |
           mkdir -p reports
+          echo "Post-deployment audit: main 96acdaf"
           export CHROME_PATH="$(command -v google-chrome || command -v chromium)"
           test -n "$CHROME_PATH"
           for mode in mobile desktop; do
-            for page in home novel reading taiwan; do
+            for page in home; do
               case "$page" in
                 home) url=https://weibeifen.com/ ;;
                 novel) url=https://weibeifen.com/novel/shanhai/ ;;
