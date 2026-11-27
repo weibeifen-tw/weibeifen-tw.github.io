@@ -20,14 +20,14 @@ body_class: wide
   <svg class="cty-map" viewBox="0 0 600 873" role="group" aria-label="臺灣縣市地圖">
     <use class="cty-insets" href="{{ geo }}#c-insets"/>
     {%- for c in site.data.counties.counties %}
-    {%- assign visible = '' | split: ',' -%}{%- for id in c.novels -%}{%- assign nv = site.data.novels[id] -%}{%- if nv.title and nv.title != '' -%}{%- assign visible = visible | push: id -%}{%- endif -%}{%- endfor -%}
+    {%- include cty-visible-novels.html ids=c.novels -%}
     <a class="cty-a{% if visible.size == 0 %} none{% endif %}" href="#cty-{{ c.key }}" data-k="{{ c.key }}" aria-label="{{ c.name }}{% if visible.size > 0 %}，{{ visible.size }} 部故事{% else %}，尚無故事{% endif %}"><title>{{ c.name }}</title><use href="{{ geo }}#c-{{ c.key }}"/>{% if c.bbox[2] < 45 and c.bbox[3] < 45 %}<circle class="cty-hit" cx="{{ c.bbox[2] | divided_by: 2.0 | plus: c.bbox[0] }}" cy="{{ c.bbox[3] | divided_by: 2.0 | plus: c.bbox[1] }}" r="18"/>{% endif %}</a>
     {%- endfor %}
   </svg>
   <ol class="cty-list" aria-label="史前與古地理、22 縣市、地點未定">
     {%- include cty-special-row.html g=site.data.counties.prehistoric %}
     {%- for c in site.data.counties.counties %}
-    {%- assign visible = '' | split: ',' -%}{%- for id in c.novels -%}{%- assign nv = site.data.novels[id] -%}{%- if nv.title and nv.title != '' -%}{%- assign visible = visible | push: id -%}{%- endif -%}{%- endfor -%}
+    {%- include cty-visible-novels.html ids=c.novels -%}
     <li class="cty-row{% if visible.size == 0 %} none{% endif %}" id="cty-{{ c.key }}" data-k="{{ c.key }}">
       <button type="button" class="cty-btn" aria-expanded="false"{% if visible.size > 0 %} aria-controls="cty-n-{{ c.key }}"{% else %} aria-disabled="true"{% endif %}>
         <svg class="cty-ico" viewBox="{{ c.bbox[0] | minus: 2 }} {{ c.bbox[1] | minus: 2 }} {{ c.bbox[2] | plus: 4 }} {{ c.bbox[3] | plus: 4 }}" aria-hidden="true"><use href="{{ geo }}#c-{{ c.key }}"/></svg>
