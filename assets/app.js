@@ -665,8 +665,18 @@ window.WBReadingStore.onChange(function () { window.WBRenderShelf(); });
     var rest = function () { sl.querySelectorAll('img[data-src]').forEach(function (im) { im.src = im.dataset.src; im.removeAttribute('data-src'); }); rest = function () {}; };
     ['pointerdown', 'touchstart', 'scroll', 'focusin'].forEach(function (ev) { sl.addEventListener(ev, function () { rest(); }, { once: true, passive: true }); });
     dots.forEach(function (d) { d.addEventListener('click', function () { rest(); }); });
-    var later = function () { (window.requestIdleCallback || setTimeout)(function () { rest(); }, { timeout: 2500 }); };
-    if (document.readyState === 'complete') later(); else addEventListener('load', later);
+    // V2.09: only prepare deferred slides near the viewport, or immediately on interaction.
+    if (sl.querySelector('img[data-src]')) {
+      if ('IntersectionObserver' in window) {
+        var observer = new IntersectionObserver(function (entries) {
+          if (entries.some(function (entry) { return entry.isIntersecting; })) { observer.disconnect(); rest(); }
+        }, { rootMargin: '160px' });
+        observer.observe(sl);
+      } else {
+        var later = function () { if (window.requestIdleCallback) window.requestIdleCallback(function () { rest(); }, { timeout: 2500 }); else setTimeout(function () { rest(); }, 0); };
+        if (document.readyState === 'complete') later(); else addEventListener('load', later, { once: true });
+      }
+    }
     function go(k) { sl.scrollTo({ left: k * sl.clientWidth, behavior: 'smooth' }); }
     dots.forEach(function (d, i) { d.onclick = function () { go(i); }; });
     sl.onclick = function (e) { var r = sl.getBoundingClientRect(), k = Math.round(sl.scrollLeft / sl.clientWidth); go(e.clientX - r.left > r.width / 2 ? Math.min(k + 1, dots.length - 1) : Math.max(k - 1, 0)); };
