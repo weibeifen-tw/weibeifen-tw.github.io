@@ -1,0 +1,8 @@
+{%- comment -%} Shared county visibility filter. Sets visible to the valid novel IDs in the supplied list. {%- endcomment -%}
+{%- assign visible = '' | split: ',' -%}
+{%- for county_novel_id in include.ids -%}
+  {%- assign county_novel = site.data.novels[county_novel_id] -%}
+  {%- if county_novel.title and county_novel.title != '' -%}
+    {%- assign visible = visible | push: county_novel_id -%}
+  {%- endif -%}
+{%- endfor -%}
