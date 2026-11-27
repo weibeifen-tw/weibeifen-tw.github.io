@@ -8,7 +8,7 @@
  *    舊 wb:last:* 紀錄保持隔離，捲動位置及已讀標記也由 WBReadingStore 依身分管理。
  * 2. 收藏：小說介紹頁可收藏整本，章節頁可加書籤；會員頁列出「我的收藏」。
  * 3. 公開留言：章節頁最下面、小說介紹頁篇章列表下面（整本小說的留言）。訪客也看得到（直接用可公開金鑰讀，不載入 SDK），會員才能留言。
- * 4. （V1.0 S09 私訊已全面退役，前端不再讀寫私訊）原：私訊角色存到雲端（收件匣在 app.js，透過 window.WBDM）。
+ * 4. 通知：公開留言回覆通知。
  *
  * 權限由 Supabase RLS 在伺服器端把關：每個人只能讀寫自己的資料。
  * 所有資料一律用 textContent 寫入，不使用 innerHTML。
@@ -230,12 +230,10 @@
   // 沿用 favorites 原本的資料（整本 path=''，章節 path=網址），再按一次取消。空心＝未收藏，紅心＝已收藏。
   function favHeart(b, labels, row) {
     if (!b) return;
-    var nEl = b.querySelector('.n'), base = parseInt(nEl && nEl.textContent, 10) || 0, on = false;
-    function no4(n) { while (String(n).indexOf('4') >= 0) n++; return n; }
+    var on = false;
     function paint() {
       b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on));
       b.setAttribute('aria-label', labels[on ? 1 : 0]);
-      if (nEl && base) nEl.textContent = String(on ? no4(base + 1) : base);
     }
     b.onclick = async function () {
       if (!signedIn()) { askLogin(); return; }
