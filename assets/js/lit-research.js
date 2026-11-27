@@ -7,7 +7,6 @@
   // 1. 目錄
   var toc = document.querySelector('.lit-toc');
   if (toc) toc.open = false;
-  if (toc) toc.querySelectorAll('[data-toc-mode]').forEach(function(b){b.addEventListener('click',function(){toc.querySelectorAll('[data-toc-mode]').forEach(function(x){x.setAttribute('aria-pressed',String(x===b));});toc.querySelectorAll('[data-toc-panel]').forEach(function(p){p.hidden=p.dataset.tocPanel!==b.dataset.tocMode;});});});
   if (toc) toc.addEventListener('click', function (e) { if (e.target.closest('a') && window.matchMedia && matchMedia('(max-width:767px)').matches) toc.open = false; });
 
   var refs=document.querySelector('.research-refs');

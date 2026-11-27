@@ -59,6 +59,12 @@ const server=http.createServer((req,res)=>{
  assert.equal(await page.locator('.wb-reader-back').getAttribute('href'),'/literature/indigenous/v01/');
  await page.locator('.fs [data-fs="l"]').click();
  assert.equal(await page.evaluate(()=>document.documentElement.dataset.fs),'l');
+ const big=await page.locator('.lit-body').evaluate(e=>parseFloat(getComputedStyle(e).fontSize));
+ await page.locator('.fs [data-fs="s"]').click();
+ assert.ok(await page.locator('.lit-body').evaluate(e=>parseFloat(getComputedStyle(e).fontSize))<big);
+ await page.locator('.theme-btn').click();
+ assert.equal(await page.evaluate(()=>document.documentElement.dataset.theme),'night');
+ await page.locator('.theme-btn').click();
  assert.equal(await page.locator('.research-refs').evaluate(e=>e.open),false);
  await page.locator('.lit-body a[href="#ref-1"]').click();
  assert.equal(await page.locator('.research-refs').evaluate(e=>e.open),true);
@@ -76,6 +82,9 @@ const server=http.createServer((req,res)=>{
  await page.goto(origin+'/literature/indigenous/v01/');
  assert.equal(await page.locator('.ind-start').textContent(),'繼續閱讀');
  assert.equal(await page.locator('.ind-start').getAttribute('href'),'/literature/ind-test-a/');
+ assert.equal(await page.locator('[data-ind-piece="1.1"] > a').evaluate(e=>e.classList.contains('here')),true);
+ await page.goto(origin+'/literature/ind-test-b/');
+ assert.equal(await page.locator('.r-next').getAttribute('href'),'/literature/indigenous/v01/');
  await page.goto(origin+'/literature/indigenous/v07/');
  assert.equal(await page.locator('[data-ind-piece]').count(),155);
  assert.equal(await page.locator('.wb-toc-chapter').count(),16);
@@ -85,6 +94,22 @@ const server=http.createServer((req,res)=>{
  assert.equal(await page.locator('.wb-toc-chapter[open]').count(),2);
  assert.equal(await page.locator('.ind-start').isDisabled(),true);
  assert.deepEqual(errors,[],'page JS errors at '+width);
+ // Real rendered novel: keep existing list, native reading directory, and theme/font behavior.
+ const posts=JSON.parse(fs.readFileSync(path.join(root,'assets/posts.json'),'utf8'));
+ const novel=Object.values(posts).find(p=>p.n&&p.u&&fs.existsSync(path.join(root,p.u.replace(/^\//,''),'index.html')));
+ assert.ok(novel,'published novel fixture');
+ await page.goto(origin+'/novel/'+novel.n+'/');
+ assert.ok(await page.locator('.nv-list a.chapter.toc').count()>0);
+ await page.goto(origin+novel.u);
+ assert.equal(await page.locator('.r-toc').evaluate(e=>e.open),false);
+ await page.locator('.r-toc > summary').click();
+ await page.waitForFunction(()=>document.querySelector('.r-toc-list [aria-current="page"]'));
+ await page.locator('.fs [data-fs="l"]').click();
+ assert.equal(await page.evaluate(()=>document.documentElement.dataset.fs),'l');
+ await page.locator('.theme-btn').click();
+ assert.equal(await page.evaluate(()=>document.documentElement.dataset.theme),'night');
+ await page.locator('.theme-btn').click();
+ assert.deepEqual(errors,[],'novel regression '+width);
  await ctx.close();console.log('BUILD07 research rendered browser '+width+'px passed');
  }
  }finally{if(browser)await browser.close();server.close();}

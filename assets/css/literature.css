@@ -171,17 +171,17 @@ details.lit-toc:not([open]) summary::after{content:" ▸"}
 
 /* BUILD02: indigenous archive shelf, scoped to this landing page */
 .ind-book .ind-section-title{font-size:17px;margin:24px 0 10px;font-weight:600}
-.ind-book .ind-shelf{display:grid;grid-auto-flow:column;grid-auto-columns:calc((100% - 24px)/2.5);gap:12px;overflow-x:auto;list-style:none;padding:4px 2px 14px;margin:0;scroll-snap-type:x proximity;overscroll-behavior-inline:contain}
+.ind-book .ind-shelf{list-style:none;margin:0}
 .ind-book .ind-shelf li{min-width:0;scroll-snap-align:start}
 .ind-book .ind-shelf a{display:block;color:inherit;text-decoration:none}
-.ind-book .ind-shelf img{display:block;width:100%;height:auto;aspect-ratio:3/4;border-radius:6px;box-shadow:0 2px 7px #0002}
-.ind-book .ind-shelf span{display:block;color:var(--sub);font-size:12px;padding-top:6px}
+
+.ind-book .ind-shelf a > span:not(.bk-cover){display:block;color:var(--sub);font-size:12px;padding-top:6px}
 .ind-book .ind-tools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;list-style:none;padding:0;margin:0}
 .ind-book .ind-tools li{border:1px solid var(--line);border-radius:10px;background:var(--card);padding:14px;display:grid;gap:5px}
 .ind-book .ind-tools small{font-size:12px;color:var(--sub)}
 .ind-book .ind-vol{scroll-margin-top:116px}
-@media(min-width:768px){.ind-book .ind-shelf{grid-auto-columns:calc((100% - 36px)/4)}}
-@media(min-width:1024px){.ind-book .ind-shelf{grid-auto-columns:calc((100% - 60px)/6)}.ind-book .ind-tools{grid-template-columns:repeat(4,minmax(0,1fr))}body:has(.ind-book) .wrap{max-width:1040px}}
+
+@media(min-width:1024px){.ind-book .ind-tools{grid-template-columns:repeat(4,minmax(0,1fr))}body:has(.ind-book) .wrap{max-width:1040px}}
 
 /* BUILD03: volume catalogue */
 .ind-volume-head{display:flex;align-items:center;gap:18px;margin:12px 0 18px}.ind-volume-head img{width:min(30%,160px);height:auto;border-radius:6px}.ind-volume-head>div{min-width:0}.ind-volume-toc{border:1px solid var(--line);border-radius:12px;padding:12px}.ind-volume-toc>summary{cursor:pointer;font-weight:600;padding:8px}.ind-catalog-ch{margin:18px 0}.ind-catalog-ch h2{font-size:16px;margin:12px 0 6px}.ind-catalog-ch li{border-top:1px solid var(--line)}.ind-pending{display:flex;gap:10px;align-items:baseline;padding:8px 6px;color:var(--sub)}.ind-pending small,.ind-arts a small{flex:none;white-space:nowrap}.ind-pending .ind-at{min-width:0}.ind-pending{cursor:default}
@@ -197,5 +197,5 @@ details.lit-toc:not([open]) summary::after{content:" ▸"}
 .ind-volume-page .ind-volume-head{align-items:flex-start;gap:24px}.ind-volume-page .ind-volume-head img{flex:none}.ind-volume-intro{flex:1;min-width:0}.ind-volume-page .ind-volume-intro .ind-section-title{margin-top:0}.ind-volume-intro .ind-chapter-summary{padding-left:1.4em}.ind-volume-page .research-actions{margin-top:8px}@media(max-width:767px){.ind-volume-page .ind-volume-head{flex-direction:column;gap:18px}.ind-volume-page .ind-volume-intro{width:100%}}
 
 /* V1.7: research adapters use the same chapter rows and reading controls as novels. */
-.ind-book .shelf.ind-shelf{display:flex;grid-auto-columns:unset}.ind-book .shelf.ind-shelf .bk{flex:0 0 calc((100% - 24px)/2.5)}@media(min-width:700px){.ind-book .shelf.ind-shelf .bk{flex-basis:calc((100% - 48px)/5)}}@media(min-width:1024px){.ind-book .shelf.ind-shelf .bk{flex-basis:calc((100% - 60px)/6)}}
+@media(min-width:1024px){.ind-book .shelf.ind-shelf .bk{flex-basis:calc((100% - 60px)/6)}}
 .ind-volume-page .ind-volume-head .ind-cover{width: min(45%,420px);flex:none}.ind-volume-page .ind-volume-head .ind-cover img{width:100%;aspect-ratio:auto;object-fit:contain}.ind-volume-page .ind-volume-toc{padding:0}.ind-volume-toc .chapter.toc,.r-toc[data-static-toc] .chapter.toc{border-radius:0;border-bottom:1px solid var(--line)}.ind-volume-toc .ind-pending,.r-toc[data-static-toc] .ind-pending{opacity:.55;cursor:default}.ind-pending small{flex:none;white-space:nowrap}.r-toc[data-static-toc] .r-toc-list{padding:0}.r-toc[data-static-toc] .r-toc-list a{border-radius:0}.wb-volume-progress{width:100%;height:8px;accent-color:var(--accent)}.lit-body.wb-reader-text{max-width:none}.lit-article:has(.wb-reader-text) .r-nav{--c:var(--ink)}@media(max-width:767px){.ind-volume-page .ind-volume-head .ind-cover{width:100%}}
