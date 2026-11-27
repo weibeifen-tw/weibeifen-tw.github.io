@@ -5,7 +5,7 @@ counties:
   - key: kinmen
     name: 金門
     bbox: [19.4, 247.5, 126.2, 43.1]
-    novels: [duanqiao]
+    novels: []
   - key: yilan
     name: 宜蘭
     bbox: [440.1, 79.4, 150.3, 174.5]
@@ -17,7 +17,7 @@ counties:
   - key: nantou
     name: 南投
     bbox: [276.1, 270.4, 171.7, 207.8]
-    novels: [shiyi, weigongkai, pendi]
+    novels: [shiyi]
   - key: pingtung
     name: 屏東
     bbox: [212.9, 619.1, 130.5, 253.7]
@@ -69,7 +69,7 @@ counties:
   - key: taitung
     name: 臺東
     bbox: [304.5, 475.9, 208.2, 384.4]
-    novels: [huaji]
+    novels: []
   - key: tainan
     name: 臺南
     bbox: [136.7, 483.5, 148.4, 134.7]
