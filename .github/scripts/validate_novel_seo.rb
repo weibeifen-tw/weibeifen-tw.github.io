@@ -62,6 +62,17 @@ ids.each do |id|
   check.call(html.scan(/"@type": "Book"/).size == 1, "#{id}: duplicate Book JSON-LD")
 end
 
+# Taiwan Stories must not link to withdrawn or missing novel pages.
+taiwan = File.join(site, 'taiwan', 'index.html')
+check.call(File.file?(taiwan), 'Taiwan Stories page missing')
+if File.file?(taiwan)
+  html = File.read(taiwan)
+  html.scan(/href="\/novel\/([^\/"#?]+)\/"/).flatten.uniq.each do |id|
+    check.call(ids.include?(id) && File.file?(File.join(site, 'novel', id, 'index.html')), "Taiwan Stories: invalid novel link #{id}")
+  end
+  check.call(!html.include?('<b>《》</b>'), 'Taiwan Stories: empty novel title')
+end
+
 chapters = 0
 Dir.glob(File.join(site, 't', '*', 'index.html')).sort.each do |path|
   html = File.read(path)
