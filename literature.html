@@ -28,7 +28,8 @@ permalink: /literature/
     </li>
     {%- endfor -%}
   </ul>
-  <h2 class="rz-h">最新發布文章</h2>
+  <section class="lit-filter-results" hidden aria-label="分類或標籤文章">
+  <h2 class="rz-h">文章</h2>
   {%- if arts.size > 0 %}
   <div class="lit-tools">
     <input type="search" class="lit-q" placeholder="搜尋標題、摘要、分類、標籤" aria-label="搜尋文章" autocomplete="off">
@@ -60,6 +61,7 @@ permalink: /literature/
   </div>
   <p class="lit-none" hidden>找不到符合的文章。<button type="button" class="lit-clear">清除篩選</button></p>
   {%- endif %}
+  </section>
 </section>
 <script>
 (function () {
@@ -68,6 +70,9 @@ permalink: /literature/
   var q = document.querySelector('.lit-q'), sort = document.querySelector('.lit-sort'), none = document.querySelector('.lit-none');
   var cat = '', tag = '';
   var p = new URLSearchParams(location.search); cat = p.get('cat') || ''; tag = p.get('tag') || '';
+  var results=document.querySelector('.lit-filter-results');
+  if (!cat && !tag) return;
+  results.hidden=false;
   function sync() {
     document.querySelectorAll('.lit-chip[data-cat]').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.cat === cat); });
     document.querySelectorAll('.lit-chip[data-tag]').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.tag === tag); });
@@ -82,9 +87,9 @@ permalink: /literature/
     none.hidden = shown > 0; sync();
   }
   document.querySelectorAll('.lit-chip[data-cat]').forEach(function (b) { b.onclick = function () { cat = cat === b.dataset.cat ? '' : b.dataset.cat; apply(); }; });
-  document.querySelectorAll('.rz-in[data-cat]').forEach(function (b) { b.onclick = function (e) { e.preventDefault(); cat = b.dataset.cat; apply(); var h = document.querySelector('.rz-h'); if (h) h.scrollIntoView({ behavior: 'smooth' }); }; });
+
   document.querySelectorAll('.lit-chip[data-tag]').forEach(function (b) { b.onclick = function () { tag = tag === b.dataset.tag ? '' : b.dataset.tag; apply(); }; });
-  document.querySelectorAll('.lit-clear').forEach(function (b) { b.onclick = function () { cat = ''; tag = ''; q.value = ''; sort.value = 'new'; apply(); }; });
+  document.querySelectorAll('.lit-clear').forEach(function (b) { b.onclick = function () { location.href = location.pathname; }; });
   q.addEventListener('input', apply); sort.addEventListener('change', apply);
   apply();
 })();

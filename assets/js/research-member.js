@@ -8,11 +8,9 @@ window.WBResearch={resolve:resolve,rows:rows,completion:completion};
 var r=resolve(location.pathname), store=window.WBReadingStore, body=document.querySelector('.lit-body');
 if(store){
   function paintCatalog(){
-    var records=store.listLast(), current={}, latest=null;
-    Object.keys(records).forEach(function(k){var rec=records[k], row=resolve(rec.url);if(!row||row.kind!=='article'||row.id!==k)return;current[row.path]=true;if(!latest||Number(rec.t)>Number(latest.t))latest={path:row.path,title:row.title,t:rec.t};});
+    var records=store.listLast(), current={};
+    Object.keys(records).forEach(function(k){var rec=records[k], row=resolve(rec.url);if(!row||row.kind!=='article'||row.id!==k)return;current[row.path]=true;});
     document.querySelectorAll('[data-wb-read]').forEach(function(a){var m=a.querySelector('.wb-read-mark'), row=resolve(a.pathname);if(!row||row.kind!=='article')return;if(m)m.textContent=a.pathname===location.pathname||current[a.pathname]?'目前閱讀':store.read('read',a.pathname)==='1'?'已讀':'已公開';var chapter=a.closest('.wb-toc-chapter');if(chapter&&(a.pathname===location.pathname||current[a.pathname])&&!chapter.dataset.initialized){chapter.open=true;chapter.dataset.initialized='1';}});
-    var resume=document.querySelector('.ind-resume'), link=resume&&resume.querySelector('.ind-resume-link');
-    if(link){resume.hidden=!latest;if(latest){link.href=latest.path;link.textContent=latest.title+' →';}else{link.removeAttribute('href');link.textContent='';}}
   }
   paintCatalog();store.onChange(paintCatalog);addEventListener('pageshow',paintCatalog);
 }

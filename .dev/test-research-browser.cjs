@@ -74,8 +74,12 @@ const server=http.createServer((req,res)=>{
  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2),'horizontal overflow at '+width);
  assert.deepEqual(errors,[],'page JS errors at '+width);
  await page.goto(origin+'/literature/indigenous/',{waitUntil:'load'});
- assert.equal(await page.locator('.ind-resume').isVisible(),true);
- assert.equal(await page.locator('.ind-resume-link').getAttribute('href'),'/literature/ind-test-a/');
+ assert.equal(await page.locator('.ind-resume,.ind-zone').count(),0);
+ await page.goto(origin+'/shelf/');
+ await page.locator('.shelf-tabs button').nth(1).click();
+ assert.equal(await page.locator('.research-shelf-item a[href="/literature/ind-test-a/"]').isVisible(),true);
+ assert.equal(await page.getByRole('button',{name:'復原這台裝置的舊閱讀紀錄'}).count(),0);
+ await page.goto(origin+'/literature/indigenous/');
  assert.equal(await page.locator('.wb-page-nav').count(),0);
  assert.equal(await page.locator('.wb-catalog-open,.wb-catalog-dialog,[data-ind-piece]').count(),0);
  assert.equal(await page.locator('.ind-shelf .bk').count(),7);
@@ -94,6 +98,13 @@ const server=http.createServer((req,res)=>{
  assert.equal(await page.locator('.wb-toc-chapter[open]').count(),2);
  assert.equal(await page.locator('.ind-start').isDisabled(),true);
  assert.deepEqual(errors,[],'page JS errors at '+width);
+ await page.goto(origin+'/literature/');
+ assert.equal(await page.locator('.lit-filter-results').isVisible(),false);
+ assert.deepEqual(await page.locator('.drawer .d-sec').allTextContents(),['探索','個人功能']);
+ assert.equal(await page.locator('.drawer .d-candy').count(),0);
+ assert.equal(await page.locator('.foot p').count(),2);
+ assert.equal(await page.locator('.foot a[href="https://portaly.cc/weibeifen/support"]').textContent(),'贊助 → 請MU吃糖果');
+ assert.equal(await page.locator('header.top .search-btn').isVisible(),true);
  // Real rendered novel: keep existing list, native reading directory, and theme/font behavior.
  const posts=JSON.parse(fs.readFileSync(path.join(root,'assets/posts.json'),'utf8'));
  const novel=Object.values(posts).find(p=>p.n&&p.u&&fs.existsSync(path.join(root,p.u.replace(/^\//,''),'index.html')));

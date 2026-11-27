@@ -444,17 +444,6 @@ window.WBRenderShelf = function () {
   if (list.length && identity.state === 'member' && window.WBReadingSyncStatus === 'error') {
     var warning = document.createElement('p'); warning.textContent = '目前顯示裝置紀錄，雲端同步失敗。'; sub.appendChild(warning);
   }
-  if (store.recoverableCount && store.recoverableCount()) {
-    var restore = document.createElement('button'); restore.type = 'button'; restore.className = 'mb-btn';
-    restore.textContent = '復原這台裝置的舊閱讀紀錄';
-    restore.onclick = function () {
-      if (!confirm('請確認這台裝置上的舊紀錄及訪客紀錄都是你本人的。復原會保留現有紀錄，不覆蓋或刪除原始資料。確定匯入目前書櫃？')) return;
-      var count = store.recover();
-      alert('已復原 ' + count + ' 筆閱讀資料。');
-      location.reload();
-    };
-    sub.appendChild(restore);
-  }
   function add(x) {
     if (x.r) { sub.appendChild(row(x.r.url, novels[x.id].title, x.r.no, '', x.id)); return; }
     var h = document.createElement('a'); h.href = BASE + '/novel/' + x.id + '/';

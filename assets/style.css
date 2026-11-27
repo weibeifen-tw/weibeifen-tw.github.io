@@ -51,7 +51,7 @@ a{color:inherit;text-decoration:none}
 .profile p{margin:.4em 0 0;font-size:15px}
 .back{display:inline-block;margin:4px 0 12px;color:var(--sub);font-size:14px}
 .empty{text-align:center;color:var(--sub)}
-.foot{max-width:620px;margin:0 auto;padding:28px 16px 40px;font-size:12px;line-height:1.8;color:var(--sub);text-align:center}.foot p{margin:0 0 4px}.foot .candy{margin-top:16px}.foot .candy a{display:inline-block;padding:6px 16px;border:1px solid var(--line);border-radius:999px;text-decoration:none}
+.foot{max-width:620px;margin:0 auto;padding:28px 16px 40px;font-size:12px;line-height:1.8;color:var(--sub);text-align:center}.foot p{margin:0 0 4px}
 .chapter{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:26px 22px;margin-bottom:14px;scroll-margin-top:72px}
 .ch-no{margin:0;font-size:13px;color:var(--sub);letter-spacing:.2em}
 .chapter h2{margin:.1em 0 .8em;font-family:"Noto Serif TC",serif;font-weight:600;font-size:22px}
@@ -295,9 +295,8 @@ body.wide .bar,body.wide .wrap,body.wide .foot{max-width:960px}
 .tip{text-align:center;margin:24px 0 8px}.tip a{display:inline-block;padding:8px 18px;border:1px solid var(--line);border-radius:999px;font-size:14px;color:var(--sub);text-decoration:none}.tip a:hover{color:inherit}.foot a{color:inherit}
 
 /* 章節頁已經有「喜歡這一章？請畝 MU 吃糖果」，頁尾就不再放 */
-body.reading .foot .candy{display:none}
 
-.drawer{display:flex;flex-direction:column}.d-candy{margin-top:auto;align-self:center;padding:10px 22px;border:1px solid var(--line);border-radius:999px;font-size:15px;color:var(--sub);text-decoration:none}.d-candy:hover{color:var(--ink)}
+.drawer{display:flex;flex-direction:column}
 
 /* 私訊 */
 .chat-btn{display:grid;place-items:center;width:40px;height:40px;margin:0 -8px 0 auto;border:0;border-radius:50%;background:none;color:var(--ink);cursor:pointer}
@@ -550,7 +549,6 @@ button.search-btn{border:0;background:none;cursor:pointer}
 /* .account-story 數值與 .story（約第 393–395 行）相同；調整小說限動尺寸時請一併修改 */
 /* 抽屜：「我的帳號」推到底部，糖果緊接在下（只保留一個 margin-top:auto） */
 .d-account{margin-top:auto}
-.d-account + .d-candy{margin-top:12px}
 .d-av{width:28px;height:28px;font-size:12px;--c:#c9c3b9}
 
 /* 管理後台 */
@@ -804,8 +802,6 @@ button.d-item{width:100%;font:inherit;font-size:17px;font-weight:500;color:inher
   body.docked .drawer .d-item .d-icon{font-size:15px;margin:0}
   body.docked .drawer .d-item:hover{background:var(--chip)}
   body.docked .drawer .d-sec + .d-item,body.docked .drawer .d-about{margin-top:14px}
-  body.docked .d-candy{font-size:0;padding:10px;border-radius:50%}
-  body.docked .d-candy::first-letter{font-size:18px}
 }
 @media (min-width:1024px){
   body.docked{padding-left:240px}

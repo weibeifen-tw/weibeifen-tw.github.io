@@ -8,11 +8,9 @@ permalink: /literature/indigenous/
 {%- assign book = site.data.indigenous_book -%}
 {%- assign arts = site.literature | where: "series_key", book.series_key -%}
 <section class="lit-list page-box ind-book">
-  <p class="ind-zone"><a class="wb-reader-back" aria-label="返回研究所" href="{{ '/literature/' | relative_url }}">‹</a> 原住民族專區</p>
   <h1 class="ov-h">未備份原住民族研究典藏</h1>
   <p class="ind-note">{{ book.title | escape }}・7卷30章210篇</p>
   {%- if book.intro and book.intro != '' %}<div class="ind-intro">{% assign ps = book.intro | split: '|' %}{% for p in ps %}<p>{{ p | strip | escape }}</p>{% endfor %}</div>{%- endif %}
-  <section class="ind-resume" hidden aria-label="繼續閱讀"><h2 class="ind-section-title">繼續閱讀</h2><a class="ind-resume-link"></a></section>
   <h2 class="ind-section-title">探索卷冊</h2>
   <ul class="shelf ind-shelf" aria-label="七卷書架">
     {% for v in book.volumes %}{% assign vas = arts | where: "volume_no", v.no %}
