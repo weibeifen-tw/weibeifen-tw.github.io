@@ -81,6 +81,8 @@ jobs:
           node .dev/test-t03-rollback.cjs
           node .dev/test-t03-async-races.cjs
           for f in assets/js/page-nav.js assets/js/research-member.js assets/js/research-errata.js assets/js/lit-research.js assets/js/reading-store.js assets/app.js assets/cloud.js; do node --check "$f"; done
+      - name: V2.11 PWA isolated cache regression
+        run: node .dev/test-v2-pwa.cjs
       - name: GitHub Pages 官方 Jekyll 建置（含假資料）
         uses: actions/jekyll-build-pages@v1
         with: { source: ./, destination: ./_site }
