@@ -61,7 +61,7 @@
       .then(function (payload) {
         if (!applyPopularityPayload(payload)) return;
         var second = document.querySelector('.shelf-hot');
-        if (second) { second.textContent = ''; hot.forEach(function (b) { var c=b.cloneNode(true); var im=c.querySelector('img'); if(im) im.loading='lazy'; second.appendChild(c); }); }
+        if (second) { second.textContent = ''; hot.forEach(function (b) { var c=b.cloneNode(true); var im=c.querySelector('img'); if(im) { im.loading='lazy'; im.setAttribute('fetchpriority','auto'); } second.appendChild(c); }); }
         var on = tabs.filter(function (b) { return b.getAttribute('aria-selected') === 'true'; })[0];
         if (on && on.dataset.sort === 'hot') show('hot');
         var heading = document.getElementById('ex-sec-hot');
@@ -74,10 +74,16 @@
     // 切換時先清空原書架：否則熱門只有前十名，剩餘作品會留在前面。
     // 保留 books/rand/hot 的 DOM 節點參照，切回全部作品時可完整復原。
     shelf.replaceChildren();
-    (k === 'hot' ? hot : rand).forEach(function (b) { shelf.appendChild(b); });
+    // 在插入書架前設定載入優先權：首張可見封面優先，其餘維持既有延遲載入。
+    (k === 'hot' ? hot : rand).forEach(function (b, i) {
+      var im = b.querySelector('img');
+      if (im) {
+        im.loading = i < 6 ? 'eager' : 'lazy';
+        im.setAttribute('fetchpriority', i === 0 ? 'high' : 'auto');
+      }
+      shelf.appendChild(b);
+    });
     shelf.scrollLeft = 0;
-    // 排序後前 6 本先載入，其餘滑到才載入
-    Array.prototype.forEach.call(shelf.querySelectorAll('.bk img'), function (im, i) { im.loading = i < 6 ? 'eager' : 'lazy'; });
   }
   tabs.forEach(function (b, i) {
     b.onclick = function () { show(b.dataset.sort); };
@@ -103,7 +109,7 @@
   var h1 = document.createElement('h2'); h1.className = 'ex-sec'; h1.id = 'ex-sec-all'; h1.textContent = '全部作品';
   var h2 = document.createElement('h2'); h2.className = 'ex-sec'; h2.id = 'ex-sec-hot'; h2.innerHTML = '熱門作品<small>暫依最新上架</small>';
   var hotShelf = document.createElement('div'); hotShelf.className = 'shelf shelf-hot'; hotShelf.tabIndex = 0; hotShelf.setAttribute('aria-labelledby', 'ex-sec-hot');
-  hot.forEach(function (b, i) { var c = b.cloneNode(true); var im = c.querySelector('img'); if (im) im.loading = 'lazy'; hotShelf.appendChild(c); });
+  hot.forEach(function (b, i) { var c = b.cloneNode(true); var im = c.querySelector('img'); if (im) { im.loading = 'lazy'; im.setAttribute('fetchpriority', 'auto'); } hotShelf.appendChild(c); });
   shelf.parentNode.insertBefore(h1, shelf); shelf.parentNode.appendChild(h2); shelf.parentNode.appendChild(hotShelf); bind(hotShelf);
   function layout() {
     var multi = !!(mq && mq.matches); ex.classList.toggle('multi', multi);
