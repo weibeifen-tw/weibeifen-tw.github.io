@@ -5,7 +5,8 @@
   novels 是 [{id, era, area}]；沒有作品時沿用縣市的空分類樣式（.none、尚無故事、不可展開）。
 {%- endcomment -%}
 {%- assign g = include.g -%}
-{%- assign n = g.novels.size | default: 0 -%}
+{%- assign visible = '' | split: ',' -%}{%- for u in g.novels -%}{%- assign nv = site.data.novels[u.id] -%}{%- if nv.title and nv.title != '' -%}{%- assign visible = visible | push: u -%}{%- endif -%}{%- endfor -%}
+{%- assign n = visible.size -%}
 {%- assign sp = '/assets/taiwan/special.svg' | relative_url -%}
 <li class="cty-row cty-sp{% if n == 0 %} none{% endif %}" id="cty-{{ g.key }}" data-k="{{ g.key }}">
       <button type="button" class="cty-btn" aria-expanded="false"{% if n > 0 %} aria-controls="cty-n-{{ g.key }}"{% else %} aria-disabled="true"{% endif %}>
@@ -14,7 +15,7 @@
       </button>
       {%- if n > 0 %}
       <ul class="cty-novels" id="cty-n-{{ g.key }}" hidden>
-        {%- for u in g.novels -%}{%- assign nv = site.data.novels[u.id] -%}
+        {%- for u in visible -%}{%- assign nv = site.data.novels[u.id] -%}
         <li><a href="{{ '/novel/' | append: u.id | append: '/' | relative_url }}"><b>《{{ nv.title }}》</b><small>{% if u.era %}{{ u.era }}・{% endif %}{{ u.area }}</small></a></li>
         {%- endfor -%}
       </ul>
