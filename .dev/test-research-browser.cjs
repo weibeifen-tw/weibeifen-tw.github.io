@@ -47,7 +47,8 @@ const server=http.createServer((req,res)=>{
  assert.equal(await page.locator('.ind-volume-page > #comments').count(),0);
  assert.equal(await page.locator('header.top .search-btn').isVisible(),true);
  assert.equal(await page.locator('.wb-catalog-open, .wb-catalog-dialog, .wb-toc-chapter').count(),0);
- assert.ok(await page.locator('.ind-volume-toc').evaluate(e=>e.getBoundingClientRect().top>document.querySelector('.ind-reading-progress').getBoundingClientRect().bottom));
+ assert.equal(await page.locator('.ind-reading-progress, .wb-volume-progress').count(),0);
+ assert.ok(await page.locator('.ind-volume-toc').evaluate(e=>e.getBoundingClientRect().top>document.querySelector('.ind-start').getBoundingClientRect().bottom));
  assert.equal(await page.locator('[data-ind-piece="1.1"] > a').isVisible(),true);
  await page.locator('[data-ind-piece="1.1"] > a').click();
  await page.waitForURL('**/literature/ind-test-a/');

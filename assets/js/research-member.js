@@ -18,7 +18,7 @@ if(store){
 }
 if(r&&r.kind==='volume'&&store){
 var progress=document.querySelector('.ind-reading-progress');
-function paint(){if(!progress)return;var n=store.identity(),c=completion(r.id,store);progress.textContent=n.state==='unknown'?'正在確認閱讀紀錄…':c.total?'已讀 '+c.done+' / '+c.total+' 篇（'+Math.round(c.done/c.total*100)+'%）':'尚無公開文章';
+function paint(){var n=store.identity(),c=completion(r.id,store);if(progress)progress.textContent=n.state==='unknown'?'正在確認閱讀紀錄…':c.total?'已讀 '+c.done+' / '+c.total+' 篇（'+Math.round(c.done/c.total*100)+'%）':'尚無公開文章';
 var bar=document.querySelector('.wb-volume-progress');if(bar){bar.value=n.state==='unknown'||!c.total?0:Math.round(c.done/c.total*100);}
 var start=document.querySelector('a.ind-start');if(!start)return;
 var all=Object.keys(rows).filter(function(p){return rows[p].kind==='article'&&rows[p].id===r.id;}).sort(function(a,b){return rows[a].rank-rows[b].rank;});
