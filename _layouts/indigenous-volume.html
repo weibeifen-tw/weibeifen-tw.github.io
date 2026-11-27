@@ -22,7 +22,6 @@ layout: default
 <div class="research-actions r-acts">{% capture research_url %}{{ page.url | relative_url }}{% endcapture %}{% include actions.html key=page.url url=research_url notalk=true cmt=true norepost=true %}</div>
 {% assign first_article = arts | first %}
 {% if first_article %}<a class="nv-btn ind-start" href="{{ first_article.url | relative_url }}">開始閱讀</a>{% else %}<button class="nv-btn ind-start" disabled>籌備中</button>{% endif %}
-<h2 class="ind-section-title">個人閱讀進度</h2><p class="ind-reading-progress" aria-live="polite"></p><progress class="wb-volume-progress" max="100" value="0" aria-label="閱讀進度"></progress>
 <h2 class="nv-h">篇章</h2><div class="chapters nv-list ind-volume-toc">{% include research-volume-toc.html volume=page.volume_no %}</div>
 <p class="ind-fine">研究證據、核讀狀態與使用授權見各篇正式文章。</p>
 </section>
