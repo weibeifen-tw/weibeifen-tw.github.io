@@ -187,33 +187,17 @@ window.WBAvatar = (function () {
   document.querySelector('.empty').hidden = shown > 0;
 })();
 
-// 互動按鈕：讚只有動畫、轉發到脆、留言進角色私訊、分享連結
+// 互動按鈕：收藏／留言由雲端模組接管；分享與轉發不顯示模擬數字
 (function () {
   function get(k, d) { try { var v = localStorage.getItem('wb:' + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
   function set(k, v) { try { localStorage.setItem('wb:' + k, JSON.stringify(v)); } catch (e) {} }
-  // 假的互動數字：用文章 key 當種子，同一篇每次看到的數字都一樣
-  function rnd(seed) { var h = 2166136261; for (var i = 0; i < seed.length; i++) { h ^= seed.charCodeAt(i); h = Math.imul(h, 16777619); } return function () { h ^= h << 13; h ^= h >>> 17; h ^= h << 5; return ((h >>> 0) % 100000) / 100000; }; }
-  // 數字裡不出現 4：碰到就往上跳（14→15、40→50）
-  function no4(n) { while (String(n).indexOf('4') >= 0) n++; return n; }
-  function fake(key) {
-    // 愛心 1～100；轉發、分享跟著愛心比例；留言 10～99。全部是假的，同一篇每次都一樣
-    var r = rnd(key || 'x');
-    var likes = 1 + Math.floor(r() * 100);
-    var rp = Math.round(likes * (0.01 + r() * 0.05)), share = Math.round(likes * (0.01 + r() * 0.07));
-    var talk = 10 + Math.floor(r() * 90);
-    return { like: likes, rp: rp, share: share, talk: Math.min(no4(talk), 99) };
-  }
-  function fmt(n) { return !n ? '' : n >= 10000 ? (Math.round(n / 1000) / 10) + '萬' : String(no4(n)); }
   document.querySelectorAll('.actions').forEach(function (a) {
-    var key = a.dataset.key, base = fake(key), liked = false;
+    var liked = false;
     var host = a.closest('[data-char]'), cid = host ? host.dataset.char : '';
     var like = a.querySelector('.like'), talk = a.querySelector('.talk'), rep = a.querySelector('.repost');
     var url = new URL(a.dataset.url, location.origin).href;
     function draw() {
-      like.classList.toggle('on', liked); like.querySelector('.n').textContent = fmt(base.like + (liked ? 1 : 0));
-      if (rep) rep.querySelector('.n').textContent = fmt(base.rp);
-      if (talk) talk.querySelector('.n').textContent = fmt(base.talk);
-      a.querySelector('.share .n').textContent = fmt(base.share);
+      like.classList.toggle('on', liked);
     }
     // 讚：只有動畫，不記錄
     like.onclick = function () { liked = !liked; like.classList.add('pop'); setTimeout(function () { like.classList.remove('pop'); }, 300); draw(); };
