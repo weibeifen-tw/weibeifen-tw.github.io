@@ -5,7 +5,7 @@
   var tabs = Array.prototype.slice.call(document.querySelectorAll('.ex-tabs [data-sort]')), note = document.querySelector('.ex-note');
   var books = Array.prototype.slice.call(shelf.querySelectorAll('.bk'));
   var rand = books.slice();
-  for (var i = rand.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = rand[i]; rand[i] = rand[j]; rand[j] = t; }
+  for (var i = shelf.dataset.initialized === '1' ? 0 : rand.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = rand[i]; rand[i] = rand[j]; rand[j] = t; }
   var hot = books.slice().sort(function (a, b) { return (+b.dataset.ord) - (+a.dataset.ord); });
   var hasTrustedSnapshot = false;
   var popularityMap = {};
@@ -61,7 +61,7 @@
       .then(function (payload) {
         if (!applyPopularityPayload(payload)) return;
         var second = document.querySelector('.shelf-hot');
-        if (second) { second.textContent = ''; hot.forEach(function (b) { var c=b.cloneNode(true); var im=c.querySelector('img'); if(im) { im.loading='lazy'; im.setAttribute('fetchpriority','auto'); } second.appendChild(c); }); }
+        if (second && matchMedia('(min-width:768px)').matches) { second.textContent = ''; hot.forEach(function (b) { var c=b.cloneNode(true); var im=c.querySelector('img'); if(im) { im.loading='lazy'; im.setAttribute('fetchpriority','auto'); } second.appendChild(c); }); }
         var on = tabs.filter(function (b) { return b.getAttribute('aria-selected') === 'true'; })[0];
         if (on && on.dataset.sort === 'hot') show('hot');
         var heading = document.getElementById('ex-sec-hot');
@@ -78,7 +78,7 @@
     (k === 'hot' ? hot : rand).forEach(function (b, i) {
       var im = b.querySelector('img');
       if (im) {
-        im.loading = i < 6 ? 'eager' : 'lazy';
+        im.loading = i < (matchMedia('(min-width:768px)').matches ? 6 : 3) ? 'eager' : 'lazy';
         im.setAttribute('fetchpriority', i === 0 ? 'high' : 'auto');
       }
       shelf.appendChild(b);
@@ -89,7 +89,7 @@
     b.onclick = function () { show(b.dataset.sort); };
     b.onkeydown = function (e) { if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { var n = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length]; n.focus(); show(n.dataset.sort); e.preventDefault(); } };
   });
-  show('all');
+  if (shelf.dataset.initialized !== '1') show('all');
   // 電腦：拖曳左右滑（不攔滾輪，頁面照常往下捲）；鍵盤：書架有焦點時左右鍵捲動
   function bind(sh) {
     var down = false, x0 = 0, l0 = 0, moved = false;
@@ -109,12 +109,12 @@
   var h1 = document.createElement('h2'); h1.className = 'ex-sec'; h1.id = 'ex-sec-all'; h1.textContent = '全部作品';
   var h2 = document.createElement('h2'); h2.className = 'ex-sec'; h2.id = 'ex-sec-hot'; h2.innerHTML = '熱門作品<small>暫依最新上架</small>';
   var hotShelf = document.createElement('div'); hotShelf.className = 'shelf shelf-hot'; hotShelf.tabIndex = 0; hotShelf.setAttribute('aria-labelledby', 'ex-sec-hot');
-  hot.forEach(function (b, i) { var c = b.cloneNode(true); var im = c.querySelector('img'); if (im) { im.loading = 'lazy'; im.setAttribute('fetchpriority', 'auto'); } hotShelf.appendChild(c); });
+  function fillHot(){ hotShelf.replaceChildren(); hot.forEach(function(b){var c=b.cloneNode(true),im=c.querySelector('img'); if(im){im.loading='lazy';im.setAttribute('fetchpriority','auto');} hotShelf.appendChild(c);}); }
   shelf.parentNode.insertBefore(h1, shelf); shelf.parentNode.appendChild(h2); shelf.parentNode.appendChild(hotShelf); bind(hotShelf);
   function layout() {
     var multi = !!(mq && mq.matches); ex.classList.toggle('multi', multi);
-    if (multi) { show('all'); shelf.removeAttribute('role'); shelf.setAttribute('aria-labelledby', 'ex-sec-all'); }
-    else { shelf.setAttribute('role', 'tabpanel'); var on = tabs.filter(function (b) { return b.getAttribute('aria-selected') === 'true'; })[0]; if (on) shelf.setAttribute('aria-labelledby', on.id); }
+    if (multi) { if (!hotShelf.children.length) fillHot(); if (tabs.some(function(b){return b.dataset.sort==='hot' && b.getAttribute('aria-selected')==='true';})) show('all'); shelf.removeAttribute('role'); shelf.setAttribute('aria-labelledby', 'ex-sec-all'); }
+    else { hotShelf.replaceChildren(); shelf.setAttribute('role', 'tabpanel'); var on = tabs.filter(function (b) { return b.getAttribute('aria-selected') === 'true'; })[0]; if (on) shelf.setAttribute('aria-labelledby', on.id); }
   }
   if (mq) { if (mq.addEventListener) mq.addEventListener('change', layout); else if (mq.addListener) mq.addListener(layout); }
   layout();
