@@ -368,15 +368,16 @@ window.WBAvatar = (function () {
 
 // 章節列表：讀完的打勾變淡，最後讀到的那章標「讀到這」
 (function () {
-  var tocs = document.querySelectorAll('.chapter.toc');
+  var tocs = document.querySelectorAll('a.chapter.toc');
   if (!tocs.length) return;
   function renderReadMarks() {
     var here = {}, records = window.WBReadingStore.listLast();
     Object.keys(records).forEach(function (key) { if (records[key].url) here[records[key].url] = 1; });
     tocs.forEach(function (a) {
       var p = a.pathname, done = window.WBReadingStore.read('read', p) === '1';
-      a.classList.toggle('here', !!here[p]);
-      a.classList.toggle('done', !here[p] && done);
+      var current=!!here[p]||a.getAttribute('aria-current')==='page';
+      a.classList.toggle('here', current);
+      a.classList.toggle('done', !current && done);
     });
   }
   renderReadMarks();

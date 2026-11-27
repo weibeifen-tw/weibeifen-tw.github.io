@@ -16,6 +16,7 @@
   }
   var readerBack = main.querySelector('.wb-reader-back');
   if (readerBack) {
+    if (readerBack.hasAttribute("data-fixed-back")) return;
     try {
       var from = new URL(document.referrer);
       if (from.origin === location.origin && from.pathname !== location.pathname && !from.pathname.startsWith('/auth/') && !from.pathname.startsWith('/login-test/')) {

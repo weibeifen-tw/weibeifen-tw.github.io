@@ -8,23 +8,15 @@ permalink: /literature/indigenous/
 {%- assign book = site.data.indigenous_book -%}
 {%- assign arts = site.literature | where: "series_key", book.series_key -%}
 <section class="lit-list page-box ind-book">
-<div class="wb-catalog-entry"><button type="button" class="wb-catalog-open" aria-haspopup="dialog" aria-controls="wb-catalog-dialog"><span aria-hidden="true">☰</span> 目錄 <span aria-hidden="true">⌄</span></button></div>
-<dialog class="wb-catalog-dialog ind-home-toc" id="wb-catalog-dialog" aria-labelledby="wb-catalog-title"><header><h2 id="wb-catalog-title">全書目錄</h2><button type="button" class="wb-catalog-close" aria-label="關閉目錄">×</button></header><div class="wb-catalog-body">    {% for v in book.volumes %}
-    <details class="wb-toc-volume"><summary>第 {{ v.no }} 卷　{{ v.title | escape }}</summary>
-      {% include research-volume-toc.html volume=v.no %}
-    </details>
-    {% endfor %}
-  </div></dialog>
-<noscript><p>請開啟 JavaScript 使用目錄。</p></noscript>
   <p class="ind-zone"><a class="wb-reader-back" aria-label="返回研究所" href="{{ '/literature/' | relative_url }}">‹</a> 原住民族專區</p>
   <h1 class="ov-h">未備份原住民族研究典藏</h1>
   <p class="ind-note">{{ book.title | escape }}・7卷30章210篇</p>
   {%- if book.intro and book.intro != '' %}<div class="ind-intro">{% assign ps = book.intro | split: '|' %}{% for p in ps %}<p>{{ p | strip | escape }}</p>{% endfor %}</div>{%- endif %}
   <section class="ind-resume" hidden aria-label="繼續閱讀"><h2 class="ind-section-title">繼續閱讀</h2><a class="ind-resume-link"></a></section>
   <h2 class="ind-section-title">探索卷冊</h2>
-  <ul class="ind-shelf" aria-label="七卷書架">
+  <ul class="shelf ind-shelf" aria-label="七卷書架">
     {% for v in book.volumes %}{% assign vas = arts | where: "volume_no", v.no %}
-    <li><a href="{{ '/literature/indigenous/v0' | append: v.no | append: '/' | relative_url }}"><img src="{{ v.cover | relative_url }}" width="600" height="800" alt="第{{ '一二三四五六七' | slice: forloop.index0 }}卷：{{ v.title | escape }}" {% unless forloop.first %}loading="lazy"{% endunless %}><span>{{ vas.size }} / {{ v.planned_count }} 篇已公開</span></a></li>
+    <li class="bk"><a href="{{ '/literature/indigenous/v0' | append: v.no | append: '/' | relative_url }}"><img src="{{ v.cover | relative_url }}" width="600" height="800" alt="第{{ '一二三四五六七' | slice: forloop.index0 }}卷：{{ v.title | escape }}" {% unless forloop.first %}loading="lazy"{% endunless %}><span>{{ vas.size }} 篇已公開</span></a></li>
     {% endfor %}
   </ul>
   <h2 class="ind-section-title">研究工具</h2>

@@ -268,7 +268,7 @@
 
   var research = window.WBResearch && window.WBResearch.resolve(location.pathname);
   var researchMount = research && document.querySelector('.ind-volume-page, .lit-article');
-  if(researchMount) favHeart(researchMount.querySelector('.research-actions .act.like'), ['收藏','取消收藏'], {novel:research.id,path:research.path,title:research.title,no:research.no||''});
+  if(researchMount){var volumePath='/literature/indigenous/v0'+research.id.slice(-1)+'/', volume=window.WBResearch.resolve(volumePath);if(volume) favHeart(researchMount.querySelector('.research-actions .act.like'), ['收藏本卷','取消收藏本卷'], {novel:volume.id,path:volume.path,title:volume.title,no:''});}
   function researchRow(path){return window.WBResearch && window.WBResearch.resolve(path);}
   /* ---------- 會員頁：我的收藏 ---------- */
   var favBox = document.querySelector('.mb-favs');

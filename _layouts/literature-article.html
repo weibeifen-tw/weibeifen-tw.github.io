@@ -31,12 +31,11 @@ page_js: lit-research
 {%- endcomment -%}
 {%- assign h2parts = content | split: '<h2 id="' -%}
 <article class="lit-article page-box">
-  {% if h2parts.size > 1 or page.series_key == 'indigenous-history' %}
+  {% if page.series_key == 'indigenous-history' %}
+  <details class="r-toc" data-static-toc><summary>目錄</summary><div class="r-toc-list chapters">{% include research-volume-toc.html volume=page.volume_no %}</div></details>
+  {% elsif h2parts.size > 1 %}
   <details class="lit-toc">
     <summary class="lit-toc-h">目錄</summary>
-    {% if page.series_key == 'indigenous-history' %}
-    <div class="wb-toc-switch" role="group" aria-label="目錄範圍"><button type="button" data-toc-mode="article" aria-pressed="true">本篇段落</button><button type="button" data-toc-mode="volume" aria-pressed="false">本卷目錄</button></div>
-    {% endif %}
     <nav aria-label="本篇段落" data-toc-panel="article">
     {% if h2parts.size > 1 %}<ol>
     {% for part in h2parts offset: 1 %}
@@ -46,13 +45,12 @@ page_js: lit-research
     {% endfor %}
     </ol>{% else %}<p>本篇無分節標題。</p>{% endif %}
     </nav>
-    {% if page.series_key == 'indigenous-history' %}<nav aria-label="本卷目錄" data-toc-panel="volume" hidden>{% include research-volume-toc.html volume=page.volume_no %}</nav>{% endif %}
   </details>
   {% endif %}
 
   {%- if page.series_key == site.data.indigenous_book.series_key %}
   {%- assign vi = page.volume_no | minus: 1 %}
-  <p class="ind-pos"><a class="wb-reader-back" aria-label="返回卷冊" href="{{ '/literature/indigenous/v0' | append: page.volume_no | append: '/' | relative_url }}">‹</a> 第{{ "一二三四五六七" | slice: vi }}卷・第 {{ page.chapter_no }} 章・第 {{ page.piece }} 篇{% if page.version %}・{{ page.version | escape }}{% endif %}</p>
+  <p class="ind-pos"><a class="wb-reader-back" data-fixed-back aria-label="返回卷冊" href="{{ '/literature/indigenous/v0' | append: page.volume_no | append: '/' | relative_url }}">‹</a> 第{{ "一二三四五六七" | slice: vi }}卷・第 {{ page.chapter_no }} 章・第 {{ page.piece }} 篇{% if page.version %}・{{ page.version | escape }}{% endif %}</p>
   {%- else %}
   <p class="wb-literature-position"><a class="wb-reader-back" aria-label="返回研究所" href="{{ '/literature/' | relative_url }}">‹</a> 未備份研究所</p>
   {%- endif %}
@@ -71,7 +69,7 @@ page_js: lit-research
   <img class="lit-cover" src="{{ page.cover | relative_url }}" alt="{{ page.cover_alt | default: page.title | escape }}" decoding="async">
   {%- endif %}
   {%- if page.description and page.description != '' %}<p class="lit-summary">{{ page.description | escape }}</p>{% endif %}
-  <div class="lit-body">
+  <div class="lit-body{% if page.series_key == 'indigenous-history' %} wb-reader-text{% endif %}">
 {{ content }}
   </div>
   {%- if page.references and page.references.size > 0 %}
@@ -132,7 +130,9 @@ page_js: lit-research
     {%- if visible_revisions != '' %}<ol>{{ visible_revisions }}</ol>{% endif %}
   </section>
   {%- endif %}
-  {%- if page.series %}
+  {%- if page.series_key == 'indigenous-history' -%}
+  {%- assign seq = site.literature | where: "series_key", page.series_key | where: "volume_no", page.volume_no | sort: "article_id" -%}
+  {%- elsif page.series %}
   {%- assign sarts = site.literature | where: "series", page.series | sort: "date" -%}
   {%- assign sarts = sarts | sort: "piece" | sort: "chapter_no" | sort: "volume" -%}
   {%- assign vols = sarts | group_by: "volume" -%}
@@ -159,7 +159,12 @@ page_js: lit-research
   {%- endif %}
   {%- assign lpv = nil -%}{%- assign lnx = nil -%}{%- assign lhit = false -%}
   {%- for a in seq -%}{%- if lhit -%}{%- assign lnx = a -%}{%- break -%}{%- endif -%}{%- if a.url == page.url -%}{%- assign lhit = true -%}{%- else -%}{%- assign lpv = a -%}{%- endif -%}{%- endfor -%}
-  {%- if lpv or lnx %}
+  {%- if page.series_key == 'indigenous-history' %}
+  <nav class="r-nav" aria-label="上一篇、下一篇">
+  {% if lpv %}<a class="r-prev" href="{{ lpv.url | relative_url }}"><small>← 上一篇</small><span>{{ lpv.title | escape }}</span></a>{% else %}<span class="r-prev off"><small>← 上一篇</small><span>這是第一篇</span></span>{% endif %}
+  {% if lnx %}<a class="r-next" href="{{ lnx.url | relative_url }}"><small>下一篇 →</small><span>{{ lnx.title | escape }}</span></a>{% else %}<a class="r-next" href="{{ '/literature/indigenous/v0' | append: page.volume_no | append: '/' | relative_url }}"><small>目前最後一篇</small><span>返回卷冊 →</span></a>{% endif %}
+  </nav>
+  {%- elsif lpv or lnx %}
   <nav class="lit-pn" aria-label="上一篇、下一篇">
     {%- if lpv %}<a class="lit-prev" href="{{ lpv.url | relative_url }}"><small>← 上一篇</small><span>{{ lpv.title | escape }}</span></a>{% else %}<span></span>{% endif -%}
     {%- if lnx %}<a class="lit-next" href="{{ lnx.url | relative_url }}"><small>下一篇 →</small><span>{{ lnx.title | escape }}</span></a>{% endif -%}

@@ -2,9 +2,11 @@
 {% assign toc_chapters = site.data.indigenous_catalog | where: 'volume', toc_volume %}
 {% assign toc_articles = site.literature | where: 'series_key', 'indigenous-history' | where: 'volume_no', toc_volume %}
 {% for c in toc_chapters %}
-<details class="wb-toc-chapter"><summary>第 {{ c.no }} 章　{{ c.title | escape }}</summary><ol class="ind-arts">
+{% if toc_volume == 7 %}<details class="wb-toc-chapter"{% if c.no == page.chapter_no %} open{% endif %}><summary class="grp">第 {{ c.no }} 章　{{ c.title | escape }}</summary>{% else %}<h3 class="grp">第 {{ c.no }} 章　{{ c.title | escape }}</h3>{% endif %}
 {% for p in c.pieces %}
 {% assign ca = toc_articles | where: 'chapter_no', c.no | where: 'piece', p.piece | first %}
-<li data-ind-piece="{{ c.no }}.{{ p.piece }}">{% if ca %}<a data-wb-read href="{{ ca.url | relative_url }}"{% if ca.url == page.url %} aria-current="page"{% endif %}><span class="ind-pn">{{ c.no }}.{{ p.piece }}</span><span class="ind-at">{{ ca.title | escape }}</span><small class="wb-read-mark">已公開</small></a>{% else %}<div class="ind-pending"><span class="ind-pn">{{ c.no }}.{{ p.piece }}</span><span class="ind-at">{{ p.title | escape }}</span><small>籌備中</small></div>{% endif %}</li>
-{% endfor %}</ol></details>
+{% capture pn %}{{ c.no }}.{{ p.piece }}{% endcapture %}
+{% if ca %}<div data-ind-piece="{{ pn }}"><a class="chapter toc" data-wb-read href="{{ ca.url | relative_url }}"{% if ca.url == page.url %} aria-current="page"{% endif %}><span class="ch-no">{{ pn }}</span><span class="ch-title">{{ ca.title | escape }}</span><span class="ch-go" aria-hidden="true">›</span></a></div>{% else %}<div data-ind-piece="{{ pn }}"><div class="chapter toc ind-pending" aria-disabled="true"><span class="ch-no">{{ pn }}</span><span class="ch-title">{{ p.title | escape }}</span><small>籌備中</small></div></div>{% endif %}
+{% endfor %}
+{% if toc_volume == 7 %}</details>{% endif %}
 {% endfor %}

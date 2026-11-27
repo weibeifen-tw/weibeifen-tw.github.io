@@ -2,6 +2,7 @@
 (function () {
   var t = document.querySelector('.r-toc'); if (!t) return;
   var list = t.querySelector('.r-toc-list'), done = false;
+  if(t.hasAttribute('data-static-toc')) return;
   t.addEventListener('toggle', function () {
     if (!t.open || done) return; done = true;
     list.innerHTML = '<li class="r-toc-wait">載入中…</li>';

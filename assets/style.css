@@ -180,9 +180,9 @@ html[data-theme="night"] .theme-btn .moon{display:none}
 .r-who-t small{font-size:13px;color:var(--sub)}
 .chapter.read h1{margin:0 0 1.2em;font-family:"Noto Serif TC",serif;font-weight:700;font-size:30px;line-height:1.5;letter-spacing:.04em}
 .chapter.read .era{color:var(--sub)}
-.chapter.read .ch-text{font-family:"Noto Serif TC",serif;font-size:18px;line-height:1.95;letter-spacing:.03em;text-align:justify}
-html[data-fs="s"] .chapter.read .ch-text{font-size:16px}
-html[data-fs="l"] .chapter.read .ch-text{font-size:20px}
+:is(.chapter.read .ch-text,.wb-reader-text){font-family:"Noto Serif TC",serif;font-size:18px;line-height:1.95;letter-spacing:.03em;text-align:justify}
+html[data-fs="s"] :is(.chapter.read .ch-text,.wb-reader-text){font-size:16px}
+html[data-fs="l"] :is(.chapter.read .ch-text,.wb-reader-text){font-size:20px}
 .chapter.read .ch-text p{margin:0 0 1.3em}
 .r-end{display:flex;justify-content:center;gap:10px;margin:48px 0 28px}
 .r-end span{width:5px;height:5px;border-radius:50%;background:var(--line)}
@@ -206,9 +206,9 @@ html[data-theme="night"] .reading .era{background:var(--chip)}
 @media (max-width:700px){
   .chapter.read{padding-top:24px}
   .chapter.read h1{font-size:25px}
-  .chapter.read .ch-text{font-size:17px}
-  html[data-fs="s"] .chapter.read .ch-text{font-size:15px}
-  html[data-fs="l"] .chapter.read .ch-text{font-size:19px}
+  :is(.chapter.read .ch-text,.wb-reader-text){font-size:17px}
+  html[data-fs="s"] :is(.chapter.read .ch-text,.wb-reader-text){font-size:15px}
+  html[data-fs="l"] :is(.chapter.read .ch-text,.wb-reader-text){font-size:19px}
   body.reading{padding-bottom:64px}
   .r-bar{display:grid;grid-template-columns:1fr 1fr;position:fixed;left:0;right:0;bottom:0;z-index:6;height:56px;background:var(--bg);border-top:1px solid var(--line)}
   .r-bar a,.r-bar span{display:flex;align-items:center;justify-content:center;font-size:15px}
@@ -838,10 +838,10 @@ button.d-item{width:100%;font:inherit;font-size:17px;font-weight:500;color:inher
 
 /* ===== V1.0 S07 閱讀器目錄（Q30）：可收合，深色模式沿用 ===== */
 .r-toc{margin:8px 0 14px;border:1px solid var(--line);border-radius:12px;background:var(--card)}
-.r-toc summary{padding:8px 14px;font-size:14px;color:var(--sub);cursor:pointer;list-style:none}
-.r-toc summary::-webkit-details-marker{display:none}
-.r-toc summary::before{content:"☰";margin-right:8px}
-.r-toc[open] summary{border-bottom:1px solid var(--line);color:var(--ink)}
+.r-toc > summary{padding:8px 14px;font-size:14px;color:var(--sub);cursor:pointer;list-style:none}
+.r-toc > summary::-webkit-details-marker{display:none}
+.r-toc > summary::before{content:"☰";margin-right:8px}
+.r-toc[open] > summary{border-bottom:1px solid var(--line);color:var(--ink)}
 .r-toc-list{list-style:none;margin:0;padding:6px;max-height:min(52vh,420px);overflow-y:auto}
 .r-toc-list a{display:flex;gap:10px;align-items:baseline;padding:7px 8px;border-radius:8px;font-size:15px;line-height:1.5}
 .r-toc-list a:hover{background:var(--chip)}
