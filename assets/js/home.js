@@ -106,11 +106,11 @@
 
   // V1.0 S07（Q27）：平板、電腦＝多區書架（全部作品／熱門作品上下排列，整頁往下捲）；手機維持切換（Q28 約 2.5 本）
   var ex = document.querySelector('.explore'), mq = window.matchMedia ? matchMedia('(min-width:768px)') : null;
-  var h1 = document.createElement('h2'); h1.className = 'ex-sec'; h1.id = 'ex-sec-all'; h1.textContent = '全部作品';
-  var h2 = document.createElement('h2'); h2.className = 'ex-sec'; h2.id = 'ex-sec-hot'; h2.innerHTML = '熱門作品<small>暫依最新上架</small>';
-  var hotShelf = document.createElement('div'); hotShelf.className = 'shelf shelf-hot'; hotShelf.tabIndex = 0; hotShelf.setAttribute('aria-labelledby', 'ex-sec-hot');
+  var h1 = document.getElementById('ex-sec-all');
+  var h2 = document.getElementById('ex-sec-hot');
+  var hotShelf = document.querySelector('.shelf-hot');
   function fillHot(){ hotShelf.replaceChildren(); hot.forEach(function(b){var c=b.cloneNode(true),im=c.querySelector('img'); if(im){im.loading='lazy';im.setAttribute('fetchpriority','auto');} hotShelf.appendChild(c);}); }
-  shelf.parentNode.insertBefore(h1, shelf); shelf.parentNode.appendChild(h2); shelf.parentNode.appendChild(hotShelf); bind(hotShelf);
+  bind(hotShelf);
   function layout() {
     var multi = !!(mq && mq.matches); ex.classList.toggle('multi', multi);
     if (multi) { if (!hotShelf.children.length) fillHot(); if (tabs.some(function(b){return b.dataset.sort==='hot' && b.getAttribute('aria-selected')==='true';})) show('all'); shelf.removeAttribute('role'); shelf.setAttribute('aria-labelledby', 'ex-sec-all'); }
@@ -118,6 +118,7 @@
   }
   if (mq) { if (mq.addEventListener) mq.addEventListener('change', layout); else if (mq.addListener) mq.addListener(layout); }
   layout();
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', loadPopularitySnapshot, { once: true });
-  else loadPopularitySnapshot();
+  // Start after initial paint, with a bounded delay; search remains click-loaded.
+  function laterPopularity(){ if(window.requestIdleCallback) window.requestIdleCallback(loadPopularitySnapshot,{timeout:1500}); else setTimeout(loadPopularitySnapshot,0); }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',laterPopularity,{once:true}); else laterPopularity();
 })();
