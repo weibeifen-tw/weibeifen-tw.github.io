@@ -805,8 +805,8 @@
         var actualNovel = st && st.status === 'published' ? st.chapter.novel : r.novel;
         var nv = novels[actualNovel] || novels[r.novel] || {};
         var title = '《' + (nv.title || r.novel || '未知作品') + '》' +
-          (pp ? (pp.ch ? '第 ' + pp.ch + ' 篇・' : '') + pp.t : (safePath && path.indexOf('/novel/') === 0 ? '介紹頁' : ''));
-        if(rr && rr.id===r.novel) title=rr.title;
+          (st && st.status === 'published' ? '第 ' + st.chapter.chapter + ' 篇' : pp && pp.ch ? '第 ' + pp.ch + ' 篇' : (safePath && path.indexOf('/novel/') === 0 ? '介紹頁' : ''));
+        if(rr && rr.id===r.novel){var volume=researchRow('/literature/indigenous/v0'+rr.id.slice(-1)+'/');title='《'+(volume?volume.title:rr.title)+'》'+(rr.kind==='article'&&rr.no?'第 '+rr.no+' 篇':'介紹頁');}
         var item = el('div', 'fav-item mycm-item');
         var a = el(safePath ? 'a' : 'span', null, title);
         if (safePath) a.href = safePath + '#comments';

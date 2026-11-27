@@ -27,6 +27,7 @@ const server=http.createServer((req,res)=>{
  assert.equal(await page.locator('.ind-pending a').count(),0);
  assert.equal(await page.locator('.wb-page-nav').count(),0);
  assert.equal(await page.locator('.ind-volume-crumb .wb-reader-back').count(),1);
+ assert.equal((await page.locator('.ind-volume-crumb').textContent()).trim(),'〈 返回研究典藏');
  assert.equal(await page.locator('.ind-volume-head .ind-volume-intro').count(),1);
  const cover=await page.locator('.ind-volume-head img').boundingBox(),intro=await page.locator('.ind-volume-intro').boundingBox();
  assert.ok(width>=768?intro.x>=cover.x+cover.width:intro.y>=cover.y+cover.height);
@@ -74,10 +75,13 @@ const server=http.createServer((req,res)=>{
  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2),'horizontal overflow at '+width);
  assert.deepEqual(errors,[],'page JS errors at '+width);
  await page.goto(origin+'/literature/indigenous/',{waitUntil:'load'});
- assert.equal(await page.locator('.ind-resume,.ind-zone').count(),0);
+ assert.equal(await page.locator('.ind-resume,.ind-zone,.ind-fine').count(),0);
  await page.goto(origin+'/shelf/');
  await page.locator('.shelf-tabs button').nth(1).click();
  assert.equal(await page.locator('.research-shelf-item a[href="/literature/ind-test-a/"]').isVisible(),true);
+ assert.equal(await page.locator('.shelf-tabs button').nth(1).textContent(),'研究室');
+ assert.equal(await page.locator('.shelf-research-pane h3').count(),0);
+ assert.equal(await page.locator('.research-shelf-item a>small').textContent(),'讀到第 1.1 篇');
  assert.equal(await page.getByRole('button',{name:'復原這台裝置的舊閱讀紀錄'}).count(),0);
  await page.goto(origin+'/literature/indigenous/');
  assert.equal(await page.locator('.wb-page-nav').count(),0);
@@ -177,6 +181,12 @@ const server=http.createServer((req,res)=>{
  await mp.locator('.research-actions .act.cmt').click();
  await mp.waitForFunction(()=>document.querySelector('#comments .cm-list')?.textContent.includes('隔離測試：文章留言'));
  assert.equal(await mp.locator('#comments .cm-list').textContent().then(s=>s.includes('隔離測試：卷冊留言')),false);
+ await mp.evaluate(({path,novel})=>{const rows=JSON.parse(sessionStorage.getItem('fixture:comments')||'[]');rows.push({id:'novel-comment',user_id:'fixture-member-v17',novel,path,body:'小說留言測試',created_at:'2026-11-20T00:00:00Z'});sessionStorage.setItem('fixture:comments',JSON.stringify(rows));},{path:novel.u,novel:novel.n});
+ await mp.goto(origin+'/my-comments/');
+ await mp.waitForFunction(()=>document.querySelector('.mycm-list')?.textContent.includes('小說留言測試'));
+ const novelLabel=await mp.locator('.mycm-head a[href="'+novel.u+'#comments"]').textContent();
+ assert.match(novelLabel,/^《.+》第 .+ 篇$/);
+ assert.equal(await mp.locator('.mycm-head a[href="/literature/ind-test-a/#comments"]').textContent(),'《島嶼與人群的起源》第 1.1 篇');
  await member.close();
  await ctx.close();console.log('BUILD07 research rendered browser '+width+'px passed');
  }

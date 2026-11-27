@@ -11,7 +11,7 @@ layout: default
 {% assign chapter_start = chapter_starts[volume_index] | plus: 0 %}
 {% assign arts = site.literature | where: "series_key", book.series_key | where: "volume_no", v.no | sort: "article_id" %}
 <section class="lit-list page-box ind-book ind-volume-page">
-<p class="ind-volume-crumb"><a class="wb-reader-back ind-title-back" data-fixed-back href="{{ '/literature/indigenous/' | relative_url }}" aria-label="返回研究典藏">‹</a>《{{ book.title | escape }}》・第{{ '一二三四五六七' | slice: volume_index }}卷・{{ v.title | escape }}</p>
+<p class="ind-volume-crumb"><a class="wb-reader-back ind-title-back" data-fixed-back href="{{ '/literature/indigenous/' | relative_url }}" aria-label="返回研究典藏"><span aria-hidden="true">〈</span> 返回研究典藏</a></p>
 <div class="ind-volume-head"><div class="nv-post ind-cover"><div class="ip-one"><img src="{{ v.cover | relative_url }}" width="600" height="800" alt="{{ v.title | escape }}"></div></div>
 <div class="ind-volume-intro"><h2 class="ind-section-title">卷冊簡介</h2><p class="ind-note">{{ arts.size }} 篇已公開</p>
 {% if v.summary %}<p>{{ v.summary | escape }}</p>{% else %}<p class="ind-note">本卷收錄以下研究章節：</p><ul class="ind-chapter-summary">{% for c in site.data.indigenous_catalog offset:chapter_start limit:chapter_count %}<li>{{ c.title | escape }}</li>{% endfor %}</ul>{% endif %}</div></div>

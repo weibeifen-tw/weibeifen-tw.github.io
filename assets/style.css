@@ -963,4 +963,4 @@ body.sheet-lock .cm-card{position:fixed;z-index:65}
 .ib-notices .nv-link-retry{align-self:flex-start;margin:4px 16px 16px;min-height:44px}
 
 /* BUILD04 research shelf */
-.shelf-tabs{display:flex;gap:8px;margin:12px 0}.shelf-tabs button[aria-pressed=true]{background:var(--ink);color:var(--bg)}.shelf-novel-pane[hidden],.shelf-research-pane[hidden]{display:none!important}.research-shelf-item{display:grid;gap:5px;border-bottom:1px solid var(--line);padding:12px 0}.research-shelf-item small,.ind-reading-progress{color:var(--sub);font-size:13px}
+.shelf-tabs{display:flex;gap:8px;margin:12px 0}.shelf-tabs button[aria-pressed=true]{background:var(--ink);color:var(--bg)}.shelf-novel-pane[hidden],.shelf-research-pane[hidden]{display:none!important}.research-shelf-item+.research-shelf-item{border-top:1px solid var(--line)}.research-shelf-item>a>span{min-width:0;overflow-wrap:anywhere}.research-shelf-item>a>small{flex:none;max-width:48%;text-align:right}.research-shelf-item .research-shelf-volume{display:block;margin:3px 0 0}.ind-reading-progress{color:var(--sub);font-size:13px}
