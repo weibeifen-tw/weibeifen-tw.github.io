@@ -149,6 +149,23 @@ const server=http.createServer((req,res)=>{
  await mp.waitForFunction(()=>document.querySelector('.research-actions .act.like')?.getAttribute('aria-pressed')==='true');
  await mp.locator('.research-actions .act.like').click();
  await mp.waitForFunction(()=>JSON.parse(sessionStorage.getItem('fixture:favorites')||'[]').length===0);
+
+ await mp.locator('.research-actions .act.cmt').click();
+ const articleForm=mp.locator('#comments .cm-form');
+ await articleForm.locator('textarea').fill('隔離測試：文章留言');
+ await articleForm.locator('.cm-send').click();
+ await mp.waitForFunction(()=>JSON.parse(sessionStorage.getItem('fixture:comments')||'[]').some(r=>r.path==='/literature/ind-test-a/'&&r.body==='隔離測試：文章留言'));
+ await mp.goto(origin+'/literature/indigenous/v01/');
+ await mp.locator('.research-actions .act.cmt').click();
+ await mp.locator('#comments .cm-form textarea').fill('隔離測試：卷冊留言');
+ await mp.locator('#comments .cm-send').click();
+ await mp.waitForFunction(()=>JSON.parse(sessionStorage.getItem('fixture:comments')||'[]').some(r=>r.path==='/literature/indigenous/v01/'&&r.body==='隔離測試：卷冊留言'));
+ await mp.waitForFunction(()=>document.querySelector('#comments .cm-list')?.textContent.includes('隔離測試：卷冊留言'));
+ assert.equal(await mp.locator('#comments .cm-list').textContent().then(s=>s.includes('隔離測試：文章留言')),false);
+ await mp.goto(origin+'/literature/ind-test-a/');
+ await mp.locator('.research-actions .act.cmt').click();
+ await mp.waitForFunction(()=>document.querySelector('#comments .cm-list')?.textContent.includes('隔離測試：文章留言'));
+ assert.equal(await mp.locator('#comments .cm-list').textContent().then(s=>s.includes('隔離測試：卷冊留言')),false);
  await member.close();
  await ctx.close();console.log('BUILD07 research rendered browser '+width+'px passed');
  }
