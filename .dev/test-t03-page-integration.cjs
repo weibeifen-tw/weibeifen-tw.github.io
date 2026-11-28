@@ -5,7 +5,7 @@ const http=require('node:http'),fs=require('node:fs'),path=require('node:path');
 const {chromium}=require('playwright-core');
 const root=path.join(__dirname,'..');
 const assets={};
-for(const name of ['assets/js/reading-store.js','assets/app.js','assets/member.js'])
+for(const name of ['assets/js/reading-store.js','assets/app.js','assets/js/novel-reading.js','assets/member.js'])
   assets['/'+name]=fs.readFileSync(path.join(root,name));
 const SESSION='sb-tqicconarhpddejxdvmf-auth-token';
 const status={version:1,chapters:{'/t/demo01/':{status:'published',url:'/t/demo01/',novel:'demo',chapter:1}},withdrawn:{},remaps:{}};
@@ -34,7 +34,7 @@ function html(type){
  return '<!doctype html><html><head>'+meta+'</head><body>'+
   (type==='chapter'?chapter:type==='shelf'?shelf:type==='novel'?novel:member)+fakeAuth+
   '<script src="/assets/js/reading-store.js"></script><script src="/assets/app.js"></script>'+
-  '<script src="/assets/member.js"></script></body></html>';
+  (type==='chapter'?'<script src="/assets/js/novel-reading.js"></script>':'')+'<script src="/assets/member.js"></script></body></html>';
 }
 const server=http.createServer((req,res)=>{
  const p=new URL(req.url,'http://127.0.0.1').pathname;

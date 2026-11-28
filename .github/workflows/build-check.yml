@@ -159,3 +159,13 @@ jobs:
           node --check _site/assets/js/novel-media.js
           npm install --prefix .dev --ignore-scripts --no-audit --no-fund
           CHROME_PATH="$(command -v google-chrome || command -v chromium)" node .dev/test-v3-novel-media.cjs
+
+      - name: V3 閱讀模組隔離回歸
+        run: |
+          set -eu
+          node --check _site/assets/js/novel-reading.js
+          grep -q 'assets/js/novel-reading.js' _site/t/shanhai01/index.html
+          ! grep -q 'assets/js/novel-reading.js' _site/index.html
+          ! grep -q 'assets/js/novel-reading.js' _site/member/index.html
+          ! grep -q 'assets/js/novel-reading.js' _site/novel/shanhai/index.html
+          CHROME_PATH="$(command -v google-chrome || command -v chromium)" node .dev/test-t03-page-integration.cjs

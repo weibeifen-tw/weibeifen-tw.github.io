@@ -159,6 +159,7 @@
 <script src="{{ '/assets/js/research-member.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>
 <script src="{{ '/assets/app.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>
 {% assign page_prefix = page.url | slice: 0, 7 %}{% if page_prefix == '/novel/' %}<script src="{{ '/assets/js/novel-media.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>{% endif %}
+{% if page.layout == 'thread' %}<script src="{{ '/assets/js/novel-reading.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>{% endif %}
 {%- assign pjs = page.page_js | default: layout.page_js -%}
 {%- if pjs %}
 <script src="{{ '/assets/js/' | append: pjs | append: '.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>
