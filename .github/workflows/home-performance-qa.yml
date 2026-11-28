@@ -13,13 +13,19 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 0
-      - name: Prepare baseline source
-        run: git worktree add --detach /tmp/wb-baseline 96acdafc37f418501ea00789bfe053d3072b9593
+      - name: Prepare baseline source inside Docker-mounted workspace
+        run: |
+          mkdir -p _qa_baseline_source
+          git archive 96acdafc37f418501ea00789bfe053d3072b9593 | tar -x -C _qa_baseline_source
       - name: Build baseline
         uses: actions/jekyll-build-pages@v1
         with:
-          source: /tmp/wb-baseline
+          source: ./_qa_baseline_source
           destination: ./_baseline
+      - name: Move baseline out before candidate build
+        run: |
+          rm -rf _qa_baseline_source
+          mv _baseline /tmp/wb-baseline-built
       - name: Build candidate
         uses: actions/jekyll-build-pages@v1
         with:
@@ -31,8 +37,9 @@ jobs:
       - name: Install tools
         run: npm install --prefix /tmp/wb-qa --no-save lighthouse@12.8.2 playwright-core@1.51.1
       - name: Start isolated servers
+        id: servers
         run: |
-          python3 -m http.server 8765 --bind 127.0.0.1 --directory _baseline > /tmp/baseline.log 2>&1 &
+          python3 -m http.server 8765 --bind 127.0.0.1 --directory /tmp/wb-baseline-built > /tmp/baseline.log 2>&1 &
           python3 -m http.server 8766 --bind 127.0.0.1 --directory _site > /tmp/candidate.log 2>&1 &
           curl --retry 10 --retry-connrefused -fsS http://127.0.0.1:8765/ >/dev/null
           curl --retry 10 --retry-connrefused -fsS http://127.0.0.1:8766/ >/dev/null
@@ -42,7 +49,8 @@ jobs:
           export CHROME_PATH="$(command -v google-chrome || command -v chromium)"
           node .dev/test-home-performance-qa.cjs
       - name: Three measurements per version and viewport
-        if: always()
+        id: measure
+        if: ${{ success() || (failure() && steps.servers.outcome == 'success') }}
         run: |
           mkdir -p reports
           export CHROME_PATH="$(command -v google-chrome || command -v chromium)"
@@ -58,7 +66,7 @@ jobs:
             done
           done
       - name: Report medians
-        if: always()
+        if: ${{ success() || (failure() && steps.measure.outcome == 'success') }}
         run: |
           node - <<'JS'
           const fs=require('fs');
