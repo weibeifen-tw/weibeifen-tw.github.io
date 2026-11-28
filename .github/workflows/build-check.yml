@@ -169,3 +169,8 @@ jobs:
           ! grep -q 'assets/js/novel-reading.js' _site/member/index.html
           ! grep -q 'assets/js/novel-reading.js' _site/novel/shanhai/index.html
           CHROME_PATH="$(command -v google-chrome || command -v chromium)" node .dev/test-t03-page-integration.cjs
+
+      - name: V3 書架 CSS 路由及版面回歸
+        run: |
+          set -eu
+          CHROME_PATH="$(command -v google-chrome || command -v chromium)" node .dev/test-v3-bookshelf-css.cjs
