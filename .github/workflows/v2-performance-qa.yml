@@ -18,7 +18,7 @@ jobs:
       - name: Audit public website, mobile and desktop
         run: |
           mkdir -p reports
-          echo "Post-deployment audit: main 96acdaf"
+          echo "Post-deployment audit: main 7c01df5"
           export CHROME_PATH="$(command -v google-chrome || command -v chromium)"
           test -n "$CHROME_PATH"
           for mode in mobile desktop; do
