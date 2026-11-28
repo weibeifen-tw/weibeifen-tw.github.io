@@ -69,6 +69,7 @@
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@{% if page.url == '/' %}600;700{% else %}400;600;700{% endif %}&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@{% if page.url == '/' %}600;700{% else %}400;600;700{% endif %}&display=swap" rel="stylesheet"></noscript>
 <link rel="stylesheet" href="{{ '/assets/style.css' | relative_url }}?v={{ site.time | date: '%s' }}">
+{% if page.url == '/' or page.url == '/literature/indigenous/' %}<link rel="stylesheet" href="{{ '/assets/css/bookshelf.css' | relative_url }}?v={{ site.time | date: '%s' }}">{% endif %}
 {%- comment -%} V1.0 S12（LCP）：作品頁第一張漫畫在 head 就開始下載（原圖，不降畫質） {%- endcomment -%}
 {%- if page.url contains '/novel/' -%}{%- assign lcp_id = page.url | remove_first: '/novel/' | remove: '/' -%}{%- capture lcp_p -%}/assets/comics/{{ lcp_id }}-1.webp{%- endcapture -%}{%- assign lcp_f = site.static_files | where: "path", lcp_p | first -%}{%- if lcp_f %}
 <link rel="preload" as="image" href="{{ lcp_p | relative_url }}" fetchpriority="high">
