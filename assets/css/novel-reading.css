@@ -1,0 +1,6 @@
+.r-who{display:inline-flex;align-items:center;gap:12px;margin-bottom:22px}
+.r-who-t{display:flex;flex-direction:column;line-height:1.4}
+.r-who-t b{font-size:15px;font-weight:500}
+.r-who-t small{font-size:13px;color:var(--sub)}
+.r-end{display:flex;justify-content:center;gap:10px;margin:48px 0 28px}
+.r-end span{width:5px;height:5px;border-radius:50%;background:var(--line)}

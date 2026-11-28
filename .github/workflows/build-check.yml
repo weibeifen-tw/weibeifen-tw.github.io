@@ -174,3 +174,8 @@ jobs:
         run: |
           set -eu
           CHROME_PATH="$(command -v google-chrome || command -v chromium)" node .dev/test-v3-bookshelf-css.cjs
+
+      - name: V3 作品及閱讀 CSS 回歸
+        run: |
+          set -eu
+          CHROME_PATH="$(command -v google-chrome || command -v chromium)" node .dev/test-v3-media-reader-css.cjs
