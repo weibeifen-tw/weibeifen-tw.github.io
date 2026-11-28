@@ -718,23 +718,6 @@ body.roles-only .cm-intro{display:none}
 a.cm-who.cm-as-char{text-decoration:none;color:inherit}
 /* V1.0 R03：角色區只在「認識角色」（?roles=1、?c=）顯示 */
 body:not(.roles-only) #roles{display:none}
-/* V1.0 R04：首頁探索故事、橫向書架 */
-.explore{padding:8px 0 24px}
-.ex-h{margin:4px 0 12px;font-family:"Noto Serif TC",serif;font-size:24px;font-weight:700;letter-spacing:.06em}
-.ex-tabs{display:flex;gap:8px;margin:0 0 6px}
-.ex-tabs button{font:inherit;font-size:14px;padding:6px 16px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--sub);cursor:pointer}
-.ex-tabs button[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:var(--card)}
-.ex-note{margin:6px 0 0;font-size:12px;color:var(--sub)}
-.shelf{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x proximity;padding:12px 2px 14px;scrollbar-width:thin;overscroll-behavior-x:contain}
-.shelf:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:8px}
-.bk{flex:0 0 calc((100% - 24px) / 2.5);scroll-snap-align:start;display:flex;flex-direction:column;gap:4px;color:inherit;text-decoration:none;min-width:0}
-@media (min-width:700px){.bk{flex-basis:calc((100% - 48px) / 5)}}
-.bk-cover{display:grid;place-items:center;aspect-ratio:3/4;border-radius:10px;overflow:hidden;background:color-mix(in srgb,var(--c) 22%,var(--card));border:1px solid var(--line)}
-.bk-cover > img{width:100%;height:100%;object-fit:cover}
-.bk-cover .avatar{width:62%;height:auto;aspect-ratio:1;box-shadow:0 0 0 3px var(--card)}
-.bk-t{margin-top:4px;font-family:"Noto Serif TC",serif;font-size:16px;line-height:1.35}
-.bk-b{font-size:13px;line-height:1.55;color:var(--sub);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.bk:hover .bk-t{text-decoration:underline}
 /* V1.0 R05：選單三區 */
 .d-sec{margin:14px 8px 2px;font-size:12px;font-weight:500;color:var(--sub);letter-spacing:.15em}
 .drawer h2 + .d-sec{margin-top:0}
@@ -798,20 +781,6 @@ button.d-item{width:100%;font:inherit;font-size:17px;font-weight:500;color:inher
 }
 @media (min-width:768px){body.docked .drawer .d-account{margin-top:0}}
 @media (min-width:1024px){body.docked .top .brand{visibility:hidden}}
-
-/* ===== V1.0 S07 首頁多區書架（Q27、Q28） ===== */
-.ex-sec{display:none}
-.ex-sec small{margin-left:8px;font-family:"Noto Sans TC",sans-serif;font-size:12px;font-weight:400;letter-spacing:.02em;color:var(--sub)}
-.explore:not(.multi) .shelf-hot{display:none}
-@media (min-width:768px){
-  .explore .ex-tabs,.explore .ex-note{display:none}
-  .explore .ex-sec{display:block;margin:22px 0 0;font-family:"Noto Serif TC",serif;font-size:19px;font-weight:600;letter-spacing:.06em}
-  .explore .ex-sec:first-of-type{margin-top:6px}
-}
-@media (min-width:1024px){
-  body.home .bar,body.home .wrap,body.home .foot{max-width:1120px}
-  body.home .bk{flex-basis:calc((100% - 60px) / 6)}
-}
 
 /* ===== V1.0 S07 作品頁（Q29）：電腦左側主視覺（捲動時固定）、右側介紹與章節；手機、平板維持上下 ===== */
 @media (min-width:1024px){
@@ -884,13 +853,6 @@ body.sheet-lock .cm-card{position:fixed;z-index:65}
 @media (prefers-reduced-motion:reduce){.cm-sheet,.cm-sheet-layer{transition:none}}
 
 
-/* 《未備份》人氣 V1.0：預留固定高度，避免快照更新造成 CLS；不顯示虛構數字。 */
-.bk-pop{display:flex;align-items:center;justify-content:flex-start;gap:5px;height:18px;min-height:18px;line-height:18px;margin:0;color:var(--sub);font-size:12px;white-space:nowrap}
-.bk-pop svg{display:block;flex:none;width:14px;height:14px}
-.bk-pop-n{font-variant-numeric:tabular-nums;font-size:12px}
-.bk-pop:not(.has-popularity) .bk-pop-n{opacity:.55}
-.bk .bk-t{margin-top:0}
-
 /* 手機會員頁：前往管理後台靠左、儲存置於正下方；登出維持右上，不更動桌機版。 */
 @media(max-width:767px){
   .mb-acts.has-admin{
@@ -953,6 +915,3 @@ body.sheet-lock .cm-card{position:fixed;z-index:65}
 /* BUILD04 research shelf */
 .shelf-tabs{display:flex;gap:8px;margin:12px 0}.shelf-tabs button[aria-pressed=true]{background:var(--ink);color:var(--bg)}.shelf-novel-pane[hidden],.shelf-research-pane[hidden]{display:none!important}.research-shelf-item+.research-shelf-item{border-top:1px solid var(--line)}.research-shelf-item>a>span{min-width:0;overflow-wrap:anywhere}.research-shelf-item>a>small{flex:none;max-width:48%;text-align:right}.research-shelf-item .research-shelf-volume{display:block;margin:3px 0 0}.ind-reading-progress{color:var(--sub);font-size:13px}
 
-/* Home-only deferred image placeholders and stable desktop headings. */
-body.home .bk-cover > img[data-home-src]:not([src]),body.home .avatar > img[data-home-src]:not([src]){display:none}
-body.home .bk-cover > noscript img{width:100%;height:100%;object-fit:cover}
