@@ -25,7 +25,10 @@ jobs:
       - name: Move baseline out before candidate build
         run: |
           rm -rf _qa_baseline_source
+          sudo chown -R "$(id -u):$(id -g)" _baseline
+          chmod -R u+rwX _baseline
           mv _baseline /tmp/wb-baseline-built
+          test -s /tmp/wb-baseline-built/index.html
       - name: Build candidate
         uses: actions/jekyll-build-pages@v1
         with:
