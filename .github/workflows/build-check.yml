@@ -152,3 +152,10 @@ jobs:
 
       - name: P3-01-A 公開章節／撤回狀態索引驗證（不部署）
         run: ruby .github/scripts/validate_chapter_status.rb . --site _site
+
+      - name: V3 作品媒體模組瀏覽器回歸驗證
+        run: |
+          set -eu
+          node --check _site/assets/js/novel-media.js
+          npm install --prefix .dev --ignore-scripts --no-audit --no-fund
+          CHROME_PATH="$(command -v google-chrome || command -v chromium)" node .dev/test-v3-novel-media.cjs
