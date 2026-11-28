@@ -15,13 +15,14 @@ body_class: wide home
     <button type="button" role="tab" id="ex-t-hot" aria-selected="false" aria-controls="ex-shelf" data-sort="hot" tabindex="-1">熱門作品</button>
   </div>
   <p class="ex-note" hidden>暫依最新上架排序</p>
+  <h2 class="ex-sec" id="ex-sec-all">全部作品</h2>
   <div class="shelf" id="ex-shelf" role="tabpanel" aria-labelledby="ex-t-all" tabindex="0">
   {%- for nv in site.data.novels -%}
     {%- assign lead = nil -%}{%- for ch in site.data.characters -%}{%- if ch[1].novel == nv[0] or ch[1].also contains nv[0] -%}{%- assign lead = ch[1] -%}{%- break -%}{%- endif -%}{%- endfor -%}
     <a class="bk" href="{{ '/novel/' | append: nv[0] | append: '/' | relative_url }}" data-work-id="{{ nv[0] | escape }}" data-ord="{{ forloop.index }}" style="--c:{{ lead.color | default: '#999' }}">
       <span class="bk-cover">
-        {%- if nv[1].cover -%}<img src="{{ nv[1].cover | relative_url }}?v={{ site.time | date: '%s' }}" alt="" width="300" height="400"{% if forloop.index > 6 %} loading="lazy"{% endif %} decoding="async">
-        {%- elsif lead -%}<span class="avatar">{%- if lead.avatar -%}<img src="{{ '/assets/avatars/' | append: lead.avatar | relative_url }}" alt="" width="96" height="96"{% if forloop.index > 6 %} loading="lazy"{% endif %} decoding="async">{%- else -%}{{ lead.glyph }}{%- endif -%}</span>
+        {%- if nv[1].cover -%}<img data-home-src="{{ nv[1].cover | relative_url }}?v={{ site.time | date: '%s' }}" alt="" width="300" height="400" loading="lazy" decoding="async"><noscript><img src="{{ nv[1].cover | relative_url }}?v={{ site.time | date: '%s' }}" alt="" width="300" height="400" loading="lazy" decoding="async"></noscript>
+        {%- elsif lead -%}<span class="avatar">{%- if lead.avatar -%}<img data-home-src="{{ '/assets/avatars/' | append: lead.avatar | relative_url }}" alt="" width="96" height="96" loading="lazy" decoding="async"><noscript><img src="{{ '/assets/avatars/' | append: lead.avatar | relative_url }}" alt="" width="96" height="96" loading="lazy" decoding="async"></noscript>{%- else -%}{{ lead.glyph }}{%- endif -%}</span>
         {%- endif -%}
       </span>
       <span class="bk-pop" data-work-id="{{ nv[0] | escape }}" aria-label="人氣尚未公布"><svg aria-hidden="true" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.8-6 10-6 10 6 10 6-3.8 6-10 6-10-6-10-6z"/><circle cx="12" cy="12" r="2.5"/></svg><span class="bk-pop-n" aria-hidden="true">—</span></span>
@@ -30,7 +31,25 @@ body_class: wide home
     </a>
   {%- endfor -%}
   </div>
+  <h2 class="ex-sec" id="ex-sec-hot">熱門作品<small>暫依最新上架</small></h2>
+  <div class="shelf shelf-hot" tabindex="0" aria-labelledby="ex-sec-hot"></div>
 </section>
+<script>
+(function(){
+  var shelf=document.getElementById('ex-shelf'); if(!shelf)return;
+  var cards=Array.from(shelf.querySelectorAll('.bk'));
+  for(var i=cards.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=cards[i];cards[i]=cards[j];cards[j]=t;}
+  var eager=matchMedia('(min-width:768px)').matches?6:3;
+  var frag=document.createDocumentFragment();
+  cards.forEach(function(card,i){
+    var im=card.querySelector('img[data-home-src]');
+    if(im){im.loading=i<eager?'eager':'lazy';im.setAttribute('fetchpriority',i===0?'high':'auto');im.src=im.getAttribute('data-home-src');}
+    frag.appendChild(card);
+  });
+  shelf.appendChild(frag);
+  shelf.dataset.initialized='1';
+})();
+</script>
 <script>
 // 舊網址相容：?c=角色、?n=小說 轉到作品頁（以前的角色頁／動態篩選）
 document.addEventListener('DOMContentLoaded', function () {
